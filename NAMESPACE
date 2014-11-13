@@ -1,0 +1,2 @@
+exportPattern("^[[:alpha:]]+")
+useDynLib(curl, R_curl_connection)
