@@ -116,6 +116,8 @@ void request(Rconnection con) {
   //FILE *f = fopen("/dev/null", "wb");
   //curl_easy_setopt(http_handle, CURLOPT_WRITEDATA, f);
 
+  /* example: http://curl.haxx.se/libcurl/c/getinmemory.html */
+
   /* we start some action by calling perform right away */
   res = curl_multi_perform(multi_handle, &still_running);
   if(res != CURLE_OK)
