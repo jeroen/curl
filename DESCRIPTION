@@ -1,9 +1,9 @@
 Package: curl
 Type: Package
-Title: What the package does (short line)
-Version: 1.0
+Title: Stream data from url using libcurl
+Version: 0.0
 Date: 2014-11-12
-Author: Who wrote it
+Author: Jeroen Ooms
 Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
-License: What license is it under?
+Description: Drop-in replacement for url() that uses libcurl.
+License: GPL
