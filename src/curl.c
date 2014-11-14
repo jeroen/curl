@@ -22,7 +22,8 @@ void request(Rconnection con);
 
 typedef struct curl_private {
   const char *url;
-  CURL *curl;
+  CURL *http_handle;
+  CURLM *multi_handle;
 } curl_private;
 
 SEXP R_curl_connection(SEXP url) {
@@ -82,34 +83,101 @@ static int rcurl_fgetc(Rconnection c) {
 }
 
 void request(Rconnection con) {
-  CURL *curl;
+  CURL *http_handle;
+  CURLM *multi_handle;
   CURLcode res;
+  int still_running = 1;
 
   /* get url value */
   curl_private *cc = (curl_private*) con->private;
   Rprintf("Opening URL:%s\n", cc->url);
 
-  /* set request options */
+  /* init */
   curl_global_init(CURL_GLOBAL_DEFAULT);
-  curl = curl_easy_init();
-  curl_easy_setopt(curl, CURLOPT_URL, cc->url);
-  curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
-  curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+
+  /* setup http handler */
+  http_handle = curl_easy_init();
+  curl_easy_setopt(http_handle, CURLOPT_URL, cc->url);
+  curl_easy_setopt(http_handle, CURLOPT_SSL_VERIFYHOST, 0L);
+  curl_easy_setopt(http_handle, CURLOPT_SSL_VERIFYPEER, 0L);
 
   /* set http request headers */
   struct curl_slist *reqheaders = NULL;
   reqheaders = curl_slist_append(reqheaders, "User-Agent: curl from r");
   reqheaders = curl_slist_append(reqheaders, "Accept-Charset: utf-8");
   reqheaders = curl_slist_append(reqheaders, "Cache-Control: no-cache");
-  curl_easy_setopt(curl, CURLOPT_HTTPHEADER, reqheaders);
+  curl_easy_setopt(http_handle, CURLOPT_HTTPHEADER, reqheaders);
+
+  /* init a multi stack */
+  multi_handle = curl_multi_init();
+  curl_multi_add_handle(multi_handle, http_handle);
 
   /* should plugin an R connection or fd here */
   //FILE *f = fopen("/dev/null", "wb");
-  //curl_easy_setopt(curl, CURLOPT_WRITEDATA, f);
+  //curl_easy_setopt(http_handle, CURLOPT_WRITEDATA, f);
 
-  res = curl_easy_perform(curl);
+  /* we start some action by calling perform right away */
+  res = curl_multi_perform(multi_handle, &still_running);
   if(res != CURLE_OK)
     error(curl_easy_strerror(res));
 
-  curl_easy_cleanup(curl);
+  /* this should move to readBin */
+  while(still_running) {
+    struct timeval timeout;
+
+    fd_set fdread;
+    fd_set fdwrite;
+    fd_set fdexcep;
+    int maxfd = -1;
+
+    long curl_timeo = -1;
+
+    FD_ZERO(&fdread);
+    FD_ZERO(&fdwrite);
+    FD_ZERO(&fdexcep);
+
+    /* set a suitable timeout to play around with */
+    timeout.tv_sec = 1;
+    timeout.tv_usec = 0;
+
+    curl_multi_timeout(multi_handle, &curl_timeo);
+    if(curl_timeo >= 0) {
+      timeout.tv_sec = curl_timeo / 1000;
+      if(timeout.tv_sec > 1)
+        timeout.tv_sec = 1;
+      else
+        timeout.tv_usec = (curl_timeo % 1000) * 1000;
+    }
+
+    /* get file descriptors from the transfers */
+    res = curl_multi_fdset(multi_handle, &fdread, &fdwrite, &fdexcep, &maxfd);
+    if(res != CURLE_OK)
+      error(curl_easy_strerror(res));
+
+    /* In a real-world program you OF COURSE check the return code of the
+       function calls.  On success, the value of maxfd is guaranteed to be
+       greater or equal than -1.  We call select(maxfd + 1, ...), specially in
+       case of (maxfd == -1), we call select(0, ...), which is basically equal
+       to sleep. */
+
+    int rc = select(maxfd+1, &fdread, &fdwrite, &fdexcep, &timeout);
+
+    switch(rc) {
+    case -1:
+      still_running = 0;
+      error("select() returns error, this is badness.");
+      break;
+    case 0:
+    default:
+      /* timeout or readable/writable sockets */
+      curl_multi_perform(multi_handle, &still_running);
+      break;
+    }
+  }
+
+  /* cleanup should be done in close() function */
+  curl_multi_remove_handle(multi_handle, http_handle);
+  curl_easy_cleanup(http_handle);
+  curl_multi_cleanup(multi_handle);
+  curl_global_cleanup();
 }
