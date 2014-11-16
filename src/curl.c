@@ -24,7 +24,7 @@ static size_t rcurl_read(void *buf, size_t sz, size_t ni, Rconnection c);
 static int rcurl_fgetc(Rconnection c);
 void cleanup(Rconnection con);
 
-typedef struct curl_private {
+typedef struct {
   const char *url;
   CURL *http_handle;
   CURLM *multi_handle;
@@ -88,14 +88,12 @@ SEXP R_curl_connection(SEXP url) {
   con->destroy = cleanup;
   con->read = rcurl_read;
   con->fgetc = rcurl_fgetc;
-  //con->write = zmqc_write;
   return rc;
 }
 
 static Rboolean rcurl_open(Rconnection con) {
   CURL *http_handle;
   CURLM *multi_handle;
-  int still_running = 1;
 
   /* get url value */
   curl_private *cc = (curl_private*) con->private;
@@ -121,24 +119,18 @@ static Rboolean rcurl_open(Rconnection con) {
   multi_handle = curl_multi_init();
   curl_multi_add_handle(multi_handle, http_handle);
 
-  /* send all data to this function  */
+  /* setup data callback function */
   curl_easy_setopt(http_handle, CURLOPT_WRITEFUNCTION, push);
-
-  /* we pass our 'chunk' struct to the callback function */
   curl_easy_setopt(http_handle, CURLOPT_WRITEDATA, cc);
 
   /* we start some action by calling perform right away */
-  assert(curl_multi_perform(multi_handle, &still_running));
-
-  /* buf: at least 2x CURL_MAX_WRITE_SIZE */
-  char *buf = malloc(cc->limit);
+  assert(curl_multi_perform(multi_handle, &(cc->has_more)));
 
   /* store in struct */
+  cc->buf = malloc(cc->limit);
+  cc->size = 0;
   cc->http_handle = http_handle;
   cc->multi_handle = multi_handle;
-  cc->size = 0;
-  cc->has_more = 1;
-  cc->buf = buf;
 
   /* return the R connection object */
   con->isopen = TRUE;
