@@ -1,3 +1,9 @@
+/* Connection interface to libcurl (c) 2014 Jeroen Ooms.
+ * Source: https://github.com/jeroenooms/curl
+ * Curl example: example: http://curl.haxx.se/libcurl/c/getinmemory.html
+ * Rconnection interface: http://biostatmatt.com/R/R-conn-ints/C-Structures.html
+ */
+
 #include <curl/curl.h>
 #include <curl/easy.h>
 #include <Rinternals.h>
@@ -14,9 +20,9 @@
 #define R_EOF -1
 
 static Rboolean rcurl_open(Rconnection c);
-static void rcurl_close(Rconnection c);
 static size_t rcurl_read(void *buf, size_t sz, size_t ni, Rconnection c);
 static int rcurl_fgetc(Rconnection c);
+void cleanup(Rconnection con);
 
 typedef struct curl_private {
   const char *url;
@@ -24,12 +30,15 @@ typedef struct curl_private {
   CURLM *multi_handle;
   char *buf;
   size_t size;
+  size_t limit;
   int has_more;
 } curl_private;
 
 /* example: http://curl.haxx.se/libcurl/c/getinmemory.html */
 static size_t push(void *contents, size_t size, size_t nmemb, curl_private *cc) {
   size_t newsize = size * nmemb;
+  if((cc->size + newsize) > (cc->limit))
+    error("Buffer overflow in push!");
   memcpy(&(cc->buf[cc->size]), contents, newsize);
   cc->size = cc->size + newsize;
   Rprintf("Pushed %d bytes. New size:%d bytes.\n", newsize, cc->size);
@@ -57,23 +66,26 @@ SEXP R_curl_connection(SEXP url) {
   if(!isString(url))
     error("Argument 'url' must be string.");
 
+  /* create the R connection object */
   Rconnection con;
   SEXP rc = R_new_custom_connection(translateCharUTF8(asChar(url)), "", "curl", &con);
 
+  /* create the internal curl structure */
   curl_private *cc;
   cc = malloc(sizeof(curl_private));
-  if (!cc)
-    Rf_error("cannot allocate private context");
-
   cc->url = translateCharUTF8(asChar(url));
+  cc->limit = 2 * CURL_MAX_WRITE_SIZE;
+
+  /* set connection properties */
   con->private = cc;
   con->canseek = FALSE;
   con->canwrite = FALSE;
   con->isopen = FALSE;
   con->blocking = TRUE;
   con->text = FALSE;
+  con->UTF8out = TRUE;
   con->open = rcurl_open;
-  con->close = rcurl_close;
+  con->destroy = cleanup;
   con->read = rcurl_read;
   con->fgetc = rcurl_fgetc;
   //con->write = zmqc_write;
@@ -119,7 +131,7 @@ static Rboolean rcurl_open(Rconnection con) {
   assert(curl_multi_perform(multi_handle, &still_running));
 
   /* buf: at least 2x CURL_MAX_WRITE_SIZE */
-  char *buf = malloc(2*CURL_MAX_WRITE_SIZE);
+  char *buf = malloc(cc->limit);
 
   /* store in struct */
   cc->http_handle = http_handle;
@@ -134,25 +146,21 @@ static Rboolean rcurl_open(Rconnection con) {
   return TRUE;
 }
 
-/* this doesn't work. Seems like con has been destroyed already */
-static void rcurl_close(Rconnection con) {
-
-}
-
 /* Support for readBin() */
 static size_t rcurl_read(void *buf, size_t sz, size_t ni, Rconnection con) {
   curl_private *cc = (curl_private*) con->private;
-  Rprintf("cc->size: %d\n", cc->size);
   size_t req_size = sz * ni;
-  size_t total_size = 0;
-  int has_more = cc->has_more;
   long timeout = 10*1000;
 
-  while((req_size > total_size) && has_more) {
+  /* clear existing buffer */
+  size_t total_size = pop(buf, req_size, cc);
+
+  /* fetch more data */
+  while((req_size > total_size) && cc->has_more) {
     assert(curl_multi_timeout(cc->multi_handle, &timeout));
-    assert(curl_multi_perform(cc->multi_handle, &has_more));
-    total_size = total_size + pop(&(buf[total_size]), req_size-total_size, cc);
-    sleep(1L);
+    assert(curl_multi_perform(cc->multi_handle, &(cc->has_more)));
+    total_size = total_size + pop(&(buf[total_size]), (req_size-total_size), cc);
+    //sleep(1L);
   }
 
   return total_size;
@@ -170,6 +178,7 @@ static int rcurl_fgetc(Rconnection c) {
 }
 
 void cleanup(Rconnection con) {
+  Rprintf("Cleaning up curl.\n");
   curl_private *cc = (curl_private*) con->private;
   curl_multi_remove_handle(cc->multi_handle, cc->http_handle);
   curl_easy_cleanup(cc->http_handle);
