@@ -1,43 +1,69 @@
 #include <curl/curl.h>
 #include <curl/easy.h>
 #include <Rinternals.h>
-#include <R_ext/Connections.h>
 #include <string.h>
 #include <stdlib.h>
-#include <time.h>
-#include <stdlib.h>
-
-#define R_EOF -1
-
-static Rboolean rcurl_open(Rconnection c);
-static void rcurl_close(Rconnection c);
-static size_t rcurl_read(void *buf, size_t sz, size_t ni, Rconnection c);
-static int rcurl_fgetc(Rconnection c);
-void request(Rconnection con);
 
 #include <R_ext/Connections.h>
 #if ! defined(R_CONNECTIONS_VERSION) || R_CONNECTIONS_VERSION != 1
 #error "Unsupported connections API version"
 #endif
 
-typedef struct curl_private {
+#define min(a, b) (((a) < (b)) ? (a) : (b))
+#define R_EOF -1
+
+static Rboolean rcurl_open(Rconnection c);
+static void rcurl_close(Rconnection c);
+static size_t rcurl_read(void *buf, size_t sz, size_t ni, Rconnection c);
+static int rcurl_fgetc(Rconnection c);
+
+typedef struct {
   const char *url;
   CURL *http_handle;
   CURLM *multi_handle;
+  char *buf;
+  size_t size;
+  int has_more;
 } curl_private;
+
+/* example: http://curl.haxx.se/libcurl/c/getinmemory.html */
+static size_t push(void *contents, size_t size, size_t nmemb, curl_private *cc) {
+  size_t newsize = size * nmemb;
+  Rprintf("Pushed %d bytes.\n", newsize);
+  memcpy(&(cc->buf[cc->size]), contents, newsize);
+  cc->size = cc->size + newsize;
+  return cc->size;
+}
+
+static size_t pop(void *target, size_t req_size, curl_private *cc){
+  size_t copy_size = min(cc->size, req_size);
+  Rprintf("Popped %d bytes.\n", copy_size);
+  memcpy(target, cc->buf, copy_size);
+  cc->size = cc->size - copy_size;
+  if(cc->size > 0) {
+    memcpy(cc->buf, &(cc->buf[req_size]), cc->size);
+  }
+  return copy_size;
+}
+
+void assert(CURLMcode res){
+  if(res != CURLE_OK)
+    error(curl_easy_strerror(res));
+}
 
 SEXP R_curl_connection(SEXP url) {
   if(!isString(url))
     error("Argument 'url' must be string.");
 
   Rconnection con;
-  SEXP rc = R_new_custom_connection(CHAR(asChar(url)), "", "curl", &con);
+  SEXP rc = R_new_custom_connection(translateCharUTF8(asChar(url)), "", "curl", &con);
 
   curl_private *cc;
   cc = malloc(sizeof(curl_private));
-  if (!cc) Rf_error("cannot allocate private context");
+  if (!cc)
+    Rf_error("cannot allocate private context");
 
-  cc->url = CHAR(asChar(url));
+  cc->url = translateCharUTF8(asChar(url));
   con->private = cc;
   con->canseek = FALSE;
   con->canwrite = FALSE;
@@ -53,39 +79,8 @@ SEXP R_curl_connection(SEXP url) {
 }
 
 static Rboolean rcurl_open(Rconnection con) {
-  request(con);
-  con->isopen = TRUE;
-  return TRUE;
-}
-
-/* this doesn't work. Seems like con has been destroyed already */
-static void rcurl_close(Rconnection con) {
-
-}
-
-/* placeholder for readBin */
-static size_t rcurl_read(void *buf, size_t sz, size_t ni, Rconnection con) {
-  size_t req = sz * ni;
-  const char test[] = "Foo Bar";
-  memcpy(buf, (unsigned char*) &test, req);
-  return strlen(test);
-}
-
-/* placeholder for readLines */
-static int rcurl_fgetc(Rconnection c) {
-  //return R_EOF;
-  int r = rand() % 26;
-  if(rand()%1000) {
-    return r + 97;
-  } else {
-    return R_EOF;
-  }
-}
-
-void request(Rconnection con) {
   CURL *http_handle;
   CURLM *multi_handle;
-  CURLcode res;
   int still_running = 1;
 
   /* get url value */
@@ -112,74 +107,70 @@ void request(Rconnection con) {
   multi_handle = curl_multi_init();
   curl_multi_add_handle(multi_handle, http_handle);
 
-  /* should plugin an R connection or fd here */
-  //FILE *f = fopen("/dev/null", "wb");
-  //curl_easy_setopt(http_handle, CURLOPT_WRITEDATA, f);
+  /* send all data to this function  */
+  curl_easy_setopt(http_handle, CURLOPT_WRITEFUNCTION, push);
 
-  /* example: http://curl.haxx.se/libcurl/c/getinmemory.html */
+  /* we pass our 'chunk' struct to the callback function */
+  curl_easy_setopt(http_handle, CURLOPT_WRITEDATA, (void *)&cc);
 
   /* we start some action by calling perform right away */
-  res = curl_multi_perform(multi_handle, &still_running);
-  if(res != CURLE_OK)
-    error(curl_easy_strerror(res));
+  assert(curl_multi_perform(multi_handle, &still_running));
 
-  /* this should move to readBin */
-  while(still_running) {
-    struct timeval timeout;
+  /* buf: at least 2x CURL_MAX_WRITE_SIZE */
+  char *buf = malloc(2*CURL_MAX_WRITE_SIZE);
 
-    fd_set fdread;
-    fd_set fdwrite;
-    fd_set fdexcep;
-    int maxfd = -1;
+  /* store in struct */
+  cc->http_handle = http_handle;
+  cc->multi_handle = multi_handle;
+  cc->buf = NULL;
+  cc->size = 0;
+  cc->has_more = 1;
+  cc->buf = buf;
 
-    long curl_timeo = -1;
+  /* return the R connection object */
+  con->isopen = TRUE;
+  return TRUE;
+}
 
-    FD_ZERO(&fdread);
-    FD_ZERO(&fdwrite);
-    FD_ZERO(&fdexcep);
+/* this doesn't work. Seems like con has been destroyed already */
+static void rcurl_close(Rconnection con) {
 
-    /* set a suitable timeout to play around with */
-    timeout.tv_sec = 1;
-    timeout.tv_usec = 0;
+}
 
-    curl_multi_timeout(multi_handle, &curl_timeo);
-    if(curl_timeo >= 0) {
-      timeout.tv_sec = curl_timeo / 1000;
-      if(timeout.tv_sec > 1)
-        timeout.tv_sec = 1;
-      else
-        timeout.tv_usec = (curl_timeo % 1000) * 1000;
-    }
+/* Support for readBin() */
+static size_t rcurl_read(void *buf, size_t sz, size_t ni, Rconnection con) {
+  curl_private *cc = (curl_private*) con->private;
+  size_t req_size = sz * ni;
+  size_t total_size = 0;
+  int has_more = cc->has_more;
+  long timeout = 10*1000;
 
-    /* get file descriptors from the transfers */
-    res = curl_multi_fdset(multi_handle, &fdread, &fdwrite, &fdexcep, &maxfd);
-    if(res != CURLE_OK)
-      error(curl_easy_strerror(res));
+  Rprintf("req size:%d\n", req_size);
 
-    /* In a real-world program you OF COURSE check the return code of the
-       function calls.  On success, the value of maxfd is guaranteed to be
-       greater or equal than -1.  We call select(maxfd + 1, ...), specially in
-       case of (maxfd == -1), we call select(0, ...), which is basically equal
-       to sleep. */
-
-    int rc = select(maxfd+1, &fdread, &fdwrite, &fdexcep, &timeout);
-
-    switch(rc) {
-    case -1:
-      still_running = 0;
-      error("select() returns error, this is badness.");
-      break;
-    case 0:
-    default:
-      /* timeout or readable/writable sockets */
-      curl_multi_perform(multi_handle, &still_running);
-      break;
-    }
+  while((req_size > total_size) && has_more) {
+    assert(curl_multi_timeout(cc->multi_handle, &timeout));
+    assert(curl_multi_perform(cc->multi_handle, &has_more));
+    total_size = total_size + pop(&(buf[total_size]), req_size-total_size, cc);
   }
 
-  /* cleanup should be done in close() function */
-  curl_multi_remove_handle(multi_handle, http_handle);
-  curl_easy_cleanup(http_handle);
-  curl_multi_cleanup(multi_handle);
+  return total_size;
+}
+
+/* placeholder for readLines */
+static int rcurl_fgetc(Rconnection c) {
+  //return R_EOF;
+  int r = rand() % 26;
+  if(rand()%1000) {
+    return r + 97;
+  } else {
+    return R_EOF;
+  }
+}
+
+void cleanup(Rconnection con) {
+  curl_private *cc = (curl_private*) con->private;
+  curl_multi_remove_handle(cc->multi_handle, cc->http_handle);
+  curl_easy_cleanup(cc->http_handle);
+  curl_multi_cleanup(cc->multi_handle);
   curl_global_cleanup();
 }
