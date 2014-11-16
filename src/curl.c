@@ -1,7 +1,11 @@
 /* Streaming interface to libcurl for R. (c) 2014 Jeroen Ooms.
- * Source: https://github.com/jeroenooms/curl
- * Curl example: example: http://curl.haxx.se/libcurl/c/getinmemory.html
- * Rconnection interface: http://biostatmatt.com/R/R-conn-ints/C-Structures.html
+   Source: https://github.com/jeroenooms/curl
+   Useful libcurl examples:
+     - http://curl.haxx.se/libcurl/c/getinmemory.html
+     - http://curl.haxx.se/libcurl/c/multi-single.html
+   Info about Rconnection API:
+    - https://github.com/wch/r-source/blob/trunk/src/include/R_ext/Connections.h
+    - http://biostatmatt.com/R/R-conn-ints/C-Structures.html
  */
 
 #include <curl/curl.h>
@@ -57,9 +61,14 @@ static size_t pop(void *target, size_t req_size, curl_private *cc){
   return copy_size;
 }
 
-void assert(CURLMcode res){
+void assert(CURLcode res){
   if(res != CURLE_OK)
     error(curl_easy_strerror(res));
+}
+
+void massert(CURLMcode res){
+  if(res != CURLE_OK)
+    error(curl_multi_strerror(res));
 }
 
 SEXP R_curl_connection(SEXP url) {
@@ -99,7 +108,7 @@ static Rboolean rcurl_open(Rconnection con) {
   curl_private *cc = (curl_private*) con->private;
   Rprintf("Opening URL:%s\n", cc->url);
 
-  /* init */
+  /* maybe not be needed as curl_easy_init triggers a global_init as well  */
   curl_global_init(CURL_GLOBAL_DEFAULT);
 
   /* setup http handler */
@@ -115,22 +124,26 @@ static Rboolean rcurl_open(Rconnection con) {
   reqheaders = curl_slist_append(reqheaders, "Cache-Control: no-cache");
   curl_easy_setopt(http_handle, CURLOPT_HTTPHEADER, reqheaders);
 
-  /* init a multi stack */
+  /* init a multi stack with callback */
   multi_handle = curl_multi_init();
   curl_multi_add_handle(multi_handle, http_handle);
-
-  /* setup data callback function */
   curl_easy_setopt(http_handle, CURLOPT_WRITEFUNCTION, push);
   curl_easy_setopt(http_handle, CURLOPT_WRITEDATA, cc);
 
-  /* we start some action by calling perform right away */
-  assert(curl_multi_perform(multi_handle, &(cc->has_more)));
-
-  /* store in struct */
+  /* store in private struct */
   cc->buf = malloc(cc->limit);
   cc->size = 0;
   cc->http_handle = http_handle;
   cc->multi_handle = multi_handle;
+
+  /* we start some action by calling perform right away */
+  massert(curl_multi_perform(multi_handle, &(cc->has_more)));
+
+  /* check if connection was successful */
+  long *status_code;
+  assert(curl_easy_getinfo(http_handle, CURLINFO_RESPONSE_CODE, &status_code));
+
+  Rprintf("Status code: %d\n", status);
 
   /* return the R connection object */
   con->isopen = TRUE;
@@ -139,6 +152,7 @@ static Rboolean rcurl_open(Rconnection con) {
 
 /* Support for readBin() */
 static size_t rcurl_read(void *buf, size_t sz, size_t ni, Rconnection con) {
+  Rprintf("rcurl_read called with %d\n", sz * ni);
   curl_private *cc = (curl_private*) con->private;
   size_t req_size = sz * ni;
   long timeout = 10*1000;
@@ -148,8 +162,8 @@ static size_t rcurl_read(void *buf, size_t sz, size_t ni, Rconnection con) {
 
   /* fetch more data */
   while((req_size > total_size) && cc->has_more) {
-    assert(curl_multi_timeout(cc->multi_handle, &timeout));
-    assert(curl_multi_perform(cc->multi_handle, &(cc->has_more)));
+    massert(curl_multi_timeout(cc->multi_handle, &timeout));
+    massert(curl_multi_perform(cc->multi_handle, &(cc->has_more)));
     total_size = total_size + pop(&(buf[total_size]), (req_size-total_size), cc);
     //sleep(1L);
   }
