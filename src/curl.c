@@ -1,4 +1,4 @@
-/* Connection interface to libcurl (c) 2014 Jeroen Ooms.
+/* Streaming interface to libcurl for R. (c) 2014 Jeroen Ooms.
  * Source: https://github.com/jeroenooms/curl
  * Curl example: example: http://curl.haxx.se/libcurl/c/getinmemory.html
  * Rconnection interface: http://biostatmatt.com/R/R-conn-ints/C-Structures.html
@@ -136,7 +136,6 @@ static Rboolean rcurl_open(Rconnection con) {
   /* store in struct */
   cc->http_handle = http_handle;
   cc->multi_handle = multi_handle;
-  cc->buf = NULL;
   cc->size = 0;
   cc->has_more = 1;
   cc->buf = buf;
@@ -183,5 +182,6 @@ void cleanup(Rconnection con) {
   curl_multi_remove_handle(cc->multi_handle, cc->http_handle);
   curl_easy_cleanup(cc->http_handle);
   curl_multi_cleanup(cc->multi_handle);
-  curl_global_cleanup();
+  /* NOTE: global_cleanup destroys all other connections as well */
+  //curl_global_cleanup();
 }
