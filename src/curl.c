@@ -3,6 +3,7 @@
 #include <Rinternals.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include <R_ext/Connections.h>
 #if ! defined(R_CONNECTIONS_VERSION) || R_CONNECTIONS_VERSION != 1
@@ -17,7 +18,7 @@ static void rcurl_close(Rconnection c);
 static size_t rcurl_read(void *buf, size_t sz, size_t ni, Rconnection c);
 static int rcurl_fgetc(Rconnection c);
 
-typedef struct {
+typedef struct curl_private {
   const char *url;
   CURL *http_handle;
   CURLM *multi_handle;
@@ -29,20 +30,21 @@ typedef struct {
 /* example: http://curl.haxx.se/libcurl/c/getinmemory.html */
 static size_t push(void *contents, size_t size, size_t nmemb, curl_private *cc) {
   size_t newsize = size * nmemb;
-  Rprintf("Pushed %d bytes.\n", newsize);
   memcpy(&(cc->buf[cc->size]), contents, newsize);
   cc->size = cc->size + newsize;
+  Rprintf("Pushed %d bytes. New size:%d bytes.\n", newsize, cc->size);
   return cc->size;
 }
 
 static size_t pop(void *target, size_t req_size, curl_private *cc){
   size_t copy_size = min(cc->size, req_size);
-  Rprintf("Popped %d bytes.\n", copy_size);
-  memcpy(target, cc->buf, copy_size);
-  cc->size = cc->size - copy_size;
-  if(cc->size > 0) {
-    memcpy(cc->buf, &(cc->buf[req_size]), cc->size);
+  if(copy_size){
+    memcpy(target, cc->buf, copy_size);
+    cc->size = cc->size - copy_size;
+    if(cc->size > 0)
+      memcpy(cc->buf, &(cc->buf[req_size]), cc->size);
   }
+  Rprintf("Requested %d bytes, popped %d bytes, new size %d bytes.\n", req_size, copy_size, cc->size);
   return copy_size;
 }
 
@@ -111,7 +113,7 @@ static Rboolean rcurl_open(Rconnection con) {
   curl_easy_setopt(http_handle, CURLOPT_WRITEFUNCTION, push);
 
   /* we pass our 'chunk' struct to the callback function */
-  curl_easy_setopt(http_handle, CURLOPT_WRITEDATA, (void *)&cc);
+  curl_easy_setopt(http_handle, CURLOPT_WRITEDATA, cc);
 
   /* we start some action by calling perform right away */
   assert(curl_multi_perform(multi_handle, &still_running));
@@ -140,17 +142,17 @@ static void rcurl_close(Rconnection con) {
 /* Support for readBin() */
 static size_t rcurl_read(void *buf, size_t sz, size_t ni, Rconnection con) {
   curl_private *cc = (curl_private*) con->private;
+  Rprintf("cc->size: %d\n", cc->size);
   size_t req_size = sz * ni;
   size_t total_size = 0;
   int has_more = cc->has_more;
   long timeout = 10*1000;
 
-  Rprintf("req size:%d\n", req_size);
-
   while((req_size > total_size) && has_more) {
     assert(curl_multi_timeout(cc->multi_handle, &timeout));
     assert(curl_multi_perform(cc->multi_handle, &has_more));
     total_size = total_size + pop(&(buf[total_size]), req_size-total_size, cc);
+    sleep(1L);
   }
 
   return total_size;
