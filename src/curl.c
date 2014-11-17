@@ -195,7 +195,7 @@ static size_t rcurl_read(void *target, size_t sz, size_t ni, Rconnection con) {
   return total_size;
 }
 
-/* naive (slow) implementation of readLines */
+/* naive implementation of readLines */
 static int rcurl_fgetc(Rconnection con) {
   int x;
   return rcurl_read(&x, 1, 1, con) ? x : R_EOF;
