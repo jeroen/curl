@@ -149,10 +149,9 @@ static Rboolean rcurl_open(Rconnection con) {
   if(status >= 300)
     error("HTTP error %d.", status);
 
-  /* return the R connection object */
+  /* set mode in case open() changed it */
+  con->text = strcmp(con->mode, "rb") ? TRUE : FALSE;
   con->isopen = TRUE;
-  con->text = FALSE;
-  strcpy(con->mode, "rb");
   return TRUE;
 }
 
@@ -198,6 +197,7 @@ SEXP R_curl_connection(SEXP url, SEXP mode) {
   /* open connection  */
   const char *smode = translateCharUTF8(asChar(mode));
   if(!strcmp(smode, "r") || !strcmp(smode, "rb")){
+    strcpy(con->mode, smode);
     rcurl_open(con);
   } else if(strcmp(smode, "")) {
     error("Invalid mode: %s", smode);
