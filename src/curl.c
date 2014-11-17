@@ -161,6 +161,7 @@ static Rboolean rcurl_open(Rconnection con) {
   cc->buf = malloc(cc->limit);
   cc->size = 0;
   cc->has_data = 0;
+  cc->has_more = 1;
   cc->http_handle = http_handle;
   cc->multi_handle = multi_handle;
 
