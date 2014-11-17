@@ -22,7 +22,6 @@
 
 #define min(a, b) (((a) < (b)) ? (a) : (b))
 #define R_EOF -1
-#define BUFFER_LIMIT (2 * CURL_MAX_WRITE_SIZE)
 
 static Rboolean rcurl_open(Rconnection c);
 static size_t rcurl_read(void *buf, size_t sz, size_t ni, Rconnection c);
@@ -34,33 +33,30 @@ typedef struct {
   CURL *http_handle;
   CURLM *multi_handle;
   char *buf;
+  char *ptr;
   size_t size;
-  size_t limit;
   int has_data;
   int has_more;
 } curl_private;
 
 /* example: http://curl.haxx.se/libcurl/c/getinmemory.html */
-static size_t push(void *contents, size_t size, size_t nmemb, curl_private *cc) {
+static size_t push(void *contents, size_t sz, size_t nmemb, curl_private *cc) {
+  if(cc->size)
+    error("Pushed called without clearing buffer first.");
+  cc->ptr = cc->buf;
+  cc->size = sz * nmemb;
   cc->has_data = 1;
-  size_t newsize = size * nmemb;
-  if((cc->size + newsize) > (cc->limit))
-    error("Buffer overflow in push!");
-  memcpy(&(cc->buf[cc->size]), contents, newsize);
-  cc->size = cc->size + newsize;
-  //Rprintf("Pushed %d bytes. New size:%d bytes.\n", newsize, cc->size);
+  memcpy(cc->ptr, contents, cc->size);
+  //Rprintf("Pushed %d bytes.\n", cc->size);
   return cc->size;
 }
 
-static size_t pop(void *target, size_t req_size, curl_private *cc){
-  size_t copy_size = min(cc->size, req_size);
-  if(copy_size){
-    memcpy(target, cc->buf, copy_size);
-    cc->size = cc->size - copy_size;
-    if(cc->size > 0)
-      memcpy(cc->buf, &(cc->buf[req_size]), cc->size);
-  }
-  //Rprintf("Requested %d bytes, popped %d bytes, new size %d bytes.\n", req_size, copy_size, cc->size);
+static size_t pop(void *target, size_t max, curl_private *cc){
+  size_t copy_size = min(cc->size, max);
+  memcpy(target, cc->ptr, copy_size);
+  cc->ptr = cc->ptr + copy_size;
+  cc->size = cc->size - copy_size;
+  //Rprintf("Requested %d bytes, popped %d bytes, new size %d bytes.\n", max, copy_size, cc->size);
   return copy_size;
 }
 
@@ -82,6 +78,13 @@ void check_status(CURLM *multi_handle) {
   }
 }
 
+void fetch(curl_private *cc) {
+  long timeout = 10*1000;
+  massert(curl_multi_timeout(cc->multi_handle, &timeout));
+  massert(curl_multi_perform(cc->multi_handle, &(cc->has_more)));
+  check_status(cc->multi_handle);
+}
+
 SEXP R_curl_connection(SEXP url, SEXP mode) {
   if(!isString(url))
     error("Argument 'url' must be string.");
@@ -97,10 +100,13 @@ SEXP R_curl_connection(SEXP url, SEXP mode) {
   SEXP rc = R_new_custom_connection(translateCharUTF8(asChar(url)), "r", "curl", &con);
 
   /* create the internal curl structure */
-  curl_private *cc;
-  cc = malloc(sizeof(curl_private));
+  curl_private *cc = malloc(sizeof(curl_private));
+  cc->buf = malloc(CURL_MAX_WRITE_SIZE);
+  cc->ptr = cc->buf;
+  cc->size = 0;
+  cc->has_data = 0;
+  cc->has_more = 1;
   cc->url = translateCharUTF8(asChar(url));
-  cc->limit = BUFFER_LIMIT;
   cc->http_handle = curl_easy_init();
   cc->multi_handle = curl_multi_init();
   curl_multi_add_handle(cc->multi_handle, cc->http_handle);
@@ -129,14 +135,13 @@ SEXP R_curl_connection(SEXP url, SEXP mode) {
 }
 
 static Rboolean rcurl_open(Rconnection con) {
-  /* get url value */
   curl_private *cc = (curl_private*) con->private;
   CURL *http_handle = cc->http_handle;
   CURLM *multi_handle = cc->multi_handle;
 
   //Rprintf("Opening URL:%s\n", cc->url);
 
-  /* setup http handler */
+  /* curl configuration options */
   curl_easy_setopt(http_handle, CURLOPT_URL, cc->url);
   curl_easy_setopt(http_handle, CURLOPT_SSL_VERIFYHOST, 0L);
   curl_easy_setopt(http_handle, CURLOPT_SSL_VERIFYPEER, 0L);
@@ -152,12 +157,6 @@ static Rboolean rcurl_open(Rconnection con) {
   /* init a multi stack with callback */
   curl_easy_setopt(http_handle, CURLOPT_WRITEFUNCTION, push);
   curl_easy_setopt(http_handle, CURLOPT_WRITEDATA, cc);
-
-  /* store in private struct */
-  cc->buf = malloc(cc->limit);
-  cc->size = 0;
-  cc->has_data = 0;
-  cc->has_more = 1;
 
   /* Wait for first data to come in. Monitoring a change in status code does not
      suffice in case of http redirects */
@@ -181,21 +180,17 @@ static Rboolean rcurl_open(Rconnection con) {
 }
 
 /* Support for readBin() */
-static size_t rcurl_read(void *buf, size_t sz, size_t ni, Rconnection con) {
-  //int* intbuf = (int*) buf;
+static size_t rcurl_read(void *target, size_t sz, size_t ni, Rconnection con) {
   curl_private *cc = (curl_private*) con->private;
   size_t req_size = sz * ni;
-  long timeout = 10*1000;
+  void *ptr = target;
 
-  /* clear existing buffer */
-  size_t total_size = pop(buf, req_size, cc);
-
-  /* fetch more data */
+  /* append data to the target buffer */
+  size_t total_size = pop(target, req_size, cc);
   while((req_size > total_size) && cc->has_more) {
-    massert(curl_multi_timeout(cc->multi_handle, &timeout));
-    massert(curl_multi_perform(cc->multi_handle, &(cc->has_more)));
-    check_status(cc->multi_handle);
-    total_size = total_size + pop(&(buf[total_size]), (req_size-total_size), cc);
+    fetch(cc);
+    ptr = target + total_size;
+    total_size = total_size + pop(ptr, (req_size-total_size), cc);
   }
   return total_size;
 }
@@ -212,6 +207,8 @@ void cleanup(Rconnection con) {
   curl_multi_remove_handle(cc->multi_handle, cc->http_handle);
   curl_easy_cleanup(cc->http_handle);
   curl_multi_cleanup(cc->multi_handle);
+  free(cc->buf);
+  free(cc);
   /* NOTE: global_cleanup destroys all other connections as well */
   //curl_global_cleanup();
 }
