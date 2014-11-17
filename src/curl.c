@@ -131,9 +131,10 @@ SEXP R_curl_connection(SEXP url, SEXP mode) {
 static Rboolean rcurl_open(Rconnection con) {
   /* get url value */
   curl_private *cc = (curl_private*) con->private;
-  Rprintf("Opening URL:%s\n", cc->url);
   CURL *http_handle = cc->http_handle;
   CURLM *multi_handle = cc->multi_handle;
+
+  //Rprintf("Opening URL:%s\n", cc->url);
 
   /* setup http handler */
   curl_easy_setopt(http_handle, CURLOPT_URL, cc->url);
@@ -205,7 +206,7 @@ static int rcurl_fgetc(Rconnection con) {
 }
 
 void cleanup(Rconnection con) {
-  Rprintf("Cleaning up curl.\n");
+  //Rprintf("Cleaning up curl.\n");
   curl_private *cc = (curl_private*) con->private;
   curl_multi_remove_handle(cc->multi_handle, cc->http_handle);
   curl_easy_cleanup(cc->http_handle);
