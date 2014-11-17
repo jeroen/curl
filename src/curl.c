@@ -182,6 +182,7 @@ static Rboolean rcurl_open(Rconnection con) {
 
 /* Support for readBin() */
 static size_t rcurl_read(void *buf, size_t sz, size_t ni, Rconnection con) {
+  buf = (int*) buf;
   curl_private *cc = (curl_private*) con->private;
   size_t req_size = sz * ni;
   long timeout = 10*1000;
