@@ -1,11 +1,14 @@
-/* Streaming interface to libcurl for R. (c) 2014 Jeroen Ooms.
-   Source: https://github.com/jeroenooms/curl
-   Useful libcurl examples:
-     - http://curl.haxx.se/libcurl/c/getinmemory.html
-     - http://curl.haxx.se/libcurl/c/multi-single.html
-   Info about Rconnection API:
-    - https://github.com/wch/r-source/blob/trunk/src/include/R_ext/Connections.h
-    - http://biostatmatt.com/R/R-conn-ints/C-Structures.html
+/* *
+ * Streaming interface to libcurl for R. (c) 2014 Jeroen Ooms.
+ * Source: https://github.com/jeroenooms/curl
+ * Contributions are welcome!
+ * Helpful libcurl examples:
+ *  - http://curl.haxx.se/libcurl/c/getinmemory.html
+ *  - http://curl.haxx.se/libcurl/c/multi-single.html
+ * Info about Rconnection API:
+ *  - https://github.com/wch/r-source/blob/trunk/src/include/R_ext/Connections.h
+ *  - http://biostatmatt.com/R/R-conn-ints/C-Structures.html
+ *
  */
 
 #include <curl/curl.h>
@@ -22,6 +25,7 @@
 
 #define min(a, b) (((a) < (b)) ? (a) : (b))
 #define R_EOF -1
+#define BUFFER_LIMIT (2 * CURL_MAX_WRITE_SIZE)
 
 static Rboolean rcurl_open(Rconnection c);
 static size_t rcurl_read(void *buf, size_t sz, size_t ni, Rconnection c);
@@ -81,19 +85,22 @@ void check_status(CURLM *multi_handle) {
   }
 }
 
-SEXP R_curl_connection(SEXP url) {
+SEXP R_curl_connection(SEXP url, SEXP mode) {
   if(!isString(url))
     error("Argument 'url' must be string.");
 
+  if(!isString(mode))
+    error("Argument 'mode' must be string.");
+
   /* create the R connection object */
   Rconnection con;
-  SEXP rc = R_new_custom_connection(translateCharUTF8(asChar(url)), "rb", "curl", &con);
+  SEXP rc = R_new_custom_connection(translateCharUTF8(asChar(url)), "", "curl", &con);
 
   /* create the internal curl structure */
   curl_private *cc;
   cc = malloc(sizeof(curl_private));
   cc->url = translateCharUTF8(asChar(url));
-  cc->limit = 2 * CURL_MAX_WRITE_SIZE;
+  cc->limit = BUFFER_LIMIT;
 
   /* set connection properties */
   con->private = cc;
@@ -107,6 +114,15 @@ SEXP R_curl_connection(SEXP url) {
   con->destroy = cleanup;
   con->read = rcurl_read;
   con->fgetc = rcurl_fgetc;
+
+  /* open connection  */
+  const char *smode = translateCharUTF8(asChar(mode));
+  if(!strcmp(smode, "r") || !strcmp(smode, "rb")){
+    rcurl_open(con);
+  } else if(strcmp(smode, "")){
+    error("Invalid mode: %s", smode);
+  }
+
   return rc;
 }
 
@@ -164,6 +180,7 @@ static Rboolean rcurl_open(Rconnection con) {
 
   /* return the R connection object */
   con->isopen = TRUE;
+  strcpy(con->mode, "rb");
   return TRUE;
 }
 

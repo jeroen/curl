@@ -19,8 +19,8 @@
 #'
 #' # stream over https with gzip
 #' library(jsonlite)
-#' con <- gzcon(curl("https://jeroenooms.github.io/data/nycflights13.json.gz"))
+#' con <- gzcon(curl("https://jeroenooms.github.io/data/nycflights13.json.gz", "rb"))
 #' test <- stream_in(con)
-curl <- function(url = "http://httpbin.org/get"){
-  .Call(R_curl_connection, url)
+curl <- function(url = "http://httpbin.org/get", mode = ""){
+  .Call(R_curl_connection, url, mode)
 }
