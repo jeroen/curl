@@ -11,23 +11,32 @@ Drop-in replacement for url() that uses libcurl to support https.
 \examples{
 test <- curl()
 open(test)
+readLines(test)
 close(test)
 
-# http error
+# HTTP error
 curl("https://httpbin.org/status/418", "r")
 
-# http redirects
+# HTTP redirects
 readLines(curl("https://httpbin.org/redirect/3"))
 
-# redirect to error
+# Binary data
+buf <- readBin(curl("http://httpbin.org/bytes/12345", "rb"), raw(), 99999)
+length(buf)
+
+# Error after redirect
 curl("https://httpbin.org/redirect-to?url=http://httpbin.org/status/418", "r")
 
-# works for ftp too
+# FTP support
 read.csv(curl("ftp://cran.r-project.org/pub/R/CRAN_mirrors.csv"))
 
-# stream over https with gzip
+ # Stream large dataset over https with gzip
 library(jsonlite)
 con <- gzcon(curl("https://jeroenooms.github.io/data/nycflights13.json.gz"))
-test <- stream_in(con)
+nycflights <- stream_in(con)
+
+# Accept-Encoding: compress, gzip
+readLines(curl("http://httpbin.org/gzip))
+readLines(curl("http://httpbin.org/deflate))
 }
 

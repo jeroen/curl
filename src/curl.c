@@ -123,6 +123,8 @@ static Rboolean rcurl_open(Rconnection con) {
   curl_easy_setopt(http_handle, CURLOPT_SSL_VERIFYHOST, 0L);
   curl_easy_setopt(http_handle, CURLOPT_SSL_VERIFYPEER, 0L);
   curl_easy_setopt(http_handle, CURLOPT_FOLLOWLOCATION, 1L);
+  curl_easy_setopt(http_handle, CURLOPT_CONNECTTIMEOUT_MS, 10*1000);
+  curl_easy_setopt(http_handle, CURLOPT_ACCEPT_ENCODING, "gzip, deflate");
 
   /* set http request headers */
   struct curl_slist *reqheaders = NULL;
