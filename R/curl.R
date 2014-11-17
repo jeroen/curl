@@ -16,6 +16,11 @@
 #'
 #' # redirect to error
 #' open(curl("http://httpbin.org/redirect-to?url=http://httpbin.org/status/418"))
+#'
+#' # stream over https with gzip
+#' library(jsonlite)
+#' con <- gzcon(curl("https://jeroenooms.github.io/data/nycflights13.json.gz"))
+#' test <- stream_in(con)
 curl <- function(url = "http://httpbin.org/get"){
   .Call(R_curl_connection, url)
 }

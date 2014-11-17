@@ -87,7 +87,7 @@ SEXP R_curl_connection(SEXP url) {
 
   /* create the R connection object */
   Rconnection con;
-  SEXP rc = R_new_custom_connection(translateCharUTF8(asChar(url)), "", "curl", &con);
+  SEXP rc = R_new_custom_connection(translateCharUTF8(asChar(url)), "rb", "curl", &con);
 
   /* create the internal curl structure */
   curl_private *cc;
@@ -148,7 +148,8 @@ static Rboolean rcurl_open(Rconnection con) {
   cc->http_handle = http_handle;
   cc->multi_handle = multi_handle;
 
-  /* we start some action by calling perform right away */
+  /* Wait for first data to come in. Monitoring a change in status code does not
+     suffice in case of http redirects */
   while(cc->has_more && !cc->has_data) {
     massert(curl_multi_perform(multi_handle, &(cc->has_more)));
     check_status(multi_handle);
@@ -158,9 +159,8 @@ static Rboolean rcurl_open(Rconnection con) {
   assert(curl_easy_getinfo(http_handle, CURLINFO_RESPONSE_CODE, &status));
 
   /* check http status code */
-  if(status >= 400) {
+  if(status >= 300)
     error("HTTP error %d.", status);
-  }
 
   /* return the R connection object */
   con->isopen = TRUE;
