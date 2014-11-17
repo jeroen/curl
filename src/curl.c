@@ -207,12 +207,11 @@ static size_t rcurl_read(void *buf, size_t sz, size_t ni, Rconnection con) {
   return total_size;
 }
 
-/* placeholder for readLines */
-static int rcurl_fgetc(Rconnection c) {
-  //return R_EOF;
-  int r = rand() % 26;
-  if(rand()%1000) {
-    return r + 97;
+/* naive (slow) implementation */
+static int rcurl_fgetc(Rconnection con) {
+  int x;
+  if(rcurl_read(&x, 1, 1, con)){
+    return x;
   } else {
     return R_EOF;
   }
