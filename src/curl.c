@@ -37,12 +37,12 @@ typedef struct {
 /* example: http://curl.haxx.se/libcurl/c/getinmemory.html */
 static size_t push(void *contents, size_t sz, size_t nmemb, curl_private *cc) {
   if(cc->size)
-    error("Pushed called without clearing buffer first.");
+    error("Pushed called without clearing buffer first (%d).", cc->size);
   cc->ptr = cc->buf;
   cc->size = sz * nmemb;
   cc->has_data = 1;
   memcpy(cc->ptr, contents, cc->size);
-  //Rprintf("Pushed %d bytes.\n", cc->size);
+  Rprintf("Pushed %d bytes.\n", cc->size);
   return cc->size;
 }
 
@@ -74,6 +74,7 @@ void check_status(CURLM *multi_handle) {
 }
 
 void fetch(curl_private *cc) {
+  Rprintf("Fetching...\n");
   long timeout = 10*1000;
   massert(curl_multi_timeout(cc->multi_handle, &timeout));
   massert(curl_multi_perform(cc->multi_handle, &(cc->has_more)));
@@ -116,7 +117,6 @@ static Rboolean rcurl_open(Rconnection con) {
   //Rprintf("Opening URL:%s\n", cc->url);
   curl_private *cc = (curl_private*) con->private;
   CURL *http_handle = cc->http_handle;
-  CURLM *multi_handle = cc->multi_handle;
 
   /* curl configuration options */
   curl_easy_setopt(http_handle, CURLOPT_URL, cc->url);
@@ -124,6 +124,8 @@ static Rboolean rcurl_open(Rconnection con) {
   curl_easy_setopt(http_handle, CURLOPT_SSL_VERIFYPEER, 0L);
   curl_easy_setopt(http_handle, CURLOPT_FOLLOWLOCATION, 1L);
   curl_easy_setopt(http_handle, CURLOPT_CONNECTTIMEOUT_MS, 10*1000);
+
+  /* this triggers a bug where the callback gets called more than once x perform */
   curl_easy_setopt(http_handle, CURLOPT_ACCEPT_ENCODING, "gzip, deflate");
 
   /* set http request headers */
@@ -140,8 +142,7 @@ static Rboolean rcurl_open(Rconnection con) {
   /* Wait for first data to arrive. Monitoring a change in status code does not
      suffice in case of http redirects */
   while(cc->has_more && !cc->has_data) {
-    massert(curl_multi_perform(multi_handle, &(cc->has_more)));
-    check_status(multi_handle);
+    fetch(cc);
   }
 
   long status = 0;

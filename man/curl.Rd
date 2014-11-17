@@ -29,8 +29,8 @@ length(buf)
 curl("https://httpbin.org/redirect-to?url=http://httpbin.org/status/418", "r")
 
 # Accept-Encoding: compress, gzip
-readLines(curl("http://httpbin.org/gzip))
-readLines(curl("http://httpbin.org/deflate))
+readLines(curl("http://httpbin.org/gzip"))
+readLines(curl("http://httpbin.org/deflate"))
 
 # File support
 test <- paste0("file://", system.file("CITATION"))
@@ -40,6 +40,12 @@ readLines(curl(test))
 read.csv(curl("ftp://cran.r-project.org/pub/R/CRAN_mirrors.csv"))
 readLines(curl("ftps://test.rebex.net:990/readme.txt"))
 readLines(curl("gopher://quux.org/1"))
+
+# Streaming data
+con <- curl("http://jeroenooms.github.io/data/diamonds.json", "r")
+while(length(x <- readLines(con, n = 5))){
+  print(x)
+}
 
 # Stream large dataset over https with gzip
 library(jsonlite)
