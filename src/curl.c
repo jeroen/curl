@@ -35,11 +35,13 @@ typedef struct {
   char *buf;
   size_t size;
   size_t limit;
+  int has_data;
   int has_more;
 } curl_private;
 
 /* example: http://curl.haxx.se/libcurl/c/getinmemory.html */
 static size_t push(void *contents, size_t size, size_t nmemb, curl_private *cc) {
+  cc->has_data = 1;
   size_t newsize = size * nmemb;
   if((cc->size + newsize) > (cc->limit))
     error("Buffer overflow in push!");
@@ -67,8 +69,16 @@ void assert(CURLcode res){
 }
 
 void massert(CURLMcode res){
-  if(res != CURLE_OK)
+  if(res != CURLM_OK)
     error(curl_multi_strerror(res));
+}
+
+void check_status(CURLM *multi_handle) {
+  for(int msg = 1; msg > 0;){
+    CURLMsg *out = curl_multi_info_read(multi_handle, &msg);
+    if(out)
+      assert(out->data.result);
+  }
 }
 
 SEXP R_curl_connection(SEXP url) {
@@ -116,10 +126,11 @@ static Rboolean rcurl_open(Rconnection con) {
   curl_easy_setopt(http_handle, CURLOPT_URL, cc->url);
   curl_easy_setopt(http_handle, CURLOPT_SSL_VERIFYHOST, 0L);
   curl_easy_setopt(http_handle, CURLOPT_SSL_VERIFYPEER, 0L);
+  curl_easy_setopt(http_handle, CURLOPT_FOLLOWLOCATION, 1L);
 
   /* set http request headers */
   struct curl_slist *reqheaders = NULL;
-  reqheaders = curl_slist_append(reqheaders, "User-Agent: curl from r");
+  reqheaders = curl_slist_append(reqheaders, "User-Agent: r/curl/jeroen");
   reqheaders = curl_slist_append(reqheaders, "Accept-Charset: utf-8");
   reqheaders = curl_slist_append(reqheaders, "Cache-Control: no-cache");
   curl_easy_setopt(http_handle, CURLOPT_HTTPHEADER, reqheaders);
@@ -133,17 +144,23 @@ static Rboolean rcurl_open(Rconnection con) {
   /* store in private struct */
   cc->buf = malloc(cc->limit);
   cc->size = 0;
+  cc->has_data = 0;
   cc->http_handle = http_handle;
   cc->multi_handle = multi_handle;
 
   /* we start some action by calling perform right away */
-  massert(curl_multi_perform(multi_handle, &(cc->has_more)));
+  while(cc->has_more && !cc->has_data) {
+    massert(curl_multi_perform(multi_handle, &(cc->has_more)));
+    check_status(multi_handle);
+  }
 
-  /* check if connection was successful */
-  long *status_code;
-  assert(curl_easy_getinfo(http_handle, CURLINFO_RESPONSE_CODE, &status_code));
+  long status = 0;
+  assert(curl_easy_getinfo(http_handle, CURLINFO_RESPONSE_CODE, &status));
 
-  Rprintf("Status code: %d\n", status);
+  /* check http status code */
+  if(status >= 400) {
+    error("HTTP error %d.", status);
+  }
 
   /* return the R connection object */
   con->isopen = TRUE;
@@ -164,6 +181,7 @@ static size_t rcurl_read(void *buf, size_t sz, size_t ni, Rconnection con) {
   while((req_size > total_size) && cc->has_more) {
     massert(curl_multi_timeout(cc->multi_handle, &timeout));
     massert(curl_multi_perform(cc->multi_handle, &(cc->has_more)));
+    check_status(cc->multi_handle);
     total_size = total_size + pop(&(buf[total_size]), (req_size-total_size), cc);
     //sleep(1L);
   }
