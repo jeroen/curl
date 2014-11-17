@@ -175,7 +175,7 @@ static Rboolean rcurl_open(Rconnection con) {
   long status = 0;
   assert(curl_easy_getinfo(http_handle, CURLINFO_RESPONSE_CODE, &status));
 
-  /* check http status code */
+  /* check http status code. Not sure what this does for ftp. */
   if(status >= 300)
     error("HTTP error %d.", status);
 

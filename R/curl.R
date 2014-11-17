@@ -9,13 +9,16 @@
 #' close(test)
 #'
 #' # http error
-#' open(curl("http://httpbin.org/status/418"))
+#' curl("http://httpbin.org/status/418", "r")
 #'
 #' # http redirects
-#' open(curl("http://httpbin.org/redirect/3"))
+#' curl("http://httpbin.org/redirect/3", "r")
 #'
 #' # redirect to error
-#' open(curl("http://httpbin.org/redirect-to?url=http://httpbin.org/status/418"))
+#' curl("http://httpbin.org/redirect-to?url=http://httpbin.org/status/418", "r")
+#'
+#' # works for ftp too
+#' curl("ftp://cran.r-project.org/pub/R/CRAN_mirrors.csv", "r")
 #'
 #' # stream over https with gzip
 #' library(jsonlite)
