@@ -1,0 +1,11 @@
+# Borrowing libcurl libs from RCurl (for now)
+CURL_INCLUDE_DIR=-I${LIB_CURL}${R_ARCH}/include
+CURL_LIB_DIR=-L${LIB_CURL}${R_ARCH}/lib
+
+PKG_CPPFLAGS = ${CURL_INCLUDE_DIR}
+
+ifeq "${R_ARCH}" "/x64"
+  PKG_LIBS= -L${LIB_CURL}${R_ARCH}/bin -lcurl-4 -lws2_32
+else
+  PKG_LIBS= -L${LIB_CURL}${R_ARCH}/lib -lcurl -lssl -lssl32 -leay32 -lidn -lz -lws2_32 -lwldap32
+endif

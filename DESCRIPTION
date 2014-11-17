@@ -11,4 +11,4 @@ Description: The curl() function provides a drop-in replacement for base url()
     support incremental processing of binary streams. If you are looking for a
     simple HTTP client, have a look at the RCurl or httr packages instead.
 License: MIT + file LICENSE
-SystemRequirements: libcurl, OpenSSL
+SystemRequirements: libcurl, OpenSSL (e.g: libcurl4-openssl-dev)
