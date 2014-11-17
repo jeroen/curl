@@ -24,6 +24,6 @@
 #' library(jsonlite)
 #' con <- gzcon(curl("https://jeroenooms.github.io/data/nycflights13.json.gz"))
 #' test <- stream_in(con)
-curl <- function(url = "http://httpbin.org/get", mode = ""){
-  .Call(R_curl_connection, url, mode)
+curl <- function(url = "http://httpbin.org/get", open = ""){
+  .Call(R_curl_connection, url, open)
 }

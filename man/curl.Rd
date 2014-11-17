@@ -3,7 +3,7 @@
 \alias{curl}
 \title{Curl connection}
 \usage{
-curl(url = "http://httpbin.org/get", mode = "")
+curl(url = "http://httpbin.org/get", open = "")
 }
 \description{
 Drop-in replacement for url() that uses libcurl to support https.
