@@ -18,7 +18,7 @@
 #' curl("http://httpbin.org/redirect-to?url=http://httpbin.org/status/418", "r")
 #'
 #' # works for ftp too
-#' curl("ftp://cran.r-project.org/pub/R/CRAN_mirrors.csv", "r")
+#' readLines(curl("ftp://cran.r-project.org/pub/R/CRAN_mirrors.csv"))
 #'
 #' # stream over https with gzip
 #' library(jsonlite)

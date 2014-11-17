@@ -1,22 +1,19 @@
 /* *
  * Streaming interface to libcurl for R. (c) 2014 Jeroen Ooms.
  * Source: https://github.com/jeroenooms/curl
- * Contributions are welcome!
+ * Comments and contributions are welcome!
  * Helpful libcurl examples:
  *  - http://curl.haxx.se/libcurl/c/getinmemory.html
  *  - http://curl.haxx.se/libcurl/c/multi-single.html
  * Info about Rconnection API:
  *  - https://github.com/wch/r-source/blob/trunk/src/include/R_ext/Connections.h
  *  - http://biostatmatt.com/R/R-conn-ints/C-Structures.html
- *
  */
-
 #include <curl/curl.h>
 #include <curl/easy.h>
 #include <Rinternals.h>
 #include <string.h>
 #include <stdlib.h>
-#include <unistd.h>
 
 #include <R_ext/Connections.h>
 #if ! defined(R_CONNECTIONS_VERSION) || R_CONNECTIONS_VERSION != 1
@@ -51,7 +48,7 @@ static size_t push(void *contents, size_t size, size_t nmemb, curl_private *cc) 
     error("Buffer overflow in push!");
   memcpy(&(cc->buf[cc->size]), contents, newsize);
   cc->size = cc->size + newsize;
-  Rprintf("Pushed %d bytes. New size:%d bytes.\n", newsize, cc->size);
+  //Rprintf("Pushed %d bytes. New size:%d bytes.\n", newsize, cc->size);
   return cc->size;
 }
 
@@ -63,7 +60,7 @@ static size_t pop(void *target, size_t req_size, curl_private *cc){
     if(cc->size > 0)
       memcpy(cc->buf, &(cc->buf[req_size]), cc->size);
   }
-  Rprintf("Requested %d bytes, popped %d bytes, new size %d bytes.\n", req_size, copy_size, cc->size);
+  //Rprintf("Requested %d bytes, popped %d bytes, new size %d bytes.\n", req_size, copy_size, cc->size);
   return copy_size;
 }
 
@@ -92,15 +89,21 @@ SEXP R_curl_connection(SEXP url, SEXP mode) {
   if(!isString(mode))
     error("Argument 'mode' must be string.");
 
+  /* maybe not be needed as curl_easy_init triggers a global_init as well  */
+  curl_global_init(CURL_GLOBAL_DEFAULT);
+
   /* create the R connection object */
   Rconnection con;
-  SEXP rc = R_new_custom_connection(translateCharUTF8(asChar(url)), "", "curl", &con);
+  SEXP rc = R_new_custom_connection(translateCharUTF8(asChar(url)), "r", "curl", &con);
 
   /* create the internal curl structure */
   curl_private *cc;
   cc = malloc(sizeof(curl_private));
   cc->url = translateCharUTF8(asChar(url));
   cc->limit = BUFFER_LIMIT;
+  cc->http_handle = curl_easy_init();
+  cc->multi_handle = curl_multi_init();
+  curl_multi_add_handle(cc->multi_handle, cc->http_handle);
 
   /* set connection properties */
   con->private = cc;
@@ -108,7 +111,7 @@ SEXP R_curl_connection(SEXP url, SEXP mode) {
   con->canwrite = FALSE;
   con->isopen = FALSE;
   con->blocking = TRUE;
-  con->text = FALSE;
+  con->text = TRUE;
   con->UTF8out = TRUE;
   con->open = rcurl_open;
   con->destroy = cleanup;
@@ -119,26 +122,20 @@ SEXP R_curl_connection(SEXP url, SEXP mode) {
   const char *smode = translateCharUTF8(asChar(mode));
   if(!strcmp(smode, "r") || !strcmp(smode, "rb")){
     rcurl_open(con);
-  } else if(strcmp(smode, "")){
+  } else if(strcmp(smode, "")) {
     error("Invalid mode: %s", smode);
   }
-
   return rc;
 }
 
 static Rboolean rcurl_open(Rconnection con) {
-  CURL *http_handle;
-  CURLM *multi_handle;
-
   /* get url value */
   curl_private *cc = (curl_private*) con->private;
   Rprintf("Opening URL:%s\n", cc->url);
-
-  /* maybe not be needed as curl_easy_init triggers a global_init as well  */
-  curl_global_init(CURL_GLOBAL_DEFAULT);
+  CURL *http_handle = cc->http_handle;
+  CURLM *multi_handle = cc->multi_handle;
 
   /* setup http handler */
-  http_handle = curl_easy_init();
   curl_easy_setopt(http_handle, CURLOPT_URL, cc->url);
   curl_easy_setopt(http_handle, CURLOPT_SSL_VERIFYHOST, 0L);
   curl_easy_setopt(http_handle, CURLOPT_SSL_VERIFYPEER, 0L);
@@ -152,8 +149,6 @@ static Rboolean rcurl_open(Rconnection con) {
   curl_easy_setopt(http_handle, CURLOPT_HTTPHEADER, reqheaders);
 
   /* init a multi stack with callback */
-  multi_handle = curl_multi_init();
-  curl_multi_add_handle(multi_handle, http_handle);
   curl_easy_setopt(http_handle, CURLOPT_WRITEFUNCTION, push);
   curl_easy_setopt(http_handle, CURLOPT_WRITEDATA, cc);
 
@@ -162,8 +157,6 @@ static Rboolean rcurl_open(Rconnection con) {
   cc->size = 0;
   cc->has_data = 0;
   cc->has_more = 1;
-  cc->http_handle = http_handle;
-  cc->multi_handle = multi_handle;
 
   /* Wait for first data to come in. Monitoring a change in status code does not
      suffice in case of http redirects */
@@ -181,13 +174,13 @@ static Rboolean rcurl_open(Rconnection con) {
 
   /* return the R connection object */
   con->isopen = TRUE;
+  con->text = FALSE;
   strcpy(con->mode, "rb");
   return TRUE;
 }
 
 /* Support for readBin() */
 static size_t rcurl_read(void *buf, size_t sz, size_t ni, Rconnection con) {
-  Rprintf("rcurl_read called with %d\n", sz * ni);
   curl_private *cc = (curl_private*) con->private;
   size_t req_size = sz * ni;
   long timeout = 10*1000;
@@ -201,20 +194,14 @@ static size_t rcurl_read(void *buf, size_t sz, size_t ni, Rconnection con) {
     massert(curl_multi_perform(cc->multi_handle, &(cc->has_more)));
     check_status(cc->multi_handle);
     total_size = total_size + pop(&(buf[total_size]), (req_size-total_size), cc);
-    //sleep(1L);
   }
-
   return total_size;
 }
 
-/* naive (slow) implementation */
+/* naive (slow) implementation of readLines */
 static int rcurl_fgetc(Rconnection con) {
   int x;
-  if(rcurl_read(&x, 1, 1, con)){
-    return x;
-  } else {
-    return R_EOF;
-  }
+  return rcurl_read(&x, 1, 1, con) ? x : R_EOF;
 }
 
 void cleanup(Rconnection con) {
