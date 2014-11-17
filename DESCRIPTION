@@ -6,10 +6,11 @@ Date: 2014-11-17
 Author: Jeroen Ooms
 Maintainer: Jeroen Ooms <jeroen.ooms@stat.ucla.edu>
 Description: The curl() function provides a drop-in replacement for base url()
-    with added support for https, http 2.0, sftp, and other libcurl goodies.
-    This interface is implemented using the RConnection API in order to
-    support incremental processing of binary streams. If you are looking for a
-    simple HTTP client, have a look at the RCurl or httr packages instead.
+    with added support for https, gzip, deflate, http 2.0, ftps, and other
+    libcurl goodies. This interface is implemented using the RConnection API in
+    order to support incremental processing of binary streams. If you are
+    looking for a simple HTTP client, have a look at the RCurl or httr packages
+    instead.
 License: MIT + file LICENSE
 SystemRequirements: libcurl, OpenSSL (e.g: libcurl4-openssl-dev)
 URL: http://github.com/jeroenooms/curl
