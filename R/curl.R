@@ -9,13 +9,13 @@
 #' close(test)
 #'
 #' # http error
-#' curl("http://httpbin.org/status/418", "r")
+#' curl("https://httpbin.org/status/418", "r")
 #'
 #' # http redirects
-#' curl("http://httpbin.org/redirect/3", "r")
+#' curl("https://httpbin.org/redirect/3", "r")
 #'
 #' # redirect to error
-#' curl("http://httpbin.org/redirect-to?url=http://httpbin.org/status/418", "r")
+#' curl("https://httpbin.org/redirect-to?url=http://httpbin.org/status/418", "r")
 #'
 #' # works for ftp too
 #' readLines(curl("ftp://cran.r-project.org/pub/R/CRAN_mirrors.csv"))

@@ -23,11 +23,6 @@
 #define min(a, b) (((a) < (b)) ? (a) : (b))
 #define R_EOF -1
 
-static Rboolean rcurl_open(Rconnection c);
-static size_t rcurl_read(void *buf, size_t sz, size_t ni, Rconnection c);
-static int rcurl_fgetc(Rconnection c);
-void cleanup(Rconnection con);
-
 typedef struct {
   const char *url;
   CURL *http_handle;
@@ -85,6 +80,82 @@ void fetch(curl_private *cc) {
   check_status(cc->multi_handle);
 }
 
+/* Support for readBin() */
+static size_t rcurl_read(void *target, size_t sz, size_t ni, Rconnection con) {
+  curl_private *cc = (curl_private*) con->private;
+  size_t req_size = sz * ni;
+
+  /* append data to the target buffer */
+  size_t total_size = pop(target, req_size, cc);
+  while((req_size > total_size) && cc->has_more) {
+    fetch(cc);
+    total_size += pop(target + total_size, (req_size-total_size), cc);
+  }
+  return total_size;
+}
+
+/* naive implementation of readLines */
+static int rcurl_fgetc(Rconnection con) {
+  int x;
+  return rcurl_read(&x, 1, 1, con) ? x : R_EOF;
+}
+
+void cleanup(Rconnection con) {
+  //Rprintf("Cleaning up curl.\n");
+  curl_private *cc = (curl_private*) con->private;
+  curl_multi_remove_handle(cc->multi_handle, cc->http_handle);
+  curl_easy_cleanup(cc->http_handle);
+  curl_multi_cleanup(cc->multi_handle);
+  free(cc->buf);
+  free(cc);
+  /* NOTE: global_cleanup destroys all other connections as well */
+  //curl_global_cleanup();
+}
+
+static Rboolean rcurl_open(Rconnection con) {
+  //Rprintf("Opening URL:%s\n", cc->url);
+  curl_private *cc = (curl_private*) con->private;
+  CURL *http_handle = cc->http_handle;
+  CURLM *multi_handle = cc->multi_handle;
+
+  /* curl configuration options */
+  curl_easy_setopt(http_handle, CURLOPT_URL, cc->url);
+  curl_easy_setopt(http_handle, CURLOPT_SSL_VERIFYHOST, 0L);
+  curl_easy_setopt(http_handle, CURLOPT_SSL_VERIFYPEER, 0L);
+  curl_easy_setopt(http_handle, CURLOPT_FOLLOWLOCATION, 1L);
+
+  /* set http request headers */
+  struct curl_slist *reqheaders = NULL;
+  reqheaders = curl_slist_append(reqheaders, "User-Agent: r/curl/jeroen");
+  reqheaders = curl_slist_append(reqheaders, "Accept-Charset: utf-8");
+  reqheaders = curl_slist_append(reqheaders, "Cache-Control: no-cache");
+  curl_easy_setopt(http_handle, CURLOPT_HTTPHEADER, reqheaders);
+
+  /* init a multi stack with callback */
+  curl_easy_setopt(http_handle, CURLOPT_WRITEFUNCTION, push);
+  curl_easy_setopt(http_handle, CURLOPT_WRITEDATA, cc);
+
+  /* Wait for first data to arrive. Monitoring a change in status code does not
+     suffice in case of http redirects */
+  while(cc->has_more && !cc->has_data) {
+    massert(curl_multi_perform(multi_handle, &(cc->has_more)));
+    check_status(multi_handle);
+  }
+
+  long status = 0;
+  assert(curl_easy_getinfo(http_handle, CURLINFO_RESPONSE_CODE, &status));
+
+  /* check http status code. Not sure what this does for ftp. */
+  if(status >= 300)
+    error("HTTP error %d.", status);
+
+  /* return the R connection object */
+  con->isopen = TRUE;
+  con->text = FALSE;
+  strcpy(con->mode, "rb");
+  return TRUE;
+}
+
 SEXP R_curl_connection(SEXP url, SEXP mode) {
   if(!isString(url))
     error("Argument 'url' must be string.");
@@ -132,83 +203,4 @@ SEXP R_curl_connection(SEXP url, SEXP mode) {
     error("Invalid mode: %s", smode);
   }
   return rc;
-}
-
-static Rboolean rcurl_open(Rconnection con) {
-  curl_private *cc = (curl_private*) con->private;
-  CURL *http_handle = cc->http_handle;
-  CURLM *multi_handle = cc->multi_handle;
-
-  //Rprintf("Opening URL:%s\n", cc->url);
-
-  /* curl configuration options */
-  curl_easy_setopt(http_handle, CURLOPT_URL, cc->url);
-  curl_easy_setopt(http_handle, CURLOPT_SSL_VERIFYHOST, 0L);
-  curl_easy_setopt(http_handle, CURLOPT_SSL_VERIFYPEER, 0L);
-  curl_easy_setopt(http_handle, CURLOPT_FOLLOWLOCATION, 1L);
-
-  /* set http request headers */
-  struct curl_slist *reqheaders = NULL;
-  reqheaders = curl_slist_append(reqheaders, "User-Agent: r/curl/jeroen");
-  reqheaders = curl_slist_append(reqheaders, "Accept-Charset: utf-8");
-  reqheaders = curl_slist_append(reqheaders, "Cache-Control: no-cache");
-  curl_easy_setopt(http_handle, CURLOPT_HTTPHEADER, reqheaders);
-
-  /* init a multi stack with callback */
-  curl_easy_setopt(http_handle, CURLOPT_WRITEFUNCTION, push);
-  curl_easy_setopt(http_handle, CURLOPT_WRITEDATA, cc);
-
-  /* Wait for first data to come in. Monitoring a change in status code does not
-     suffice in case of http redirects */
-  while(cc->has_more && !cc->has_data) {
-    massert(curl_multi_perform(multi_handle, &(cc->has_more)));
-    check_status(multi_handle);
-  }
-
-  long status = 0;
-  assert(curl_easy_getinfo(http_handle, CURLINFO_RESPONSE_CODE, &status));
-
-  /* check http status code. Not sure what this does for ftp. */
-  if(status >= 300)
-    error("HTTP error %d.", status);
-
-  /* return the R connection object */
-  con->isopen = TRUE;
-  con->text = FALSE;
-  strcpy(con->mode, "rb");
-  return TRUE;
-}
-
-/* Support for readBin() */
-static size_t rcurl_read(void *target, size_t sz, size_t ni, Rconnection con) {
-  curl_private *cc = (curl_private*) con->private;
-  size_t req_size = sz * ni;
-  void *ptr = target;
-
-  /* append data to the target buffer */
-  size_t total_size = pop(target, req_size, cc);
-  while((req_size > total_size) && cc->has_more) {
-    fetch(cc);
-    ptr = target + total_size;
-    total_size = total_size + pop(ptr, (req_size-total_size), cc);
-  }
-  return total_size;
-}
-
-/* naive implementation of readLines */
-static int rcurl_fgetc(Rconnection con) {
-  int x;
-  return rcurl_read(&x, 1, 1, con) ? x : R_EOF;
-}
-
-void cleanup(Rconnection con) {
-  //Rprintf("Cleaning up curl.\n");
-  curl_private *cc = (curl_private*) con->private;
-  curl_multi_remove_handle(cc->multi_handle, cc->http_handle);
-  curl_easy_cleanup(cc->http_handle);
-  curl_multi_cleanup(cc->multi_handle);
-  free(cc->buf);
-  free(cc);
-  /* NOTE: global_cleanup destroys all other connections as well */
-  //curl_global_cleanup();
 }
