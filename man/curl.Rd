@@ -5,6 +5,12 @@
 \usage{
 curl(url = "http://httpbin.org/get", open = "")
 }
+\arguments{
+\item{url}{character string. See examples.}
+
+\item{open}{character string. How to open the connection if it should be opened
+initially. Currently only "r" and "rb" are supported.}
+}
 \description{
 Drop-in replacement for url() that uses libcurl. Supports http(s), ftp(s), file,
 gzip, deflate, etc.
@@ -15,6 +21,7 @@ open(test)
 readLines(test)
 close(test)
 
+\dontrun{
 # HTTP error
 curl("https://httpbin.org/status/418", "r")
 
@@ -51,5 +58,6 @@ while(length(x <- readLines(con, n = 5))){
 library(jsonlite)
 con <- gzcon(curl("https://jeroenooms.github.io/data/nycflights13.json.gz"))
 nycflights <- stream_in(con)
+}
 }
 

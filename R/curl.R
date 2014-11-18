@@ -5,11 +5,15 @@
 #'
 #' @useDynLib curl R_curl_connection
 #' @export
+#' @param url character string. See examples.
+#' @param open character string. How to open the connection if it should be opened
+#'   initially. Currently only "r" and "rb" are supported.
 #' @examples test <- curl("http://httpbin.org/get")
 #' open(test)
 #' readLines(test)
 #' close(test)
 #'
+#' \dontrun{
 #' # HTTP error
 #' curl("https://httpbin.org/status/418", "r")
 #'
@@ -46,6 +50,7 @@
 #' library(jsonlite)
 #' con <- gzcon(curl("https://jeroenooms.github.io/data/nycflights13.json.gz"))
 #' nycflights <- stream_in(con)
+#' }
 #'
 curl <- function(url = "http://httpbin.org/get", open = ""){
   .Call(R_curl_connection, url, open)
