@@ -30,20 +30,35 @@ typedef struct {
   char *buf;
   char *ptr;
   size_t size;
+  size_t limit;
   int has_data;
   int has_more;
 } curl_private;
 
-/* example: http://curl.haxx.se/libcurl/c/getinmemory.html */
+/* callback function to store received data */
 static size_t push(void *contents, size_t sz, size_t nmemb, curl_private *cc) {
-  if(cc->size)
-    error("Pushed called without clearing buffer first (%d).", cc->size);
-  cc->ptr = cc->buf;
-  cc->size = sz * nmemb;
+  /* only needed first time */
   cc->has_data = 1;
-  memcpy(cc->ptr, contents, cc->size);
-  Rprintf("Pushed %d bytes.\n", cc->size);
-  return cc->size;
+  size_t newsize = cc->size + sz * nmemb;
+
+  /* move existing data to front of buffer */
+  memcpy(cc->buf, cc->ptr, cc->size);
+
+  /* allocate more space if required */
+  if(newsize > cc->limit) {
+    //Rprintf("Resizing buffer to %d.\n", newsize);
+    void *newbuf = realloc(cc->buf, newsize + 1);
+    if(!newbuf)
+      error("Failure in realloc. Out of memory?");
+    cc->buf = newbuf;
+    cc->limit = newsize;
+  }
+
+  /* append new data */
+  memcpy(cc->buf + cc->size, contents, sz * nmemb);
+  cc->size = newsize;
+  cc->ptr = cc->buf;
+  return sz * nmemb;
 }
 
 static size_t pop(void *target, size_t max, curl_private *cc){
@@ -74,7 +89,6 @@ void check_status(CURLM *multi_handle) {
 }
 
 void fetch(curl_private *cc) {
-  Rprintf("Fetching...\n");
   long timeout = 10*1000;
   massert(curl_multi_timeout(cc->multi_handle, &timeout));
   massert(curl_multi_perform(cc->multi_handle, &(cc->has_more)));
@@ -174,7 +188,8 @@ SEXP R_curl_connection(SEXP url, SEXP mode) {
 
   /* create the internal curl structure */
   curl_private *cc = malloc(sizeof(curl_private));
-  cc->buf = malloc(CURL_MAX_WRITE_SIZE);
+  cc->limit = CURL_MAX_WRITE_SIZE;
+  cc->buf = malloc(cc->limit);
   cc->ptr = cc->buf;
   cc->size = 0;
   cc->has_data = 0;
