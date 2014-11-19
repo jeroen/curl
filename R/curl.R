@@ -10,7 +10,7 @@
 #'   initially. Currently only "r" and "rb" are supported.
 #' @examples test <- curl("http://httpbin.org/get")
 #' open(test)
-#' readLines(test)
+#' readLines(test, warn = FALSE)
 #' close(test)
 #'
 #' \dontrun{
