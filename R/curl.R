@@ -55,3 +55,8 @@
 curl <- function(url = "http://httpbin.org/get", open = ""){
   .Call(R_curl_connection, url, open)
 }
+
+#' @useDynLib curl R_global_cleanup
+.onUnload <- function(lib){
+  .Call(R_global_cleanup);
+}

@@ -8,6 +8,9 @@
  * Info about Rconnection API:
  *  - https://github.com/wch/r-source/blob/trunk/src/include/R_ext/Connections.h
  *  - http://biostatmatt.com/R/R-conn-ints/C-Structures.html
+ *
+ * Notes: the close() function in R actually calls cc->destroy. The cc->close
+ * function is only used when a connection is recycled.
  */
 #include <curl/curl.h>
 #include <curl/easy.h>
@@ -33,6 +36,7 @@ typedef struct {
   size_t limit;
   int has_data;
   int has_more;
+  int used;
 } curl_private;
 
 /* callback function to store received data */
@@ -116,21 +120,44 @@ static int rcurl_fgetc(Rconnection con) {
 }
 
 void cleanup(Rconnection con) {
-  //Rprintf("Cleaning up curl.\n");
+  //Rprintf("Destroying connection.\n");
   curl_private *cc = (curl_private*) con->private;
   curl_multi_remove_handle(cc->multi_handle, cc->http_handle);
   curl_easy_cleanup(cc->http_handle);
   curl_multi_cleanup(cc->multi_handle);
   free(cc->buf);
   free(cc);
-  /* NOTE: global_cleanup destroys all other connections as well */
-  //curl_global_cleanup();
+}
+
+/* reset to pre-opened state */
+void reset(Rconnection con) {
+  //Rprintf("Closing connection.\n");
+  con->isopen = FALSE;
+  con->text = TRUE;
+  strcmp(con->mode, "r");
 }
 
 static Rboolean rcurl_open(Rconnection con) {
-  //Rprintf("Opening URL:%s\n", cc->url);
   curl_private *cc = (curl_private*) con->private;
-  CURL *http_handle = cc->http_handle;
+  //Rprintf("Opening URL:%s\n", cc->url);
+
+  /* case of recycled connection */
+  if(cc->used) {
+    //Rprintf("Cleaning up old handle.\n");
+    curl_multi_remove_handle(cc->multi_handle, cc->http_handle);
+    curl_easy_cleanup(cc->http_handle);
+  }
+
+  CURL *http_handle = curl_easy_init();
+  curl_multi_add_handle(cc->multi_handle, http_handle);
+
+  /* reset the state */
+  cc->http_handle = http_handle;
+  cc->ptr = cc->buf;
+  cc->size = 0;
+  cc->used = 1;
+  cc->has_data = 0;
+  cc->has_more = 1;
 
   /* curl configuration options */
   curl_easy_setopt(http_handle, CURLOPT_URL, cc->url);
@@ -138,8 +165,6 @@ static Rboolean rcurl_open(Rconnection con) {
   curl_easy_setopt(http_handle, CURLOPT_SSL_VERIFYPEER, 0L);
   curl_easy_setopt(http_handle, CURLOPT_FOLLOWLOCATION, 1L);
   curl_easy_setopt(http_handle, CURLOPT_CONNECTTIMEOUT_MS, 10*1000);
-
-  /* this triggers a bug where the callback gets called more than once x perform */
   curl_easy_setopt(http_handle, CURLOPT_ACCEPT_ENCODING, "gzip, deflate");
 
   /* set http request headers */
@@ -186,18 +211,13 @@ SEXP R_curl_connection(SEXP url, SEXP mode) {
   Rconnection con;
   SEXP rc = R_new_custom_connection(translateCharUTF8(asChar(url)), "r", "curl", &con);
 
-  /* create the internal curl structure */
+  /* setup curl. These are the parts that are recycable. */
   curl_private *cc = malloc(sizeof(curl_private));
   cc->limit = CURL_MAX_WRITE_SIZE;
   cc->buf = malloc(cc->limit);
-  cc->ptr = cc->buf;
-  cc->size = 0;
-  cc->has_data = 0;
-  cc->has_more = 1;
   cc->url = translateCharUTF8(asChar(url));
-  cc->http_handle = curl_easy_init();
   cc->multi_handle = curl_multi_init();
-  curl_multi_add_handle(cc->multi_handle, cc->http_handle);
+  cc->used = 0;
 
   /* set connection properties */
   con->private = cc;
@@ -208,6 +228,7 @@ SEXP R_curl_connection(SEXP url, SEXP mode) {
   con->text = TRUE;
   con->UTF8out = TRUE;
   con->open = rcurl_open;
+  con->close = reset;
   con->destroy = cleanup;
   con->read = rcurl_read;
   con->fgetc = rcurl_fgetc;
@@ -221,4 +242,9 @@ SEXP R_curl_connection(SEXP url, SEXP mode) {
     error("Invalid mode: %s", smode);
   }
   return rc;
+}
+
+SEXP R_global_cleanup() {
+  curl_global_cleanup();
+  return R_NilValue;
 }
