@@ -18,7 +18,7 @@
 #' curl("https://httpbin.org/status/418", "r")
 #'
 #' # HTTP redirects
-#' readLines(curl("https://httpbin.org/redirect/3"))
+#' readLines(curl("https://httpbin.org/redirect/3"), warn = FALSE)
 #'
 #' # Binary data
 #' buf <- readBin(curl("http://httpbin.org/bytes/12345", "rb"), raw(), 99999)
@@ -28,8 +28,8 @@
 #' curl("https://httpbin.org/redirect-to?url=http://httpbin.org/status/418", "r")
 #'
 #' # Accept-Encoding: compress, gzip
-#' readLines(curl("http://httpbin.org/gzip"))
-#' readLines(curl("http://httpbin.org/deflate"))
+#' readLines(curl("http://httpbin.org/gzip"), warn = FALSE)
+#' readLines(curl("http://httpbin.org/deflate"), warn = FALSE)
 #'
 #' # File support
 #' test <- paste0("file://", system.file("CITATION"))
