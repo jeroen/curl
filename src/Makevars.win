@@ -11,7 +11,7 @@ SOURCES = curl.c
 
 OBJECTS = $(SOURCES:.c=.o)
 
-all: clean $(OBJECTS)
+all: clean winlibs $(OBJECTS)
 
 clean:
 	rm -f $(OBJECTS)
