@@ -5,7 +5,7 @@
  * Helpful libcurl examples:
  *  - http://curl.haxx.se/libcurl/c/getinmemory.html
  *  - http://curl.haxx.se/libcurl/c/multi-single.html
- * Info about Rconnection API:
+ * Sparse documentation about Rconnection API:
  *  - https://github.com/wch/r-source/blob/trunk/src/include/R_ext/Connections.h
  *  - http://biostatmatt.com/R/R-conn-ints/C-Structures.html
  *
@@ -18,6 +18,7 @@
 #include <string.h>
 #include <stdlib.h>
 
+/* the RConnection API is experimental and subject to change */
 #include <R_ext/Connections.h>
 #if ! defined(R_CONNECTIONS_VERSION) || R_CONNECTIONS_VERSION != 1
 #error "Unsupported connections API version"
