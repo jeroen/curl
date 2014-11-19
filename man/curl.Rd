@@ -17,30 +17,34 @@ gzip, deflate, etc.
 }
 \examples{
 \dontrun{
-test <- curl("http://httpbin.org/get")
-open(test)
-readLines(test, warn = FALSE)
-close(test)
+con <- curl("https://httpbin.org/get")
+readLines(con, warn = FALSE)
+
+# Auto-opened connections can be recycled
+open(con, "rb")
+bin <- readBin(con, raw(), 999)
+close(con)
+rawToChar(bin)
 
 # HTTP error
 curl("https://httpbin.org/status/418", "r")
 
-# HTTP redirects
+# Follow redirects
 readLines(curl("https://httpbin.org/redirect/3"), warn = FALSE)
-
-# Binary data
-buf <- readBin(curl("http://httpbin.org/bytes/12345", "rb"), raw(), 99999)
-length(buf)
 
 # Error after redirect
 curl("https://httpbin.org/redirect-to?url=http://httpbin.org/status/418", "r")
 
-# Accept-Encoding: compress, gzip
+# Auto decompress Accept-Encoding: gzip / deflate (rfc2616 #14.3)
 readLines(curl("http://httpbin.org/gzip"), warn = FALSE)
 readLines(curl("http://httpbin.org/deflate"), warn = FALSE)
 
-# File support
-test <- paste0("file://", system.file("CITATION"))
+# Binary support
+buf <- readBin(curl("http://httpbin.org/bytes/98765", "rb"), raw(), 1e5)
+length(buf)
+
+# Read file from disk
+test <- paste0("file://", system.file("DESCRIPTION"))
 readLines(curl(test))
 
 # Other protocols
