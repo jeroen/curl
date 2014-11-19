@@ -1,3 +1,4 @@
+.DS_Store
 .travis.yml
 .git
 .gitignore
