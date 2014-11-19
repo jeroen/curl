@@ -8,12 +8,12 @@
 #' @param url character string. See examples.
 #' @param open character string. How to open the connection if it should be opened
 #'   initially. Currently only "r" and "rb" are supported.
-#' @examples test <- curl("http://httpbin.org/get")
+#' @examples \dontrun{
+#' test <- curl("http://httpbin.org/get")
 #' open(test)
 #' readLines(test, warn = FALSE)
 #' close(test)
 #'
-#' \dontrun{
 #' # HTTP error
 #' curl("https://httpbin.org/status/418", "r")
 #'
