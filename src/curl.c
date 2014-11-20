@@ -44,7 +44,8 @@ typedef struct {
 static size_t push(void *contents, size_t sz, size_t nmemb, curl_private *cc) {
   /* only needed first time */
   cc->has_data = 1;
-  size_t newsize = cc->size + sz * nmemb;
+  size_t realsize = sz * nmemb;
+  size_t newsize = cc->size + realsize;
 
   /* move existing data to front of buffer */
   memcpy(cc->buf, cc->ptr, cc->size);
@@ -60,10 +61,10 @@ static size_t push(void *contents, size_t sz, size_t nmemb, curl_private *cc) {
   }
 
   /* append new data */
-  memcpy(cc->buf + cc->size, contents, sz * nmemb);
+  memcpy(cc->buf + cc->size, contents, realsize);
   cc->size = newsize;
   cc->ptr = cc->buf;
-  return sz * nmemb;
+  return realsize;
 }
 
 static size_t pop(void *target, size_t max, curl_private *cc){
@@ -109,7 +110,7 @@ static size_t rcurl_read(void *target, size_t sz, size_t ni, Rconnection con) {
   size_t total_size = pop(target, req_size, cc);
   while((req_size > total_size) && cc->has_more) {
     fetch(cc);
-    total_size += pop(target + total_size, (req_size-total_size), cc);
+    total_size += pop((char *)target + total_size, (req_size-total_size), cc);
   }
   return total_size;
 }

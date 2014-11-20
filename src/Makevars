@@ -1,1 +1,4 @@
 PKG_LIBS= -lcurl -lssl -lcrypto -lldap -lssl -lcrypto -lz
+
+# For CMD check only (gcc specific):
+# PKG_CFLAGS= -Wall -pedantic
