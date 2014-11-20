@@ -22,16 +22,16 @@ SEXP R_download_curl(SEXP url, SEXP destfile, SEXP quiet, SEXP mode) {
     error("Argument 'mode' must be string.");
 
   /* Open file descriptor */
-  FILE dest = *fopen(translateCharUTF8(asChar(destfile)), CHAR(asChar(mode)));
+  FILE *dest = fopen(translateCharUTF8(asChar(destfile)), CHAR(asChar(mode)));
 
   /* setup curl */
   CURL *http_handle = make_handle(translateCharUTF8(asChar(url)));
-  curl_easy_setopt(http_handle, CURLOPT_WRITEDATA, &dest);
+  curl_easy_setopt(http_handle, CURLOPT_WRITEDATA, dest);
   curl_easy_setopt(http_handle, CURLOPT_NOPROGRESS, asLogical(quiet));
 
   /* perform request */
   CURLcode res = curl_easy_perform(http_handle);
-  fclose(&dest);
+  fclose(dest);
   assert(res);
   stop_for_status(http_handle);
 
