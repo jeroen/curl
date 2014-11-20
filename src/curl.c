@@ -135,7 +135,7 @@ void reset(Rconnection con) {
   //Rprintf("Closing connection.\n");
   con->isopen = FALSE;
   con->text = TRUE;
-  strcmp(con->mode, "r");
+  strcpy(con->mode, "r");
 }
 
 static Rboolean rcurl_open(Rconnection con) {
