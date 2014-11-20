@@ -53,12 +53,13 @@ static size_t push(void *contents, size_t sz, size_t nmemb, curl_private *cc) {
 
   /* allocate more space if required */
   if(newsize > cc->limit) {
-    //Rprintf("Resizing buffer to %d.\n", newsize);
-    void *newbuf = realloc(cc->buf, newsize + 1);
+    size_t newlimit = 2 * cc->limit;
+    //Rprintf("Resizing buffer to %d.\n", newlimit);
+    void *newbuf = realloc(cc->buf, newlimit);
     if(!newbuf)
       error("Failure in realloc. Out of memory?");
     cc->buf = newbuf;
-    cc->limit = newsize;
+    cc->limit = newlimit;
   }
 
   /* append new data */
