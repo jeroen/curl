@@ -42,16 +42,18 @@ typedef struct {
 } curl_private;
 
 /* callback function to store received data */
-static size_t push(void *contents, size_t sz, size_t nmemb, curl_private *cc) {
-  /* only needed first time */
+static size_t push(void *contents, size_t sz, size_t nmemb, void *ctx) {
+  /* avoids compiler warning on windows */
+  curl_private* cc = (curl_private*) ctx;
   cc->has_data = 1;
-  size_t realsize = sz * nmemb;
-  size_t newsize = cc->size + realsize;
 
   /* move existing data to front of buffer */
-  memcpy(cc->buf, cc->ptr, cc->size);
+  if(cc->size)
+    memcpy(cc->buf, cc->ptr, cc->size);
 
   /* allocate more space if required */
+  size_t realsize = sz * nmemb;
+  size_t newsize = cc->size + realsize;
   if(newsize > cc->limit) {
     size_t newlimit = 2 * cc->limit;
     //Rprintf("Resizing buffer to %d.\n", newlimit);
