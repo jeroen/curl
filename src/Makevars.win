@@ -7,7 +7,7 @@ endif
 
 PKG_LIBS= -L../windows/curl-7.39.0-devel/lib${R_ARCH} -lcurl -lrtmp -lssl -lssh2 -lcrypto -lgdi32 -lcrypt32 -lz -lws2_32 -lgdi32 -lcrypt32 -lwldap32 -lwinmm ${WIN32FIX}
 
-SOURCES = curl.c
+SOURCES = curl.c download.c utils.c
 
 OBJECTS = $(SOURCES:.c=.o)
 

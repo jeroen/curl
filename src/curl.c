@@ -17,6 +17,7 @@
 #include <Rinternals.h>
 #include <string.h>
 #include <stdlib.h>
+#include "utils.h"
 
 /* the RConnection API is experimental and subject to change */
 #include <R_ext/Connections.h>
@@ -63,7 +64,7 @@ static size_t push(void *contents, size_t sz, size_t nmemb, curl_private *cc) {
   memcpy(cc->buf + cc->size, contents, sz * nmemb);
   cc->size = newsize;
   cc->ptr = cc->buf;
-  return sz * nmemb;
+  return (size_t) sz * nmemb;
 }
 
 static size_t pop(void *target, size_t max, curl_private *cc){
@@ -75,17 +76,12 @@ static size_t pop(void *target, size_t max, curl_private *cc){
   return copy_size;
 }
 
-void assert(CURLcode res){
-  if(res != CURLE_OK)
-    error(curl_easy_strerror(res));
-}
-
 void massert(CURLMcode res){
   if(res != CURLM_OK)
     error(curl_multi_strerror(res));
 }
 
-void check_status(CURLM *multi_handle) {
+void check_manager(CURLM *multi_handle) {
   for(int msg = 1; msg > 0;){
     CURLMsg *out = curl_multi_info_read(multi_handle, &msg);
     if(out)
@@ -97,7 +93,7 @@ void fetch(curl_private *cc) {
   long timeout = 10*1000;
   massert(curl_multi_timeout(cc->multi_handle, &timeout));
   massert(curl_multi_perform(cc->multi_handle, &(cc->has_more)));
-  check_status(cc->multi_handle);
+  check_manager(cc->multi_handle);
 }
 
 /* Support for readBin() */
@@ -149,7 +145,10 @@ static Rboolean rcurl_open(Rconnection con) {
     curl_easy_cleanup(cc->http_handle);
   }
 
-  CURL *http_handle = curl_easy_init();
+  /* init a multi stack with callback */
+  CURL *http_handle = make_handle(cc->url);
+  curl_easy_setopt(http_handle, CURLOPT_WRITEFUNCTION, push);
+  curl_easy_setopt(http_handle, CURLOPT_WRITEDATA, cc);
   curl_multi_add_handle(cc->multi_handle, http_handle);
 
   /* reset the state */
@@ -160,37 +159,14 @@ static Rboolean rcurl_open(Rconnection con) {
   cc->has_data = 0;
   cc->has_more = 1;
 
-  /* curl configuration options */
-  curl_easy_setopt(http_handle, CURLOPT_URL, cc->url);
-  curl_easy_setopt(http_handle, CURLOPT_SSL_VERIFYHOST, 0L);
-  curl_easy_setopt(http_handle, CURLOPT_SSL_VERIFYPEER, 0L);
-  curl_easy_setopt(http_handle, CURLOPT_FOLLOWLOCATION, 1L);
-  curl_easy_setopt(http_handle, CURLOPT_CONNECTTIMEOUT_MS, 10*1000);
-  curl_easy_setopt(http_handle, CURLOPT_ACCEPT_ENCODING, "gzip, deflate");
-
-  /* set http request headers */
-  struct curl_slist *reqheaders = NULL;
-  reqheaders = curl_slist_append(reqheaders, "User-Agent: r/curl/jeroen");
-  reqheaders = curl_slist_append(reqheaders, "Accept-Charset: utf-8");
-  reqheaders = curl_slist_append(reqheaders, "Cache-Control: no-cache");
-  curl_easy_setopt(http_handle, CURLOPT_HTTPHEADER, reqheaders);
-
-  /* init a multi stack with callback */
-  curl_easy_setopt(http_handle, CURLOPT_WRITEFUNCTION, push);
-  curl_easy_setopt(http_handle, CURLOPT_WRITEDATA, cc);
-
   /* Wait for first data to arrive. Monitoring a change in status code does not
      suffice in case of http redirects */
   while(cc->has_more && !cc->has_data) {
     fetch(cc);
   }
 
-  long status = 0;
-  assert(curl_easy_getinfo(http_handle, CURLINFO_RESPONSE_CODE, &status));
-
-  /* check http status code. Not sure what this does for ftp. */
-  if(status >= 300)
-    error("HTTP error %d.", status);
+  /* check http status code */
+  stop_for_status(http_handle);
 
   /* set mode in case open() changed it */
   con->text = strcmp(con->mode, "rb") ? TRUE : FALSE;
@@ -243,9 +219,4 @@ SEXP R_curl_connection(SEXP url, SEXP mode) {
     error("Invalid mode: %s", smode);
   }
   return rc;
-}
-
-SEXP R_global_cleanup() {
-  curl_global_cleanup();
-  return R_NilValue;
 }

@@ -1,0 +1,22 @@
+#' Download file
+#'
+#' Libcurl implementation of \code{C_download} (the "internal" download method).
+#' Designed to behave similar to \code{\link{download.file}}.
+#'
+#' @useDynLib curl R_download_curl
+#' @param url A character string naming the URL of a resource to be downloaded.
+#' @param destfile A character string with the name where the downloaded file is saved.
+#' Tilde-expansion is performed.
+#' @param quiet If \code{TRUE}, suppress status messages (if any), and the progress bar.
+#' @param mode A character string specifying the mode with which to write the file. Useful values are \code{"w"},
+#' \code{"wb"} (binary), \code{"a"} (append) and \code{"ab"}.
+#' @export
+download_curl <- function(url, destfile, quiet = FALSE, mode = "w"){
+  destfile <- normalizePath(destfile, mustWork = FALSE)
+  invisible(.Call(R_download_curl, url, destfile, quiet, mode))
+}
+
+#' @useDynLib curl R_global_cleanup
+.onUnload <- function(lib){
+  .Call(R_global_cleanup);
+}
