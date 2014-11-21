@@ -30,8 +30,8 @@
 
 typedef struct {
   const char *url;
-  CURL *http_handle;
-  CURLM *multi_handle;
+  CURL *req;
+  CURLM *manager;
   char *buf;
   char *ptr;
   size_t size;
@@ -84,9 +84,9 @@ void massert(CURLMcode res){
     error(curl_multi_strerror(res));
 }
 
-void check_manager(CURLM *multi_handle) {
+void check_manager(CURLM *manager) {
   for(int msg = 1; msg > 0;){
-    CURLMsg *out = curl_multi_info_read(multi_handle, &msg);
+    CURLMsg *out = curl_multi_info_read(manager, &msg);
     if(out)
       assert(out->data.result);
   }
@@ -94,9 +94,9 @@ void check_manager(CURLM *multi_handle) {
 
 void fetch(curl_private *cc) {
   long timeout = 10*1000;
-  massert(curl_multi_timeout(cc->multi_handle, &timeout));
-  massert(curl_multi_perform(cc->multi_handle, &(cc->has_more)));
-  check_manager(cc->multi_handle);
+  massert(curl_multi_timeout(cc->manager, &timeout));
+  massert(curl_multi_perform(cc->manager, &(cc->has_more)));
+  check_manager(cc->manager);
 }
 
 /* Support for readBin() */
@@ -122,9 +122,9 @@ static int rcurl_fgetc(Rconnection con) {
 void cleanup(Rconnection con) {
   //Rprintf("Destroying connection.\n");
   curl_private *cc = (curl_private*) con->private;
-  curl_multi_remove_handle(cc->multi_handle, cc->http_handle);
-  curl_easy_cleanup(cc->http_handle);
-  curl_multi_cleanup(cc->multi_handle);
+  curl_multi_remove_handle(cc->manager, cc->req);
+  curl_easy_cleanup(cc->req);
+  curl_multi_cleanup(cc->manager);
   free(cc->buf);
   free(cc);
 }
@@ -144,18 +144,18 @@ static Rboolean rcurl_open(Rconnection con) {
   /* case of recycled connection */
   if(cc->used) {
     //Rprintf("Cleaning up old handle.\n");
-    curl_multi_remove_handle(cc->multi_handle, cc->http_handle);
-    curl_easy_cleanup(cc->http_handle);
+    curl_multi_remove_handle(cc->manager, cc->req);
+    curl_easy_cleanup(cc->req);
   }
 
   /* init a multi stack with callback */
-  CURL *http_handle = make_handle(cc->url);
-  curl_easy_setopt(http_handle, CURLOPT_WRITEFUNCTION, push);
-  curl_easy_setopt(http_handle, CURLOPT_WRITEDATA, cc);
-  curl_multi_add_handle(cc->multi_handle, http_handle);
+  CURL *req = make_handle(cc->url);
+  curl_easy_setopt(req, CURLOPT_WRITEFUNCTION, push);
+  curl_easy_setopt(req, CURLOPT_WRITEDATA, cc);
+  curl_multi_add_handle(cc->manager, req);
 
   /* reset the state */
-  cc->http_handle = http_handle;
+  cc->req = req;
   cc->ptr = cc->buf;
   cc->size = 0;
   cc->used = 1;
@@ -169,7 +169,7 @@ static Rboolean rcurl_open(Rconnection con) {
   }
 
   /* check http status code */
-  stop_for_status(http_handle);
+  stop_for_status(req);
 
   /* set mode in case open() changed it */
   con->text = strcmp(con->mode, "rb") ? TRUE : FALSE;
@@ -196,7 +196,7 @@ SEXP R_curl_connection(SEXP url, SEXP mode) {
   cc->limit = CURL_MAX_WRITE_SIZE;
   cc->buf = malloc(cc->limit);
   cc->url = translateCharUTF8(asChar(url));
-  cc->multi_handle = curl_multi_init();
+  cc->manager = curl_multi_init();
   cc->used = 0;
 
   /* set connection properties */

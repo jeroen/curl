@@ -21,21 +21,21 @@ SEXP R_download_curl(SEXP url, SEXP destfile, SEXP quiet, SEXP mode) {
   if(!isString(mode))
     error("Argument 'mode' must be string.");
 
-  /* Open file descriptor */
+  /* open file */
   FILE *dest = fopen(translateCharUTF8(asChar(destfile)), CHAR(asChar(mode)));
+  if(!dest)
+    error("Failed to open file %s.", translateCharUTF8(asChar(destfile)));
 
-  /* setup curl */
-  CURL *http_handle = make_handle(translateCharUTF8(asChar(url)));
-  curl_easy_setopt(http_handle, CURLOPT_WRITEDATA, dest);
-  curl_easy_setopt(http_handle, CURLOPT_NOPROGRESS, asLogical(quiet));
+  /* init curl */
+  CURL *req = make_handle(translateCharUTF8(asChar(url)));
+  curl_easy_setopt(req, CURLOPT_NOPROGRESS, asLogical(quiet));
+  curl_easy_setopt(req, CURLOPT_WRITEDATA, dest);
+  CURLcode success = curl_easy_perform(req);
 
-  /* perform request */
-  CURLcode res = curl_easy_perform(http_handle);
+  /* post processing */
   fclose(dest);
-  assert(res);
-  stop_for_status(http_handle);
-
+  assert(success);
+  stop_for_status(req);
+  curl_easy_cleanup(req);
   return ScalarInteger(0);
 }
-
-
