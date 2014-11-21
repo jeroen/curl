@@ -47,9 +47,8 @@ static size_t push(void *contents, size_t sz, size_t nmemb, void *ctx) {
   curl_private* cc = (curl_private*) ctx;
   cc->has_data = 1;
 
-  /* move existing data to front of buffer */
-  if(cc->size)
-    memcpy(cc->buf, cc->ptr, cc->size);
+  /* move existing data to front of buffer (if any) */
+  memcpy(cc->buf, cc->ptr, cc->size);
 
   /* allocate more space if required */
   size_t realsize = sz * nmemb;
