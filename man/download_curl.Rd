@@ -20,4 +20,10 @@ Tilde-expansion is performed.}
 Libcurl implementation of \code{C_download} (the "internal" download method).
 Designed to behave similar to \code{\link{download.file}}.
 }
+\examples{
+\dontrun{download file to disk
+url <- "http://www2.census.gov/acs2011_5yr/pums/csv_pus.zip"
+download_curl(url, "csv_pus.zip")
+}
+}
 
