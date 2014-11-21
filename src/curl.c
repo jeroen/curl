@@ -9,8 +9,8 @@
  *  - https://github.com/wch/r-source/blob/trunk/src/include/R_ext/Connections.h
  *  - http://biostatmatt.com/R/R-conn-ints/C-Structures.html
  *
- * Notes: the close() function in R actually calls req->destroy. The req->close
- * function is only used when a connection is recycled.
+ * Notes: the close() function in R actually calls con->destroy. The con->close
+ * function is only used when a connection is recycled after auto-open.
  */
 #include <curl/curl.h>
 #include <curl/easy.h>
