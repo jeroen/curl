@@ -212,6 +212,7 @@ SEXP R_curl_connection(SEXP url, SEXP mode) {
   con->destroy = cleanup;
   con->read = rcurl_read;
   con->fgetc = rcurl_fgetc;
+  con->fgetc_internal = rcurl_fgetc;
 
   /* open connection  */
   const char *smode = translateCharUTF8(asChar(mode));

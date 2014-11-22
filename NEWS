@@ -1,3 +1,8 @@
+0.3
+ - Add download_curl function
+ - Better use of realloc
+ - Fix for older versions of libcurl (e.g. Snow Leopard)
+
 0.2
   - add support for recycling connections
 
