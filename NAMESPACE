@@ -3,5 +3,6 @@
 export(curl)
 export(download_curl)
 useDynLib(curl,R_curl_connection)
+useDynLib(curl,R_download_cleanup)
 useDynLib(curl,R_download_curl)
 useDynLib(curl,R_global_cleanup)

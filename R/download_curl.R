@@ -3,7 +3,7 @@
 #' Libcurl implementation of \code{C_download} (the "internal" download method).
 #' Designed to behave similar to \code{\link{download.file}}.
 #'
-#' @useDynLib curl R_download_curl
+#' @useDynLib curl R_download_curl R_download_cleanup
 #' @param url A character string naming the URL of a resource to be downloaded.
 #' @param destfile A character string with the name where the downloaded file is saved.
 #' Tilde-expansion is performed.
@@ -16,8 +16,24 @@
 #' download_curl(url, "csv_pus.zip")
 #' }
 download_curl <- function(url, destfile, quiet = FALSE, mode = "w"){
+  newfile <- FALSE
   destfile <- normalizePath(destfile, mustWork = FALSE)
-  invisible(.Call(R_download_curl, url, destfile, quiet, mode))
+  if(!file.exists(destfile)){
+    stopifnot(file.create(destfile))
+    newfile <- TRUE
+  }
+  destfile <- normalizePath(destfile, mustWork = TRUE)
+  tryCatch({
+    .Call(R_download_curl, url, destfile, quiet, mode)
+    .Call(R_download_cleanup)
+    invisible()
+  }, error = function(err){
+    .Call(R_download_cleanup)
+    if(isTRUE(newfile)){
+      unlink(destfile)
+    }
+    stop(err$message, call. = FALSE)
+  });
 }
 
 #' @useDynLib curl R_global_cleanup
