@@ -29,7 +29,7 @@
 #define R_EOF -1
 
 typedef struct {
-  const char *url;
+  char *url;
   char *buf;
   char *ptr;
   int has_data;
@@ -127,6 +127,7 @@ void cleanup(Rconnection con) {
   curl_easy_cleanup(req->handler);
   curl_multi_cleanup(req->manager);
   free(req->buf);
+  free(req->url);
   free(req);
 }
 
@@ -196,9 +197,12 @@ SEXP R_curl_connection(SEXP url, SEXP mode) {
   request *req = malloc(sizeof(request));
   req->limit = CURL_MAX_WRITE_SIZE;
   req->buf = malloc(req->limit);
-  req->url = translateCharUTF8(asChar(url));
   req->manager = curl_multi_init();
   req->used = 0;
+
+  /* allocate url string */
+  req->url = malloc(strlen(translateCharUTF8(asChar(url))+1));
+  strcpy(req->url, translateCharUTF8(asChar(url)));
 
   /* set connection properties */
   con->private = req;
