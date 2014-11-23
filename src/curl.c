@@ -31,7 +31,7 @@
 typedef struct {
   char *url;
   char *buf;
-  char *ptr;
+  char *cur;
   int has_data;
   int has_more;
   int used;
@@ -48,7 +48,7 @@ static size_t push(void *contents, size_t sz, size_t nmemb, void *ctx) {
   req->has_data = 1;
 
   /* move existing data to front of buffer (if any) */
-  memcpy(req->buf, req->ptr, req->size);
+  memcpy(req->buf, req->cur, req->size);
 
   /* allocate more space if required */
   size_t realsize = sz * nmemb;
@@ -66,14 +66,14 @@ static size_t push(void *contents, size_t sz, size_t nmemb, void *ctx) {
   /* append new data */
   memcpy(req->buf + req->size, contents, realsize);
   req->size = newsize;
-  req->ptr = req->buf;
+  req->cur = req->buf;
   return realsize;
 }
 
 static size_t pop(void *target, size_t max, request *req){
   size_t copy_size = min(req->size, max);
-  memcpy(target, req->ptr, copy_size);
-  req->ptr = req->ptr + copy_size;
+  memcpy(target, req->cur, copy_size);
+  req->cur = req->cur + copy_size;
   req->size = req->size - copy_size;
   //Rprintf("Requested %d bytes, popped %d bytes, new size %d bytes.\n", max, copy_size, req->size);
   return copy_size;
@@ -97,7 +97,6 @@ void fetch(request *req) {
   massert(curl_multi_timeout(req->manager, &timeout));
   massert(curl_multi_perform(req->manager, &(req->has_more)));
   check_manager(req->manager);
-  R_CheckUserInterrupt();
 }
 
 /* Support for readBin() */
@@ -108,6 +107,7 @@ static size_t rcurl_read(void *target, size_t sz, size_t ni, Rconnection con) {
   /* append data to the target buffer */
   size_t total_size = pop(target, req_size, req);
   while((req_size > total_size) && req->has_more) {
+    R_CheckUserInterrupt();
     fetch(req);
     total_size += pop((char*)target + total_size, (req_size-total_size), req);
   }
@@ -158,7 +158,7 @@ static Rboolean rcurl_open(Rconnection con) {
 
   /* reset the state */
   req->handler = handler;
-  req->ptr = req->buf;
+  req->cur = req->buf;
   req->size = 0;
   req->used = 1;
   req->has_data = 0;
