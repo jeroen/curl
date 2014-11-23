@@ -97,6 +97,7 @@ void fetch(request *req) {
   massert(curl_multi_timeout(req->manager, &timeout));
   massert(curl_multi_perform(req->manager, &(req->has_more)));
   check_manager(req->manager);
+  R_CheckUserInterrupt();
 }
 
 /* Support for readBin() */
