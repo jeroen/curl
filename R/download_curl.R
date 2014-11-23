@@ -16,15 +16,16 @@
 #' download_curl(url, "csv_pus.zip")
 #' }
 download_curl <- function(url, destfile, quiet = FALSE, mode = "w"){
-  newfile <- FALSE
   destfile <- normalizePath(destfile, mustWork = FALSE)
-  if(!file.exists(destfile)){
+  if(file.exists(destfile)){
+    newfile <- FALSE
+  } else {
     stopifnot(file.create(destfile))
     newfile <- TRUE
   }
   destfile <- normalizePath(destfile, mustWork = TRUE)
-  on.exit(.Call(R_download_cleanup))
   tryCatch({
+    on.exit(.Call(R_download_cleanup))
     invisible(.Call(R_download_curl, url, destfile, quiet, mode))
   }, error = function(err){
     if(isTRUE(newfile)) {
