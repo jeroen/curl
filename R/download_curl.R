@@ -23,13 +23,11 @@ download_curl <- function(url, destfile, quiet = FALSE, mode = "w"){
     newfile <- TRUE
   }
   destfile <- normalizePath(destfile, mustWork = TRUE)
+  on.exit(.Call(R_download_cleanup))
   tryCatch({
-    .Call(R_download_curl, url, destfile, quiet, mode)
-    .Call(R_download_cleanup)
-    invisible()
+    invisible(.Call(R_download_curl, url, destfile, quiet, mode))
   }, error = function(err){
-    .Call(R_download_cleanup)
-    if(isTRUE(newfile)){
+    if(isTRUE(newfile)) {
       unlink(destfile)
     }
     stop(err$message, call. = FALSE)
