@@ -28,9 +28,9 @@ download_curl <- function(url, destfile, quiet = FALSE, mode = "w"){
     # Clean in case of interrupt
     on.exit(.Call(R_download_cleanup))
     invisible(.Call(R_download_curl, url, destfile, quiet, mode))
-  }, error = function(err)
+  }, error = function(err){
     # Need to close descriptor before we can unlink
-    if(isTRUE(newfile)) {
+    if(isTRUE(newfile)){
       .Call(R_download_cleanup)
       unlink(destfile)
     }
