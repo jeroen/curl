@@ -11,11 +11,12 @@
 #' @param mode A character string specifying the mode with which to write the file. Useful values are \code{"w"},
 #' \code{"wb"} (binary), \code{"a"} (append) and \code{"ab"}.
 #' @export
-#' @examples \dontrun{download file to disk
+#' @examples \dontrun{download large file
 #' url <- "http://www2.census.gov/acs2011_5yr/pums/csv_pus.zip"
-#' download_curl(url, "csv_pus.zip")
+#' tmp <- tempfile()
+#' curl_download(url, tmp)
 #' }
-download_curl <- function(url, destfile, quiet = FALSE, mode = "w"){
+curl_download <- function(url, destfile, quiet = FALSE, mode = "w"){
   destfile <- normalizePath(destfile, mustWork = FALSE)
   if(file.exists(destfile)){
     newfile <- FALSE
