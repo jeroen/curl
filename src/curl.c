@@ -189,7 +189,7 @@ SEXP R_curl_connection(SEXP url, SEXP mode) {
 
   /* create the R connection object */
   Rconnection con;
-  SEXP rc = R_new_custom_connection(translateCharUTF8(asChar(url)), "r", "curl", &con);
+  SEXP rc = PROTECT(R_new_custom_connection(translateCharUTF8(asChar(url)), "r", "curl", &con));
 
   /* setup curl. These are the parts that are recycable. */
   request *req = malloc(sizeof(request));
@@ -222,5 +222,6 @@ SEXP R_curl_connection(SEXP url, SEXP mode) {
   } else if(strcmp(smode, "")) {
     error("Invalid mode: %s", smode);
   }
+  UNPROTECT(1);
   return rc;
 }
