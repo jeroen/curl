@@ -2,6 +2,7 @@
  - Add download_curl function
  - Better use of realloc
  - Fix for older versions of libcurl (e.g. Snow Leopard)
+ - Add support for interrupting (ESC or CTRL+C)
 
 0.2
   - add support for recycling connections
