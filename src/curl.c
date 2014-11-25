@@ -93,6 +93,7 @@ void check_manager(CURLM *manager) {
 }
 
 void fetch(request *req) {
+  R_CheckUserInterrupt();
   long timeout = 10*1000;
   massert(curl_multi_timeout(req->manager, &timeout));
   massert(curl_multi_perform(req->manager, &(req->has_more)));
@@ -107,7 +108,6 @@ static size_t rcurl_read(void *target, size_t sz, size_t ni, Rconnection con) {
   /* append data to the target buffer */
   size_t total_size = pop(target, req_size, req);
   while((req_size > total_size) && req->has_more) {
-    R_CheckUserInterrupt();
     fetch(req);
     total_size += pop((char*)target + total_size, (req_size-total_size), req);
   }
