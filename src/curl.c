@@ -38,7 +38,7 @@ typedef struct {
   size_t size;
   size_t limit;
   CURLM *manager;
-  CURL *handler;
+  CURL *handle;
 } request;
 
 /* callback function to store received data */
@@ -123,8 +123,8 @@ static int rcurl_fgetc(Rconnection con) {
 void cleanup(Rconnection con) {
   //Rprintf("Destroying connection.\n");
   request *req = (request*) con->private;
-  curl_multi_remove_handle(req->manager, req->handler);
-  curl_easy_cleanup(req->handler);
+  curl_multi_remove_handle(req->manager, req->handle);
+  curl_easy_cleanup(req->handle);
   curl_multi_cleanup(req->manager);
   free(req->buf);
   free(req->url);
@@ -146,18 +146,18 @@ static Rboolean rcurl_open(Rconnection con) {
   /* case of recycled connection */
   if(req->used) {
     //Rprintf("Cleaning up old handle.\n");
-    curl_multi_remove_handle(req->manager, req->handler);
-    curl_easy_cleanup(req->handler);
+    curl_multi_remove_handle(req->manager, req->handle);
+    curl_easy_cleanup(req->handle);
   }
 
   /* init a multi stack with callback */
-  CURL *handler = make_handle(req->url);
-  curl_easy_setopt(handler, CURLOPT_WRITEFUNCTION, push);
-  curl_easy_setopt(handler, CURLOPT_WRITEDATA, req);
-  curl_multi_add_handle(req->manager, handler);
+  CURL *handle = make_handle(req->url);
+  curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, push);
+  curl_easy_setopt(handle, CURLOPT_WRITEDATA, req);
+  curl_multi_add_handle(req->manager, handle);
 
   /* reset the state */
-  req->handler = handler;
+  req->handle = handle;
   req->cur = req->buf;
   req->size = 0;
   req->used = 1;
@@ -171,7 +171,7 @@ static Rboolean rcurl_open(Rconnection con) {
   }
 
   /* check http status code */
-  stop_for_status(handler);
+  stop_for_status(handle);
 
   /* set mode in case open() changed it */
   con->text = strcmp(con->mode, "rb") ? TRUE : FALSE;
