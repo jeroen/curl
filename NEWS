@@ -1,8 +1,10 @@
 0.3
- - Add download_curl function
- - Better use of realloc
+ - Add curl_download function
+ - More efficient use of realloc
  - Fix for older versions of libcurl (e.g. Snow Leopard)
- - Add support for interrupting (ESC or CTRL+C)
+ - Add support for user interrupts while downloading (ESC or CTRL+C)
+ - Fixed bug that caused GC to corrupt connection object
+ - Refactoring and cleanup
 
 0.2
   - add support for recycling connections
