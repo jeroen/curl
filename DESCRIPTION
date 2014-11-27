@@ -1,8 +1,8 @@
 Package: curl
 Type: Package
 Title: A Connection Interface to Libcurl.
-Version: 0.2.99
-Date: 2014-11-19
+Version: 0.3
+Date: 2014-11-27
 Author: Jeroen Ooms
 Maintainer: Jeroen Ooms <jeroen.ooms@stat.ucla.edu>
 Description: The curl() function provides a drop-in replacement for base url()
