@@ -1,13 +1,13 @@
 # On most systems the curl headers will be found automatically.
 # You can use CURL_INCLUDES to set a custom include dir.
-if [ -z "$CURL_INCLUDES" ]; then
-  CURL_INCLUDES="/usr/include"
-else
+if [ "$CURL_INCLUDES" ]; then
   echo "PKG_CPPFLAGS= -I$CURL_INCLUDES" >> src/Makevars
+else
+  CURL_INCLUDES="/usr/include"
 fi
 
 # Verify that curl.h is present
-if [ ! -e $CURL_INCLUDES/curl/curl.h ]; then
+if [ ! -r $CURL_INCLUDES/curl/curl.h ]; then
   echo "File $CURL_INCLUDES/curl/curl.h not found. Make sure the curl development library is installed, e.g. libcurl4-openssl-dev (deb) or libcurl-devel (rpm)."
   exit 1
 fi
