@@ -201,7 +201,7 @@ SEXP R_curl_connection(SEXP url, SEXP mode) {
   req->used = 0;
 
   /* allocate url string */
-  req->url = malloc(strlen(translateCharUTF8(asChar(url))+1));
+  req->url = malloc(strlen(translateCharUTF8(asChar(url))) + 1);
   strcpy(req->url, translateCharUTF8(asChar(url)));
 
   /* set connection properties */
