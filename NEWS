@@ -1,3 +1,6 @@
+0.4
+ - Fixed a malloc bug that would cause error on free
+
 0.3
  - Add curl_download function
  - More efficient use of realloc
