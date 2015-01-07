@@ -10,7 +10,7 @@
 #'   initially. Currently only "r" and "rb" are supported.
 #' @examples \dontrun{
 #' con <- curl("https://httpbin.org/get")
-#' readLines(con, warn = FALSE)
+#' readLines(con)
 #'
 #' # Auto-opened connections can be recycled
 #' open(con, "rb")
@@ -22,14 +22,14 @@
 #' curl("https://httpbin.org/status/418", "r")
 #'
 #' # Follow redirects
-#' readLines(curl("https://httpbin.org/redirect/3"), warn = FALSE)
+#' readLines(curl("https://httpbin.org/redirect/3"))
 #'
 #' # Error after redirect
 #' curl("https://httpbin.org/redirect-to?url=http://httpbin.org/status/418", "r")
 #'
 #' # Auto decompress Accept-Encoding: gzip / deflate (rfc2616 #14.3)
-#' readLines(curl("http://httpbin.org/gzip"), warn = FALSE)
-#' readLines(curl("http://httpbin.org/deflate"), warn = FALSE)
+#' readLines(curl("http://httpbin.org/gzip"))
+#' readLines(curl("http://httpbin.org/deflate"))
 #'
 #' # Binary support
 #' buf <- readBin(curl("http://httpbin.org/bytes/98765", "rb"), raw(), 1e5)
