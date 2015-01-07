@@ -1,5 +1,7 @@
 0.4
- - Fixed a malloc bug that would cause error on free
+ - Fixed a memory bug that could cause R to crash
+ - Add curl_escape, curl_unescape
+ - Add curl_version and curl_options
 
 0.3
  - Add curl_download function
