@@ -12,4 +12,5 @@ else
 fi
 
 # Grep the CURL_OPTION values from curl.h
-grep "^\W*CINIT(" "$CURL_INCLUDES/curl/curl.h" > src/option_table.h
+grep "^[ \t]*CINIT(" "$CURL_INCLUDES/curl/curl.h" > src/option_table.h
+exit 0
