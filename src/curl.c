@@ -96,7 +96,15 @@ void fetch(request *req) {
   R_CheckUserInterrupt();
   long timeout = 10*1000;
   massert(curl_multi_timeout(req->manager, &timeout));
-  massert(curl_multi_perform(req->manager, &(req->has_more)));
+  /* massert(curl_multi_perform(req->manager, &(req->has_more))); */
+
+  /* On libcurl < 7.20 we need to check for CURLM_CALL_MULTI_PERFORM, see docs */
+  CURLMcode res = CURLM_CALL_MULTI_PERFORM;
+  while(res == CURLM_CALL_MULTI_PERFORM){
+    res = curl_multi_perform(req->manager, &(req->has_more));
+  }
+  massert(res);
+  /* End */
   check_manager(req->manager);
 }
 
