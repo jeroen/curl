@@ -12,5 +12,6 @@ else
 fi
 
 # Grep the CURL_OPTION values from curl.h
+echo "Found libcurl in $CURL_INCLUDES/curl/curl.h"
 grep "^[ \t]*CINIT(" "$CURL_INCLUDES/curl/curl.h" > src/option_table.h
 exit 0
