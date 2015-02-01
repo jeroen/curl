@@ -1,5 +1,5 @@
 /* *
- * Streaming interface to libcurl for R. (c) 2014 Jeroen Ooms.
+ * Streaming interface to libcurl for R. (c) 2015 Jeroen Ooms.
  * Source: https://github.com/jeroenooms/curl
  * Comments and contributions are welcome!
  * Helpful libcurl examples:
