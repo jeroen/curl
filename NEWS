@@ -1,6 +1,5 @@
 0.5
  - Check for CURLM_CALL_MULTI_PERFORM to support very old versions of libcurl
- - Verify SSL certificates, except for on windows
 
 0.4
  - Fixed a memory bug that could cause R to crash
