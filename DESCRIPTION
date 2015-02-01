@@ -13,5 +13,5 @@ Description: The curl() function provides a drop-in replacement for base url()
     http client, try the RCurl or httr packages instead.
 License: MIT + file LICENSE
 SystemRequirements: libcurl: libcurl-devel (rpm) or libcurl4-openssl-dev (deb).
-URL: http://github.com/jeroenooms/curl
-BugReports: http://github.com/jeroenooms/curl/issues
+URL: https://github.com/jeroenooms/curl, https://www.opencpu.org/posts/curl-release-0-2/
+BugReports: https://github.com/jeroenooms/curl/issues
