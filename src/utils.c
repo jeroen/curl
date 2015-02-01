@@ -13,8 +13,12 @@ CURL *make_handle(const char *url){
 
   /* curl configuration options */
   curl_easy_setopt(http_handle, CURLOPT_URL, url);
+
+  #ifdef _WIN32
   curl_easy_setopt(http_handle, CURLOPT_SSL_VERIFYHOST, 0L);
   curl_easy_setopt(http_handle, CURLOPT_SSL_VERIFYPEER, 0L);
+  #endif
+
   curl_easy_setopt(http_handle, CURLOPT_FOLLOWLOCATION, 1L);
   curl_easy_setopt(http_handle, CURLOPT_CONNECTTIMEOUT_MS, 10*1000);
 
