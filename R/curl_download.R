@@ -16,7 +16,7 @@
 #' tmp <- tempfile()
 #' curl_download(url, tmp)
 #' }
-curl_download <- function(url, destfile, quiet = FALSE, mode = "w"){
+curl_download <- function(url, destfile, quiet = TRUE, mode = "wb"){
   destfile <- normalizePath(destfile, mustWork = FALSE)
   if(file.exists(destfile)){
     newfile <- FALSE
