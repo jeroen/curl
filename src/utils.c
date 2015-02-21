@@ -29,7 +29,7 @@ CURL *make_handle(const char *url){
   struct curl_slist *reqheaders = NULL;
   reqheaders = curl_slist_append(reqheaders, "User-Agent: r/curl/jeroen");
   reqheaders = curl_slist_append(reqheaders, "Accept-Charset: utf-8");
-  reqheaders = curl_slist_append(reqheaders, "Cache-Control: no-cache");
+  //reqheaders = curl_slist_append(reqheaders, "Cache-Control: no-cache");
   curl_easy_setopt(http_handle, CURLOPT_HTTPHEADER, reqheaders);
 
   /*return the handler */
