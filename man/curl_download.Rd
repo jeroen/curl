@@ -4,7 +4,7 @@
 \alias{curl_download}
 \title{Download file}
 \usage{
-curl_download(url, destfile, quiet = FALSE, mode = "w")
+curl_download(url, destfile, quiet = TRUE, mode = "wb")
 }
 \arguments{
 \item{url}{A character string naming the URL of a resource to be downloaded.}
