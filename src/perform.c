@@ -131,7 +131,7 @@ SEXP make_namesvec(){
   SET_STRING_ELT(names, 2, mkChar("headers"));
   SET_STRING_ELT(names, 3, mkChar("cookies"));
   SET_STRING_ELT(names, 4, mkChar("content"));
-  SET_STRING_ELT(names, 5, mkChar("date"));
+  SET_STRING_ELT(names, 5, mkChar("modified"));
   SET_STRING_ELT(names, 6, mkChar("times"));
   SET_STRING_ELT(names, 7, mkChar("request"));
   UNPROTECT(1);
