@@ -1,7 +1,7 @@
 Package: curl
 Type: Package
 Title: A Connection Interface to Libcurl
-Version: 0.5
+Version: 0.5.99
 Date: 2015-02-01
 Author: Jeroen Ooms
 Maintainer: Jeroen Ooms <jeroen.ooms@stat.ucla.edu>
