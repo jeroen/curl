@@ -1,11 +1,11 @@
-PKG_CPPFLAGS= -I../windows/curl-7.39.0-devel/include
+PKG_CPPFLAGS= -I../windows/libcurl-7.39.0/include
 PKG_CFLAGS= -DCURL_STATICLIB
 
 ifeq "${R_ARCH}" "/i386"
 WIN32FIX= -lidn
 endif
 
-PKG_LIBS= -L../windows/curl-7.39.0-devel/lib${R_ARCH} -lcurl -lrtmp -lssl -lssh2 -lcrypto -lgdi32 -lcrypt32 -lz -lws2_32 -lgdi32 -lcrypt32 -lwldap32 -lwinmm ${WIN32FIX}
+PKG_LIBS= -L../windows/libcurl-7.39.0/lib${R_ARCH} -lcurl -lrtmp -lssl -lssh2 -lcrypto -lgdi32 -lcrypt32 -lz -lws2_32 -lgdi32 -lcrypt32 -lwldap32 -lwinmm ${WIN32FIX}
 
 SOURCES = $(wildcard *.c)
 
@@ -18,4 +18,4 @@ clean:
 
 winlibs:
 	"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" "../tools/winlibs.R"
-	grep "^\W*CINIT(" "../windows/curl-7.39.0-devel/include/curl/curl.h" > option_table.h
+	grep "^\W*CINIT(" "../windows/libcurl-7.39.0/include/curl/curl.h" > option_table.h
