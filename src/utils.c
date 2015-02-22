@@ -25,6 +25,10 @@ CURL *make_handle(const char *url){
   /* aka 'CURLOPT_ACCEPT_ENCODING' in recent versions */
   curl_easy_setopt(http_handle, CURLOPT_ENCODING, "gzip, deflate");
 
+  /* start the cookie engine */
+  curl_easy_setopt(http_handle, CURLOPT_COOKIEFILE, "");
+  curl_easy_setopt(http_handle, CURLOPT_FILETIME, 1);
+
   /* set http request headers */
   struct curl_slist *reqheaders = NULL;
   reqheaders = curl_slist_append(reqheaders, "User-Agent: r/curl/jeroen");

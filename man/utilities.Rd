@@ -2,6 +2,7 @@
 % Please edit documentation in R/curl_escape.R, R/curl_version.R
 \name{utility functions}
 \alias{curl_escape}
+\alias{curl_getdate}
 \alias{curl_options}
 \alias{curl_unescape}
 \alias{curl_version}
@@ -15,16 +16,28 @@ curl_unescape(url)
 curl_version()
 
 curl_options()
+
+curl_getdate(datestring)
 }
 \arguments{
 \item{url}{a string (typically a url or parameter) to be URL encoded}
+
+\item{datestring}{a string with a timestamp}
 }
 \description{
 Utility functions for working with curl.
 }
 \examples{
-curl_version()
+# Escape strings
 out <- curl_escape("foo = bar + 5")
 curl_unescape(out)
+# Curl/ssl version info
+curl_version()
+# List available curl options
+curl_options()
+# Parse dates in many formats
+curl_getdate("Sunday, 06-Nov-94 08:49:37 GMT")
+curl_getdate("06 Nov 1994 08:49:37")
+curl_getdate("20040911 +0200")
 }
 

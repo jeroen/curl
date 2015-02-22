@@ -1,4 +1,4 @@
 PKG_LIBS= -lcurl
 
 # Disable for CRAN (gcc specific):
-# PKG_CFLAGS= -Wall -pedantic
+PKG_CFLAGS= -Wall -pedantic
