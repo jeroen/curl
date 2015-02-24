@@ -11,7 +11,6 @@
 #include "utils.h"
 
 FILE *dest;
-CURL *handle;
 
 /* callback function to store received data */
 static size_t push(void *contents, size_t sz, size_t nmemb, void *ctx) {
@@ -19,7 +18,7 @@ static size_t push(void *contents, size_t sz, size_t nmemb, void *ctx) {
   return fwrite(contents, sz, nmemb, ctx);
 }
 
-SEXP R_download_curl(SEXP url, SEXP destfile, SEXP quiet, SEXP mode) {
+SEXP R_download_curl(SEXP url, SEXP destfile, SEXP quiet, SEXP mode, SEXP ptr) {
   if(!isString(url))
     error("Argument 'url' must be string.");
 
@@ -32,9 +31,14 @@ SEXP R_download_curl(SEXP url, SEXP destfile, SEXP quiet, SEXP mode) {
   if(!isString(mode))
     error("Argument 'mode' must be string.");
 
-  /* init curl */
-  handle = make_handle(translateCharUTF8(asChar(url)));
-  curl_easy_setopt(handle, CURLOPT_NOPROGRESS, asLogical(quiet));
+  if(!R_ExternalPtrAddr(ptr))
+    error("handle is dead");
+
+  /* get the handle */
+  CURL *handle = R_ExternalPtrAddr(ptr);
+
+  /* update the url */
+  curl_easy_setopt(handle, CURLOPT_URL, translateCharUTF8(asChar(url)));
 
   /* open file */
   dest = fopen(translateCharUTF8(asChar(destfile)), CHAR(asChar(mode)));
@@ -44,6 +48,10 @@ SEXP R_download_curl(SEXP url, SEXP destfile, SEXP quiet, SEXP mode) {
 
   /* Custom writefun only to call R_CheckUserInterrupt */
   curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, push);
+
+  /* Temporary fix to reset pointers set by perform */
+  curl_easy_setopt(handle, CURLOPT_HEADERFUNCTION, NULL);
+  curl_easy_setopt(handle, CURLOPT_HEADERDATA, NULL);
 
   /* perform blocking request */
   CURLcode success = curl_easy_perform(handle);
@@ -56,10 +64,6 @@ SEXP R_download_cleanup(){
   if(dest) {
     fclose(dest);
     dest = NULL;
-  }
-  if(handle){
-    curl_easy_cleanup(handle);
-    handle = NULL;
   }
   return R_NilValue;
 }

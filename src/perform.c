@@ -141,12 +141,18 @@ SEXP make_namesvec(){
   return names;
 }
 
-SEXP R_curl_perform(SEXP url){
+SEXP R_curl_perform(SEXP url, SEXP ptr){
   if(!isString(url))
     error("Argument 'url' must be string.");
 
-  /* create generic handle */
-  CURL *handle = make_handle(translateCharUTF8(asChar(url)));
+  if(!R_ExternalPtrAddr(ptr))
+    error("handle is dead");
+
+  /* get the handle */
+  CURL *handle = R_ExternalPtrAddr(ptr);
+
+  /* update the url */
+  curl_easy_setopt(handle, CURLOPT_URL, translateCharUTF8(asChar(url)));
 
   /* buffer body output */
   memory body = {NULL, 0};
@@ -177,6 +183,5 @@ SEXP R_curl_perform(SEXP url){
   UNPROTECT(1);
   free(body.buf);
   free(headers.buf);
-  curl_easy_cleanup(handle);
   return res;
 }

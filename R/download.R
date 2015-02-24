@@ -16,7 +16,7 @@
 #' tmp <- tempfile()
 #' curl_download(url, tmp)
 #' }
-curl_download <- function(url, destfile, quiet = TRUE, mode = "wb"){
+curl_download <- function(url, destfile, quiet = TRUE, mode = "wb", handle = new_handle()){
   destfile <- normalizePath(destfile, mustWork = FALSE)
   if(file.exists(destfile)){
     newfile <- FALSE
@@ -28,7 +28,7 @@ curl_download <- function(url, destfile, quiet = TRUE, mode = "wb"){
   tryCatch({
     # Clean in case of interrupt
     on.exit(.Call(R_download_cleanup))
-    invisible(.Call(R_download_curl, url, destfile, quiet, mode))
+    invisible(.Call(R_download_curl, url, destfile, quiet, mode, handle))
   }, error = function(err){
     # Need to close descriptor before we can unlink
     if(isTRUE(newfile)){
