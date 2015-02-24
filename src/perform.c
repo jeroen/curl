@@ -17,6 +17,9 @@ typedef struct {
 } memory;
 
 static size_t append_buffer(void *contents, size_t sz, size_t nmemb, void *ctx) {
+  /* check for sigint */
+  R_CheckUserInterrupt();
+
   /* avoids compiler warning on windows */
   size_t realsize = sz * nmemb;
   memory *mem = (memory*) ctx;
