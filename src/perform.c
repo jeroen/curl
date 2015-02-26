@@ -166,6 +166,9 @@ SEXP R_curl_perform(SEXP url, SEXP ptr){
 
   /* perform blocking request */
   CURLcode status = curl_easy_perform(handle);
+  if(status == CURLE_FAILED_INIT){
+    Rf_warningcall_immediate(R_NilValue, "Problem using this handle. Maybe it is still in use elsewhere.");
+  }
 
   /* Reset for reuse */
   curl_easy_setopt(handle, CURLOPT_HEADERFUNCTION, NULL);
