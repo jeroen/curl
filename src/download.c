@@ -49,10 +49,6 @@ SEXP R_download_curl(SEXP url, SEXP destfile, SEXP quiet, SEXP mode, SEXP ptr) {
   /* Custom writefun only to call R_CheckUserInterrupt */
   curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, push);
 
-  /* Temporary fix to reset pointers set by perform */
-  curl_easy_setopt(handle, CURLOPT_HEADERFUNCTION, NULL);
-  curl_easy_setopt(handle, CURLOPT_HEADERDATA, NULL);
-
   /* perform blocking request */
   CURLcode success = curl_easy_perform(handle);
   assert(success);

@@ -56,6 +56,10 @@
 #' nycflights <- stream_in(con)
 #' }
 #'
-curl <- function(url = "http://httpbin.org/get", open = ""){
-  .Call(R_curl_connection, url, open)
+curl <- function(url = "http://httpbin.org/get", open = "", handle = new_handle()){
+  out <- .Call(R_curl_connection, url, open, handle)
+
+  # Make sure handle doesn't get cleaned up by R gc.
+  attr(out, "handle") <- handle
+  out
 }

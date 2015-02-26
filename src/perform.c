@@ -165,7 +165,14 @@ SEXP R_curl_perform(SEXP url, SEXP ptr){
   curl_easy_setopt(handle, CURLOPT_HEADERDATA, &headers);
 
   /* perform blocking request */
-  assert(curl_easy_perform(handle));
+  CURLcode status = curl_easy_perform(handle);
+
+  /* Reset for reuse */
+  curl_easy_setopt(handle, CURLOPT_HEADERFUNCTION, NULL);
+  curl_easy_setopt(handle, CURLOPT_HEADERDATA, NULL);
+
+  /* check for errors */
+  assert(status);
 
   /* create output */
   SEXP res = PROTECT(allocVector(VECSXP, 8));

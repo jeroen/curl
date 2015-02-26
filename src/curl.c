@@ -132,7 +132,6 @@ void cleanup(Rconnection con) {
   //Rprintf("Destroying connection.\n");
   request *req = (request*) con->private;
   curl_multi_remove_handle(req->manager, req->handle);
-  curl_easy_cleanup(req->handle);
   curl_multi_cleanup(req->manager);
   free(req->buf);
   free(req->url);
@@ -141,7 +140,9 @@ void cleanup(Rconnection con) {
 
 /* reset to pre-opened state */
 void reset(Rconnection con) {
-  //Rprintf("Closing connection.\n");
+  //Rprintf("Resetting connection object.\n");
+  request *req = (request*) con->private;
+  curl_multi_remove_handle(req->manager, req->handle);
   con->isopen = FALSE;
   con->text = TRUE;
   strcpy(con->mode, "r");
@@ -151,15 +152,9 @@ static Rboolean rcurl_open(Rconnection con) {
   request *req = (request*) con->private;
   //Rprintf("Opening URL:%s\n", req->url);
 
-  /* case of recycled connection */
-  if(req->used) {
-    //Rprintf("Cleaning up old handle.\n");
-    curl_multi_remove_handle(req->manager, req->handle);
-    curl_easy_cleanup(req->handle);
-  }
-
   /* init a multi stack with callback */
-  CURL *handle = make_handle(req->url);
+  CURL *handle = req->handle;
+  curl_easy_setopt(handle, CURLOPT_URL, req->url);
   curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, push);
   curl_easy_setopt(handle, CURLOPT_WRITEDATA, req);
   curl_multi_add_handle(req->manager, handle);
@@ -187,7 +182,7 @@ static Rboolean rcurl_open(Rconnection con) {
   return TRUE;
 }
 
-SEXP R_curl_connection(SEXP url, SEXP mode) {
+SEXP R_curl_connection(SEXP url, SEXP mode, SEXP ptr) {
   if(!isString(url))
     error("Argument 'url' must be string.");
 
@@ -201,12 +196,17 @@ SEXP R_curl_connection(SEXP url, SEXP mode) {
   Rconnection con;
   SEXP rc = PROTECT(R_new_custom_connection(translateCharUTF8(asChar(url)), "r", "curl", &con));
 
+  /*get handle */
+  if(!R_ExternalPtrAddr(ptr))
+    error("handle is dead");
+
   /* setup curl. These are the parts that are recycable. */
   request *req = malloc(sizeof(request));
   req->limit = CURL_MAX_WRITE_SIZE;
   req->buf = malloc(req->limit);
   req->manager = curl_multi_init();
   req->used = 0;
+  req->handle = R_ExternalPtrAddr(ptr);
 
   /* allocate url string */
   req->url = malloc(strlen(translateCharUTF8(asChar(url))) + 1);
