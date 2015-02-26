@@ -8,6 +8,8 @@ curl_perform(url, handle = new_handle())
 }
 \arguments{
 \item{url}{A character string naming the URL of a resource to be downloaded.}
+
+\item{handle}{a curl handle object}
 }
 \description{
 Perform a request

@@ -11,6 +11,8 @@ curl(url = "http://httpbin.org/get", open = "", handle = new_handle())
 
 \item{open}{character string. How to open the connection if it should be opened
 initially. Currently only "r" and "rb" are supported.}
+
+\item{handle}{a curl handle object}
 }
 \description{
 Drop-in replacement for url() that uses libcurl. Supports http(s), ftp(s), file,

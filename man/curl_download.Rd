@@ -17,6 +17,8 @@ Tilde-expansion is performed.}
 
 \item{mode}{A character string specifying the mode with which to write the file. Useful values are \code{"w"},
 \code{"wb"} (binary), \code{"a"} (append) and \code{"ab"}.}
+
+\item{handle}{a curl handle object}
 }
 \description{
 Libcurl implementation of \code{C_download} (the "internal" download method).

@@ -10,6 +10,7 @@
 #' @param quiet If \code{TRUE}, suppress status messages (if any), and the progress bar.
 #' @param mode A character string specifying the mode with which to write the file. Useful values are \code{"w"},
 #' \code{"wb"} (binary), \code{"a"} (append) and \code{"ab"}.
+#' @param handle a curl handle object
 #' @export
 #' @examples \dontrun{download large file
 #' url <- "http://www2.census.gov/acs2011_5yr/pums/csv_pus.zip"
