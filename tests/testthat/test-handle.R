@@ -51,8 +51,9 @@ test_that("Opening and closing a connection",{
   expect_equal(curl_perform("http://httpbin.org/get", handle = h)$status, 200)
 
   # Removing the connection also unlocks the handle
-  con <- curl("http://httpbin.org/cookies", open = "rb", handle = h)
-  expect_error(curl_perform("http://httpbin.org/get", handle = h))
+  con <- curl("http://httpbin.org/cookies", handle = h)
+  open(con)
+  expect_error(curl_perform("http://httpbin.org/headers", handle = h))
   rm(con)
   gc()
   expect_equal(curl_perform("http://httpbin.org/get", handle = h)$status, 200)
