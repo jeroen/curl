@@ -5,13 +5,13 @@ ifeq "${R_ARCH}" "/i386"
 WIN32FIX= -lidn
 endif
 
-PKG_LIBS= -L../windows/libcurl-7.39.0/lib${R_ARCH} -lcurl -lrtmp -lssl -lssh2 -lcrypto -lgdi32 -lcrypt32 -lz -lws2_32 -lgdi32 -lcrypt32 -lwldap32 -lwinmm ${WIN32FIX}
+PKG_LIBS= -L./proxy -L../windows/libcurl-7.39.0/lib${R_ARCH} -lwinhttp -lcurl -lrtmp -lssl -lssh2 -lcrypto -lgdi32 -lcrypt32 -lz -lws2_32 -lgdi32 -lcrypt32 -lwldap32 -lwinmm ${WIN32FIX}
 
-SOURCES = $(wildcard *.c) windows/proxy.c
+SOURCES = $(wildcard *.c) proxy/proxy.c
 
 OBJECTS = $(SOURCES:.c=.o)
 
-all: clean winlibs $(OBJECTS)
+all: clean winlibs winhttp $(OBJECTS)
 
 clean:
 	rm -f $(OBJECTS)
@@ -19,3 +19,10 @@ clean:
 winlibs:
 	"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" "../tools/winlibs.R"
 	grep "^\W*CINIT(" "../windows/libcurl-7.39.0/include/curl/curl.h" > option_table.h
+
+winhttp:
+ifeq "${R_ARCH}" "/i386"
+	dlltool -k --output-lib proxy/libwinhttp.a --def proxy/winhttp.def
+else
+	dlltool -m i386:x86-64 --as-flags --64 --output-lib proxy/libwinhttp.a --def proxy/winhttp.def
+endif
