@@ -128,15 +128,13 @@ SEXP make_rawvec(unsigned char *ptr, size_t size){
 }
 
 SEXP make_namesvec(){
-  SEXP names = PROTECT(allocVector(STRSXP, 8));
+  SEXP names = PROTECT(allocVector(STRSXP, 6));
   SET_STRING_ELT(names, 0, mkChar("url"));
   SET_STRING_ELT(names, 1, mkChar("status_code"));
   SET_STRING_ELT(names, 2, mkChar("headers"));
-  SET_STRING_ELT(names, 3, mkChar("cookies"));
-  SET_STRING_ELT(names, 4, mkChar("content"));
-  SET_STRING_ELT(names, 5, mkChar("modified"));
-  SET_STRING_ELT(names, 6, mkChar("times"));
-  SET_STRING_ELT(names, 7, mkChar("request"));
+  SET_STRING_ELT(names, 3, mkChar("content"));
+  SET_STRING_ELT(names, 4, mkChar("modified"));
+  SET_STRING_ELT(names, 5, mkChar("times"));
   UNPROTECT(1);
   return names;
 }
@@ -178,15 +176,13 @@ SEXP R_curl_perform(SEXP url, SEXP ptr){
   assert(status);
 
   /* create output */
-  SEXP res = PROTECT(allocVector(VECSXP, 8));
+  SEXP res = PROTECT(allocVector(VECSXP, 6));
   SET_VECTOR_ELT(res, 0, make_url(handle));
   SET_VECTOR_ELT(res, 1, make_status(handle));
   SET_VECTOR_ELT(res, 2, make_rawvec(headers.buf, headers.size));
-  SET_VECTOR_ELT(res, 3, make_cookievec(handle));
-  SET_VECTOR_ELT(res, 4, make_rawvec(body.buf, body.size));
-  SET_VECTOR_ELT(res, 5, make_filetime(handle));
-  SET_VECTOR_ELT(res, 6, make_timevec(handle));
-  SET_VECTOR_ELT(res, 7, R_NilValue);
+  SET_VECTOR_ELT(res, 3, make_rawvec(body.buf, body.size));
+  SET_VECTOR_ELT(res, 4, make_filetime(handle));
+  SET_VECTOR_ELT(res, 5, make_timevec(handle));
   setAttrib(res, R_NamesSymbol, make_namesvec());
 
   /* cleanup */
@@ -194,4 +190,13 @@ SEXP R_curl_perform(SEXP url, SEXP ptr){
   free(body.buf);
   free(headers.buf);
   return res;
+}
+
+SEXP R_get_handle_cookies(SEXP ptr){
+  if(!R_ExternalPtrAddr(ptr))
+    error("handle is dead");
+
+  /* get the handle */
+  CURL *handle = R_ExternalPtrAddr(ptr);
+  return make_cookievec(handle);
 }
