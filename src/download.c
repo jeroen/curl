@@ -48,6 +48,7 @@ SEXP R_download_curl(SEXP url, SEXP destfile, SEXP quiet, SEXP mode, SEXP ptr) {
 
   /* update the url */
   curl_easy_setopt(handle, CURLOPT_URL, translateCharUTF8(asChar(url)));
+  curl_easy_setopt(handle, CURLOPT_NOPROGRESS, asLogical(quiet));
 
   /* open file */
   dest = fopen(translateCharUTF8(asChar(destfile)), CHAR(asChar(mode)));
