@@ -15,3 +15,4 @@ License: MIT + file LICENSE
 SystemRequirements: libcurl: libcurl-devel (rpm) or libcurl4-openssl-dev (deb).
 URL: https://github.com/jeroenooms/curl, https://www.opencpu.org/posts/curl-release-0-2/
 BugReports: https://github.com/jeroenooms/curl/issues
+Suggests: testthat, knitr, jsonlite
