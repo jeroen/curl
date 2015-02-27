@@ -18,6 +18,15 @@ static size_t push(void *contents, size_t sz, size_t nmemb, void *ctx) {
   return fwrite(contents, sz, nmemb, ctx);
 }
 
+/* Use to close the file descriptor in case of SIGINT */
+SEXP R_download_cleanup(){
+  if(dest) {
+    fclose(dest);
+    dest = NULL;
+  }
+  return R_NilValue;
+}
+
 SEXP R_download_curl(SEXP url, SEXP destfile, SEXP quiet, SEXP mode, SEXP ptr) {
   if(!isString(url))
     error("Argument 'url' must be string.");
@@ -51,15 +60,13 @@ SEXP R_download_curl(SEXP url, SEXP destfile, SEXP quiet, SEXP mode, SEXP ptr) {
 
   /* perform blocking request */
   CURLcode success = curl_easy_perform(handle);
+
+  /* close file */
+  R_download_cleanup();
+
+  /* check for success */
   assert(success);
   stop_for_status(handle);
   return ScalarInteger(0);
 }
 
-SEXP R_download_cleanup(){
-  if(dest) {
-    fclose(dest);
-    dest = NULL;
-  }
-  return R_NilValue;
-}
