@@ -14,7 +14,7 @@ OBJECTS = $(SOURCES:.c=.o)
 all: clean winlibs winhttp $(OBJECTS)
 
 clean:
-	rm -f $(OBJECTS)
+	rm -f $(OBJECTS) curl.dll
 
 winlibs:
 	"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" "../tools/winlibs.R"
@@ -22,7 +22,7 @@ winlibs:
 
 winhttp:
 ifeq "${R_ARCH}" "/i386"
-	dlltool -k --output-lib libwinhttp.a --def ./winhttp.def
+	dlltool -k --output-lib libwinhttp.a --def winhttp32.def
 else
-	dlltool -m i386:x86-64 --as-flags --64 --output-lib ./libwinhttp.a --def ./winhttp.def
+	dlltool -m i386:x86-64 --as-flags --64 --output-lib libwinhttp.a --def winhttp64.def
 endif
