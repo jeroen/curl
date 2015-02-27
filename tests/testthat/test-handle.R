@@ -43,18 +43,25 @@ test_that("Opening and closing a connection",{
 
   # Opening the connection locks the handle
   open(con)
-  expect_error(curl_perform("http://httpbin.org/get", handle = h))
+
+  # Recent versions of libcurl will raise an error
+  if(compareVersion(curl_version()$version, "7.37") > 0){
+    expect_error(curl_perform("http://httpbin.org/get", handle = h))
+  }
+
   expect_equal(jsonlite::fromJSON(readLines(con))$cookies$foo, "123")
 
   # After closing it is free again
   close(con)
-  expect_equal(curl_perform("http://httpbin.org/get", "r", handle = h)$status, 200)
+  expect_equal(curl_perform("http://httpbin.org/get", handle = h)$status, 200)
 
   # Removing the connection also unlocks the handle
-  con <- curl("http://httpbin.org/cookies", handle = h)
+  con <- curl("http://httpbin.org/cookies", "rb", handle = h)
 
-  #Doesn't trigger error for old libcurl
-  #expect_error(curl_perform("http://httpbin.org/headers", handle = h))
+  # Recent versions of libcurl will raise an error
+  if(compareVersion(curl_version()$version, "7.37") > 0){
+    expect_error(curl_perform("http://httpbin.org/get", handle = h))
+  }
 
   rm(con)
   gc()
