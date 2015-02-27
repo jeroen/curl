@@ -5,6 +5,5 @@
 src/*.o
 src/*.so
 src/*.dll
-src/proxy/*.a
-src/proxy/*.o
+src/*.a
 src/option_table.h

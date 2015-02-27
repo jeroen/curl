@@ -1,6 +1,8 @@
+#include <Rinternals.h>
+
+#ifdef _WIN32
 #include <Windows.h>
 #include <Winhttp.h>
-#include <Rinternals.h>
 #include <stdlib.h>
 
 SEXP proxy_namesvec(){
@@ -40,3 +42,8 @@ SEXP R_proxy_info(){
   UNPROTECT(1);
   return vec;
 }
+#else
+SEXP R_proxy_info(){
+  return R_NilValue;
+}
+#endif
