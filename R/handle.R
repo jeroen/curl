@@ -13,13 +13,6 @@ new_handle <- function(){
   return(h)
 }
 
-set_default_headers <- function(h){
-  handle_setheader(h,
-   "User-Agent" = "r/curl/jeroen",
-   "Accept-Charset" = "utf-8"
-  )
-}
-
 #' @export
 #' @rdname handle
 #' @param ... additional options / headers to be set in the handle.
@@ -82,3 +75,11 @@ get_handle_cookies <- function(handle){
   df$expiration <- as.numeric(df$expiration)
   df
 }
+
+set_default_headers <- function(h){
+  handle_setheader(h,
+                   "User-Agent" = "r/curl/jeroen",
+                   "Accept-Charset" = "utf-8"
+  )
+}
+
