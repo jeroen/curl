@@ -1,0 +1,88 @@
+---
+title: "The curl package: bindings to libcurl"
+author: "Jeroen Ooms"
+date: "`r Sys.Date()`"
+output:
+  knitr:::html_vignette:
+    toc: yes
+vignette: >
+  %\VignetteIndexEntry{The curl package: bindings to libcurl}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+```{r, echo = FALSE, message = FALSE}
+knitr::opts_chunk$set(comment = "#")
+library(curl)
+```
+
+
+The curl package implements flexible, low-level bindings to libcurl for R. The package supports retrieving data in-memory, downloading to disk, or streaming using the R "connection" interface. Some knowledge of curl is required to use this package. If you are looking for a more user-friendly HTTP client, you are better of using  [httr](http://cran.r-project.org/web/packages/httr/vignettes/quickstart.html) which extends curl with HTTP specific tools and logic.
+
+## Download in memory
+
+The curl package implements three ways to retrieve data from a URL. The `curl_perform` function is a synchronous interface which returns a list with content of the server response.
+
+
+```{r}
+req <- curl_perform("http://httpbin.org/get")
+print(req$status_code)
+cat(rawToChar(req$content))
+```
+
+The `curl_perform` is the easiest interface and most powerful for buidling API clients. However because it is fully in-memory, it might not be suitable for downloading really large files. If you are expecting 100G of data, you probably need one of the other interfaces.
+
+## Download to disk
+
+The second method is `curl_download`, which has been designed as a drop-in replacement for `download.file` in r-base. It writes the response straight to disk, which is useful for downloading (large) files.
+
+```{r}
+tmp <- tempfile()
+curl_download("http://httpbin.org/get", tmp)
+cat(readLines(tmp), sep = "\n")
+```
+
+## Streaming
+
+The most flexible interface is the `curl` function, which has been designed as a drop-in replacement for base `url`. It will create a so-called connection object, which allows for incremental (asynchronous) reading of the response.
+
+```{r}
+con <- curl("http://httpbin.org/get")
+open(con)
+
+# Get 5 lines
+out <- readLines(con, n = 5)
+cat(out, sep = "\n")
+
+# Get 5 more lines
+out <- readLines(con, n = 5)
+cat(out, sep = "\n")
+
+# Get remaining lines
+out <- readLines(con)
+close(con)
+cat(out, sep = "\n")
+```
+
+As the example how to use `readLines` on the opened connection object to read `n` lines at a time. Similarly `readBin` is used to read `n` bytes at a time for stream parsing binary data.
+
+## Status codes
+
+It is important to note that `curl_perform` will **not** automatically raise an error if the request was completed but returned a non-200 status code. When using `curl_perform` you need to implement the application logic yourself.
+
+```{r}
+req <- curl_perform("http://httpbin.org/status/418")
+print(req$status_code)
+```
+
+The `curl` and `curl_download` functions on the other hand will automatically raise an error if the HTTP response was non successful, as would the base functions `url` and `download.file` do.
+
+```{r, error=TRUE, purl = FALSE}
+curl_download("http://httpbin.org/status/418", tempfile())
+con <- curl("http://httpbin.org/status/418")
+open(con)
+```
+
+
+## Creating a handle
+
