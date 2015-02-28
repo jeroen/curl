@@ -17,9 +17,14 @@ This function creates a new libcurl easy handle object.
 }
 \examples{
 h <- new_handle()
-req <- curl_perform("http://httpbin.org/cookies/set?foo=123&bar=ftw", handle = h)
+get_handle_cookies(h)
 
-# See http://www.cookiecentral.com/faq/#3.5
+# Server sets cookies
+req <- curl_perform("http://httpbin.org/cookies/set?foo=123&bar=ftw", handle = h)
+get_handle_cookies(h)
+
+# Server deletes cookies
+req <- curl_perform("http://httpbin.org/cookies/delete?foo", handle = h)
 get_handle_cookies(h)
 }
 
