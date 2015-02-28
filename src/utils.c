@@ -7,6 +7,12 @@
 #include <string.h>
 #include <stdlib.h>
 
+CURL *get_handle(SEXP ptr){
+  if(!R_ExternalPtrAddr(ptr))
+    error("handle is dead");
+  return (CURL*) R_ExternalPtrAddr(ptr);
+}
+
 CURL *make_handle(const char *url){
   /* construct new handler */
   CURL *http_handle = curl_easy_init();

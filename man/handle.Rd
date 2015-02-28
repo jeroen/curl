@@ -9,6 +9,9 @@ new_handle()
 
 get_handle_cookies(handle)
 }
+\arguments{
+\item{handle}{a curl handle object}
+}
 \description{
 This function creates a new libcurl easy handle object.
 }

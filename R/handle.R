@@ -12,6 +12,7 @@ new_handle <- function(){
 #' @useDynLib curl R_get_handle_cookies
 #' @export
 #' @rdname handle
+#' @param handle a curl handle object
 #' @examples h <- new_handle()
 #' req <- curl_perform("http://httpbin.org/cookies/set?foo=123&bar=ftw", handle = h)
 #'

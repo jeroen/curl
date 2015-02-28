@@ -40,11 +40,8 @@ SEXP R_download_curl(SEXP url, SEXP destfile, SEXP quiet, SEXP mode, SEXP ptr) {
   if(!isString(mode))
     error("Argument 'mode' must be string.");
 
-  if(!R_ExternalPtrAddr(ptr))
-    error("handle is dead");
-
   /* get the handle */
-  CURL *handle = R_ExternalPtrAddr(ptr);
+  CURL *handle = get_handle(ptr);
 
   /* update the url */
   curl_easy_setopt(handle, CURLOPT_URL, translateCharUTF8(asChar(url)));

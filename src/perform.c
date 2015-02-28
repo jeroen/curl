@@ -143,11 +143,8 @@ SEXP R_curl_perform(SEXP url, SEXP ptr){
   if(!isString(url))
     error("Argument 'url' must be string.");
 
-  if(!R_ExternalPtrAddr(ptr))
-    error("handle is dead");
-
   /* get the handle */
-  CURL *handle = R_ExternalPtrAddr(ptr);
+  CURL *handle = get_handle(ptr);
 
   /* update the url */
   curl_easy_setopt(handle, CURLOPT_URL, translateCharUTF8(asChar(url)));
@@ -193,10 +190,5 @@ SEXP R_curl_perform(SEXP url, SEXP ptr){
 }
 
 SEXP R_get_handle_cookies(SEXP ptr){
-  if(!R_ExternalPtrAddr(ptr))
-    error("handle is dead");
-
-  /* get the handle */
-  CURL *handle = R_ExternalPtrAddr(ptr);
-  return make_cookievec(handle);
+  return make_cookievec(get_handle(ptr));
 }

@@ -189,24 +189,17 @@ SEXP R_curl_connection(SEXP url, SEXP mode, SEXP ptr) {
   if(!isString(mode))
     error("Argument 'mode' must be string.");
 
-  /* maybe not be needed as curl_easy_init triggers a global_init as well  */
-  curl_global_init(CURL_GLOBAL_DEFAULT);
-
   /* create the R connection object */
   Rconnection con;
   SEXP rc = PROTECT(R_new_custom_connection(translateCharUTF8(asChar(url)), "r", "curl", &con));
 
-  /*get handle */
-  if(!R_ExternalPtrAddr(ptr))
-    error("handle is dead");
-
   /* setup curl. These are the parts that are recycable. */
   request *req = malloc(sizeof(request));
+  req->handle = get_handle(ptr);
   req->limit = CURL_MAX_WRITE_SIZE;
   req->buf = malloc(req->limit);
   req->manager = curl_multi_init();
   req->used = 0;
-  req->handle = R_ExternalPtrAddr(ptr);
 
   /* allocate url string */
   req->url = malloc(strlen(translateCharUTF8(asChar(url))) + 1);
