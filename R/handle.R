@@ -1,13 +1,53 @@
 #' Create new libcurl handle
 #'
-#' This function creates a new libcurl easy handle object.
+#' Functions to create and manipualte handle objects. Note that currently
+#' handle_setopt will append options whereas handle_setheader will reset
+#' all of the currently set headers.
 #'
 #' @useDynLib curl R_new_handle
 #' @export
 #' @rdname handle
 new_handle <- function(){
-  .Call(R_new_handle)
+  h <- .Call(R_new_handle)
+  handle_setopt(h,
+    SSL_VERIFYHOST = FALSE,
+    SSL_VERIFYPEER = FALSE,
+    FOLLOWLOCATION = TRUE,
+    CONNECTTIMEOUT_MS = 10*1000
+  )
+
+  handle_setheader(h,
+    "User-Agent" = "r/curl/jeroen",
+    "Accept-Charset" = "utf-8"
+  )
+  return(h)
 }
+
+#' @export
+#' @rdname handle
+#' @param ... additional options / headers to be set in the handle.
+#' @useDynLib curl R_handle_setopt
+handle_setopt <- function(handle, ...){
+  values <- list(...)
+  keys <- as.integer(curl_options()[names(values)])
+  if(anyNA(keys)){
+    stop("Unknown options.")
+  }
+  stopifnot(length(keys) == length(values))
+  .Call(R_handle_setopt, handle, keys, values)
+}
+
+#' @export
+#' @useDynLib curl R_handle_setheader
+#' @rdname handle
+handle_setheader <- function(handle, ...){
+  opts <- list(...)
+  names <- names(opts)
+  values <- as.character(unlist(opts))
+  vec <- paste0(names, ": ", values)
+  .Call(R_handle_setheader, handle, vec)
+}
+
 
 #' @useDynLib curl R_get_handle_cookies
 #' @export

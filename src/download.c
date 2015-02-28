@@ -4,10 +4,7 @@
  * we need to do the cleanup in a separate function.
  */
 #include <curl/curl.h>
-#include <curl/easy.h>
 #include <Rinternals.h>
-#include <string.h>
-#include <stdlib.h>
 #include "utils.h"
 
 FILE *dest;

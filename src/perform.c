@@ -4,7 +4,6 @@
  */
 
 #include <curl/curl.h>
-#include <curl/easy.h>
 #include <Rinternals.h>
 #include <string.h>
 #include <stdlib.h>
@@ -64,30 +63,13 @@ SEXP make_timevec(CURL *handle){
   return result;
 }
 
-
 /* Extract current cookies (state) from handle */
 SEXP make_cookievec(CURL *handle){
   /* linked list of strings */
   struct curl_slist *cookies;
-  struct curl_slist *cursor;
   assert(curl_easy_getinfo(handle, CURLINFO_COOKIELIST, &cookies));
-
-  /* count cookies */
-  int n = 0;
-  cursor = cookies;
-  while (cursor) {
-    n++;
-    cursor = cursor->next;
-  }
-
-  SEXP out = PROTECT(allocVector(STRSXP, n));
-  cursor = cookies;
-  for(int i = 0; i < n; i++){
-    SET_STRING_ELT(out, i, mkChar(cursor->data));
-    cursor = cursor->next;
-  }
+  SEXP out = slist_to_vec(cookies);
   curl_slist_free_all(cookies);
-  UNPROTECT(1);
   return out;
 }
 

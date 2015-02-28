@@ -1,49 +1,10 @@
-/* *
- * This is where the actual HTTP request settings are made.
- */
 #include <curl/curl.h>
-#include <curl/easy.h>
 #include <Rinternals.h>
-#include <string.h>
-#include <stdlib.h>
 
 CURL *get_handle(SEXP ptr){
   if(!R_ExternalPtrAddr(ptr))
     error("handle is dead");
   return (CURL*) R_ExternalPtrAddr(ptr);
-}
-
-CURL *make_handle(const char *url){
-  /* construct new handler */
-  CURL *http_handle = curl_easy_init();
-
-  /* curl configuration options */
-  curl_easy_setopt(http_handle, CURLOPT_URL, url);
-
-  //#ifdef _WIN32
-  curl_easy_setopt(http_handle, CURLOPT_SSL_VERIFYHOST, 0L);
-  curl_easy_setopt(http_handle, CURLOPT_SSL_VERIFYPEER, 0L);
-  //#endif
-
-  curl_easy_setopt(http_handle, CURLOPT_FOLLOWLOCATION, 1L);
-  curl_easy_setopt(http_handle, CURLOPT_CONNECTTIMEOUT_MS, 10*1000);
-
-  /* aka 'CURLOPT_ACCEPT_ENCODING' in recent versions */
-  curl_easy_setopt(http_handle, CURLOPT_ENCODING, "gzip, deflate");
-
-  /* start the cookie engine */
-  curl_easy_setopt(http_handle, CURLOPT_COOKIEFILE, "");
-  curl_easy_setopt(http_handle, CURLOPT_FILETIME, 1);
-
-  /* set http request headers */
-  struct curl_slist *reqheaders = NULL;
-  reqheaders = curl_slist_append(reqheaders, "User-Agent: r/curl/jeroen");
-  reqheaders = curl_slist_append(reqheaders, "Accept-Charset: utf-8");
-  //reqheaders = curl_slist_append(reqheaders, "Cache-Control: no-cache");
-  curl_easy_setopt(http_handle, CURLOPT_HTTPHEADER, reqheaders);
-
-  /*return the handler */
-  return http_handle;
 }
 
 void assert(CURLcode res){
@@ -60,8 +21,40 @@ void stop_for_status(CURL *http_handle){
     error("HTTP error %d.", status);
 }
 
+/* make sure to call curl_slist_free_all on this object */
+struct curl_slist* vec_to_slist(SEXP vec){
+  if(!isString(vec))
+    error("vec is not a character vector");
+  struct curl_slist *slist = NULL;
+  for(int i = 0; i < length(vec); i++){
+    slist = curl_slist_append(slist, CHAR(STRING_ELT(vec, i)));
+  }
+  return slist;
+}
+
+SEXP slist_to_vec(struct curl_slist *slist){
+  /* linked list of strings */
+  struct curl_slist *cursor;
+
+  /* count slist */
+  int n = 0;
+  cursor = slist;
+  while (cursor) {
+    n++;
+    cursor = cursor->next;
+  }
+
+  SEXP out = PROTECT(allocVector(STRSXP, n));
+  cursor = slist;
+  for(int i = 0; i < n; i++){
+    SET_STRING_ELT(out, i, mkChar(cursor->data));
+    cursor = cursor->next;
+  }
+  UNPROTECT(1);
+  return out;
+}
+
 SEXP R_global_cleanup() {
   curl_global_cleanup();
   return R_NilValue;
 }
-

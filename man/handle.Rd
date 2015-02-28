@@ -2,18 +2,28 @@
 % Please edit documentation in R/handle.R
 \name{new_handle}
 \alias{get_handle_cookies}
+\alias{handle_setheader}
+\alias{handle_setopt}
 \alias{new_handle}
 \title{Create new libcurl handle}
 \usage{
 new_handle()
 
+handle_setopt(handle, ...)
+
+handle_setheader(handle, ...)
+
 get_handle_cookies(handle)
 }
 \arguments{
 \item{handle}{a curl handle object}
+
+\item{...}{additional options / headers to be set in the handle.}
 }
 \description{
-This function creates a new libcurl easy handle object.
+Functions to create and manipualte handle objects. Note that currently
+handle_setopt will append options whereas handle_setheader will reset
+all of the currently set headers.
 }
 \examples{
 h <- new_handle()
