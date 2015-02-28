@@ -10,7 +10,7 @@
 new_handle <- function(){
   h <- .Call(R_new_handle)
   set_default_headers(h)
-  return(h)
+  h
 }
 
 #' @export
@@ -78,8 +78,7 @@ get_handle_cookies <- function(handle){
 
 set_default_headers <- function(h){
   handle_setheader(h,
-                   "User-Agent" = "r/curl/jeroen",
-                   "Accept-Charset" = "utf-8"
+   "User-Agent" = "r/curl/jeroen",
+   "Accept-Charset" = "utf-8"
   )
 }
-
