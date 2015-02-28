@@ -8,27 +8,41 @@ void fin_handle(SEXP ptr){
   R_ClearExternalPtr(ptr);
 }
 
-CURL *make_handle(){
-  /* construct new handler */
-  CURL *http_handle = curl_easy_init();
+/* These are defaulst that we always want to set */
+void set_handle_defaults(CURL *handle){
 
-  /* aka 'CURLOPT_ACCEPT_ENCODING' in recent versions */
-  curl_easy_setopt(http_handle, CURLOPT_ENCODING, "gzip, deflate");
+  /* needed to support compressed responses */
+  assert(curl_easy_setopt(handle, CURLOPT_ENCODING, "gzip, deflate"));
+
+  /* do not validate SSL certificates by default */
+  assert(curl_easy_setopt(handle, CURLOPT_SSL_VERIFYHOST, 0));
+  assert(curl_easy_setopt(handle, CURLOPT_SSL_VERIFYPEER, 0));
+
+  /* follow redirect */
+  assert(curl_easy_setopt(handle, CURLOPT_FOLLOWLOCATION, 1));
+
+  /* a sensible timeout (10s) */
+  assert(curl_easy_setopt(handle, CURLOPT_CONNECTTIMEOUT_MS, 10*1000));
 
   /* needed to start the cookie engine */
-  curl_easy_setopt(http_handle, CURLOPT_COOKIEFILE, "");
-  curl_easy_setopt(http_handle, CURLOPT_FILETIME, 1);
-
-  /*return the handler */
-  return http_handle;
+  assert(curl_easy_setopt(handle, CURLOPT_COOKIEFILE, ""));
+  assert(curl_easy_setopt(handle, CURLOPT_FILETIME, 1));
 }
 
 SEXP R_new_handle(){
-  CURL *handle = make_handle();
+  CURL *handle = curl_easy_init();
+  set_handle_defaults(handle);
   SEXP ptr = PROTECT(R_MakeExternalPtr(handle, R_NilValue, R_NilValue));
   R_RegisterCFinalizerEx(ptr, fin_handle, 1);
   setAttrib(ptr, R_ClassSymbol, mkString("curl_handle"));
   UNPROTECT(1);
+  return ptr;
+}
+
+SEXP R_handle_reset(SEXP ptr){
+  CURL *handle = get_handle(ptr);
+  curl_easy_reset(handle);
+  set_handle_defaults(handle);
   return ptr;
 }
 

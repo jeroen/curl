@@ -9,18 +9,15 @@
 #' @rdname handle
 new_handle <- function(){
   h <- .Call(R_new_handle)
-  handle_setopt(h,
-    SSL_VERIFYHOST = FALSE,
-    SSL_VERIFYPEER = FALSE,
-    FOLLOWLOCATION = TRUE,
-    CONNECTTIMEOUT_MS = 10*1000
-  )
-
-  handle_setheader(h,
-    "User-Agent" = "r/curl/jeroen",
-    "Accept-Charset" = "utf-8"
-  )
+  set_default_headers(h)
   return(h)
+}
+
+set_default_headers <- function(h){
+  handle_setheader(h,
+   "User-Agent" = "r/curl/jeroen",
+   "Accept-Charset" = "utf-8"
+  )
 }
 
 #' @export
@@ -35,6 +32,14 @@ handle_setopt <- function(handle, ...){
   }
   stopifnot(length(keys) == length(values))
   .Call(R_handle_setopt, handle, keys, values)
+}
+
+#' @export
+#' @rdname handle
+#' @useDynLib curl R_handle_reset
+handle_reset <- function(handle){
+  .Call(R_handle_reset, handle)
+  set_default_headers(handle)
 }
 
 #' @export

@@ -2,6 +2,7 @@
 % Please edit documentation in R/handle.R
 \name{new_handle}
 \alias{get_handle_cookies}
+\alias{handle_reset}
 \alias{handle_setheader}
 \alias{handle_setopt}
 \alias{new_handle}
@@ -10,6 +11,8 @@
 new_handle()
 
 handle_setopt(handle, ...)
+
+handle_reset(handle)
 
 handle_setheader(handle, ...)
 
