@@ -25,7 +25,7 @@ The curl package implements three ways to retrieve data from a URL. The `curl_pe
 
 
 ```{r}
-req <- curl_perform("http://httpbin.org/get")
+req <- curl_perform("https://httpbin.org/get")
 print(req$status_code)
 cat(rawToChar(req$content))
 ```
@@ -38,7 +38,7 @@ The second method is `curl_download`, which has been designed as a drop-in repla
 
 ```{r}
 tmp <- tempfile()
-curl_download("http://httpbin.org/get", tmp)
+curl_download("https://httpbin.org/get", tmp)
 cat(readLines(tmp), sep = "\n")
 ```
 
@@ -47,7 +47,7 @@ cat(readLines(tmp), sep = "\n")
 The most flexible interface is the `curl` function, which has been designed as a drop-in replacement for base `url`. It will create a so-called connection object, which allows for incremental (asynchronous) reading of the response.
 
 ```{r}
-con <- curl("http://httpbin.org/get")
+con <- curl("https://httpbin.org/get")
 open(con)
 
 # Get 5 lines
@@ -64,22 +64,22 @@ close(con)
 cat(out, sep = "\n")
 ```
 
-As the example how to use `readLines` on the opened connection object to read `n` lines at a time. Similarly `readBin` is used to read `n` bytes at a time for stream parsing binary data.
+The example shows how to use `readLines` on an opened connection to read `n` lines at a time. Similarly `readBin` is used to read `n` bytes at a time for stream parsing binary data.
 
 ## Status codes
 
 It is important to note that `curl_perform` will **not** automatically raise an error if the request was completed but returned a non-200 status code. When using `curl_perform` you need to implement the application logic yourself.
 
 ```{r}
-req <- curl_perform("http://httpbin.org/status/418")
+req <- curl_perform("https://httpbin.org/status/418")
 print(req$status_code)
 ```
 
 The `curl` and `curl_download` functions on the other hand will automatically raise an error if the HTTP response was non successful, as would the base functions `url` and `download.file` do.
 
 ```{r, error=TRUE, purl = FALSE}
-curl_download("http://httpbin.org/status/418", tempfile())
-con <- curl("http://httpbin.org/status/418")
+curl_download("https://httpbin.org/status/418", tempfile())
+con <- curl("https://httpbin.org/status/418")
 open(con)
 ```
 
