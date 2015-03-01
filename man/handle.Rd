@@ -3,6 +3,7 @@
 \name{new_handle}
 \alias{get_handle_cookies}
 \alias{handle_reset}
+\alias{handle_setform}
 \alias{handle_setheader}
 \alias{handle_setopt}
 \alias{new_handle}
@@ -15,6 +16,8 @@ handle_setopt(handle, ...)
 handle_reset(handle)
 
 handle_setheader(handle, ...)
+
+handle_setform(handle, ...)
 
 get_handle_cookies(handle)
 }

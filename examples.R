@@ -24,3 +24,9 @@ output <- fromJSON(rawToChar(req$content))
 
 # Note that httpbin reodered columns alphabetically
 print(output$json)
+
+# Posting multipart
+h <- new_handle()
+handle_setform(h, foo = "blabla", bar = "boeboe")
+req = curl_perform("http://httpbin.org/post", handle = h)
+cat(rawToChar(req$content))

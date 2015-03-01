@@ -90,3 +90,10 @@ SEXP R_handle_setheader(SEXP ptr, SEXP vec){
   assert(curl_easy_setopt(handle, CURLOPT_HTTPHEADER, vec_to_slist(vec)));
   return ScalarLogical(1);
 }
+
+SEXP R_handle_setform(SEXP ptr, SEXP form){
+  if(!isVector(form))
+    error("Form must be a list.");
+  curl_easy_setopt(get_handle(ptr), CURLOPT_HTTPPOST, make_form(form));
+  return ScalarLogical(1);
+}

@@ -46,6 +46,14 @@ handle_setheader <- function(handle, ...){
   .Call(R_handle_setheader, handle, vec)
 }
 
+#' @export
+#' @useDynLib curl R_handle_setform
+#' @rdname handle
+handle_setform <- function(handle, ...){
+  form <- list(...)
+  .Call(R_handle_setform, handle, form)
+}
+
 #' @useDynLib curl R_get_handle_cookies
 #' @export
 #' @rdname handle
