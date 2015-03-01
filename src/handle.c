@@ -76,7 +76,7 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
       }
       assert(curl_easy_setopt(handle, key, CHAR(asChar(val))));
     } else {
-      error("Option %d not supported.", key);
+      error("Option %s (%d) not supported.", optname, key);
     }
   }
 

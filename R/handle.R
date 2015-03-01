@@ -17,7 +17,7 @@ new_handle <- function(){
 #' @useDynLib curl R_handle_setopt
 handle_setopt <- function(handle, ...){
   values <- list(...)
-  keys <- as.integer(curl_options()[names(values)])
+  keys <- as.integer(curl_options()[toupper(names(values))])
   if(anyNA(keys)){
     stop("Unknown options.")
   }
