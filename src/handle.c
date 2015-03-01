@@ -27,6 +27,9 @@ void set_handle_defaults(CURL *handle){
   /* needed to start the cookie engine */
   assert(curl_easy_setopt(handle, CURLOPT_COOKIEFILE, ""));
   assert(curl_easy_setopt(handle, CURLOPT_FILETIME, 1));
+
+  /* a default user agent */
+  assert(curl_easy_setopt(handle, CURLOPT_USERAGENT, "r/curl/jeroen"));
 }
 
 SEXP R_new_handle(){
@@ -60,7 +63,9 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
     int key = INTEGER(keys)[i];
     const char* optname = CHAR(STRING_ELT(optnames, i));
     SEXP val = VECTOR_ELT(values, i);
-    if(key < 10000){
+    if(val == R_NilValue){
+      assert(curl_easy_setopt(handle, key, NULL));
+    } else if(key < 10000){
       if(!isNumeric(val)){
         error("Value for %s (%d) must be numeric.", optname, key);
       }

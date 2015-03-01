@@ -8,9 +8,7 @@
 #' @export
 #' @rdname handle
 new_handle <- function(){
-  h <- .Call(R_new_handle)
-  set_default_headers(h)
-  h
+  .Call(R_new_handle)
 }
 
 #' @export
@@ -32,7 +30,6 @@ handle_setopt <- function(handle, ...){
 #' @useDynLib curl R_handle_reset
 handle_reset <- function(handle){
   .Call(R_handle_reset, handle)
-  set_default_headers(handle)
 }
 
 #' @export
@@ -40,12 +37,14 @@ handle_reset <- function(handle){
 #' @rdname handle
 handle_setheader <- function(handle, ...){
   opts <- list(...)
+  if(!all(vapply(opts, is.character, logical(1)))){
+    stop("All headers must me strings.")
+  }
   names <- names(opts)
   values <- as.character(unlist(opts))
   vec <- paste0(names, ": ", values)
   .Call(R_handle_setheader, handle, vec)
 }
-
 
 #' @useDynLib curl R_get_handle_cookies
 #' @export
@@ -74,11 +73,4 @@ get_handle_cookies <- function(handle){
   df$secure <- as.logical(df$secure)
   df$expiration <- as.numeric(df$expiration)
   df
-}
-
-set_default_headers <- function(h){
-  handle_setheader(h,
-   "User-Agent" = "r/curl/jeroen",
-   "Accept-Charset" = "utf-8"
-  )
 }
