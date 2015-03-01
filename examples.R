@@ -28,6 +28,11 @@ print(output$json)
 # Posting multipart
 library(curl)
 h <- new_handle()
-handle_setform(h, foo = "blabla", bar = charToRaw("boeboe"))
+handle_setform(h,
+  foo = "blabla",
+  bar = charToRaw("boeboe"),
+  description = form_file(system.file("DESCRIPTION"))
+  binary = form_file()
+)
 req = curl_perform("http://httpbin.org/post", handle = h)
 cat(rawToChar(req$content))

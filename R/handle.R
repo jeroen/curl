@@ -51,6 +51,12 @@ handle_setheader <- function(handle, ...){
 #' @rdname handle
 handle_setform <- function(handle, ...){
   form <- list(...)
+  for(i in seq_along(form)){
+    val <- form[[i]];
+    if(!is.character(val) && !is.raw(val) && !is(val, "form_file")){
+      stop("Insupported value type for form field '", names(form[i]), "'.")
+    }
+  }
   .Call(R_handle_setform, handle, form)
 }
 
