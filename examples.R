@@ -26,7 +26,8 @@ output <- fromJSON(rawToChar(req$content))
 print(output$json)
 
 # Posting multipart
+library(curl)
 h <- new_handle()
-handle_setform(h, foo = "blabla", bar = "boeboe")
+handle_setform(h, foo = "blabla", bar = charToRaw("boeboe"))
 req = curl_perform("http://httpbin.org/post", handle = h)
 cat(rawToChar(req$content))

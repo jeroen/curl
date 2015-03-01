@@ -14,7 +14,7 @@ struct curl_httppost* make_form(SEXP form){
     if(isString(val)){
       curl_formadd(&post, &last, CURLFORM_COPYNAME, name, CURLFORM_COPYCONTENTS, translateCharUTF8(asChar(val)), CURLFORM_END);
     } else if(TYPEOF(val) == RAWSXP){
-      curl_formadd(&post, &last, CURLFORM_COPYNAME, name, CURLFORM_COPYCONTENTS, RAW(val), CURLFORM_CONTENTSLENGTH, length(val), CURLFORM_END);
+      curl_formadd(&post, &last, CURLFORM_COPYNAME, name, CURLFORM_COPYCONTENTS, RAW(val), CURLFORM_CONTENTSLENGTH, (long) length(val), CURLFORM_END);
     } else{
       error("form value %s not supported", name);
     }
