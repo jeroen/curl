@@ -31,8 +31,8 @@ h <- new_handle()
 handle_setform(h,
   foo = "blabla",
   bar = charToRaw("boeboe"),
-  description = form_file(system.file("DESCRIPTION"))
-  binary = form_file()
+  description = form_file(system.file("DESCRIPTION")),
+  logo = form_file(file.path(Sys.getenv("R_DOC_DIR"), "html/logo.jpg"), "image/jpeg")
 )
 req = curl_perform("http://httpbin.org/post", handle = h)
 cat(rawToChar(req$content))
