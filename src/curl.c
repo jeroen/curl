@@ -154,10 +154,10 @@ static Rboolean rcurl_open(Rconnection con) {
 
   /* init a multi stack with callback */
   CURL *handle = req->handle;
-  curl_easy_setopt(handle, CURLOPT_URL, req->url);
-  curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, push);
-  curl_easy_setopt(handle, CURLOPT_WRITEDATA, req);
-  curl_multi_add_handle(req->manager, handle);
+  assert(curl_easy_setopt(handle, CURLOPT_URL, req->url));
+  assert(curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, push));
+  assert(curl_easy_setopt(handle, CURLOPT_WRITEDATA, req));
+  massert(curl_multi_add_handle(req->manager, handle));
 
   /* reset the state */
   req->handle = handle;
