@@ -1,7 +1,7 @@
 library(curl)
 h <- new_handle()
 handle_setopt(h, COPYPOSTFIELDS = "mooo\nmooooo");
-handle_setheader(h,
+handle_setheaders(h,
   "Content-Type" = "text/moo",
   "Cache-Control" = "no-cache",
   "User-Agent" = "A cow"
@@ -15,7 +15,7 @@ cat(rawToChar(req$content))
 cat(readLines(curl("http://httpbin.org/post", handle = h)), sep = "\n")
 
 # Reset headers
-handle_setheader(h, "User-Agent" = "Not a cow")
+handle_setheaders(h, "User-Agent" = "Not a cow")
 req <- curl_perform("http://httpbin.org/post", handle = h)
 cat(rawToChar(req$content))
 
@@ -28,7 +28,7 @@ cat(rawToChar(req$content))
 library(jsonlite)
 h <- new_handle()
 handle_setopt(h, COPYPOSTFIELDS = toJSON(mtcars));
-handle_setheader(h, "Content-Type" = "application/json")
+handle_setheaders(h, "Content-Type" = "application/json")
 req <- curl_perform("http://httpbin.org/post", handle = h)
 output <- fromJSON(rawToChar(req$content))
 

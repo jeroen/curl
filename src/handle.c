@@ -97,7 +97,7 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
   return ScalarLogical(1);
 }
 
-SEXP R_handle_setheader(SEXP ptr, SEXP vec){
+SEXP R_handle_setheaders(SEXP ptr, SEXP vec){
   if(!isString(vec))
     error("header vector must be a string.");
   set_headers(get_ref(ptr), vec_to_slist(vec));

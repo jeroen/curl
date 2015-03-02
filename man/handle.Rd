@@ -4,7 +4,7 @@
 \alias{get_handle_cookies}
 \alias{handle_reset}
 \alias{handle_setform}
-\alias{handle_setheader}
+\alias{handle_setheaders}
 \alias{handle_setopt}
 \alias{new_handle}
 \title{Create new libcurl handle}
@@ -15,7 +15,7 @@ handle_setopt(handle, ...)
 
 handle_reset(handle)
 
-handle_setheader(handle, ...)
+handle_setheaders(handle, ...)
 
 handle_setform(handle, ...)
 

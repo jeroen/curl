@@ -33,9 +33,9 @@ handle_reset <- function(handle){
 }
 
 #' @export
-#' @useDynLib curl R_handle_setheader
+#' @useDynLib curl R_handle_setheaders
 #' @rdname handle
-handle_setheader <- function(handle, ...){
+handle_setheaders <- function(handle, ...){
   opts <- list(...)
   if(!all(vapply(opts, is.character, logical(1)))){
     stop("All headers must me strings.")
@@ -43,7 +43,7 @@ handle_setheader <- function(handle, ...){
   names <- names(opts)
   values <- as.character(unlist(opts))
   vec <- paste0(names, ": ", values)
-  .Call(R_handle_setheader, handle, vec)
+  .Call(R_handle_setheaders, handle, vec)
 }
 
 #' @export
