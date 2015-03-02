@@ -1,10 +1,19 @@
 #include <curl/curl.h>
 #include <Rinternals.h>
+#include <stdlib.h>
 #include "utils.h"
 
 void fin_handle(SEXP ptr){
-  if(!R_ExternalPtrAddr(ptr)) return;
-  curl_easy_cleanup(R_ExternalPtrAddr(ptr));
+  reference *ref = (reference*) R_ExternalPtrAddr(ptr);
+  if(ref){
+    if(ref->headers)
+      curl_slist_free_all(ref->headers);
+    if(ref->form)
+      curl_formfree(ref->form);
+    if(ref->handle)
+      curl_easy_cleanup(ref->handle);
+    free(ref);
+  }
   R_ClearExternalPtr(ptr);
 }
 
@@ -33,9 +42,12 @@ void set_handle_defaults(CURL *handle){
 }
 
 SEXP R_new_handle(){
-  CURL *handle = curl_easy_init();
-  set_handle_defaults(handle);
-  SEXP ptr = PROTECT(R_MakeExternalPtr(handle, R_NilValue, R_NilValue));
+  reference *ref = malloc(sizeof(reference));
+  ref->handle = curl_easy_init();
+  ref->headers = NULL;
+  ref->form = NULL;
+  set_handle_defaults(ref->handle);
+  SEXP ptr = PROTECT(R_MakeExternalPtr(ref, R_NilValue, R_NilValue));
   R_RegisterCFinalizerEx(ptr, fin_handle, 1);
   setAttrib(ptr, R_ClassSymbol, mkString("curl_handle"));
   UNPROTECT(1);
@@ -43,10 +55,15 @@ SEXP R_new_handle(){
 }
 
 SEXP R_handle_reset(SEXP ptr){
-  CURL *handle = get_handle(ptr);
-  curl_easy_reset(handle);
-  set_handle_defaults(handle);
-  return ptr;
+  //reset all fields
+  reference *ref = get_ref(ptr);
+  set_form(ref, NULL);
+  set_headers(ref, NULL);
+  curl_easy_reset(ref->handle);
+
+  //restore default settings
+  set_handle_defaults(ref->handle);
+  return ScalarLogical(1);
 }
 
 SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
@@ -79,21 +96,19 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
       error("Option %s (%d) not supported.", optname, key);
     }
   }
-
   return ScalarLogical(1);
 }
 
 SEXP R_handle_setheader(SEXP ptr, SEXP vec){
-  CURL *handle = get_handle(ptr);
   if(!isString(vec))
     error("header vector must be a string.");
-  assert(curl_easy_setopt(handle, CURLOPT_HTTPHEADER, vec_to_slist(vec)));
+  set_headers(get_ref(ptr), vec_to_slist(vec));
   return ScalarLogical(1);
 }
 
 SEXP R_handle_setform(SEXP ptr, SEXP form){
   if(!isVector(form))
     error("Form must be a list.");
-  curl_easy_setopt(get_handle(ptr), CURLOPT_HTTPPOST, make_form(form));
+  set_form(get_ref(ptr), make_form(form));
   return ScalarLogical(1);
 }

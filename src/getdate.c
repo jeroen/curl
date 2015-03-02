@@ -13,4 +13,3 @@ SEXP R_curl_getdate(SEXP datestring) {
 
   return ScalarInteger((int) date);
 }
-

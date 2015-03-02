@@ -1,10 +1,33 @@
 #include <curl/curl.h>
 #include <Rinternals.h>
+#include "utils.h"
 
-CURL *get_handle(SEXP ptr){
+CURL* get_handle(SEXP ptr){
   if(!R_ExternalPtrAddr(ptr))
     error("handle is dead");
-  return (CURL*) R_ExternalPtrAddr(ptr);
+  reference *ref = (reference*) R_ExternalPtrAddr(ptr);
+  return ref->handle;
+}
+
+reference* get_ref(SEXP ptr){
+  if(!R_ExternalPtrAddr(ptr))
+    error("handle is dead");
+  reference *ref = (reference*) R_ExternalPtrAddr(ptr);
+  return ref;
+}
+
+void set_form(reference *ref, struct curl_httppost* newform){
+  if(ref->form)
+    curl_formfree(ref->form);
+  ref->form = newform;
+  assert(curl_easy_setopt(ref->handle, CURLOPT_HTTPPOST, ref->form));
+}
+
+void set_headers(reference *ref, struct curl_slist *newheaders){
+  if(ref->headers)
+    curl_slist_free_all(ref->headers);
+  ref->headers = newheaders;
+  assert(curl_easy_setopt(ref->handle, CURLOPT_HTTPHEADER, ref->headers));
 }
 
 void assert(CURLcode res){
@@ -34,11 +57,10 @@ struct curl_slist* vec_to_slist(SEXP vec){
 
 SEXP slist_to_vec(struct curl_slist *slist){
   /* linked list of strings */
-  struct curl_slist *cursor;
+  struct curl_slist *cursor = slist;
 
   /* count slist */
   int n = 0;
-  cursor = slist;
   while (cursor) {
     n++;
     cursor = cursor->next;

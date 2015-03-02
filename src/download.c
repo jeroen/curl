@@ -64,4 +64,3 @@ SEXP R_download_curl(SEXP url, SEXP destfile, SEXP quiet, SEXP mode, SEXP ptr) {
   stop_for_status(handle);
   return ScalarInteger(0);
 }
-

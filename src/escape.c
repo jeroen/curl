@@ -24,4 +24,3 @@ SEXP R_curl_escape(SEXP url, SEXP unescape) {
   UNPROTECT(1);
   return res;
 }
-
