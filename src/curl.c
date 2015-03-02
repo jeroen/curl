@@ -73,8 +73,8 @@ static size_t push(void *contents, size_t sz, size_t nmemb, void *ctx) {
 static size_t pop(void *target, size_t max, request *req){
   size_t copy_size = min(req->size, max);
   memcpy(target, req->cur, copy_size);
-  req->cur = req->cur + copy_size;
-  req->size = req->size - copy_size;
+  req->cur += copy_size;
+  req->size -= copy_size;
   //Rprintf("Requested %d bytes, popped %d bytes, new size %d bytes.\n", max, copy_size, req->size);
   return copy_size;
 }
