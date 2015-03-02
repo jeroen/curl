@@ -42,10 +42,8 @@ void set_handle_defaults(CURL *handle){
 }
 
 SEXP R_new_handle(){
-  reference *ref = malloc(sizeof(reference));
+  reference *ref = calloc(1, sizeof(reference));
   ref->handle = curl_easy_init();
-  ref->headers = NULL;
-  ref->form = NULL;
   set_handle_defaults(ref->handle);
   SEXP ptr = PROTECT(R_MakeExternalPtr(ref, R_NilValue, R_NilValue));
   R_RegisterCFinalizerEx(ptr, fin_handle, 1);
