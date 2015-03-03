@@ -1,3 +1,9 @@
+0.6
+ - Major rewrite to support configurable and reusable handles
+ - Added new_handle, handle_setopt, handle_setheaders, handle_setform, handle_reset, etc.
+ - Added curl_peform interface for in-memory downloading
+ - Add ie_proxy_settings to get system proxy configuration on windows
+
 0.5
  - Check for CURLM_CALL_MULTI_PERFORM to support very old versions of libcurl
 
