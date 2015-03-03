@@ -3,9 +3,9 @@
 #include <stdlib.h>
 #include "utils.h"
 
-void fin_handle(SEXP ptr){
-  reference *ref = (reference*) R_ExternalPtrAddr(ptr);
-  if(ref){
+void clean_handle(reference *ref){
+  if(ref->garbage && !(ref->inUse)){
+    //Rprintf("cleaning easy handle\n");
     if(ref->headers)
       curl_slist_free_all(ref->headers);
     if(ref->form)
@@ -13,6 +13,15 @@ void fin_handle(SEXP ptr){
     if(ref->handle)
       curl_easy_cleanup(ref->handle);
     free(ref);
+  }
+}
+
+void fin_handle(SEXP ptr){
+  //Rprintf("finalizing handle\n");
+  reference *ref = (reference*) R_ExternalPtrAddr(ptr);
+  if(ref){
+    ref->garbage = 1;
+    clean_handle(ref);
   }
   R_ClearExternalPtr(ptr);
 }

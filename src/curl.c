@@ -39,6 +39,7 @@ typedef struct {
   size_t limit;
   CURLM *manager;
   CURL *handle;
+  reference *ref;
 } request;
 
 /* callback function to store received data */
@@ -131,6 +132,13 @@ static int rcurl_fgetc(Rconnection con) {
 void cleanup(Rconnection con) {
   //Rprintf("Destroying connection.\n");
   request *req = (request*) con->private;
+
+  /* delayed finalizer cleanup */
+  reference *ref = req->ref;
+  (ref->inUse)--;
+  clean_handle(ref);
+
+  /* clean up connection */
   curl_multi_remove_handle(req->manager, req->handle);
   curl_multi_cleanup(req->manager);
   free(req->buf);
@@ -196,6 +204,7 @@ SEXP R_curl_connection(SEXP url, SEXP mode, SEXP ptr) {
   /* setup curl. These are the parts that are recycable. */
   request *req = malloc(sizeof(request));
   req->handle = get_handle(ptr);
+  req->ref = get_ref(ptr);
   req->limit = CURL_MAX_WRITE_SIZE;
   req->buf = malloc(req->limit);
   req->manager = curl_multi_init();
@@ -228,6 +237,10 @@ SEXP R_curl_connection(SEXP url, SEXP mode, SEXP ptr) {
   } else if(strcmp(smode, "")) {
     error("Invalid mode: %s", smode);
   }
+
+  /* lock the handle */
+  (req->ref->inUse)++;
+
   UNPROTECT(1);
   return rc;
 }
