@@ -33,26 +33,26 @@ void set_handle_defaults(CURL *handle){
   assert(curl_easy_setopt(handle, CURLOPT_ENCODING, "gzip, deflate"));
 
   /* do not validate SSL certificates by default */
-  assert(curl_easy_setopt(handle, CURLOPT_SSL_VERIFYHOST, 0));
-  assert(curl_easy_setopt(handle, CURLOPT_SSL_VERIFYPEER, 0));
+  assert(curl_easy_setopt(handle, CURLOPT_SSL_VERIFYHOST, 0L));
+  assert(curl_easy_setopt(handle, CURLOPT_SSL_VERIFYPEER, 0L));
 
   /* follow redirect */
-  assert(curl_easy_setopt(handle, CURLOPT_FOLLOWLOCATION, 1));
-  assert(curl_easy_setopt(handle, CURLOPT_MAXREDIRS, 20));
+  assert(curl_easy_setopt(handle, CURLOPT_FOLLOWLOCATION, 1L));
+  assert(curl_easy_setopt(handle, CURLOPT_MAXREDIRS, 10L));
 
   /* a sensible timeout (10s) */
-  assert(curl_easy_setopt(handle, CURLOPT_CONNECTTIMEOUT_MS, 10*1000));
+  assert(curl_easy_setopt(handle, CURLOPT_CONNECTTIMEOUT_MS, 10000L));
 
   /* needed to start the cookie engine */
   assert(curl_easy_setopt(handle, CURLOPT_COOKIEFILE, ""));
-  assert(curl_easy_setopt(handle, CURLOPT_FILETIME, 1));
+  assert(curl_easy_setopt(handle, CURLOPT_FILETIME, 1L));
 
   /* a default user agent */
   assert(curl_easy_setopt(handle, CURLOPT_USERAGENT, "r/curl/jeroen"));
 
   /* allow all authentication methods */
   assert(curl_easy_setopt(handle, CURLOPT_HTTPAUTH, CURLAUTH_ANY));
-  assert(curl_easy_setopt(handle, CURLOPT_UNRESTRICTED_AUTH, 1));
+  assert(curl_easy_setopt(handle, CURLOPT_UNRESTRICTED_AUTH, 1L));
 }
 
 SEXP R_new_handle(){
@@ -98,7 +98,7 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
       if(!isNumeric(val)){
         error("Value for %s (%d) must be numeric.", optname, key);
       }
-      assert(curl_easy_setopt(handle, key, asInteger(val)));
+      assert(curl_easy_setopt(handle, key, (long) asInteger(val)));
     } else if(key < 20000){
       if(!isString(val)){
         error("Value for %s (%d) must be a string.", optname, key);
