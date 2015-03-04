@@ -11,13 +11,15 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
+
 ```{r, echo = FALSE, message = FALSE}
-knitr::opts_chunk$set(comment = "#")
+knitr::opts_chunk$set(comment = "")
 library(curl)
 ```
 
+# Three Download Interfaces
 
-The curl package implements flexible, low-level bindings to libcurl for R. The package supports retrieving data in-memory, downloading to disk, or streaming using the R "connection" interface. Some knowledge of curl is required to use this package. If you are looking for a more user-friendly HTTP client, you are better of using  [httr](http://cran.r-project.org/web/packages/httr/vignettes/quickstart.html) which extends curl with HTTP specific tools and logic.
+The curl package implements flexible, low-level bindings to libcurl for R. The package supports retrieving data in-memory, downloading to disk, or streaming using the R "connection" interface. Some knowledge of curl is recommended to use this package. If you are looking for a more user-friendly HTTP client, you are better of using  [httr](http://cran.r-project.org/web/packages/httr/vignettes/quickstart.html) which extends curl with HTTP specific tools and logic.
 
 ## Download in memory
 
@@ -30,7 +32,7 @@ print(req$status_code)
 cat(rawToChar(req$content))
 ```
 
-The `curl_perform` is the easiest interface and most powerful for buidling API clients. However because it is fully in-memory, it might not be suitable for downloading really large files. If you are expecting 100G of data, you probably need one of the other interfaces.
+The `curl_perform` interface is the easiest interface and most powerful for buidling API clients. However because it is fully in-memory, it is not suitable for downloading really large files. If you are expecting 100G of data, you probably need one of the other interfaces.
 
 ## Download to disk
 
@@ -50,12 +52,12 @@ The most flexible interface is the `curl` function, which has been designed as a
 con <- curl("https://httpbin.org/get")
 open(con)
 
-# Get 5 lines
-out <- readLines(con, n = 5)
+# Get 3 lines
+out <- readLines(con, n = 3)
 cat(out, sep = "\n")
 
-# Get 5 more lines
-out <- readLines(con, n = 5)
+# Get 3 more lines
+out <- readLines(con, n = 3)
 cat(out, sep = "\n")
 
 # Get remaining lines
@@ -83,6 +85,107 @@ con <- curl("https://httpbin.org/status/418")
 open(con)
 ```
 
+```{r, echo = FALSE, message = FALSE, warning=FALSE}
+gc()
+```
 
-## Creating a handle
+# Handles
 
+By default libcurl uses HTTP GET to issue a request to an HTTP url. To send a customized request, we first need to create and configure a curl handle object that is passed to the specific download interface.  
+
+## Configuring a handle
+
+Creating a new handle is done using `new_handle`. After creating a handle object, we can set the libcurl options and http request headers. 
+
+```{r}
+h <- new_handle()
+handle_setopt(h, COPYPOSTFIELDS = "moo=moomooo");
+handle_setheaders(h,
+  "Content-Type" = "text/moo",
+  "Cache-Control" = "no-cache",
+  "User-Agent" = "A cow"
+)
+```
+
+Use the `curl_options()` function to get a list of the options supported by your version of libcurl. The [libcurl documentation](http://curl.haxx.se/libcurl/c/curl_easy_setopt.html) explains what each option does. Option names are not case sensitive, so this would do the same:
+
+```{r}
+handle_setopt(h, copypostfields = "moo=moomooo");
+```
+
+After the handle has been configured, it can be used with any of the three download interfaces to issue the request. For example `curl_perform` will load store the output of the request in memory:
+
+```{r}
+req <- curl_perform("http://httpbin.org/post", handle = h)
+cat(rawToChar(req$content))
+```
+
+Alternatively we can use `curl()` to read the data of via a connetion interface:
+
+```{r}
+con <- curl("http://httpbin.org/post", handle = h)
+cat(readLines(con), sep = "\n")
+```
+
+Or we can use `curl_download` to write the response to disk:
+
+```{r}
+tmp <- tempfile()
+curl_download("http://httpbin.org/post", destfile = tmp, handle = h)
+cat(readLines(tmp), sep = "\n")
+```
+
+```{r, echo = FALSE, message = FALSE, warning=FALSE}
+gc()
+```
+
+## Cookies
+
+Curl handles automatically keep track of cookies set by the server. At any given point we can use `handle_cookies` to see a list of current cookies in the handle.
+
+```{r}
+# Start with a fresh handle
+h <- new_handle()
+
+# Ask server to set some cookies
+req <- curl_perform("http://httpbin.org/cookies/set?foo=123&bar=ftw", handle = h)
+req <- curl_perform("http://httpbin.org/cookies/set?baz=moooo", handle = h)
+handle_cookies(h)
+
+# Unset a cookie
+req <- curl_perform("http://httpbin.org/cookies/delete?foo", handle = h)
+handle_cookies(h)
+```
+
+The `handle_cookies` function returns a data frame with 7 columns as specified in the [netscape cookie file format](http://www.cookiecentral.com/faq/#3.5).
+
+
+## On re-using handles
+
+As we have already seen, curl allows for reusing a single handle for multiple requests. However it is not always a good idea to do so. The performance overhead of creating and configuring a new handle object is usually negligible. The safest way to issue mutiple requests, either to a single server or multiple servers is by using a separate handle for each request. 
+
+```{r}
+req1 <- curl_perform("https://httpbin.org/get", handle = new_handle())
+req2 <- curl_perform("http://www.r-project.org", handle = new_handle())
+```
+
+As far as I can tell, there are two reasons why you might want to reuse a handle. The first one is that it will automatically keep track of cookies set by the server. So if your host makes use of cookies that might be useful. 
+
+The other reason is to take advantage of HTTP Keep-Alive. Curl automatically maintains a pool of open http connections within each handle. When using a single handle to issue many requests to the same server, curl automatically uses existing connections when possible. This eliminites a little bit of connection overhead, although on a decent network this might not be very significant.
+
+```{r}
+h <- new_handle()
+system.time(curl_perform("http://cran.rstudio.com/web/packages/lattice/DESCRIPTION", handle = h))
+system.time(curl_perform("http://cran.rstudio.com/web/packages/MASS/DESCRIPTION", handle = h))
+```
+
+The argument against reusing handles is because it is very easy to introduce bugs by forgetting to unset or reset a curl option after performing a request. Once you have set an option in the handle, it will stay active until you set it to a new value, or reset the handle.
+
+```{r}
+handle_reset(h)
+```
+
+The `handle_reset` function will reset all curl options and request headers to the default values. It will **not** erease cookies and it will still keep alive the connections. Therefore it is usually good practice to call `handle_reset` after performing a request if you want to reuse the handle for a subsequent request.
+
+
+# Posting forms and data

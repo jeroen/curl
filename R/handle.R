@@ -22,14 +22,14 @@ handle_setopt <- function(handle, ...){
     stop("Unknown options.")
   }
   stopifnot(length(keys) == length(values))
-  .Call(R_handle_setopt, handle, keys, values)
+  invisible(.Call(R_handle_setopt, handle, keys, values))
 }
 
 #' @export
 #' @rdname handle
 #' @useDynLib curl R_handle_reset
 handle_reset <- function(handle){
-  .Call(R_handle_reset, handle)
+  invisible(.Call(R_handle_reset, handle))
 }
 
 #' @export
@@ -43,7 +43,7 @@ handle_setheaders <- function(handle, ...){
   names <- names(opts)
   values <- as.character(unlist(opts))
   vec <- paste0(names, ": ", values)
-  .Call(R_handle_setheaders, handle, vec)
+  invisible(.Call(R_handle_setheaders, handle, vec))
 }
 
 #' @export
@@ -57,7 +57,7 @@ handle_setform <- function(handle, ...){
       stop("Insupported value type for form field '", names(form[i]), "'.")
     }
   }
-  .Call(R_handle_setform, handle, form)
+  invisible(.Call(R_handle_setform, handle, form))
 }
 
 #' @useDynLib curl R_get_handle_cookies
@@ -65,16 +65,16 @@ handle_setform <- function(handle, ...){
 #' @rdname handle
 #' @param handle a curl handle object
 #' @examples h <- new_handle()
-#' get_handle_cookies(h)
+#' handle_cookies(h)
 #'
 #' # Server sets cookies
 #' req <- curl_perform("http://httpbin.org/cookies/set?foo=123&bar=ftw", handle = h)
-#' get_handle_cookies(h)
+#' handle_cookies(h)
 #'
 #' # Server deletes cookies
 #' req <- curl_perform("http://httpbin.org/cookies/delete?foo", handle = h)
-#' get_handle_cookies(h)
-get_handle_cookies <- function(handle){
+#' handle_cookies(h)
+handle_cookies <- function(handle){
   cookies <- .Call(R_get_handle_cookies, handle)
   df <- if(length(cookies)){
     values <- lapply(strsplit(cookies, split="\t"), `[`, 1:7)
@@ -85,6 +85,9 @@ get_handle_cookies <- function(handle){
   names(df) <- c("domain", "flag", "path", "secure", "expiration", "name", "value")
   df$flag <- as.logical(df$flag)
   df$secure <- as.logical(df$secure)
-  df$expiration <- as.numeric(df$expiration)
+  expires <- as.numeric(df$expiration)
+  expires[expires==0] <- Inf
+  class(expires) = c("POSIXct", "POSIXt");
+  df$expiration <- expires
   df
 }
