@@ -38,6 +38,7 @@ void set_handle_defaults(CURL *handle){
 
   /* follow redirect */
   assert(curl_easy_setopt(handle, CURLOPT_FOLLOWLOCATION, 1));
+  assert(curl_easy_setopt(handle, CURLOPT_MAXREDIRS, 20));
 
   /* a sensible timeout (10s) */
   assert(curl_easy_setopt(handle, CURLOPT_CONNECTTIMEOUT_MS, 10*1000));
@@ -51,6 +52,7 @@ void set_handle_defaults(CURL *handle){
 
   /* allow all authentication methods */
   assert(curl_easy_setopt(handle, CURLOPT_HTTPAUTH, CURLAUTH_ANY));
+  assert(curl_easy_setopt(handle, CURLOPT_UNRESTRICTED_AUTH, 1));
 }
 
 SEXP R_new_handle(){
