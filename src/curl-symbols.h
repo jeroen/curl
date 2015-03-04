@@ -380,6 +380,7 @@
 #define CURLOPT_HTTPPOST_FIRST 0x070100 /* Added in 7.1 */
 #define CURLOPT_HTTPPROXYTUNNEL_FIRST 0x070300 /* Added in 7.3 */
 #define CURLOPT_HTTPREQUEST_FIRST 0x070100 /* Added in 7.1 */
+#define CURLOPT_HTTPREQUEST_LAST 0x070f05 /* Last featured in 7.15.5 */
 #define CURLOPT_HTTP_CONTENT_DECODING_FIRST 0x071002 /* Added in 7.16.2 */
 #define CURLOPT_HTTP_TRANSFER_DECODING_FIRST 0x071002 /* Added in 7.16.2 */
 #define CURLOPT_HTTP_VERSION_FIRST 0x070901 /* Added in 7.9.1 */
@@ -483,13 +484,21 @@
 #define CURLOPT_SOCKS5_GSSAPI_NEC_FIRST 0x071304 /* Added in 7.19.4 */
 #define CURLOPT_SOCKS5_GSSAPI_SERVICE_FIRST 0x071304 /* Added in 7.19.4 */
 #define CURLOPT_SOURCE_HOST_FIRST 0x070c01 /* Added in 7.12.1 */
+#define CURLOPT_SOURCE_HOST_LAST 0x070f05 /* Last featured in 7.15.5 */
 #define CURLOPT_SOURCE_PATH_FIRST 0x070c01 /* Added in 7.12.1 */
+#define CURLOPT_SOURCE_PATH_LAST 0x070f05 /* Last featured in 7.15.5 */
 #define CURLOPT_SOURCE_PORT_FIRST 0x070c01 /* Added in 7.12.1 */
+#define CURLOPT_SOURCE_PORT_LAST 0x070f05 /* Last featured in 7.15.5 */
 #define CURLOPT_SOURCE_POSTQUOTE_FIRST 0x070c01 /* Added in 7.12.1 */
+#define CURLOPT_SOURCE_POSTQUOTE_LAST 0x070f05 /* Last featured in 7.15.5 */
 #define CURLOPT_SOURCE_PREQUOTE_FIRST 0x070c01 /* Added in 7.12.1 */
+#define CURLOPT_SOURCE_PREQUOTE_LAST 0x070f05 /* Last featured in 7.15.5 */
 #define CURLOPT_SOURCE_QUOTE_FIRST 0x070d00 /* Added in 7.13.0 */
+#define CURLOPT_SOURCE_QUOTE_LAST 0x070f05 /* Last featured in 7.15.5 */
 #define CURLOPT_SOURCE_URL_FIRST 0x070d00 /* Added in 7.13.0 */
+#define CURLOPT_SOURCE_URL_LAST 0x070f05 /* Last featured in 7.15.5 */
 #define CURLOPT_SOURCE_USERPWD_FIRST 0x070c01 /* Added in 7.12.1 */
+#define CURLOPT_SOURCE_USERPWD_LAST 0x070f05 /* Last featured in 7.15.5 */
 #define CURLOPT_SSH_AUTH_TYPES_FIRST 0x071001 /* Added in 7.16.1 */
 #define CURLOPT_SSH_HOST_PUBLIC_KEY_MD5_FIRST 0x071101 /* Added in 7.17.1 */
 #define CURLOPT_SSH_KEYDATA_FIRST 0x071306 /* Added in 7.19.6 */
@@ -622,6 +631,7 @@
 #define CURLSSLBACKEND_OPENSSL_FIRST 0x072200 /* Added in 7.34.0 */
 #define CURLSSLBACKEND_POLARSSL_FIRST 0x072200 /* Added in 7.34.0 */
 #define CURLSSLBACKEND_QSOSSL_FIRST 0x072200 /* Added in 7.34.0 */
+#define CURLSSLBACKEND_QSOSSL_LAST 0x072601 /* Last featured in 7.38.1 */
 #define CURLSSLBACKEND_SCHANNEL_FIRST 0x072200 /* Added in 7.34.0 */
 #define CURLSSLOPT_ALLOW_BEAST_FIRST 0x071900 /* Added in 7.25.0 */
 #define CURLUSESSL_ALL_FIRST 0x071100 /* Added in 7.17.0 */
@@ -642,7 +652,9 @@
 #define CURL_CSELECT_IN_FIRST 0x071003 /* Added in 7.16.3 */
 #define CURL_CSELECT_OUT_FIRST 0x071003 /* Added in 7.16.3 */
 #define CURL_EASY_NONE_FIRST 0x070e00 /* Added in 7.14.0 */
+#define CURL_EASY_NONE_LAST 0x070f04 /* Last featured in 7.15.4 */
 #define CURL_EASY_TIMEOUT_FIRST 0x070e00 /* Added in 7.14.0 */
+#define CURL_EASY_TIMEOUT_LAST 0x070f04 /* Last featured in 7.15.4 */
 #define CURL_ERROR_SIZE_FIRST 0x070100 /* Added in 7.1 */
 #define CURL_FNMATCHFUNC_FAIL_FIRST 0x071500 /* Added in 7.21.0 */
 #define CURL_FNMATCHFUNC_MATCH_FIRST 0x071500 /* Added in 7.21.0 */
@@ -678,10 +690,15 @@
 #define CURL_LOCK_DATA_SHARE_FIRST 0x070a04 /* Added in 7.10.4 */
 #define CURL_LOCK_DATA_SSL_SESSION_FIRST 0x070a03 /* Added in 7.10.3 */
 #define CURL_LOCK_TYPE_CONNECT_FIRST 0x070a00 /* Added in 7.10 */
+#define CURL_LOCK_TYPE_CONNECT_LAST 0x070a02 /* Last featured in 7.10.2 */
 #define CURL_LOCK_TYPE_COOKIE_FIRST 0x070a00 /* Added in 7.10 */
+#define CURL_LOCK_TYPE_COOKIE_LAST 0x070a02 /* Last featured in 7.10.2 */
 #define CURL_LOCK_TYPE_DNS_FIRST 0x070a00 /* Added in 7.10 */
+#define CURL_LOCK_TYPE_DNS_LAST 0x070a02 /* Last featured in 7.10.2 */
 #define CURL_LOCK_TYPE_NONE_FIRST 0x070a00 /* Added in 7.10 */
+#define CURL_LOCK_TYPE_NONE_LAST 0x070a02 /* Last featured in 7.10.2 */
 #define CURL_LOCK_TYPE_SSL_SESSION_FIRST 0x070a00 /* Added in 7.10 */
+#define CURL_LOCK_TYPE_SSL_SESSION_LAST 0x070a02 /* Last featured in 7.10.2 */
 #define CURL_MAX_HTTP_HEADER_FIRST 0x071307 /* Added in 7.19.7 */
 #define CURL_MAX_WRITE_SIZE_FIRST 0x070907 /* Added in 7.9.7 */
 #define CURL_NETRC_IGNORED_FIRST 0x070908 /* Added in 7.9.8 */
@@ -693,7 +710,9 @@
 #define CURL_POLL_OUT_FIRST 0x070e00 /* Added in 7.14.0 */
 #define CURL_POLL_REMOVE_FIRST 0x070e00 /* Added in 7.14.0 */
 #define CURL_PROGRESS_BAR_FIRST 0x070101 /* Added in 7.1.1 */
+#define CURL_PROGRESS_BAR_LAST 0x070401 /* Last featured in 7.4.1 */
 #define CURL_PROGRESS_STATS_FIRST 0x070101 /* Added in 7.1.1 */
+#define CURL_PROGRESS_STATS_LAST 0x070401 /* Last featured in 7.4.1 */
 #define CURL_READFUNC_ABORT_FIRST 0x070c01 /* Added in 7.12.1 */
 #define CURL_READFUNC_PAUSE_FIRST 0x071200 /* Added in 7.18.0 */
 #define CURL_REDIR_GET_ALL_FIRST 0x071301 /* Added in 7.19.1 */
