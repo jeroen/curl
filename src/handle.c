@@ -48,6 +48,9 @@ void set_handle_defaults(CURL *handle){
 
   /* a default user agent */
   assert(curl_easy_setopt(handle, CURLOPT_USERAGENT, "r/curl/jeroen"));
+
+  /* allow all authentication methods */
+  assert(curl_easy_setopt(handle, CURLOPT_HTTPAUTH, CURLAUTH_ANY));
 }
 
 SEXP R_new_handle(){
