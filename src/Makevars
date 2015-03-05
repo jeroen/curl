@@ -1,7 +1,4 @@
 PKG_LIBS= -lcurl
 
 # Disable for CRAN (gcc specific):
-ifeq "${USER}" "jeroen"
 PKG_CFLAGS= -Wall -pedantic
-endif
-
