@@ -28,7 +28,7 @@ The curl package implements three ways to retrieve data from a URL. The `curl_pe
 
 ```{r}
 req <- curl_perform("https://httpbin.org/get")
-print(req$status_code)
+str(req)
 cat(rawToChar(req$content))
 ```
 
@@ -86,7 +86,7 @@ open(con)
 ```
 
 ```{r, echo = FALSE, message = FALSE, warning=FALSE}
-gc()
+invisible(gc())
 ```
 
 # Handles
@@ -136,7 +136,7 @@ cat(readLines(tmp), sep = "\n")
 ```
 
 ```{r, echo = FALSE, message = FALSE, warning=FALSE}
-gc()
+invisible(gc())
 ```
 
 ## Cookies
