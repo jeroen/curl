@@ -3,8 +3,8 @@ title: "The curl package: bindings to libcurl"
 author: "Jeroen Ooms"
 date: "`r Sys.Date()`"
 output:
-  knitr:::html_vignette:
-    toc: yes
+  html_document:
+    toc: no
 vignette: >
   %\VignetteIndexEntry{The curl package: bindings to libcurl}
   %\VignetteEngine{knitr::rmarkdown}
@@ -185,7 +185,25 @@ The argument against reusing handles is because it is very easy to introduce bug
 handle_reset(h)
 ```
 
-The `handle_reset` function will reset all curl options and request headers to the default values. It will **not** erease cookies and it will still keep alive the connections. Therefore it is usually good practice to call `handle_reset` after performing a request if you want to reuse the handle for a subsequent request.
+The `handle_reset` function will reset all curl options and request headers to the default values. It will **not** erease cookies and it will still keep alive the connections. Therefore it is usually good practice to call `handle_reset` after performing a request if you want to reuse the handle for a subsequent request. Still it is generally safer to create a new fresh handle when possible, rather than recycling old ones.
 
 
-# Posting forms and data
+# Posting forms
+
+The `handle_setform` function is used to perform a `multipart/form-data` HTTP POST request (a.k.a. posting a form). Values can be either strings, raw vectors (for binary data) or files. 
+
+```{r}
+# Posting multipart
+h <- new_handle()
+handle_setform(h,
+  foo = "blabla",
+  bar = charToRaw("boeboe"),
+  description = form_file(system.file("DESCRIPTION")),
+  logo = form_file(file.path(Sys.getenv("R_DOC_DIR"), "html/logo.jpg"), "image/jpeg")
+)
+req <- curl_perform("http://httpbin.org/post", handle = h)
+```
+
+The `form_file` function is used to upload files with the form post. It has two arguments: a file path, and optionally a content-type value. If no content-type is set, curl will guess the content type of the file based on the file extention.
+
+
