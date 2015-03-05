@@ -22,14 +22,16 @@ handle_setopt <- function(handle, ...){
     stop("Unknown options.")
   }
   stopifnot(length(keys) == length(values))
-  invisible(.Call(R_handle_setopt, handle, keys, values))
+  .Call(R_handle_setopt, handle, keys, values)
+  invisible(handle)
 }
 
 #' @export
 #' @rdname handle
 #' @useDynLib curl R_handle_reset
 handle_reset <- function(handle){
-  invisible(.Call(R_handle_reset, handle))
+  .Call(R_handle_reset, handle)
+  invisible(handle)
 }
 
 #' @export
@@ -43,7 +45,8 @@ handle_setheaders <- function(handle, ...){
   names <- names(opts)
   values <- as.character(unlist(opts))
   vec <- paste0(names, ": ", values)
-  invisible(.Call(R_handle_setheaders, handle, vec))
+  .Call(R_handle_setheaders, handle, vec)
+  invisible(handle)
 }
 
 #' @export
@@ -57,7 +60,8 @@ handle_setform <- function(handle, ...){
       stop("Insupported value type for form field '", names(form[i]), "'.")
     }
   }
-  invisible(.Call(R_handle_setform, handle, form))
+  .Call(R_handle_setform, handle, form)
+  invisible(handle)
 }
 
 #' @useDynLib curl R_get_handle_cookies
