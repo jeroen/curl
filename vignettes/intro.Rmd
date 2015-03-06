@@ -1,15 +1,24 @@
 ---
-title: "The curl package: bindings to libcurl"
-author: "Jeroen Ooms"
+title: "The curl package: a modern R interface to libcurl"
 date: "`r Sys.Date()`"
 output:
   html_document:
-    toc: no
+    toc: yes
 vignette: >
   %\VignetteIndexEntry{The curl package: bindings to libcurl}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
+
+## Install curl
+
+This package is under active development and the API subject to change! To grab the latest version:
+
+```{r eval=FALSE}
+library(devtools)
+install_github("jeroenooms/curl")
+```
+
 
 
 ```{r, echo = FALSE, message = FALSE}
@@ -17,11 +26,13 @@ knitr::opts_chunk$set(comment = "")
 library(curl)
 ```
 
-# Three Download Interfaces
+
+
+## Three Download Interfaces
 
 The curl package implements flexible, low-level bindings to libcurl for R. The package supports retrieving data in-memory, downloading to disk, or streaming using the R "connection" interface. Some knowledge of curl is recommended to use this package. If you are looking for a more user-friendly HTTP client, you are better of using  [httr](http://cran.r-project.org/web/packages/httr/vignettes/quickstart.html) which extends curl with HTTP specific tools and logic.
 
-## Download in memory
+### Download in memory
 
 The curl package implements three ways to retrieve data from a URL. The `curl_perform` function is a synchronous interface which returns a list with content of the server response.
 
@@ -34,7 +45,7 @@ cat(rawToChar(req$content))
 
 The `curl_perform` interface is the easiest interface and most powerful for buidling API clients. However because it is fully in-memory, it is not suitable for downloading really large files. If you are expecting 100G of data, you probably need one of the other interfaces.
 
-## Download to disk
+### Download to disk
 
 The second method is `curl_download`, which has been designed as a drop-in replacement for `download.file` in r-base. It writes the response straight to disk, which is useful for downloading (large) files.
 
@@ -44,7 +55,7 @@ curl_download("https://httpbin.org/get", tmp)
 cat(readLines(tmp), sep = "\n")
 ```
 
-## Streaming
+### Streaming
 
 The most flexible interface is the `curl` function, which has been designed as a drop-in replacement for base `url`. It will create a so-called connection object, which allows for incremental (asynchronous) reading of the response.
 
@@ -68,7 +79,7 @@ cat(out, sep = "\n")
 
 The example shows how to use `readLines` on an opened connection to read `n` lines at a time. Similarly `readBin` is used to read `n` bytes at a time for stream parsing binary data.
 
-## Status codes
+### Status codes
 
 It is important to note that `curl_perform` will **not** automatically raise an error if the request was completed but returned a non-200 status code. When using `curl_perform` you need to implement the application logic yourself.
 
@@ -89,11 +100,11 @@ open(con)
 invisible(gc())
 ```
 
-# Handles
+## Handles
 
 By default libcurl uses HTTP GET to issue a request to an HTTP url. To send a customized request, we first need to create and configure a curl handle object that is passed to the specific download interface.  
 
-## Configuring a handle
+### Configuring a handle
 
 Creating a new handle is done using `new_handle`. After creating a handle object, we can set the libcurl options and http request headers. 
 
@@ -139,7 +150,7 @@ cat(readLines(tmp), sep = "\n")
 invisible(gc())
 ```
 
-## Cookies
+### Cookies
 
 Curl handles automatically keep track of cookies set by the server. At any given point we can use `handle_cookies` to see a list of current cookies in the handle.
 
@@ -160,7 +171,7 @@ handle_cookies(h)
 The `handle_cookies` function returns a data frame with 7 columns as specified in the [netscape cookie file format](http://www.cookiecentral.com/faq/#3.5).
 
 
-## On re-using handles
+### On re-using handles
 
 As we have already seen, curl allows for reusing a single handle for multiple requests. However it is not always a good idea to do so. The performance overhead of creating and configuring a new handle object is usually negligible. The safest way to issue mutiple requests, either to a single server or multiple servers is by using a separate handle for each request. 
 
@@ -188,7 +199,7 @@ handle_reset(h)
 The `handle_reset` function will reset all curl options and request headers to the default values. It will **not** erease cookies and it will still keep alive the connections. Therefore it is usually good practice to call `handle_reset` after performing a request if you want to reuse the handle for a subsequent request. Still it is generally safer to create a new fresh handle when possible, rather than recycling old ones.
 
 
-# Posting forms
+### Forms
 
 The `handle_setform` function is used to perform a `multipart/form-data` HTTP POST request (a.k.a. posting a form). Values can be either strings, raw vectors (for binary data) or files. 
 
@@ -206,4 +217,16 @@ req <- curl_perform("http://httpbin.org/post", handle = h)
 
 The `form_file` function is used to upload files with the form post. It has two arguments: a file path, and optionally a content-type value. If no content-type is set, curl will guess the content type of the file based on the file extention.
 
+### Using pipes
+
+All of the `handle_xxx` functions return the handle object so that function calls can be chained using the popular pipe operators:
+
+```{r}
+library(magrittr)
+
+new_handle() %>% 
+  handle_setopt(copypostfields = "moo=moomooo") %>% 
+  handle_setheaders("Content-Type" = "text/moo", "Cache-Control" = "no-cache", "User-Agent" = "A cow") %>%
+  curl_perform("http://httpbin.org/post", handle = .) %$% content %>% rawToChar %>% cat
+```
 
