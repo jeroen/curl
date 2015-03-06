@@ -186,18 +186,17 @@ The other reason is to take advantage of HTTP Keep-Alive. Curl automatically mai
 
 ```{r}
 h <- new_handle()
-system.time(curl_perform("http://cran.rstudio.com/web/packages/lattice/DESCRIPTION", handle = h))
-system.time(curl_perform("http://cran.rstudio.com/web/packages/MASS/DESCRIPTION", handle = h))
+system.time(curl_perform("https://api.github.com/users/ropensci", handle = h))
+system.time(curl_perform("https://api.github.com/users/rstudio", handle = h))
 ```
 
-The argument against reusing handles is because it is very easy to introduce bugs by forgetting to unset or reset a curl option after performing a request. Once you have set an option in the handle, it will stay active until you set it to a new value, or reset the handle.
+The argument against reusing handles is that curl does not clean up the handle after each request. All of the options and internal fields will linger around for all future request until explicitly reset or overwritten. This can sometimes leads to unexpected behavior. 
 
 ```{r}
 handle_reset(h)
 ```
 
-The `handle_reset` function will reset all curl options and request headers to the default values. It will **not** erease cookies and it will still keep alive the connections. Therefore it is usually good practice to call `handle_reset` after performing a request if you want to reuse the handle for a subsequent request. Still it is generally safer to create a new fresh handle when possible, rather than recycling old ones.
-
+The `handle_reset` function will reset all curl options and request headers to the default values. It will **not** erease cookies and it will still keep alive the connections. Therefore it is usually good practice to call `handle_reset` after performing a request if you want to reuse the handle for a subsequent request. Still it is always safer to create a new fresh handle when possible, rather than recycling old ones.
 
 ### Forms
 
