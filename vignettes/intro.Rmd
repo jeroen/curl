@@ -190,7 +190,7 @@ system.time(curl_perform("https://api.github.com/users/ropensci", handle = h))
 system.time(curl_perform("https://api.github.com/users/rstudio", handle = h))
 ```
 
-The argument against reusing handles is that curl does not clean up the handle after each request. All of the options and internal fields will linger around for all future request until explicitly reset or overwritten. This can sometimes leads to unexpected behavior. 
+The argument against reusing handles is that curl does not cleanup the handle after each request. All of the options and internal fields will linger around for all future request until explicitly reset or overwritten. This can sometimes leads to unexpected behavior. 
 
 ```{r}
 handle_reset(h)
