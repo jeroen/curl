@@ -12,7 +12,7 @@ vignette: >
 
 ## Install curl
 
-This package is under active development and the API subject to change! To grab the latest version:
+This package is under active development and the API subject to change! Feedback is very much welcome. To grab the latest version:
 
 ```{r eval=FALSE}
 library(devtools)
@@ -227,6 +227,6 @@ library(magrittr)
 new_handle() %>% 
   handle_setopt(copypostfields = "moo=moomooo") %>% 
   handle_setheaders("Content-Type" = "text/moo", "Cache-Control" = "no-cache", "User-Agent" = "A cow") %>%
-  curl_perform("http://httpbin.org/post", handle = .) %$% content %>% rawToChar %>% cat
+  curl_perform("http://httpbin.org/post", .) %$% content %>% rawToChar %>% cat
 ```
 
