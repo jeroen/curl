@@ -227,6 +227,6 @@ library(magrittr)
 new_handle() %>% 
   handle_setopt(copypostfields = "moo=moomooo") %>% 
   handle_setheaders("Content-Type" = "text/moo", "Cache-Control" = "no-cache", "User-Agent" = "A cow") %>%
-  curl_perform("http://httpbin.org/post", .) %$% content %>% rawToChar %>% cat
+  curl_perform(url = "http://httpbin.org/post") %$% content %>% rawToChar %>% cat
 ```
 
