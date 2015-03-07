@@ -28,6 +28,6 @@ parse_headers <- function(txt, multiple = FALSE){
   if(multiple){
     headers
   } else {
-    tail(headers, 1)
+    headers[[length(headers)]]
   }
 }
