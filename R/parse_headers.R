@@ -6,9 +6,7 @@
 #' for each request. By default it only returns the headers of the final request.
 #'
 #' @param txt raw or character vector with the header data
-#' @param multiple if true, parses multiple sets of headers as separated by
-#' a blank line. These are usually the result of redirects. When set to false
-#' it only parses the headers from the final request.
+#' @param multiple parse multiple sets of headers separated by a blank line. See details.
 #' @export
 #' @examples req <- curl_perform("https://httpbin.org/redirect/3")
 #' parse_headers(req$headers)

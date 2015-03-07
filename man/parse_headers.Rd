@@ -9,9 +9,7 @@ parse_headers(txt, multiple = FALSE)
 \arguments{
 \item{txt}{raw or character vector with the header data}
 
-\item{multiple}{if true, parses multiple sets of headers as separated by
-a blank line. These are usually the result of redirects. When set to false
-it only parses the headers from the final request.}
+\item{multiple}{parse multiple sets of headers separated by a blank line. See details.}
 }
 \description{
 Parse response header data as returned by curl_perform. If the request has
