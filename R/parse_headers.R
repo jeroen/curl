@@ -10,9 +10,9 @@
 #' a blank line. These are usually the result of redirects. When set to false
 #' it only parses the headers from the final request.
 #' @export
-#' @examples out <- curl_perform("https://httpbin.org/redirect/3")
-#' parse_headers(out$headers)
-#' parse_headers(out$headers, multiple = TRUE)
+#' @examples req <- curl_perform("https://httpbin.org/redirect/3")
+#' parse_headers(req$headers)
+#' parse_headers(req$headers, multiple = TRUE)
 parse_headers <- function(txt, multiple = FALSE){
   if(is.raw(txt)){
     txt <- rawToChar(txt)
