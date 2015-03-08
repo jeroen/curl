@@ -20,9 +20,9 @@ curl_options()
 curl_getdate(datestring)
 }
 \arguments{
-\item{url}{a string (typically a url or parameter) to be URL encoded}
+\item{url}{a string (typically a url or parameter) to be URL encoded or decoded}
 
-\item{datestring}{a string with a timestamp}
+\item{datestring}{a string consisting of a timestamp}
 }
 \description{
 Utility functions for working with curl.
