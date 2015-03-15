@@ -1,7 +1,7 @@
 # Function to read a symbol
 library(inline)
 getsymbol <- function(name){
-  cfunction(includes = '#include "/Users/jeroen/Downloads/curl-7.41.0/include/curl/curl.h"', body = paste("return ScalarInteger((int)", name, ");"))()
+  cfunction(includes = '#include <curl/curl.h>', body = paste("return ScalarInteger((int)", name, ");"))()
 }
 
 # The symbols-in-versions file is included with libcurl
