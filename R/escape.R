@@ -6,7 +6,7 @@
 #' @export
 #' @name utility functions
 #' @rdname utilities
-#' @param url a string (typically a url or parameter) to be URL encoded
+#' @param url a string (typically a url or parameter) to be URL encoded or decoded
 #' @examples # Escape strings
 #' out <- curl_escape("foo = bar + 5")
 #' curl_unescape(out)

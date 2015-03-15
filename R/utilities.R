@@ -17,7 +17,7 @@ curl_options <- function(){
 }
 
 #' @rdname utilities
-#' @param datestring a string with a timestamp
+#' @param datestring a string consisting of a timestamp
 #' @useDynLib curl R_curl_getdate
 #' @export
 #' @examples

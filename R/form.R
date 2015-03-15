@@ -5,7 +5,7 @@
 #' @export
 form_file <- function(path, type = NULL){
   path <- normalizePath(path[1], mustWork = TRUE)
-  if(length(type)){
+  if(!is.null(type)){
     stopifnot(is.character(type))
   }
   out <- list(path = path, type = type)
@@ -16,7 +16,7 @@ form_file <- function(path, type = NULL){
 #' @export
 print.form_file <- function(x, ...){
   txt <- paste("Form file:", basename(x$path))
-  if(length(x$type)){
+  if(!is.null(x$type)){
     txt <- paste0(txt, " (", x$type, ")")
   }
   cat(txt, "\n")
