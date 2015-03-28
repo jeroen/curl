@@ -5,7 +5,6 @@
 #' all of the currently set headers.
 #'
 #' @useDynLib curl R_new_handle
-#' @param ... arguments passed to handle_setopt
 #' @export
 #' @rdname handle
 new_handle <- function(...){

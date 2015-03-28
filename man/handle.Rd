@@ -22,11 +22,9 @@ handle_setform(handle, ...)
 handle_cookies(handle)
 }
 \arguments{
-\item{...}{arguments passed to handle_setopt}
+\item{...}{additional options / headers to be set in the handle.}
 
 \item{handle}{a curl handle object}
-
-\item{...}{additional options / headers to be set in the handle.}
 }
 \description{
 Functions to create and manipualte handle objects. Note that currently
