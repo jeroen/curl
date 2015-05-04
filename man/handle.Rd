@@ -9,7 +9,7 @@
 \alias{new_handle}
 \title{Create new libcurl handle}
 \usage{
-new_handle()
+new_handle(...)
 
 handle_setopt(handle, ...)
 
@@ -22,9 +22,9 @@ handle_setform(handle, ...)
 handle_cookies(handle)
 }
 \arguments{
-\item{handle}{a curl handle object}
-
 \item{...}{additional options / headers to be set in the handle.}
+
+\item{handle}{a curl handle object}
 }
 \description{
 Functions to create and manipualte handle objects. Note that currently
