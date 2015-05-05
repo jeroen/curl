@@ -1,22 +1,38 @@
 #' Create new libcurl handle
 #'
-#' Functions to create and manipualte handle objects. Note that currently
-#' handle_setopt will append options whereas handle_setheader will reset
-#' all of the currently set headers.
-#'
 #' @useDynLib curl R_new_handle
+#' @param ... Initial options to set on handle. See \code{\link{handle_setopt}}
+#'   for more details.
+#' @family handle functions
 #' @export
-#' @rdname handle
+#' @return A handle object, an external pointer to the underlying
+#'   Curl handle.
 new_handle <- function(...){
   h <- .Call(R_new_handle)
   handle_setopt(h, ...)
   h
 }
 
-#' @export
-#' @rdname handle
-#' @param ... additional options / headers to be set in the handle.
+#' Set handle options.
+#'
+#' Currently \code{handle_setopt} will append options where
+#' \code{handle_setheader} will first reset all of the currently set headers.
+#'
+#' @family handle functions
+#' @param handle Handle to modify
+#' @param ... additional named options / headers to be set in the handle.
+#'   To send a file, see \code{\link{form_file}}. To list all allowed options,
+#'   see \code{\link{curl_options}}
 #' @useDynLib curl R_handle_setopt
+#' @return All functions modify the handle in place but also return the handle
+#'   so you can create a pipeline of operations.
+#' @export
+#' @examples
+#' h <- new_handle()
+#' handle_setopt(h, customrequest = "PUT")
+#' handle_setform(h, a = "1", b = "2")
+#' r <- curl_perform("http://httpbin.org/put", h)
+#' cat(rawToChar(r$content))
 handle_setopt <- function(handle, ...){
   values <- list(...)
   keys <- as.integer(curl_options()[toupper(names(values))])
@@ -29,20 +45,12 @@ handle_setopt <- function(handle, ...){
 }
 
 #' @export
-#' @rdname handle
-#' @useDynLib curl R_handle_reset
-handle_reset <- function(handle){
-  .Call(R_handle_reset, handle)
-  invisible(handle)
-}
-
-#' @export
 #' @useDynLib curl R_handle_setheaders
-#' @rdname handle
+#' @rdname handle_setopt
 handle_setheaders <- function(handle, ...){
   opts <- list(...)
   if(!all(vapply(opts, is.character, logical(1)))){
-    stop("All headers must me strings.")
+    stop("All headers must be strings.")
   }
   names <- names(opts)
   values <- as.character(unlist(opts))
@@ -53,7 +61,7 @@ handle_setheaders <- function(handle, ...){
 
 #' @export
 #' @useDynLib curl R_handle_setform
-#' @rdname handle
+#' @rdname handle_setopt
 handle_setform <- function(handle, ...){
   form <- list(...)
   for(i in seq_along(form)){
@@ -66,11 +74,14 @@ handle_setform <- function(handle, ...){
   invisible(handle)
 }
 
+#' Extract cookies from a handle
+#'
 #' @useDynLib curl R_get_handle_cookies
 #' @export
-#' @rdname handle
 #' @param handle a curl handle object
-#' @examples h <- new_handle()
+#' @family handle functions
+#' @examples
+#' h <- new_handle()
 #' handle_cookies(h)
 #'
 #' # Server sets cookies
@@ -96,4 +107,13 @@ handle_cookies <- function(handle){
   class(expires) = c("POSIXct", "POSIXt");
   df$expiration <- expires
   df
+
+}
+
+#' @export
+#' @rdname handle_setopt
+#' @useDynLib curl R_handle_reset
+handle_reset <- function(handle){
+  .Call(R_handle_reset, handle)
+  invisible(handle)
 }
