@@ -22,11 +22,11 @@ size_t calcDecodeLength(const char* b64input) { //Calculates the length of a dec
   return (len*3)/4 - padding;
 }
 
-void Base64Decode(char* b64message, uint8_t** buffer, size_t* length) { //Decodes a base64 encoded string
+void Base64Decode(char* b64message, unsigned char** buffer, size_t* length) { //Decodes a base64 encoded string
   BIO *bio, *b64;
 
   int decodeLen = calcDecodeLength(b64message);
-  *buffer = (uint8_t*)malloc(decodeLen);
+  *buffer = (unsigned char*)malloc(decodeLen);
 
   bio = BIO_new_mem_buf(b64message, -1);
   b64 = BIO_new(BIO_f_base64());
@@ -38,7 +38,7 @@ void Base64Decode(char* b64message, uint8_t** buffer, size_t* length) { //Decode
   BIO_free_all(bio);
 }
 
-void Base64Encode(const uint8_t* buffer, size_t length, char** b64text) { //Encodes a binary safe base 64 string
+void Base64Encode(const unsigned char* buffer, size_t length, char** b64text) { //Encodes a binary safe base 64 string
   BIO *bio, *b64;
   BUF_MEM *bufferPtr;
 
