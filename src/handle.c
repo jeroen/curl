@@ -83,10 +83,10 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
   SEXP optnames = getAttrib(values, R_NamesSymbol);
 
   if(!isInteger(keys))
-    error("Argument 'names' must be numeric.");
+    error("keys` must be an integer");
 
   if(!isVector(values))
-    error("Argument 'values' must be List.");
+    error("`values` must be a list");
 
   for(int i = 0; i < length(keys); i++){
     int key = INTEGER(keys)[i];
@@ -95,15 +95,15 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
     if(val == R_NilValue){
       assert(curl_easy_setopt(handle, key, NULL));
     } else if(key < 10000){
-      if(!isNumeric(val)){
-        error("Value for %s (%d) must be numeric.", optname, key);
+      if(!isNumeric(val) || length(val) != 1) {
+        error("Value for option %s (%d) must be a number.", optname, key);
       }
       assert(curl_easy_setopt(handle, key, (long) asInteger(val)));
     } else if(key < 20000){
-      if(!isString(val)){
-        error("Value for %s (%d) must be a string.", optname, key);
+      if(!isString(val) || length(val) != 1){
+        error("Value for option %s (%d) must be a string.", optname, key);
       }
-      assert(curl_easy_setopt(handle, key, CHAR(asChar(val))));
+      assert(curl_easy_setopt(handle, key, CHAR(STRING_ELT(val, 0))));
     } else {
       error("Option %s (%d) not supported.", optname, key);
     }
