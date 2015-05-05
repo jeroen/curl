@@ -5,7 +5,7 @@
 #'
 #' @useDynLib curl R_curl_escape
 #' @export
-#' @param url A string (typically containing a url or parameter) to be
+#' @param url A character vector (typically containing urls or parameters) to be
 #'   encoded/decoded
 #' @examples # Escape strings
 #' out <- curl_escape("foo = bar + 5")

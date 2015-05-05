@@ -10,7 +10,7 @@ curl_escape(url)
 curl_unescape(url)
 }
 \arguments{
-\item{url}{A string (typically containing a url or parameter) to be
+\item{url}{A character vector (typically containing urls or parameters) to be
 encoded/decoded}
 }
 \description{
