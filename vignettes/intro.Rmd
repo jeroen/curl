@@ -34,16 +34,16 @@ The curl package implements flexible, low-level bindings to libcurl for R. The p
 
 ### Download in memory
 
-The curl package implements three ways to retrieve data from a URL. The `curl_perform` function is a synchronous interface which returns a list with content of the server response.
+The curl package implements three ways to retrieve data from a URL. The `curl_fetch_memory` function is a synchronous interface which returns a list with content of the server response.
 
 
 ```{r}
-req <- curl_perform("https://httpbin.org/get")
+req <- curl_fetch_memory("https://httpbin.org/get")
 str(req)
 cat(rawToChar(req$content))
 ```
 
-The `curl_perform` interface is the easiest interface and most powerful for buidling API clients. However because it is fully in-memory, it is not suitable for downloading really large files. If you are expecting 100G of data, you probably need one of the other interfaces.
+The `curl_fetch_memory` interface is the easiest interface and most powerful for buidling API clients. However because it is fully in-memory, it is not suitable for downloading really large files. If you are expecting 100G of data, you probably need one of the other interfaces.
 
 ### Download to disk
 
@@ -81,10 +81,10 @@ The example shows how to use `readLines` on an opened connection to read `n` lin
 
 ### Status codes
 
-It is important to note that `curl_perform` will **not** automatically raise an error if the request was completed but returned a non-200 status code. When using `curl_perform` you need to implement the application logic yourself.
+It is important to note that `curl_fetch_memory` will **not** automatically raise an error if the request was completed but returned a non-200 status code. When using `curl_fetch_memory` you need to implement the application logic yourself.
 
 ```{r}
-req <- curl_perform("https://httpbin.org/status/418")
+req <- curl_fetch_memory("https://httpbin.org/status/418")
 print(req$status_code)
 ```
 
@@ -124,10 +124,10 @@ Use the `curl_options()` function to get a list of the options supported by your
 handle_setopt(h, copypostfields = "moo=moomooo");
 ```
 
-After the handle has been configured, it can be used with any of the three download interfaces to issue the request. For example `curl_perform` will load store the output of the request in memory:
+After the handle has been configured, it can be used with any of the three download interfaces to issue the request. For example `curl_fetch_memory` will load store the output of the request in memory:
 
 ```{r}
-req <- curl_perform("http://httpbin.org/post", handle = h)
+req <- curl_fetch_memory("http://httpbin.org/post", handle = h)
 cat(rawToChar(req$content))
 ```
 
@@ -159,12 +159,12 @@ Curl handles automatically keep track of cookies set by the server. At any given
 h <- new_handle()
 
 # Ask server to set some cookies
-req <- curl_perform("http://httpbin.org/cookies/set?foo=123&bar=ftw", handle = h)
-req <- curl_perform("http://httpbin.org/cookies/set?baz=moooo", handle = h)
+req <- curl_fetch_memory("http://httpbin.org/cookies/set?foo=123&bar=ftw", handle = h)
+req <- curl_fetch_memory("http://httpbin.org/cookies/set?baz=moooo", handle = h)
 handle_cookies(h)
 
 # Unset a cookie
-req <- curl_perform("http://httpbin.org/cookies/delete?foo", handle = h)
+req <- curl_fetch_memory("http://httpbin.org/cookies/delete?foo", handle = h)
 handle_cookies(h)
 ```
 
@@ -176,8 +176,8 @@ The `handle_cookies` function returns a data frame with 7 columns as specified i
 As we have already seen, curl allows for reusing a single handle for multiple requests. However it is not always a good idea to do so. The performance overhead of creating and configuring a new handle object is usually negligible. The safest way to issue mutiple requests, either to a single server or multiple servers is by using a separate handle for each request. 
 
 ```{r}
-req1 <- curl_perform("https://httpbin.org/get", handle = new_handle())
-req2 <- curl_perform("http://www.r-project.org", handle = new_handle())
+req1 <- curl_fetch_memory("https://httpbin.org/get", handle = new_handle())
+req2 <- curl_fetch_memory("http://www.r-project.org", handle = new_handle())
 ```
 
 As far as I can tell, there are two reasons why you might want to reuse a handle. The first one is that it will automatically keep track of cookies set by the server. So if your host makes use of cookies that might be useful. 
@@ -186,8 +186,8 @@ The other reason is to take advantage of HTTP Keep-Alive. Curl automatically mai
 
 ```{r}
 h <- new_handle()
-system.time(curl_perform("https://api.github.com/users/ropensci", handle = h))
-system.time(curl_perform("https://api.github.com/users/rstudio", handle = h))
+system.time(curl_fetch_memory("https://api.github.com/users/ropensci", handle = h))
+system.time(curl_fetch_memory("https://api.github.com/users/rstudio", handle = h))
 ```
 
 The argument against reusing handles is that curl does not cleanup the handle after each request. All of the options and internal fields will linger around for all future request until explicitly reset or overwritten. This can sometimes leads to unexpected behavior. 
@@ -211,7 +211,7 @@ handle_setform(h,
   description = form_file(system.file("DESCRIPTION")),
   logo = form_file(file.path(Sys.getenv("R_DOC_DIR"), "html/logo.jpg"), "image/jpeg")
 )
-req <- curl_perform("http://httpbin.org/post", handle = h)
+req <- curl_fetch_memory("http://httpbin.org/post", handle = h)
 ```
 
 The `form_file` function is used to upload files with the form post. It has two arguments: a file path, and optionally a content-type value. If no content-type is set, curl will guess the content type of the file based on the file extention.
@@ -226,6 +226,6 @@ library(magrittr)
 new_handle() %>% 
   handle_setopt(copypostfields = "moo=moomooo") %>% 
   handle_setheaders("Content-Type" = "text/moo", "Cache-Control" = "no-cache", "User-Agent" = "A cow") %>%
-  curl_perform(url = "http://httpbin.org/post") %$% content %>% rawToChar %>% cat
+  curl_fetch_memory(url = "http://httpbin.org/post") %$% content %>% rawToChar %>% cat
 ```
 
