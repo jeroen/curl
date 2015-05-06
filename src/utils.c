@@ -2,6 +2,14 @@
 #include <Rinternals.h>
 #include "utils.h"
 
+void check_interrupt_fn(void *dummy) {
+  R_CheckUserInterrupt();
+}
+
+int pending_interrupt() {
+  return !(R_ToplevelExec(check_interrupt_fn, NULL));
+}
+
 CURL* get_handle(SEXP ptr){
   if(!R_ExternalPtrAddr(ptr))
     error("handle is dead");

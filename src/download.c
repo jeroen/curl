@@ -7,21 +7,11 @@
 #include <Rinternals.h>
 #include "utils.h"
 
-FILE *dest;
-
 /* callback function to store received data */
-static size_t push(void *contents, size_t sz, size_t nmemb, void *ctx) {
-  R_CheckUserInterrupt();
+static size_t push(void* contents, size_t sz, size_t nmemb, FILE *ctx) {
+  if (pending_interrupt())
+    return 0;
   return fwrite(contents, sz, nmemb, ctx);
-}
-
-/* Use to close the file descriptor in case of SIGINT */
-SEXP R_download_cleanup(){
-  if(dest) {
-    fclose(dest);
-    dest = NULL;
-  }
-  return R_NilValue;
 }
 
 SEXP R_download_curl(SEXP url, SEXP destfile, SEXP quiet, SEXP mode, SEXP ptr) {
@@ -40,27 +30,31 @@ SEXP R_download_curl(SEXP url, SEXP destfile, SEXP quiet, SEXP mode, SEXP ptr) {
   /* get the handle */
   CURL *handle = get_handle(ptr);
 
-  /* update the url */
-  curl_easy_setopt(handle, CURLOPT_URL, translateCharUTF8(asChar(url)));
-  curl_easy_setopt(handle, CURLOPT_NOPROGRESS, asLogical(quiet));
-
   /* open file */
-  dest = fopen(translateCharUTF8(asChar(destfile)), CHAR(asChar(mode)));
+  FILE *dest = fopen(translateCharUTF8(asChar(destfile)), CHAR(asChar(mode)));
   if(!dest)
     error("Failed to open file %s.", translateCharUTF8(asChar(destfile)));
+
+  /* set options */
+  curl_easy_setopt(handle, CURLOPT_URL, translateCharUTF8(asChar(url)));
+  curl_easy_setopt(handle, CURLOPT_NOPROGRESS, asLogical(quiet));
+  curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, push);
   curl_easy_setopt(handle, CURLOPT_WRITEDATA, dest);
 
-  /* Custom writefun only to call R_CheckUserInterrupt */
-  curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, push);
-
   /* perform blocking request */
-  CURLcode success = curl_easy_perform(handle);
+  CURLcode status = curl_easy_perform(handle);
 
-  /* close file */
-  R_download_cleanup();
+  /* cleanup */
+  curl_easy_setopt(handle, CURLOPT_URL, NULL);
+  curl_easy_setopt(handle, CURLOPT_NOPROGRESS, 1);
+  curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, NULL);
+  curl_easy_setopt(handle, CURLOPT_WRITEDATA, NULL);
+  fclose(dest);
+
+  if (status != CURLE_OK)
+    error(curl_easy_strerror(status));
 
   /* check for success */
-  assert(success);
   stop_for_status(handle);
   return ScalarInteger(0);
 }

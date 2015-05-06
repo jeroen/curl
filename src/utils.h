@@ -16,3 +16,4 @@ struct curl_httppost* make_form(SEXP form);
 void set_form(reference *ref, struct curl_httppost* newform);
 void set_headers(reference *ref, struct curl_slist *newheaders);
 void clean_handle(reference *ref);
+int pending_interrupt();

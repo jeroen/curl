@@ -171,6 +171,58 @@ SEXP R_curl_perform(SEXP url, SEXP ptr){
   return res;
 }
 
+SEXP R_curl_fetch_dist(SEXP url, SEXP ptr, SEXP path){
+  if (!isString(url) || length(url) != 1)
+    error("Argument 'url' must be string.");
+  if (!isString(path) || length(path) != 1)
+    error("`path` must be string.");
+
+
+  /* get the handle */
+  CURL *handle = get_handle(ptr);
+
+  /* update the url */
+  curl_easy_setopt(handle, CURLOPT_URL, translateCharUTF8(asChar(url)));
+
+  /* buffer body and headers */
+  memory body = {NULL, 0};
+  memory headers = {NULL, 0};
+  curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, append_buffer);
+  curl_easy_setopt(handle, CURLOPT_HEADERFUNCTION, append_buffer);
+  curl_easy_setopt(handle, CURLOPT_WRITEDATA, &body);
+  curl_easy_setopt(handle, CURLOPT_HEADERDATA, &headers);
+
+  /* perform blocking request */
+  CURLcode status = curl_easy_perform(handle);
+
+  /* Reset for reuse */
+  curl_easy_setopt(handle, CURLOPT_HEADERFUNCTION, NULL);
+  curl_easy_setopt(handle, CURLOPT_HEADERDATA, NULL);
+  curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, NULL);
+  curl_easy_setopt(handle, CURLOPT_WRITEDATA, NULL);
+
+  /* check for errors */
+  if (status != CURLE_OK) {
+    free(body.buf);
+    free(headers.buf);
+    error(curl_easy_strerror(status));
+  }
+
+  /* create output */
+  SEXP res = PROTECT(allocVector(VECSXP, 6));
+  SET_VECTOR_ELT(res, 0, make_url(handle));
+  SET_VECTOR_ELT(res, 1, make_status(handle));
+  SET_VECTOR_ELT(res, 2, make_rawvec(headers.buf, headers.size));
+  SET_VECTOR_ELT(res, 3, make_rawvec(body.buf, body.size));
+  SET_VECTOR_ELT(res, 4, make_filetime(handle));
+  SET_VECTOR_ELT(res, 5, make_timevec(handle));
+  setAttrib(res, R_NamesSymbol, make_namesvec());
+
+  /* cleanup */
+  UNPROTECT(1);
+  return res;
+}
+
 SEXP R_get_handle_cookies(SEXP ptr){
   return make_cookievec(get_handle(ptr));
 }

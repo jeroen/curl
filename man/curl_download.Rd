@@ -10,15 +10,20 @@ curl_download(url, destfile, quiet = TRUE, mode = "wb",
 \arguments{
 \item{url}{A character string naming the URL of a resource to be downloaded.}
 
-\item{destfile}{A character string with the name where the downloaded file is saved.
-Tilde-expansion is performed.}
+\item{destfile}{A character string with the name where the downloaded file
+is saved. Tilde-expansion is performed.}
 
-\item{quiet}{If \code{TRUE}, suppress status messages (if any), and the progress bar.}
+\item{quiet}{If \code{TRUE}, suppress status messages (if any), and the
+progress bar.}
 
-\item{mode}{A character string specifying the mode with which to write the file. Useful values are \code{"w"},
-\code{"wb"} (binary), \code{"a"} (append) and \code{"ab"}.}
+\item{mode}{A character string specifying the mode with which to write the file.
+Useful values are \code{"w"}, \code{"wb"} (binary), \code{"a"} (append)
+and \code{"ab"}.}
 
 \item{handle}{a curl handle object}
+}
+\value{
+Path of downloaded file (invisibly).
 }
 \description{
 Libcurl implementation of \code{C_download} (the "internal" download method).

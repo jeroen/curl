@@ -72,9 +72,11 @@ test_that("Opening and closing a connection",{
 test_that("Downloading to a file", {
   tmp <- tempfile()
   expect_error(curl_download("http://httpbin.org/status/418", tmp, handle = h))
-  expect_equal(curl_download("http://httpbin.org/get?test=boeboe", tmp, handle = h), 0)
+
+  curl_download("http://httpbin.org/get?test=boeboe", tmp, handle = h)
   expect_equal(jsonlite::fromJSON(tmp)$args$test, "boeboe")
-  expect_equal(curl_download("http://httpbin.org/cookies", tmp, handle = h), 0)
+
+  curl_download("http://httpbin.org/cookies", tmp, handle = h)
   expect_equal(jsonlite::fromJSON(tmp)$cookies$foo, "123")
   suppressWarnings(gc())
 })
