@@ -121,8 +121,8 @@ SEXP make_namesvec(){
   return names;
 }
 
-SEXP R_curl_perform(SEXP url, SEXP ptr){
-  if(!isString(url))
+SEXP R_curl_fetch_memory(SEXP url, SEXP ptr){
+  if (!isString(url) || length(url) != 1)
     error("Argument 'url' must be string.");
 
   /* get the handle */
@@ -131,28 +131,29 @@ SEXP R_curl_perform(SEXP url, SEXP ptr){
   /* update the url */
   curl_easy_setopt(handle, CURLOPT_URL, translateCharUTF8(asChar(url)));
 
-  /* buffer body output */
+  /* buffer body and headers */
   memory body = {NULL, 0};
-  curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, append_buffer);
-  curl_easy_setopt(handle, CURLOPT_WRITEDATA, &body);
-
-  /* buffer response headers */
   memory headers = {NULL, 0};
+  curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, append_buffer);
   curl_easy_setopt(handle, CURLOPT_HEADERFUNCTION, append_buffer);
+  curl_easy_setopt(handle, CURLOPT_WRITEDATA, &body);
   curl_easy_setopt(handle, CURLOPT_HEADERDATA, &headers);
 
   /* perform blocking request */
   CURLcode status = curl_easy_perform(handle);
-  if(status == CURLE_FAILED_INIT){
-    Rf_warningcall_immediate(R_NilValue, "Problem using this handle. Maybe it is still in use elsewhere.");
-  }
 
   /* Reset for reuse */
   curl_easy_setopt(handle, CURLOPT_HEADERFUNCTION, NULL);
   curl_easy_setopt(handle, CURLOPT_HEADERDATA, NULL);
+  curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, NULL);
+  curl_easy_setopt(handle, CURLOPT_WRITEDATA, NULL);
 
   /* check for errors */
-  assert(status);
+  if (status != CURLE_OK) {
+    free(body.buf);
+    free(headers.buf);
+    error(curl_easy_strerror(status));
+  }
 
   /* create output */
   SEXP res = PROTECT(allocVector(VECSXP, 6));
@@ -166,8 +167,6 @@ SEXP R_curl_perform(SEXP url, SEXP ptr){
 
   /* cleanup */
   UNPROTECT(1);
-  free(body.buf);
-  free(headers.buf);
   return res;
 }
 
