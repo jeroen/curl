@@ -14,7 +14,7 @@ curl_fetch_disk(url, path, handle = new_handle())
 
 \item{handle}{a curl handle object}
 
-\item{param}{Path to save results}
+\item{path}{Path to save results}
 }
 \description{
 Fetch the contents of a URL.

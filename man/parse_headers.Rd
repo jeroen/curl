@@ -12,13 +12,13 @@ parse_headers(txt, multiple = FALSE)
 \item{multiple}{parse multiple sets of headers separated by a blank line. See details.}
 }
 \description{
-Parse response header data as returned by curl_perform. If the request has
+Parse response header data as returned by curl_fetch If the request has
 followed redirects, the data can contain multiple sets of headers. Therefore
 when multiple = TRUE, the function returns a list with the response headers
 for each request. By default it only returns the headers of the final request.
 }
 \examples{
-req <- curl_perform("https://httpbin.org/redirect/3")
+req <- curl_fetch_memory("https://httpbin.org/redirect/3")
 parse_headers(req$headers)
 parse_headers(req$headers, multiple = TRUE)
 }
