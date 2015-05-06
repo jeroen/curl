@@ -78,6 +78,16 @@ SEXP R_handle_reset(SEXP ptr){
   return ScalarLogical(1);
 }
 
+int opt_is_linked_list(int key) {
+  // These four options need linked lists of various forms - determined
+  // from inspection of curl.h
+  return
+    key == 10023 || // CURLOPT_HTTPHEADER
+    key == 10024 || // CURLOPT_HTTPPOST
+    key == 10070 || // CURLOPT_TELNETOPTIONS
+    key == 10228;   // CURLOPT_PROXYHEADER
+}
+
 SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
   CURL *handle = get_handle(ptr);
   SEXP optnames = getAttrib(values, R_NamesSymbol);
@@ -94,9 +104,7 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
     SEXP val = VECTOR_ELT(values, i);
     if(val == R_NilValue){
       assert(curl_easy_setopt(handle, key, NULL));
-    } else if (key == CURLOPT_HTTPHEADER || key == CURLOPT_HTTPPOST ||
-              key == CURLOPT_TELNETOPTIONS || key == CURLOPT_PROXYHEADER) {
-      // These four options need linked lists of various forms
+    } else if (opt_is_linked_list(key)) {
       error("Option %s (%d) not supported.", optname, key);
     } else if(key < 10000){
       if(!isNumeric(val) || length(val) != 1) {
