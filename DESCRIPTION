@@ -2,9 +2,11 @@ Package: curl
 Type: Package
 Title: A Connection Interface to Libcurl
 Version: 0.5.99
-Date: 2015-02-01
-Author: Jeroen Ooms
-Maintainer: Jeroen Ooms <jeroen.ooms@stat.ucla.edu>
+Authors@R: c(
+    person("Jeroen", "Ooms", , "jeroen.ooms@stat.ucla.edu", role = c("cre", "aut")),
+    person("Hadley", "Wickham", , "hadley@rstudio.com", role = "ctb"),
+    person("RStudio", role = "cph")
+    )
 Description: The curl() function provides a drop-in replacement for base url()
     with better performance and support for http 2.0, ssl (https://, ftps://),
     gzip, deflate and other libcurl goodies. This interface is implemented
