@@ -25,8 +25,3 @@ curl_download <- function(url, destfile, quiet = TRUE, mode = "wb", handle = new
   .Call(R_download_curl, url, destfile, quiet, mode, handle)
   invisible(destfile)
 }
-
-#' @useDynLib curl R_global_cleanup
-.onUnload <- function(lib){
-  .Call(R_global_cleanup);
-}

@@ -83,8 +83,3 @@ SEXP slist_to_vec(struct curl_slist *slist){
   UNPROTECT(1);
   return out;
 }
-
-SEXP R_global_cleanup() {
-  curl_global_cleanup();
-  return R_NilValue;
-}
