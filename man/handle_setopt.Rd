@@ -22,7 +22,8 @@ handle_reset(handle)
 To send a file, see \code{\link{form_file}}. To list all allowed options,
 see \code{\link{curl_options}}}
 
-\item{.list}{A named list of options}
+\item{.list}{A named list of options. This is useful if you've created
+a list of options elsewhere, avoiding the use of \code{do.call()}.}
 }
 \value{
 All functions modify the handle in place but also return the handle
