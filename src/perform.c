@@ -16,8 +16,8 @@ typedef struct {
 } memory;
 
 static size_t append_buffer(void *contents, size_t sz, size_t nmemb, void *ctx) {
-  /* check for sigint */
-  R_CheckUserInterrupt();
+  if (pending_interrupt())
+    return 0;
 
   /* avoids compiler warning on windows */
   size_t realsize = sz * nmemb;
@@ -25,8 +25,8 @@ static size_t append_buffer(void *contents, size_t sz, size_t nmemb, void *ctx) 
 
   /* increase buffer size */
   mem->buf = realloc(mem->buf, mem->size + realsize);
-  if(!mem->buf)
-    error("Out of memory.");
+  if (!mem->buf)
+    return 0;
 
   /* append data and increment size */
   memcpy(&(mem->buf[mem->size]), contents, realsize);
