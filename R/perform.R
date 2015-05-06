@@ -18,7 +18,7 @@ curl_fetch_memory <- function(url, handle = new_handle()){
 }
 
 #' @export
-#' @param param Path to save results
+#' @param path Path to save results
 #' @rdname curl_fetch_memory
 #' @useDynLib curl R_curl_fetch_disk
 curl_fetch_disk <- function(url, path, handle = new_handle()){
