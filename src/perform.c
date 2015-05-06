@@ -164,9 +164,11 @@ SEXP R_curl_fetch_memory(SEXP url, SEXP ptr){
   SET_VECTOR_ELT(res, 4, make_filetime(handle));
   SET_VECTOR_ELT(res, 5, make_timevec(handle));
   setAttrib(res, R_NamesSymbol, make_namesvec());
-
-  /* cleanup */
   UNPROTECT(1);
+
+  free(body.buf);
+  free(headers.buf);
+
   return res;
 }
 
