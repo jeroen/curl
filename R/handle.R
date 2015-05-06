@@ -23,6 +23,8 @@ new_handle <- function(...){
 #' @param ... additional named options / headers to be set in the handle.
 #'   To send a file, see \code{\link{form_file}}. To list all allowed options,
 #'   see \code{\link{curl_options}}
+#' @param .list A named list of options. This is useful if you've created
+#'   a list of options elsewhere, avoiding the use of \code{do.call()}.
 #' @useDynLib curl R_handle_setopt
 #' @return All functions modify the handle in place but also return the handle
 #'   so you can create a pipeline of operations.
@@ -33,8 +35,15 @@ new_handle <- function(...){
 #' handle_setform(h, a = "1", b = "2")
 #' r <- curl_perform("http://httpbin.org/put", h)
 #' cat(rawToChar(r$content))
-handle_setopt <- function(handle, ...){
-  values <- list(...)
+#'
+#' # Or use the list form
+#' h <- new_handle()
+#' handle_setopt(h, .list = list(customrequest = "PUT"))
+#' handle_setform(h, .list = list(a = "1", b = "2"))
+#' r <- curl_perform("http://httpbin.org/put", h)
+#' cat(rawToChar(r$content))
+handle_setopt <- function(handle, ..., .list = list()){
+  values <- c(list(...), .list)
   keys <- as.integer(curl_options()[toupper(names(values))])
   if(anyNA(keys)){
     stop("Unknown options.")
@@ -47,8 +56,8 @@ handle_setopt <- function(handle, ...){
 #' @export
 #' @useDynLib curl R_handle_setheaders
 #' @rdname handle_setopt
-handle_setheaders <- function(handle, ...){
-  opts <- list(...)
+handle_setheaders <- function(handle, ..., .list = list()){
+  opts <- c(list(...), .list)
   if(!all(vapply(opts, is.character, logical(1)))){
     stop("All headers must be strings.")
   }
@@ -62,8 +71,8 @@ handle_setheaders <- function(handle, ...){
 #' @export
 #' @useDynLib curl R_handle_setform
 #' @rdname handle_setopt
-handle_setform <- function(handle, ...){
-  form <- list(...)
+handle_setform <- function(handle, ..., .list = list()){
+  form <- c(list(...), .list)
   for(i in seq_along(form)){
     val <- form[[i]];
     if(!is.character(val) && !is.raw(val) && !is(val, "form_file")){

@@ -7,11 +7,11 @@
 \alias{handle_setopt}
 \title{Set handle options.}
 \usage{
-handle_setopt(handle, ...)
+handle_setopt(handle, ..., .list = list())
 
-handle_setheaders(handle, ...)
+handle_setheaders(handle, ..., .list = list())
 
-handle_setform(handle, ...)
+handle_setform(handle, ..., .list = list())
 
 handle_reset(handle)
 }
@@ -21,6 +21,8 @@ handle_reset(handle)
 \item{...}{additional named options / headers to be set in the handle.
 To send a file, see \code{\link{form_file}}. To list all allowed options,
 see \code{\link{curl_options}}}
+
+\item{.list}{A named list of options}
 }
 \value{
 All functions modify the handle in place but also return the handle
@@ -34,6 +36,13 @@ Currently \code{handle_setopt} will append options where
 h <- new_handle()
 handle_setopt(h, customrequest = "PUT")
 handle_setform(h, a = "1", b = "2")
+r <- curl_perform("http://httpbin.org/put", h)
+cat(rawToChar(r$content))
+
+# Or use the list form
+h <- new_handle()
+handle_setopt(h, .list = list(customrequest = "PUT"))
+handle_setform(h, .list = list(a = "1", b = "2"))
 r <- curl_perform("http://httpbin.org/put", h)
 cat(rawToChar(r$content))
 }
