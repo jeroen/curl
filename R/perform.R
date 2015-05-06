@@ -3,6 +3,7 @@
 #' @param url A character string naming the URL of a resource to be downloaded.
 #' @param handle a curl handle object
 #' @export
+#' @useDynLib curl R_curl_fetch_memory
 #' @examples
 #' # Redirect + cookies
 #' res <- curl_fetch_memory("http://httpbin.org/cookies/set?foo=123&bar=ftw")
