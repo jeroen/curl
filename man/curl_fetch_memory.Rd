@@ -3,7 +3,7 @@
 \name{curl_fetch_memory}
 \alias{curl_fetch_disk}
 \alias{curl_fetch_memory}
-\title{Perform a request}
+\title{Fetch the contents of a URL.}
 \usage{
 curl_fetch_memory(url, handle = new_handle())
 
@@ -13,9 +13,11 @@ curl_fetch_disk(url, path, handle = new_handle())
 \item{url}{A character string naming the URL of a resource to be downloaded.}
 
 \item{handle}{a curl handle object}
+
+\item{param}{Path to save results}
 }
 \description{
-Perform a request
+Fetch the contents of a URL.
 }
 \examples{
 # Redirect + cookies
