@@ -5,7 +5,7 @@ getsymbol <- function(name){
 }
 
 # The symbols-in-versions file is included with libcurl
-txt <- scan("symbols-in-versions", character(), sep = "\n", skip = 13)
+txt <- scan("tools/symbols-in-versions", character(), sep = "\n", skip = 13)
 lines <- strsplit(txt, "[ ]+")
 symbols <- as.data.frame(t(vapply(lines, `[`, character(4), 1:4)), stringsAsFactors = FALSE)
 names(symbols) <- c("name", "introduced", "deprecated", "removed")
@@ -13,12 +13,27 @@ names(symbols) <- c("name", "introduced", "deprecated", "removed")
 # Get current version
 library(curl)
 version <- curl_version()$version
-avail <- (vapply(symbols$introduced, compareVersion, double(1), a = version, USE.NAMES=FALSE) > -1) & is.na(symbols$removed)
+avail <- (vapply(symbols$introduced, compareVersion, double(1), a = version, USE.NAMES = FALSE) > -1) &
+  is.na(symbols$removed)
 
 # Lookup all symbol values from curl.h (takes a while)
-symbols$value <- NA;
+symbols$value <- NA_integer_;
 symbols$value[avail] <- vapply(symbols$name[avail], getsymbol, integer(1))
 
+# Compute type for options
+
+type_name <- c("integer", "string", "function", "number")
+
+type <- cut(symbols$value, c(-Inf, 0, 10000, 20000, 30000, 40000, Inf),
+  labels = FALSE, right = FALSE)
+type[is.na(type)] <- 1
+
+symbols$type <- c("unknown", "integer", "string", "function", "number", "unknown")[type]
+
+option <- grepl("CURLOPT", symbols$name)
+symbols$type[!option] <- NA
+
 # Save as lazy data
-curl_symbols <- symbols
-save(curl_symbols, file = "../R/sysdata.rda")
+curl_symbols <- symbols[order(symbols$name), ]
+
+devtools::use_data(curl_symbols, overwrite = TRUE)
