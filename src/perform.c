@@ -172,7 +172,7 @@ SEXP R_curl_fetch_memory(SEXP url, SEXP ptr){
   return res;
 }
 
-SEXP R_curl_fetch_dist(SEXP url, SEXP ptr, SEXP path){
+SEXP R_curl_fetch_disk(SEXP url, SEXP ptr, SEXP path, SEXP mode){
   if (!isString(url) || length(url) != 1)
     error("Argument 'url' must be string.");
   if (!isString(path) || length(path) != 1)
@@ -186,25 +186,29 @@ SEXP R_curl_fetch_dist(SEXP url, SEXP ptr, SEXP path){
   curl_easy_setopt(handle, CURLOPT_URL, translateCharUTF8(asChar(url)));
 
   /* buffer body and headers */
-  memory body = {NULL, 0};
   memory headers = {NULL, 0};
-  curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, append_buffer);
   curl_easy_setopt(handle, CURLOPT_HEADERFUNCTION, append_buffer);
-  curl_easy_setopt(handle, CURLOPT_WRITEDATA, &body);
   curl_easy_setopt(handle, CURLOPT_HEADERDATA, &headers);
+
+  /* open file */
+  FILE *dest = fopen(translateCharUTF8(asChar(path)), CHAR(asChar(mode)));
+  if(!dest)
+    error("Failed to open file %s.", translateCharUTF8(asChar(path)));
+  curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, push_disk);
+  curl_easy_setopt(handle, CURLOPT_WRITEDATA, dest);
 
   /* perform blocking request */
   CURLcode status = curl_easy_perform(handle);
 
-  /* Reset for reuse */
+  /* cleanup */
   curl_easy_setopt(handle, CURLOPT_HEADERFUNCTION, NULL);
   curl_easy_setopt(handle, CURLOPT_HEADERDATA, NULL);
   curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, NULL);
   curl_easy_setopt(handle, CURLOPT_WRITEDATA, NULL);
+  fclose(dest);
 
   /* check for errors */
   if (status != CURLE_OK) {
-    free(body.buf);
     free(headers.buf);
     error(curl_easy_strerror(status));
   }
@@ -214,7 +218,7 @@ SEXP R_curl_fetch_dist(SEXP url, SEXP ptr, SEXP path){
   SET_VECTOR_ELT(res, 0, make_url(handle));
   SET_VECTOR_ELT(res, 1, make_status(handle));
   SET_VECTOR_ELT(res, 2, make_rawvec(headers.buf, headers.size));
-  SET_VECTOR_ELT(res, 3, make_rawvec(body.buf, body.size));
+  SET_VECTOR_ELT(res, 3, path);
   SET_VECTOR_ELT(res, 4, make_filetime(handle));
   SET_VECTOR_ELT(res, 5, make_timevec(handle));
   setAttrib(res, R_NamesSymbol, make_namesvec());

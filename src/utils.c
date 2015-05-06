@@ -83,3 +83,9 @@ SEXP slist_to_vec(struct curl_slist *slist){
   UNPROTECT(1);
   return out;
 }
+
+size_t push_disk(void* contents, size_t sz, size_t nmemb, FILE *ctx) {
+  if (pending_interrupt())
+    return 0;
+  return fwrite(contents, sz, nmemb, ctx);
+}
