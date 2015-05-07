@@ -3,11 +3,14 @@
 \name{curl_fetch_memory}
 \alias{curl_fetch_disk}
 \alias{curl_fetch_memory}
+\alias{curl_fetch_stream}
 \title{Fetch the contents of a URL.}
 \usage{
 curl_fetch_memory(url, handle = new_handle())
 
 curl_fetch_disk(url, path, handle = new_handle())
+
+curl_fetch_stream(url, fun, handle = new_handle())
 }
 \arguments{
 \item{url}{A character string naming the URL of a resource to be downloaded.}
@@ -15,6 +18,9 @@ curl_fetch_disk(url, path, handle = new_handle())
 \item{handle}{a curl handle object}
 
 \item{path}{Path to save results}
+
+\item{fun}{Callback function. Should have one argument, which will be
+a raw vector.}
 }
 \description{
 Fetch the contents of a URL.
