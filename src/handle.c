@@ -119,6 +119,13 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
       assert(curl_easy_setopt(handle, CURLOPT_READFUNCTION,
         R_curl_callback_read));
       assert(curl_easy_setopt(handle, CURLOPT_READDATA, val));
+    } else if (key == CURLOPT_DEBUGFUNCTION) {
+      if (TYPEOF(val) != CLOSXP)
+        error("Value for option %s (%d) must be a function.", optname, key);
+
+      assert(curl_easy_setopt(handle, CURLOPT_DEBUGFUNCTION,
+        R_curl_callback_debug));
+      assert(curl_easy_setopt(handle, CURLOPT_DEBUGDATA, val));
     } else if (opt_is_linked_list(key)) {
       error("Option %s (%d) not supported.", optname, key);
     } else if(key < 10000){

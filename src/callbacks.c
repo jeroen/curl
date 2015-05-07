@@ -97,5 +97,20 @@ size_t R_curl_callback_read(char *buffer, size_t size, size_t nitems, SEXP fun) 
   return bytes_read;
 }
 
+int R_curl_callback_debug(CURL *handle, curl_infotype type_, char *data,
+                          size_t size, SEXP fun) {
 
+  SEXP type = PROTECT(ScalarInteger(type_));
+
+  SEXP msg = PROTECT(allocVector(STRSXP, 1));
+  SET_STRING_ELT(msg, 0, Rf_mkCharLen(data, size));
+
+  SEXP call = PROTECT(LCONS(fun, LCONS(type, LCONS(msg, R_NilValue))));
+
+  int ok;
+  R_tryEval(call, R_GlobalEnv, &ok);
+
+  UNPROTECT(3);
+  return 0;
+}
 
