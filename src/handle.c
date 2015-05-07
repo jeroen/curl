@@ -2,6 +2,7 @@
 #include <Rinternals.h>
 #include <stdlib.h>
 #include "utils.h"
+#include "callbacks.h"
 
 void clean_handle(reference *ref){
   if(ref->garbage && !(ref->inUse)){
@@ -104,6 +105,13 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
     SEXP val = VECTOR_ELT(values, i);
     if(val == R_NilValue){
       assert(curl_easy_setopt(handle, key, NULL));
+    } else if (key == CURLOPT_PROGRESSFUNCTION) {
+      if (TYPEOF(val) != CLOSXP)
+        error("Value for option %s (%d) must be a function.", optname, key);
+
+      assert(curl_easy_setopt(handle, CURLOPT_PROGRESSFUNCTION,
+        r_curl_callback_progress));
+      assert(curl_easy_setopt(handle, CURLOPT_PROGRESSDATA, val));
     } else if (opt_is_linked_list(key)) {
       error("Option %s (%d) not supported.", optname, key);
     } else if(key < 10000){
@@ -136,3 +144,5 @@ SEXP R_handle_setform(SEXP ptr, SEXP form){
   set_form(get_ref(ptr), make_form(form));
   return ScalarLogical(1);
 }
+
+
