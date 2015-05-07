@@ -7,13 +7,6 @@
 #include <Rinternals.h>
 #include "utils.h"
 
-/* callback function to store received data */
-static size_t push(void* contents, size_t sz, size_t nmemb, FILE *ctx) {
-  if (pending_interrupt())
-    return 0;
-  return fwrite(contents, sz, nmemb, ctx);
-}
-
 SEXP R_download_curl(SEXP url, SEXP destfile, SEXP quiet, SEXP mode, SEXP ptr) {
   if(!isString(url))
     error("Argument 'url' must be string.");
@@ -38,7 +31,7 @@ SEXP R_download_curl(SEXP url, SEXP destfile, SEXP quiet, SEXP mode, SEXP ptr) {
   /* set options */
   curl_easy_setopt(handle, CURLOPT_URL, translateCharUTF8(asChar(url)));
   curl_easy_setopt(handle, CURLOPT_NOPROGRESS, asLogical(quiet));
-  curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, push);
+  curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, push_disk);
   curl_easy_setopt(handle, CURLOPT_WRITEDATA, dest);
 
   /* perform blocking request */

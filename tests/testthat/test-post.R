@@ -9,7 +9,7 @@ test_that("Post text data", {
     "Cache-Control" = "no-cache",
     "User-Agent" = "A cow"
   )
-  req <- curl_perform("http://httpbin.org/post", handle = h)
+  req <- curl_fetch_memory("http://httpbin.org/post", handle = h)
   res <- jsonlite::fromJSON(rawToChar(req$content))
 
   expect_equal(res$data, "moo=moomooo")
@@ -32,7 +32,7 @@ test_that("Post text data", {
 test_that("Change headers", {
   # Default to application/url-encoded
   handle_setheaders(h, "User-Agent" = "Not a cow")
-  req <- curl_perform("http://httpbin.org/post", handle = h)
+  req <- curl_fetch_memory("http://httpbin.org/post", handle = h)
   res <- jsonlite::fromJSON(rawToChar(req$content))
   expect_equal(res$form$moo, "moomooo")
   expect_equal(res$headers$`User-Agent`, "Not a cow")
@@ -43,7 +43,7 @@ test_that("Post JSON data", {
   handle_reset(h)
   handle_setopt(h, COPYPOSTFIELDS = jsonlite::toJSON(mtcars));
   handle_setheaders(h, "Content-Type" = "application/json")
-  req <- curl_perform("http://httpbin.org/post", handle = h)
+  req <- curl_fetch_memory("http://httpbin.org/post", handle = h)
   output <- jsonlite::fromJSON(rawToChar(req$content))
 
   # Note that httpbin reoders columns alphabetically
@@ -60,7 +60,7 @@ test_that("Multipart form post", {
     description = form_file(system.file("DESCRIPTION")),
     logo = form_file(file.path(Sys.getenv("R_DOC_DIR"), "html/logo.jpg"), "image/jpeg")
   )
-  req <- curl_perform("http://httpbin.org/post", handle = h)
+  req <- curl_fetch_memory("http://httpbin.org/post", handle = h)
   res <- jsonlite::fromJSON(rawToChar(req$content))
 
   expect_match(res$headers$`Content-Type`, "multipart")
