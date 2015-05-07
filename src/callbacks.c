@@ -72,3 +72,30 @@ size_t R_curl_callback_write(void *buffer, size_t size, size_t nmemb,
   return ok;
 }
 
+size_t R_curl_callback_read(char *buffer, size_t size, size_t nitems, SEXP fun) {
+  SEXP nbytes = PROTECT(ScalarInteger(size * nitems));
+  SEXP call = PROTECT(LCONS(fun, LCONS(nbytes, R_NilValue)));
+
+  int ok;
+  SEXP res = PROTECT(R_tryEval(call, R_GlobalEnv, &ok));
+
+  if (ok != 0 || pending_interrupt()) {
+    UNPROTECT(3);
+    return CURL_READFUNC_ABORT;
+  }
+
+  if (TYPEOF(res) != RAWSXP) {
+    UNPROTECT(3);
+    Rf_warning("progress callback must return boolean");
+    return CURL_READFUNC_ABORT;
+  }
+
+  size_t bytes_read = length(res);
+  memcpy(buffer, RAW(res), bytes_read);
+
+  UNPROTECT(3);
+  return bytes_read;
+}
+
+
+
