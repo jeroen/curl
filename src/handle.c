@@ -33,10 +33,6 @@ void set_handle_defaults(CURL *handle){
   /* needed to support compressed responses */
   assert(curl_easy_setopt(handle, CURLOPT_ENCODING, "gzip, deflate"));
 
-  /* do not validate SSL certificates by default */
-  assert(curl_easy_setopt(handle, CURLOPT_SSL_VERIFYHOST, 0L));
-  assert(curl_easy_setopt(handle, CURLOPT_SSL_VERIFYPEER, 0L));
-
   /* follow redirect */
   assert(curl_easy_setopt(handle, CURLOPT_FOLLOWLOCATION, 1L));
   assert(curl_easy_setopt(handle, CURLOPT_MAXREDIRS, 10L));
