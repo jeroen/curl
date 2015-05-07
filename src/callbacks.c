@@ -3,44 +3,6 @@
 #include <curl/curl.h>
 #include "utils.h"
 
-int eval_callback_bool(SEXP call) {
-  int ok;
-  SEXP res = PROTECT(R_tryEval(call, R_GlobalEnv, &ok));
-
-  if (ok != 0 || pending_interrupt()) {
-    UNPROTECT(1);
-    return 0;
-  }
-
-  if (TYPEOF(res) != LGLSXP || length(res) != 1) {
-    UNPROTECT(1);
-    Rf_warning("progress callback must return boolean");
-    return 0;
-  }
-
-  UNPROTECT(1);
-  return asLogical(res);
-}
-
-int eval_callback_int(SEXP call) {
-  int ok;
-  SEXP res = PROTECT(R_tryEval(call, R_GlobalEnv, &ok));
-
-  if (ok != 0 || pending_interrupt()) {
-    UNPROTECT(1);
-    return 0;
-  }
-
-  if (TYPEOF(res) != INTSXP || length(res) != 1) {
-    UNPROTECT(1);
-    Rf_warning("progress callback must return integer");
-    return 0;
-  }
-
-  UNPROTECT(1);
-  return asInteger(res);
-}
-
 int R_curl_callback_progress(SEXP fun,
                              double dltotal, double dlnow,
                              double ultotal, double ulnow) {
@@ -54,10 +16,22 @@ int R_curl_callback_progress(SEXP fun,
   REAL(up)[1] = ulnow;
 
   SEXP call = PROTECT(LCONS(fun, LCONS(down, LCONS(up, R_NilValue))));
-  int ok = eval_callback_bool(call);
-  UNPROTECT(3);
+  int ok;
+  SEXP res = PROTECT(R_tryEval(call, R_GlobalEnv, &ok));
 
-  return !ok;
+  if (ok != 0 || pending_interrupt()) {
+    UNPROTECT(4);
+    return 0;
+  }
+
+  if (TYPEOF(res) != LGLSXP || length(res) != 1) {
+    UNPROTECT(4);
+    Rf_warning("progress callback must return boolean");
+    return 0;
+  }
+
+  UNPROTECT(4);
+  return !asLogical(res);
 }
 
 size_t R_curl_callback_write(void *buffer, size_t size, size_t nmemb,
@@ -66,10 +40,22 @@ size_t R_curl_callback_write(void *buffer, size_t size, size_t nmemb,
   memcpy(RAW(data), buffer, size * nmemb);
 
   SEXP call = PROTECT(LCONS(fun, LCONS(data, R_NilValue)));
-  int ok = eval_callback_int(call);
-  UNPROTECT(2);
+  int ok;
+  SEXP res = PROTECT(R_tryEval(call, R_GlobalEnv, &ok));
 
-  return ok;
+  if (ok != 0 || pending_interrupt()) {
+    UNPROTECT(3);
+    return 0;
+  }
+
+  if (TYPEOF(res) != INTSXP || length(res) != 1) {
+    UNPROTECT(3);
+    Rf_warning("progress callback must return integer");
+    return 0;
+  }
+
+  UNPROTECT(3);
+  return asInteger(res);
 }
 
 size_t R_curl_callback_read(char *buffer, size_t size, size_t nitems, SEXP fun) {
@@ -107,10 +93,10 @@ int R_curl_callback_debug(CURL *handle, curl_infotype type_, char *data,
 
   SEXP call = PROTECT(LCONS(fun, LCONS(type, LCONS(msg, R_NilValue))));
 
-  int ok;
-  R_tryEval(call, R_GlobalEnv, &ok);
+  R_tryEval(call, R_GlobalEnv, NULL);
 
   UNPROTECT(3);
+  // Debug function must always return 0
   return 0;
 }
 
