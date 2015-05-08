@@ -30,6 +30,12 @@ void fin_handle(SEXP ptr){
 /* These are defaulst that we always want to set */
 void set_handle_defaults(CURL *handle){
 
+  /* temporary workaround for missing CA bundle on windows */
+  #ifdef _WIN32
+  curl_easy_setopt(http_handle, CURLOPT_SSL_VERIFYHOST, 0L);
+  curl_easy_setopt(http_handle, CURLOPT_SSL_VERIFYPEER, 0L);
+  #endif
+
   /* needed to support compressed responses */
   assert(curl_easy_setopt(handle, CURLOPT_ENCODING, "gzip, deflate"));
 
