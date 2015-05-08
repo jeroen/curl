@@ -247,7 +247,7 @@ SEXP R_curl_fetch_stream(SEXP url, SEXP ptr, SEXP fun){
   curl_easy_setopt(handle, CURLOPT_HEADERDATA, &headers);
 
   /* use callback function for writing */
-  curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, R_curl_callback_write);
+  curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, (curl_write_callback) R_curl_callback_write);
   curl_easy_setopt(handle, CURLOPT_WRITEDATA, fun);
 
   /* perform blocking request */
