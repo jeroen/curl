@@ -4,6 +4,17 @@
 #include "utils.h"
 #include "callbacks.h"
 
+#ifndef MAX_PATH
+#define MAX_PATH 1024
+#endif
+
+char CA_BUNDLE[MAX_PATH];
+
+SEXP R_set_bundle(SEXP path){
+  strcpy(CA_BUNDLE, CHAR(asChar(path)));
+  return mkString(CA_BUNDLE);
+}
+
 void clean_handle(reference *ref){
   if(ref->garbage && !(ref->inUse)){
     //Rprintf("cleaning easy handle\n");
@@ -30,10 +41,16 @@ void fin_handle(SEXP ptr){
 /* These are defaulst that we always want to set */
 void set_handle_defaults(CURL *handle){
 
-  /* temporary workaround for missing CA bundle on windows */
   #ifdef _WIN32
-  curl_easy_setopt(handle, CURLOPT_SSL_VERIFYHOST, 0L);
-  curl_easy_setopt(handle, CURLOPT_SSL_VERIFYPEER, 0L);
+  if(CA_BUNDLE != NULL && strlen(CA_BUNDLE)){
+    /* on windows a cert bundle is included with R version 3.2.0 */
+    curl_easy_setopt(handle, CURLOPT_CAINFO, CA_BUNDLE);
+    //Rprintf("Using bundle %s\n", CA_BUNDLE);
+  } else {
+    /* disable cert validation for older versions of R */
+    curl_easy_setopt(handle, CURLOPT_SSL_VERIFYHOST, 0L);
+    curl_easy_setopt(handle, CURLOPT_SSL_VERIFYPEER, 0L);
+  }
   #endif
 
   /* needed to support compressed responses */

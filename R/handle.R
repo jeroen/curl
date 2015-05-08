@@ -9,17 +9,6 @@
 #'   Curl handle.
 new_handle <- function(...){
   h <- .Call(R_new_handle)
-
-  # Enable SSL on Windows if CA bundle is available
-  if(is_windows){
-    bundle <- Sys.getenv("CURL_CA_BUNDLE", file.path(Sys.getenv("R_Home"), "etc/curl-ca-bundle.crt"))
-    if(file.exists(bundle)){
-      handle_setopt(h, ssl_verifyhost = 2L, ssl_verifypeer = 1L, cainfo = bundle)
-    } else {
-      warning("No CA bundle available. SSL validation disabled.")
-    }
-  }
-
   handle_setopt(h, ...)
   h
 }
