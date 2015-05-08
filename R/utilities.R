@@ -52,3 +52,5 @@ curl_getdate <- function(datestring){
   class(out) <- c("POSIXct", "POSIXt")
   out
 }
+
+is_windows <- grepl("mingw", R.Version()$platform)
