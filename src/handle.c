@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "utils.h"
 #include "callbacks.h"
+#include "string.h"
 
 #ifndef MAX_PATH
 #define MAX_PATH 1024
