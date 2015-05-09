@@ -7,7 +7,7 @@ endif
 
 PKG_LIBS= -L../windows/libcurl-7.39.0/lib${R_ARCH} -L. -lwinhttp -lcurl -lrtmp -lssl -lssh2 -lcrypto -lgdi32 -lcrypt32 -lz -lws2_32 -lgdi32 -lcrypt32 -lwldap32 -lwinmm ${WIN32FIX}
 
-all: clean winlibs winhttp $(OBJECTS)
+all: clean winlibs winhttp
 
 clean:
 	rm -f $(OBJECTS) curl.dll
