@@ -225,6 +225,7 @@ SEXP R_curl_fetch_disk(SEXP url, SEXP ptr, SEXP path, SEXP mode){
   setAttrib(res, R_NamesSymbol, make_namesvec());
 
   /* cleanup */
+  free(headers.buf);
   UNPROTECT(1);
   return res;
 }
@@ -276,6 +277,7 @@ SEXP R_curl_fetch_stream(SEXP url, SEXP ptr, SEXP fun){
   setAttrib(res, R_NamesSymbol, make_namesvec());
 
   /* cleanup */
+  free(headers.buf);
   UNPROTECT(1);
   return res;
 }
