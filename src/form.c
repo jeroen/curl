@@ -1,8 +1,4 @@
-#include <curl/curl.h>
-#include <Rinternals.h>
-#include <stdlib.h>
-#include <string.h>
-#include "utils.h"
+#include "curl-common.h"
 
 struct curl_httppost* make_form(SEXP form){
   struct curl_httppost* post = NULL;

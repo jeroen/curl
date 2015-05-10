@@ -126,3 +126,9 @@ handle_reset <- function(handle){
   .Call(R_handle_reset, handle)
   invisible(handle)
 }
+
+#' @useDynLib curl R_get_handle_response
+handle_response_data <- function(handle){
+  .Call(R_get_handle_response, handle)
+}
+

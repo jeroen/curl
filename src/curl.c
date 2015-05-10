@@ -12,12 +12,7 @@
  * Notes: the close() function in R actually calls con->destroy. The con->close
  * function is only used when a connection is recycled after auto-open.
  */
-#include <curl/curl.h>
-#include <curl/easy.h>
-#include <Rinternals.h>
-#include <string.h>
-#include <stdlib.h>
-#include "utils.h"
+#include "curl-common.h"
 
 /* the RConnection API is experimental and subject to change */
 #include <R_ext/Connections.h>

@@ -3,9 +3,7 @@
  * Because the user can interrupt the download with R_CheckUserInterrupt,
  * we need to do the cleanup in a separate function.
  */
-#include <curl/curl.h>
-#include <Rinternals.h>
-#include "utils.h"
+#include "curl-common.h"
 
 SEXP R_download_curl(SEXP url, SEXP destfile, SEXP quiet, SEXP mode, SEXP ptr) {
   if(!isString(url))

@@ -1,4 +1,9 @@
 PKG_LIBS= -lcurl
 
+all: clean
+
+clean:
+	rm -Rf *.o *.so
+
 # Disable for CRAN (gcc specific):
 # PKG_CFLAGS= -Wall -pedantic

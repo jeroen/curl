@@ -1,6 +1,4 @@
-#include <curl/curl.h>
-#include <Rinternals.h>
-#include "utils.h"
+#include "curl-common.h"
 
 void check_interrupt_fn(void *dummy) {
   R_CheckUserInterrupt();
@@ -36,6 +34,13 @@ void set_headers(reference *ref, struct curl_slist *newheaders){
     curl_slist_free_all(ref->headers);
   ref->headers = newheaders;
   assert(curl_easy_setopt(ref->handle, CURLOPT_HTTPHEADER, ref->headers));
+}
+
+void reset_resheaders(reference *ref){
+  if(ref->resheaders.buf)
+    free(ref->resheaders.buf);
+  ref->resheaders.buf = NULL;
+  ref->resheaders.size = 0;
 }
 
 void assert(CURLcode res){
@@ -88,4 +93,23 @@ size_t push_disk(void* contents, size_t sz, size_t nmemb, FILE *ctx) {
   if (pending_interrupt())
     return 0;
   return fwrite(contents, sz, nmemb, ctx);
+}
+
+size_t append_buffer(void *contents, size_t sz, size_t nmemb, void *ctx) {
+  if (pending_interrupt())
+    return 0;
+
+  /* avoids compiler warning on windows */
+  size_t realsize = sz * nmemb;
+  memory *mem = (memory*) ctx;
+
+  /* increase buffer size */
+  mem->buf = realloc(mem->buf, mem->size + realsize);
+  if (!mem->buf)
+    return 0;
+
+  /* append data and increment size */
+  memcpy(&(mem->buf[mem->size]), contents, realsize);
+  mem->size += realsize;
+  return realsize;
 }

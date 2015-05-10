@@ -1,7 +1,4 @@
-#include <Rinternals.h>
-#include <string.h>
-#include <curl/curl.h>
-#include "utils.h"
+#include "curl-common.h"
 
 int R_curl_callback_progress(SEXP fun,
                              double dltotal, double dlnow,

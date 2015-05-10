@@ -14,7 +14,10 @@
 #' res$content
 #' readLines(res$content)
 curl_fetch_memory <- function(url, handle = new_handle()){
-  .Call(R_curl_fetch_memory, url, handle)
+  output <- .Call(R_curl_fetch_memory, url, handle)
+  res <- handle_response_data(handle)
+  res$content <- output
+  res
 }
 
 #' @export
@@ -23,7 +26,10 @@ curl_fetch_memory <- function(url, handle = new_handle()){
 #' @useDynLib curl R_curl_fetch_disk
 curl_fetch_disk <- function(url, path, handle = new_handle()){
   path <- normalizePath(path, mustWork = FALSE)
-  .Call(R_curl_fetch_disk, url, handle, path, "wb")
+  output <- .Call(R_curl_fetch_disk, url, handle, path, "wb")
+  res <- handle_response_data(handle)
+  res$content <- output
+  res
 }
 
 #' @export
@@ -32,5 +38,6 @@ curl_fetch_disk <- function(url, path, handle = new_handle()){
 #' @rdname curl_fetch_memory
 #' @useDynLib curl R_curl_fetch_stream
 curl_fetch_stream <- function(url, fun, handle = new_handle()){
-  .Call(R_curl_fetch_stream, url, handle, fun)
+  output <- .Call(R_curl_fetch_stream, url, handle, fun)
+  handle_response_data(handle)
 }
