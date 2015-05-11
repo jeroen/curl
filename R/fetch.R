@@ -36,15 +36,8 @@ curl_fetch_disk <- function(url, path, handle = new_handle()){
 #' @param fun Callback function. Should have one argument, which will be
 #'   a raw vector.
 #' @rdname curl_fetch_memory
-#' @useDynLib curl R_curl_fetch_stream
+#' @useDynLib curl R_curl_connection
 curl_fetch_stream <- function(url, fun, handle = new_handle()){
-  output <- .Call(R_curl_fetch_stream, url, handle, fun)
-  handle_response_data(handle)
-}
-
-#' @export
-#' @rdname curl_fetch_memory
-curl_fetch_stream2 <- function(url, fun, handle = new_handle()){
   con <- .Call(R_curl_connection, url, "rb", handle, FALSE)
   on.exit(close(con))
   while(length(bin <- readBin(con, raw(), 8192L))){

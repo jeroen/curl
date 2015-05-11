@@ -83,37 +83,3 @@ SEXP R_curl_fetch_disk(SEXP url, SEXP ptr, SEXP path, SEXP mode){
   /* return the file path */
   return path;
 }
-
-SEXP R_curl_fetch_stream(SEXP url, SEXP ptr, SEXP fun){
-  if (!isString(url) || length(url) != 1)
-    error("Argument 'url' must be string.");
-  if (TYPEOF(fun) != CLOSXP)
-    error("`fun` must be a function.");
-
-  /* get the handle */
-  CURL *handle = get_handle(ptr);
-
-  /* update the url */
-  curl_easy_setopt(handle, CURLOPT_URL, translateCharUTF8(asChar(url)));
-
-  /* reset the response header buffer */
-  reset_resheaders(get_ref(ptr));
-
-  /* use callback function for writing */
-  curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, (curl_write_callback) R_curl_callback_write);
-  curl_easy_setopt(handle, CURLOPT_WRITEDATA, fun);
-
-  /* perform blocking request */
-  CURLcode status = curl_easy_perform(handle);
-
-  /* cleanup */
-  curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, NULL);
-  curl_easy_setopt(handle, CURLOPT_WRITEDATA, NULL);
-
-  /* check for errors */
-  if (status != CURLE_OK) {
-    error(curl_easy_strerror(status));
-  }
-
-  return R_NilValue;
-}
