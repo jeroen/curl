@@ -4,7 +4,7 @@
 
   # Enable SSL on Windows if CA bundle is available (R >= 3.2.0)
   bundle <- Sys.getenv("CURL_CA_BUNDLE",
-    file.path(R.home("etc"), "etc/curl-ca-bundle.crt"))
+    file.path(R.home("etc"), "curl-ca-bundle.crt"))
   if (bundle != "" && file.exists(bundle)) {
     set_bundle(bundle)
   } else {
