@@ -58,5 +58,5 @@
 #' }
 #'
 curl <- function(url = "http://httpbin.org/get", open = "", handle = new_handle()){
-  .Call(R_curl_connection, url, open, handle)
+  .Call(R_curl_connection, url, open, handle, TRUE)
 }

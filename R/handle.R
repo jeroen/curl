@@ -131,4 +131,3 @@ handle_reset <- function(handle){
 handle_response_data <- function(handle){
   .Call(R_get_handle_response, handle)
 }
-

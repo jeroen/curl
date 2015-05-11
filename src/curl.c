@@ -30,6 +30,7 @@ typedef struct {
   int has_data;
   int has_more;
   int used;
+  int stop;
   size_t size;
   size_t limit;
   CURLM *manager;
@@ -177,7 +178,8 @@ static Rboolean rcurl_open(Rconnection con) {
   }
 
   /* check http status code */
-  stop_for_status(handle);
+  if(req->stop)
+    stop_for_status(handle);
 
   /* set mode in case open() changed it */
   con->text = strcmp(con->mode, "rb") ? TRUE : FALSE;
@@ -185,7 +187,7 @@ static Rboolean rcurl_open(Rconnection con) {
   return TRUE;
 }
 
-SEXP R_curl_connection(SEXP url, SEXP mode, SEXP ptr) {
+SEXP R_curl_connection(SEXP url, SEXP mode, SEXP ptr, SEXP stop_on_error) {
   if(!isString(url))
     error("Argument 'url' must be string.");
 
@@ -204,6 +206,7 @@ SEXP R_curl_connection(SEXP url, SEXP mode, SEXP ptr) {
   req->buf = malloc(req->limit);
   req->manager = curl_multi_init();
   req->used = 0;
+  req->stop = asLogical(stop_on_error);
 
   /* allocate url string */
   req->url = malloc(strlen(translateCharUTF8(asChar(url))) + 1);

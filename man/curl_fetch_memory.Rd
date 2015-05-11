@@ -4,6 +4,7 @@
 \alias{curl_fetch_disk}
 \alias{curl_fetch_memory}
 \alias{curl_fetch_stream}
+\alias{curl_fetch_stream2}
 \title{Fetch the contents of a URL.}
 \usage{
 curl_fetch_memory(url, handle = new_handle())
@@ -11,6 +12,8 @@ curl_fetch_memory(url, handle = new_handle())
 curl_fetch_disk(url, path, handle = new_handle())
 
 curl_fetch_stream(url, fun, handle = new_handle())
+
+curl_fetch_stream2(url, fun, handle = new_handle())
 }
 \arguments{
 \item{url}{A character string naming the URL of a resource to be downloaded.}
