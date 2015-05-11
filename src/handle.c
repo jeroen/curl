@@ -160,10 +160,18 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
       }
       assert(curl_easy_setopt(handle, key, (long) asInteger(val)));
     } else if(key < 20000){
-      if(!isString(val) || length(val) != 1){
-        error("Value for option %s (%d) must be a string.", optname, key);
+      switch (TYPEOF(val)) {
+      case RAWSXP:
+        assert(curl_easy_setopt(handle, key, RAW(val)));
+        break;
+      case STRSXP:
+        if (length(val) != 1)
+          error("Value for option %s (%d) must be length-1 string", optname, key);
+        assert(curl_easy_setopt(handle, key, CHAR(STRING_ELT(val, 0))));
+        break;
+      default:
+        error("Value for option %s (%d) must be a string or raw vector.", optname, key);
       }
-      assert(curl_easy_setopt(handle, key, CHAR(STRING_ELT(val, 0))));
     } else {
       error("Option %s (%d) not supported.", optname, key);
     }
