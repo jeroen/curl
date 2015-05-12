@@ -23,10 +23,19 @@ curl_fetch_stream(url, fun, handle = new_handle())
 a raw vector.}
 }
 \description{
-Fetch the contents of a URL.
+Low-level bindings to write data from a URL into memory, disk or a callback
+function. These are mainly intended for \code{httr}, most users will be better
+off using the \code{\link{curl}} or \code{\link{curl_download}} function, or the
+http specific wrappers in the \code{httr} package.
+}
+\details{
+The curl_fetch functions automatically raise an error upon protocol problems
+(network, disk, ssl) but do not implement application logic. For example for
+you need to check the status code of http requests yourself in the response,
+and deal with it accordingly.
 }
 \examples{
-# Redirect + cookies
+# Load in memory
 res <- curl_fetch_memory("http://httpbin.org/cookies/set?foo=123&bar=ftw")
 res$content
 
@@ -34,5 +43,10 @@ res$content
 res <- curl_fetch_disk("http://httpbin.org/stream/10", tempfile())
 res$content
 readLines(res$content)
+
+Stream with callback
+res <- curl_fetch_stream("http://httpbin.org/stream/20", function(x){
+  cat(rawToChar(x))
+})
 }
 
