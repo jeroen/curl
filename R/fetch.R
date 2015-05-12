@@ -24,7 +24,7 @@
 #' res$content
 #' readLines(res$content)
 #'
-#' Stream with callback
+#' # Stream with callback
 #' res <- curl_fetch_stream("http://httpbin.org/stream/20", function(x){
 #'   cat(rawToChar(x))
 #' })
