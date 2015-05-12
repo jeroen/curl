@@ -13,6 +13,7 @@
 #' @param url A character string naming the URL of a resource to be downloaded.
 #' @param handle a curl handle object
 #' @export
+#' @rdname curl_fetch
 #' @useDynLib curl R_curl_fetch_memory
 #' @examples
 #' # Load in memory
@@ -37,7 +38,7 @@ curl_fetch_memory <- function(url, handle = new_handle()){
 
 #' @export
 #' @param path Path to save results
-#' @rdname curl_fetch_memory
+#' @rdname curl_fetch
 #' @useDynLib curl R_curl_fetch_disk
 curl_fetch_disk <- function(url, path, handle = new_handle()){
   path <- normalizePath(path, mustWork = FALSE)
@@ -50,7 +51,7 @@ curl_fetch_disk <- function(url, path, handle = new_handle()){
 #' @export
 #' @param fun Callback function. Should have one argument, which will be
 #'   a raw vector.
-#' @rdname curl_fetch_memory
+#' @rdname curl_fetch
 #' @useDynLib curl R_curl_connection
 curl_fetch_stream <- function(url, fun, handle = new_handle()){
   con <- .Call(R_curl_connection, url, "rb", handle, FALSE)

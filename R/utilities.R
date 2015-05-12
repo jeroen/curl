@@ -44,10 +44,10 @@ curl_options <- function(){
 #' @export
 #' @examples
 #' # Parse dates in many formats
-#' curl_getdate("Sunday, 06-Nov-94 08:49:37 GMT")
-#' curl_getdate("06 Nov 1994 08:49:37")
-#' curl_getdate("20040911 +0200")
-curl_getdate <- function(datestring){
+#' parse_date("Sunday, 06-Nov-94 08:49:37 GMT")
+#' parse_date("06 Nov 1994 08:49:37")
+#' parse_date("20040911 +0200")
+parse_date <- function(datestring){
   out <- .Call(R_curl_getdate, datestring);
   class(out) <- c("POSIXct", "POSIXt")
   out
