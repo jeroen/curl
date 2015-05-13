@@ -24,7 +24,9 @@ curl_version <- function(){
 #' # See all symbols
 #' head(curl_symbols)
 curl_options <- function(){
-  .Call(R_curl_options);
+  opts <- .Call(R_curl_options)
+  names(opts) <- tolower(names(opts))
+  opts
 }
 
 #' @rdname curl_options
