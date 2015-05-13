@@ -1,7 +1,9 @@
-#' Download file
+#' Download File
 #'
-#' Libcurl implementation of \code{C_download} (the "internal" download method).
-#' Designed to behave similar to \code{\link{download.file}}.
+#' Libcurl implementation of \code{C_download} (the "internal" download method)
+#' with added support for https, ftps, gzip, etc. Default behavior is identical
+#' to \code{\link{download.file}}, but request can be fully configured by passing
+#' a custom \code{\link{handle}}.
 #'
 #' The main difference between \code{curl_download} and \code{curl_fetch_disk}
 #' is that \code{curl_download} checks the http status code before starting the

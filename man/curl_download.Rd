@@ -2,7 +2,7 @@
 % Please edit documentation in R/download.R
 \name{curl_download}
 \alias{curl_download}
-\title{Download file}
+\title{Download File}
 \usage{
 curl_download(url, destfile, quiet = TRUE, mode = "wb",
   handle = new_handle())
@@ -26,8 +26,10 @@ and \code{"ab"}.}
 Path of downloaded file (invisibly).
 }
 \description{
-Libcurl implementation of \code{C_download} (the "internal" download method).
-Designed to behave similar to \code{\link{download.file}}.
+Libcurl implementation of \code{C_download} (the "internal" download method)
+with added support for https, ftps, gzip, etc. Default behavior is identical
+to \code{\link{download.file}}, but request can be fully configured by passing
+a custom \code{\link{handle}}.
 }
 \details{
 The main difference between \code{curl_download} and \code{curl_fetch_disk}

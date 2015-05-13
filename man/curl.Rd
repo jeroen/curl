@@ -2,7 +2,7 @@
 % Please edit documentation in R/curl.R
 \name{curl}
 \alias{curl}
-\title{Curl connection}
+\title{Curl Connection Interface}
 \usage{
 curl(url = "http://httpbin.org/get", open = "", handle = new_handle())
 }
@@ -15,8 +15,9 @@ initially. Currently only "r" and "rb" are supported.}
 \item{handle}{a curl handle object}
 }
 \description{
-Drop-in replacement for url() that uses libcurl. Supports http(s), ftp(s), file,
-gzip, deflate, etc.
+Drop-in replacement for base \code{\link{url}} that supports https, ftps,
+gzip, deflate, etc. Default download methods are identical to \code{\link{url}},
+but request can be fully configured by passing a custom \code{\link{handle}}.
 }
 \examples{
 \dontrun{

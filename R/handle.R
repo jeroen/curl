@@ -24,7 +24,7 @@
 #'   All functions modify the handle in place but also return the handle
 #'   so you can create a pipeline of operations.
 #' @export
-#' @name handles
+#' @name handle
 #' @useDynLib curl R_new_handle
 #' @rdname handle
 #' @examples

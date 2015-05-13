@@ -30,10 +30,9 @@ handle_reset(h)
 handle_cookies(h)
 }
 \seealso{
-Other handles: \code{\link{handle_reset}},
-  \code{\link{handle_setform}},
+Other handles: \code{\link{handle}},
+  \code{\link{handle_reset}}, \code{\link{handle_setform}},
   \code{\link{handle_setheaders}},
-  \code{\link{handle_setopt}}, \code{\link{handles}},
-  \code{\link{new_handle}}
+  \code{\link{handle_setopt}}, \code{\link{new_handle}}
 }
 
