@@ -2,33 +2,18 @@
 title: "The curl package: a modern R interface to libcurl"
 date: "`r Sys.Date()`"
 output:
-  html_document:
-    toc: yes
+  html_document
 vignette: >
   %\VignetteIndexEntry{The curl package: bindings to libcurl}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
 
-## Install curl
-
-This package is under active development and the API subject to change! Feedback is very much welcome. To grab the latest version:
-
-```{r eval=FALSE}
-library(devtools)
-install_github("jeroenooms/curl")
-```
-
-
 
 ```{r, echo = FALSE, message = FALSE}
 knitr::opts_chunk$set(comment = "")
 library(curl)
 ```
-
-
-
-## Three Download Interfaces
 
 The curl package implements flexible, low-level bindings to libcurl for R. The package supports retrieving data in-memory, downloading to disk, or streaming using the R "connection" interface. Some knowledge of curl is recommended to use this package. If you are looking for a more user-friendly HTTP client, you are better of using  [httr](http://cran.r-project.org/web/packages/httr/vignettes/quickstart.html) which extends curl with HTTP specific tools and logic.
 
