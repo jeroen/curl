@@ -3,6 +3,12 @@
 #' Libcurl implementation of \code{C_download} (the "internal" download method).
 #' Designed to behave similar to \code{\link{download.file}}.
 #'
+#' The main difference between \code{curl_download} and \code{curl_fetch_disk}
+#' is that \code{curl_download} checks the http status code before starting the
+#' download, and raises an error when status is non-successful. The behavior of
+#' \code{curl_fetch_disk} on the other hand is to proceed as normal and write
+#' the error page to disk in case of a non success response.
+#'
 #' @useDynLib curl R_download_curl
 #' @param url A character string naming the URL of a resource to be downloaded.
 #' @param destfile A character string with the name where the downloaded file

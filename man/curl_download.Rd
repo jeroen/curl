@@ -29,6 +29,13 @@ Path of downloaded file (invisibly).
 Libcurl implementation of \code{C_download} (the "internal" download method).
 Designed to behave similar to \code{\link{download.file}}.
 }
+\details{
+The main difference between \code{curl_download} and \code{curl_fetch_disk}
+is that \code{curl_download} checks the http status code before starting the
+download, and raises an error when status is non-successful. The behavior of
+\code{curl_fetch_disk} on the other hand is to proceed as normal and write
+the error page to disk in case of a non success response.
+}
 \examples{
 \dontrun{download large file
 url <- "http://www2.census.gov/acs2011_5yr/pums/csv_pus.zip"
