@@ -10,7 +10,8 @@ handle_cookies(handle)
 \item{handle}{a curl handle object}
 }
 \description{
-Extract cookies from a handle
+The \code{handle_cookies} function returns a data frame with 7 columns as specified in the
+\href{http://www.cookiecentral.com/faq/#3.5}{netscape cookie file format}.
 }
 \examples{
 h <- new_handle()
@@ -23,11 +24,15 @@ handle_cookies(h)
 # Server deletes cookies
 req <- curl_fetch_memory("http://httpbin.org/cookies/delete?foo", handle = h)
 handle_cookies(h)
+
+# Cookies will survive a reset!
+handle_reset(h)
+handle_cookies(h)
 }
 \seealso{
-Other handle.functions: \code{\link{handle_reset}},
-  \code{\link{handle_setform}},
+Other handles: \code{\link{handle}},
+  \code{\link{handle_reset}}, \code{\link{handle_setform}},
   \code{\link{handle_setheaders}},
-  \code{\link{handle_setopt}}; \code{\link{new_handle}}
+  \code{\link{handle_setopt}}, \code{\link{new_handle}}
 }
 

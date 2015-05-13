@@ -1,34 +1,23 @@
-#' Create new libcurl handle
+#' Creating and configuring a curl handle
 #'
-#' @useDynLib curl R_new_handle
-#' @param ... Initial options to set on handle. See \code{\link{handle_setopt}}
-#'   for more details.
-#' @family handle functions
-#' @export
-#' @return A handle object, an external pointer to the underlying
-#'   Curl handle.
-new_handle <- function(...){
-  h <- .Call(R_new_handle)
-  handle_setopt(h, ...)
-  h
-}
-
-#' Set handle options.
+#' Use \code{new_handle()} to manually create a new curl handle that can be
+#' configured with custom options and headers. Note that \code{handle_setopt}
+#' appends options to the current handle, whereas \code{handle_setheader}
+#' replaces the entire set of headers with the new ones. Moreover \code{handle_reset}
+#' only resets the options/headers of the handle. It does not affect active
+#' connections or cookies.
 #'
-#' Currently \code{handle_setopt} will append options where
-#' \code{handle_setheader} will first reset all of the currently set headers.
-#'
-#' @family handle functions
-#' @param handle Handle to modify
-#' @param ... additional named options / headers to be set in the handle.
+#' @family handles
+#' @param ... named options / headers to be set in the handle.
 #'   To send a file, see \code{\link{form_file}}. To list all allowed options,
 #'   see \code{\link{curl_options}}
-#' @param .list A named list of options. This is useful if you've created
-#'   a list of options elsewhere, avoiding the use of \code{do.call()}.
-#' @useDynLib curl R_handle_setopt
-#' @return All functions modify the handle in place but also return the handle
+#' @return A handle object (external pointer to the underlying curl handle).
+#'   All functions modify the handle in place but also return the handle
 #'   so you can create a pipeline of operations.
 #' @export
+#' @name handle
+#' @useDynLib curl R_new_handle
+#' @rdname handle
 #' @examples
 #' h <- new_handle()
 #' handle_setopt(h, customrequest = "PUT")
@@ -42,6 +31,18 @@ new_handle <- function(...){
 #' handle_setform(h, .list = list(a = "1", b = "2"))
 #' r <- curl_fetch_memory("http://httpbin.org/put", h)
 #' cat(rawToChar(r$content))
+new_handle <- function(...){
+  h <- .Call(R_new_handle)
+  handle_setopt(h, ...)
+  h
+}
+
+#' @export
+#' @useDynLib curl R_handle_setopt
+#' @param handle Handle to modify
+#' @param .list A named list of options. This is useful if you've created
+#'   a list of options elsewhere, avoiding the use of \code{do.call()}.
+#' @rdname handle
 handle_setopt <- function(handle, ..., .list = list()){
   values <- c(list(...), .list)
   keys <- as.integer(curl_options()[toupper(names(values))])
@@ -55,7 +56,7 @@ handle_setopt <- function(handle, ..., .list = list()){
 
 #' @export
 #' @useDynLib curl R_handle_setheaders
-#' @rdname handle_setopt
+#' @rdname handle
 handle_setheaders <- function(handle, ..., .list = list()){
   opts <- c(list(...), .list)
   if(!all(vapply(opts, is.character, logical(1)))){
@@ -70,7 +71,7 @@ handle_setheaders <- function(handle, ..., .list = list()){
 
 #' @export
 #' @useDynLib curl R_handle_setform
-#' @rdname handle_setopt
+#' @rdname handle
 handle_setform <- function(handle, ..., .list = list()){
   form <- c(list(...), .list)
   for(i in seq_along(form)){
@@ -83,12 +84,23 @@ handle_setform <- function(handle, ..., .list = list()){
   invisible(handle)
 }
 
+#' @export
+#' @rdname handle
+#' @useDynLib curl R_handle_reset
+handle_reset <- function(handle){
+  .Call(R_handle_reset, handle)
+  invisible(handle)
+}
+
 #' Extract cookies from a handle
+#'
+#' The \code{handle_cookies} function returns a data frame with 7 columns as specified in the
+#' \href{http://www.cookiecentral.com/faq/#3.5}{netscape cookie file format}.
 #'
 #' @useDynLib curl R_get_handle_cookies
 #' @export
 #' @param handle a curl handle object
-#' @family handle functions
+#' @family handles
 #' @examples
 #' h <- new_handle()
 #' handle_cookies(h)
@@ -99,6 +111,10 @@ handle_setform <- function(handle, ..., .list = list()){
 #'
 #' # Server deletes cookies
 #' req <- curl_fetch_memory("http://httpbin.org/cookies/delete?foo", handle = h)
+#' handle_cookies(h)
+#'
+#' # Cookies will survive a reset!
+#' handle_reset(h)
 #' handle_cookies(h)
 handle_cookies <- function(handle){
   cookies <- .Call(R_get_handle_cookies, handle)
@@ -117,14 +133,6 @@ handle_cookies <- function(handle){
   df$expiration <- expires
   df
 
-}
-
-#' @export
-#' @rdname handle_setopt
-#' @useDynLib curl R_handle_reset
-handle_reset <- function(handle){
-  .Call(R_handle_reset, handle)
-  invisible(handle)
 }
 
 #' @useDynLib curl R_get_handle_response
