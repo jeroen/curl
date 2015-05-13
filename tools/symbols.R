@@ -1,5 +1,5 @@
 # Note: we can only lookup symbols that are available in the installed version of libcurl
-# Only run this script if you are running the latest version of libcurl.
+# Therefore you should only update the symbol table using the latest version of libcurl.
 # On Mac: 'brew install curl' will install to /usr/local/opt/curl
 
 # Function to read a symbol
