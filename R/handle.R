@@ -54,7 +54,7 @@ new_handle <- function(...){
 #' @rdname handle
 handle_setopt <- function(handle, ..., .list = list()){
   values <- c(list(...), .list)
-  keys <- as.integer(curl_options()[toupper(names(values))])
+  keys <- as.integer(curl_options()[tolower(names(values))])
   if(anyNA(keys)){
     stop("Unknown options.")
   }
