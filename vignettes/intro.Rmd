@@ -15,16 +15,17 @@ knitr::opts_chunk$set(comment = "")
 library(curl)
 ```
 
-The curl package implements flexible, low-level bindings to libcurl for R. The package supports retrieving data in-memory, downloading to disk, or streaming using the R "connection" interface. Some knowledge of curl is recommended to use this package. If you are looking for a more user-friendly HTTP client, you are better of using  [httr](http://cran.r-project.org/web/packages/httr/vignettes/quickstart.html) which extends curl with HTTP specific tools and logic.
+The curl package provides bindings to the [libcurl](http://curl.haxx.se/libcurl/) C library for R. The package supports retrieving data in-memory, downloading to disk, or streaming using the [R "connection" interface](https://stat.ethz.ch/R-manual/R-devel/library/base/html/connections.html). Some knowledge of curl is recommended to use this package. For a more user-friendly HTTP client, have a look at the  [httr](http://cran.r-project.org/web/packages/httr/vignettes/quickstart.html) package which builds on curl with HTTP specific tools and logic.
 
 ### Download in memory
 
-The curl package implements three ways to retrieve data from a URL. The `curl_fetch_memory` function is a synchronous interface which returns a list with content of the server response.
+The curl package implements three ways to retrieve data from a URL. The `curl_fetch_memory` function is a synchronous interface which returns a list with contents of the server response.
 
 
 ```{r}
 req <- curl_fetch_memory("https://httpbin.org/get")
 str(req)
+parse_headers(req$headers)
 cat(rawToChar(req$content))
 ```
 
@@ -95,7 +96,7 @@ Creating a new handle is done using `new_handle`. After creating a handle object
 
 ```{r}
 h <- new_handle()
-handle_setopt(h, COPYPOSTFIELDS = "moo=moomooo");
+handle_setopt(h, copypostfields = "moo=moomooo");
 handle_setheaders(h,
   "Content-Type" = "text/moo",
   "Cache-Control" = "no-cache",
@@ -103,13 +104,9 @@ handle_setheaders(h,
 )
 ```
 
-Use the `curl_options()` function to get a list of the options supported by your version of libcurl. The [libcurl documentation](http://curl.haxx.se/libcurl/c/curl_easy_setopt.html) explains what each option does. Option names are not case sensitive, so this would do the same:
+Use the `curl_options()` function to get a list of the options supported by your version of libcurl. The [libcurl documentation](http://curl.haxx.se/libcurl/c/curl_easy_setopt.html) explains what each option does. Option names are not case sensitive. 
 
-```{r}
-handle_setopt(h, copypostfields = "moo=moomooo");
-```
-
-After the handle has been configured, it can be used with any of the three download interfaces to issue the request. For example `curl_fetch_memory` will load store the output of the request in memory:
+After the handle has been configured, it can be used with any of the download interfaces to perform the request. For example `curl_fetch_memory` will load store the output of the request in memory:
 
 ```{r}
 req <- curl_fetch_memory("http://httpbin.org/post", handle = h)
@@ -165,9 +162,9 @@ req1 <- curl_fetch_memory("https://httpbin.org/get", handle = new_handle())
 req2 <- curl_fetch_memory("http://www.r-project.org", handle = new_handle())
 ```
 
-As far as I can tell, there are two reasons why you might want to reuse a handle. The first one is that it will automatically keep track of cookies set by the server. So if your host makes use of cookies that might be useful. 
+There are two reasons why you might want to reuse a handle for multiple requests. The first one is that it will automatically keep track of cookies set by the server. This might be useful if your host requires use of a session cookies.
 
-The other reason is to take advantage of HTTP Keep-Alive. Curl automatically maintains a pool of open http connections within each handle. When using a single handle to issue many requests to the same server, curl automatically uses existing connections when possible. This eliminites a little bit of connection overhead, although on a decent network this might not be very significant.
+The other reason is to take advantage of http Keep-Alive. Curl automatically maintains a pool of open http connections within each handle. When using a single handle to issue many requests to the same server, curl uses existing connections when possible. This eliminites a little bit of connection overhead, although on a decent network this might not be very significant.
 
 ```{r}
 h <- new_handle()
@@ -181,7 +178,7 @@ The argument against reusing handles is that curl does not cleanup the handle af
 handle_reset(h)
 ```
 
-The `handle_reset` function will reset all curl options and request headers to the default values. It will **not** erease cookies and it will still keep alive the connections. Therefore it is usually good practice to call `handle_reset` after performing a request if you want to reuse the handle for a subsequent request. Still it is always safer to create a new fresh handle when possible, rather than recycling old ones.
+The `handle_reset` function will reset all curl options and request headers to the default values. It will **not** erease cookies and it will still keep alive the connections. Therefore it is good practice to call `handle_reset` after performing a request if you want to reuse the handle for a subsequent request. Still it is always safer to create a new fresh handle when possible, rather than recycling old ones.
 
 ### Forms
 
