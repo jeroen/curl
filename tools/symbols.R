@@ -15,10 +15,7 @@ symbols <- as.data.frame(t(vapply(lines, `[`, character(4), 1:4)), stringsAsFact
 names(symbols) <- c("name", "introduced", "deprecated", "removed")
 
 # Get current version
-library(curl)
-version <- curl_version()$version
-avail <- (vapply(symbols$introduced, compareVersion, double(1), a = version, USE.NAMES = FALSE) > -1) &
-  is.na(symbols$removed)
+avail <- is.na(symbols$removed)
 
 # Lookup all symbol values from curl.h (takes a while)
 symbols$value <- NA_integer_;
