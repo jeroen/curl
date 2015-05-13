@@ -1,4 +1,4 @@
-#' Escape and unescape a url
+#' URL encoding
 #'
 #' Escape all special characters (i.e. everything except for a-z, A-Z, 0-9, '-',
 #' '.', '_' or '~') for use in URLs.

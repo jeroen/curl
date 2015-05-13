@@ -3,7 +3,7 @@
 \name{curl_escape}
 \alias{curl_escape}
 \alias{curl_unescape}
-\title{Escape and unescape a url}
+\title{URL encoding}
 \usage{
 curl_escape(url)
 
