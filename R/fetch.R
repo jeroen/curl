@@ -1,4 +1,4 @@
-#' Fetch the contents of a URL.
+#' Fetch the contents of a URL
 #'
 #' Low-level bindings to write data from a URL into memory, disk or a callback
 #' function. These are mainly intended for \code{httr}, most users will be better

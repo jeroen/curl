@@ -1,4 +1,4 @@
-#' Download File
+#' Download file to disk
 #'
 #' Libcurl implementation of \code{C_download} (the "internal" download method)
 #' with added support for https, ftps, gzip, etc. Default behavior is identical

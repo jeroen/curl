@@ -2,7 +2,7 @@
 % Please edit documentation in R/download.R
 \name{curl_download}
 \alias{curl_download}
-\title{Download File}
+\title{Download file to disk}
 \usage{
 curl_download(url, destfile, quiet = TRUE, mode = "wb",
   handle = new_handle())

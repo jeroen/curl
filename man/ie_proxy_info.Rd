@@ -2,7 +2,7 @@
 % Please edit documentation in R/proxy.R
 \name{ie_proxy_info}
 \alias{ie_proxy_info}
-\title{Internet Explorer Proxy Settings}
+\title{Internet Explorer proxy settings}
 \usage{
 ie_proxy_info()
 }

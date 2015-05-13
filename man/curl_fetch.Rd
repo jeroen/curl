@@ -4,7 +4,7 @@
 \alias{curl_fetch_disk}
 \alias{curl_fetch_memory}
 \alias{curl_fetch_stream}
-\title{Fetch the contents of a URL.}
+\title{Fetch the contents of a URL}
 \usage{
 curl_fetch_memory(url, handle = new_handle())
 

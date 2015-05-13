@@ -1,8 +1,8 @@
-#' Curl Connection Interface
+#' Curl connection interface
 #'
 #' Drop-in replacement for base \code{\link{url}} that supports https, ftps,
-#' gzip, deflate, etc. Default download methods are identical to \code{\link{url}},
-#' but request can be fully configured by passing a custom \code{\link{handle}}.
+#' gzip, deflate, etc. Default behavior is identical to \code{\link{url}}, but
+#' request can be fully configured by passing a custom \code{\link{handle}}.
 #'
 #' @useDynLib curl R_curl_connection
 #' @export

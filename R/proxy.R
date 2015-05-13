@@ -1,4 +1,4 @@
-#' Internet Explorer Proxy Settings
+#' Internet Explorer proxy settings
 #'
 #' This function retrieves the system proxy settings on Windows as
 #' configured in Internet Explorer. This can be used to automatically
