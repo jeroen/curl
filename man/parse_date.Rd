@@ -2,7 +2,7 @@
 % Please edit documentation in R/utilities.R
 \name{parse_date}
 \alias{parse_date}
-\title{Parse date/times.}
+\title{Parse date/time}
 \usage{
 parse_date(datestring)
 }
@@ -10,7 +10,10 @@ parse_date(datestring)
 \item{datestring}{a string consisting of a timestamp}
 }
 \description{
-Parse date/times.
+Can be used to parse dates appearing in http response headers such
+as \code{Expires} or \code{Last-Modified}. Automatically recognizes
+most common formats. If the format is known, \code{\link{strptime}}
+might be easier.
 }
 \examples{
 # Parse dates in many formats

@@ -37,7 +37,12 @@ curl_options <- function(){
 #' }
 "curl_symbols"
 
-#' Parse date/times.
+#' Parse date/time
+#'
+#' Can be used to parse dates appearing in http response headers such
+#' as \code{Expires} or \code{Last-Modified}. Automatically recognizes
+#' most common formats. If the format is known, \code{\link{strptime}}
+#' might be easier.
 #'
 #' @param datestring a string consisting of a timestamp
 #' @useDynLib curl R_curl_getdate
