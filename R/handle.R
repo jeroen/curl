@@ -1,11 +1,20 @@
-#' Creating and configuring a curl handle
+#' Create and configure a curl handle
 #'
-#' Use \code{new_handle()} to manually create a new curl handle that can be
+#' Handles are the work horses of libcurl. A handle is used to configure a
+#' request with custom options, headers and payload. Once the handle has been
+#' set up, it can be passed to any of the download functions such as \code{\link{curl}}
+#' ,\code{\link{curl_download}} or \code{\link{curl_fetch_memory}}. The handle will maintain
+#' state in between requests, including keep-alive connections, cookies and
+#' settings.
+#'
+#' Use \code{new_handle()} to create a new clean curl handle that can be
 #' configured with custom options and headers. Note that \code{handle_setopt}
-#' appends options to the current handle, whereas \code{handle_setheader}
-#' replaces the entire set of headers with the new ones. Moreover \code{handle_reset}
-#' only resets the options/headers of the handle. It does not affect active
-#' connections or cookies.
+#' appends or overrides options in the handle, whereas \code{handle_setheaders}
+#' replaces the entire set of headers with the new ones. The \code{handle_reset}
+#' funtion resets only options/headers/forms in the handle. It does not affect
+#' active connections, cookies or response data from previous requests. The safest
+#' way to perform multiple independent requests is by using a separate handle for
+#' earch request. There is very little performance overhead in creating handles.
 #'
 #' @family handles
 #' @param ... named options / headers to be set in the handle.
@@ -15,7 +24,7 @@
 #'   All functions modify the handle in place but also return the handle
 #'   so you can create a pipeline of operations.
 #' @export
-#' @name handle
+#' @name handles
 #' @useDynLib curl R_new_handle
 #' @rdname handle
 #' @examples
