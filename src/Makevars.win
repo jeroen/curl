@@ -1,11 +1,11 @@
 PKG_CPPFLAGS= -I../windows/libcurl-7.39.0/include
 PKG_CFLAGS= -DCURL_STATICLIB
 
-ifeq "${R_ARCH}" "/i386"
-WIN32FIX= -lidn
-endif
+PKG_LIBS= -L../windows/libcurl-7.39.0/lib${R_ARCH} -L. -lwinhttp -lcurl -lrtmp -lssl -lssh2 -lcrypto -lgdi32 -lcrypt32 -lz -lws2_32 -lgdi32 -lcrypt32 -lwldap32 -lwinmm
 
-PKG_LIBS= -L../windows/libcurl-7.39.0/lib${R_ARCH} -L. -lwinhttp -lcurl -lrtmp -lssl -lssh2 -lcrypto -lgdi32 -lcrypt32 -lz -lws2_32 -lgdi32 -lcrypt32 -lwldap32 -lwinmm ${WIN32FIX}
+ifeq "${R_ARCH}" "/i386"
+PKG_LIBS += -lidn
+endif
 
 all: clean winlibs winhttp
 
