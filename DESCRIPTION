@@ -1,6 +1,6 @@
 Package: curl
 Type: Package
-Title: A Modern and Flexible Web Client for R Based on 'libcurl'
+Title: A Modern and Flexible Web Client for R
 Version: 0.6
 Authors@R: c(
     person("Jeroen", "Ooms", , "jeroen.ooms@stat.ucla.edu", role = c("cre", "aut")),
