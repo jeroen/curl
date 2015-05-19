@@ -12,6 +12,10 @@ SEXP R_set_bundle(SEXP path){
   return mkString(CA_BUNDLE);
 }
 
+SEXP R_get_bundle(){
+  return mkString(CA_BUNDLE);
+}
+
 void clean_handle(reference *ref){
   if(ref->garbage && !(ref->inUse)){
     //Rprintf("cleaning easy handle\n");
