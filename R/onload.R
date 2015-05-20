@@ -22,5 +22,5 @@ set_bundle <- function(path){
 
 #' @useDynLib curl R_get_bundle
 get_bundle <- function(){
-  .Call(R_set_bundle)
+  .Call(R_get_bundle)
 }
