@@ -1,4 +1,9 @@
+0.7
+ - Rename the C function 'fetch' to 'fetchdata' because of Solaris conflict.
+ - Move warning about missing CA bundle to onAttach.
+
 0.6
+ - Validation of SSL certificates is now enabled by default if a bundle is available.
  - Major rewrite to support configurable and reusable handles
  - Added new_handle, handle_setopt, handle_setheaders, handle_setform, handle_reset, etc.
  - Added curl_fetch interfaces for httr
