@@ -1,1 +1,1 @@
-cat("This is libcurl version", curl_version()$version, "with SSL", curl_version()$ssl_version, "\n")
+cat("This is libcurl version", curl_version()$version, "with", curl_version()$ssl_version, "\n")
