@@ -89,7 +89,8 @@ void check_manager(CURLM *manager) {
   }
 }
 
-void fetch(request *req) {
+//NOTE: renamed because the name 'fetch' caused crash/conflict on Solaris.
+void fetchdata(request *req) {
   R_CheckUserInterrupt();
   long timeout = 10*1000;
   massert(curl_multi_timeout(req->manager, &timeout));
@@ -113,7 +114,7 @@ static size_t rcurl_read(void *target, size_t sz, size_t ni, Rconnection con) {
   /* append data to the target buffer */
   size_t total_size = pop(target, req_size, req);
   while((req_size > total_size) && req->has_more) {
-    fetch(req);
+    fetchdata(req);
     total_size += pop((char*)target + total_size, (req_size-total_size), req);
   }
   return total_size;
@@ -174,7 +175,7 @@ static Rboolean rcurl_open(Rconnection con) {
   /* Wait for first data to arrive. Monitoring a change in status code does not
      suffice in case of http redirects */
   while(req->has_more && !req->has_data) {
-    fetch(req);
+    fetchdata(req);
   }
 
   /* check http status code */
