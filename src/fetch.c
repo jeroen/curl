@@ -38,7 +38,12 @@ SEXP R_curl_fetch_memory(SEXP url, SEXP ptr){
 
   /* create output */
   SEXP out = PROTECT(allocVector(RAWSXP, body.size));
-  memcpy(RAW(out), body.buf, body.size);
+
+  /* copy only if there is actual content */
+  if(body.size)
+    memcpy(RAW(out), body.buf, body.size);
+
+  /* cleanup and return */
   UNPROTECT(1);
   free(body.buf);
   return out;
