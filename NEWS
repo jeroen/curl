@@ -1,6 +1,6 @@
 0.7
  - Rename the C function 'fetch' to 'fetchdata' because of Solaris conflict.
- - Move warning about missing CA bundle to onAttach.
+ - Move warning about missing CA bundle on Windows to onAttach.
 
 0.6
  - Validation of SSL certificates is now enabled by default if a bundle is available.
