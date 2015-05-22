@@ -4,7 +4,6 @@
  */
 
 #include "curl-common.h"
-#include "callbacks.h"
 
 SEXP R_curl_fetch_memory(SEXP url, SEXP ptr){
   if (!isString(url) || length(url) != 1)
