@@ -4,7 +4,7 @@ date: "`r Sys.Date()`"
 output:
   html_document
 vignette: >
-  %\VignetteIndexEntry{The curl package: bindings to libcurl}
+  %\VignetteIndexEntry{The curl package: a modern R interface to libcurl}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
