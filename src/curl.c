@@ -16,7 +16,7 @@
 
 /* defines _BIG_ENDIAN used below */
 #if (defined(__sun) && defined(__SVR4))
-#include <sys/isa_defs.h>
+#include <sys/byteorder.h>
 #endif
 
 /* the RConnection API is experimental and subject to change */
