@@ -1,24 +1,26 @@
 # On most systems the curl headers will be found automatically.
 # You can use CURL_INCLUDES to set a custom include dir.
 if [ "$CURL_INCLUDES" ]; then
-  echo "PKG_CPPFLAGS= -I$CURL_INCLUDES" >> src/Makevars
+  echo "Using libcurl from: $CURL_INCLUDES"
 elif [ -r /usr/local/include/curl/curl.h ]; then
   CURL_INCLUDES="/usr/local/include"
 elif [ -r /usr/include/curl/curl.h ]; then
   CURL_INCLUDES="/usr/include"
-elif [ $(echo "$OSTYPE" | grep "darwin") ] && [ $(command -v xcodebuild) ]; then
-  DYNLIB=$(xcodebuild -find-library curl)
-  LIBDIR=$(dirname $DYNLIB)
-  XCODE=$(dirname $LIBDIR)
-  CURL_INCLUDES="$XCODE/include"
+elif [ -r /opt/csw/include/curl/curl.h ]; then
+  CURL_INCLUDES="/opt/csw/include/"
+  LDFLAGS="-L/opt/csw/lib"
 fi
 
 if [ -r "$CURL_INCLUDES/curl/curl.h" ]; then
   # Grep the CURL_OPTION values from curl.h
   echo "Found libcurl in $CURL_INCLUDES/curl/curl.h"
   grep "^[ \t]*CINIT(" "$CURL_INCLUDES/curl/curl.h" > src/option_table.h
-  exit 0
+  echo "PKG_CPPFLAGS= -I$CURL_INCLUDES" >> src/Makevars
 else
   echo "File curl.h not found. Make sure the curl development library is installed, e.g. libcurl4-openssl-dev (deb) or libcurl-devel (rpm)."
   exit 1
 fi
+
+echo "PKG_LIBS=$LDFLAGS -lcurl" >> src/Makevars
+
+exit 0
