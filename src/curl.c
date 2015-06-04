@@ -17,11 +17,6 @@
 /* defines _BIG_ENDIAN used below */
 #if (defined(__sun) && defined(__SVR4))
 #include <sys/isa_defs.h>
-# define BSWAP_32(x) (                \
-((uint32_t)(x) & 0x000000ffU) << 24 | \
-((uint32_t)(x) & 0x0000ff00U) << 8 |  \
-((uint32_t)(x) & 0x00ff0000U) >> 8 |  \
-((uint32_t)(x) & 0xff000000U) >> 24)
 #endif
 
 /* the RConnection API is experimental and subject to change */
