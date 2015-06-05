@@ -1,3 +1,6 @@
+0.8
+ - Fix for curl() character reader on big edian machianes (i.e. sparc)
+
 0.7
  - Rename the C function 'fetch' to 'fetchdata' because of Solaris conflict.
  - Move warning about missing CA bundle on Windows to onAttach.
