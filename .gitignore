@@ -7,4 +7,5 @@ src/*.so
 src/*.dll
 src/*.a
 src/option_table.h
+src/Makevars
 inst/doc

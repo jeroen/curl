@@ -8,3 +8,4 @@
 windows
 README.md
 ^src/option_table.h$
+^src/Makevars$
