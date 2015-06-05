@@ -1,5 +1,5 @@
 0.8
- - Fix for curl() character reader to invert byte-order on big edian architectures.
+ - Fix for curl() character reader to invert byte-order on big endian architectures.
 
 0.7
  - Rename the C function 'fetch' to 'fetchdata' because of Solaris conflict.
