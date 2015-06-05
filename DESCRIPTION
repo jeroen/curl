@@ -9,8 +9,8 @@ Authors@R: c(
     )
 Description: The curl() and curl_download() functions provide highly configurable
     drop-in replacements for base url() and download.file() with better performance,
-    support for HTTP 2.0, SSL (https://, ftps://), gzip, and other 'libcurl' goodies.
-    The core of the package implements a framework for performing fully customizable
+    support for HTTP 2.0, ssl (https, ftps), 'gzip', and other 'libcurl' goodies.
+    The core of the package implements a framework for performing fully customized
     requests where data can be processed either in memory, on disk, or streaming via
     the callback or connection interfaces. Some knowledge of 'libcurl' is recommended;
     for a more-user-friendly web client see the 'httr' package which builds on this
