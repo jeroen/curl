@@ -1,3 +1,6 @@
+0.9
+ - Fix for very old versions of libcurl (RHEL 5)
+
 0.8
  - Fix for curl() character reader to invert byte-order on big endian architectures.
 
