@@ -72,7 +72,7 @@ void set_handle_defaults(reference *ref){
   assert(curl_easy_setopt(handle, CURLOPT_MAXREDIRS, 10L));
 
   /* a sensible timeout (10s) */
-  assert(curl_easy_setopt(handle, CURLOPT_CONNECTTIMEOUT_MS, 10000L));
+  assert(curl_easy_setopt(handle, CURLOPT_CONNECTTIMEOUT, 10L));
 
   /* needed to start the cookie engine */
   assert(curl_easy_setopt(handle, CURLOPT_COOKIEFILE, ""));
