@@ -15,7 +15,7 @@ if [ -r "$CURL_INCLUDES/curl/curl.h" ]; then
   # Grep the CURL_OPTION values from curl.h
   echo "Found libcurl in $CURL_INCLUDES/curl/curl.h"
   grep "^[ \t]*CINIT(" "$CURL_INCLUDES/curl/curl.h" > src/option_table.h
-  echo "PKG_CPPFLAGS= -I$CURL_INCLUDES" >> src/Makevars
+  echo "PKG_CPPFLAGS= -I$CURL_INCLUDES" > src/Makevars
 else
   echo "File curl.h not found. Make sure the curl development library is installed, e.g. libcurl4-openssl-dev (deb) or libcurl-devel (rpm)."
   exit 1
