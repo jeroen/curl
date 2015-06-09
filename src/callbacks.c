@@ -45,7 +45,7 @@ size_t R_curl_callback_read(char *buffer, size_t size, size_t nitems, SEXP fun) 
 
   if (TYPEOF(res) != RAWSXP) {
     UNPROTECT(3);
-    Rf_warning("progress callback must return boolean");
+    Rf_warning("read callback must raw vector");
     return CURL_READFUNC_ABORT;
   }
 
