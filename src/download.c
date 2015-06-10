@@ -20,9 +20,9 @@ SEXP R_download_curl(SEXP url, SEXP destfile, SEXP quiet, SEXP mode, SEXP ptr) {
   CURL *handle = get_handle(ptr);
 
   /* open file */
-  FILE *dest = fopen(translateCharUTF8(asChar(destfile)), CHAR(asChar(mode)));
+  FILE *dest = fopen(CHAR(asChar(destfile)), CHAR(asChar(mode)));
   if(!dest)
-    error("Failed to open file %s.", translateCharUTF8(asChar(destfile)));
+    error("Failed to open file %s.", CHAR(asChar(destfile)));
 
   /* set options */
   curl_easy_setopt(handle, CURLOPT_URL, translateCharUTF8(asChar(url)));

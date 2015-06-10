@@ -65,9 +65,9 @@ SEXP R_curl_fetch_disk(SEXP url, SEXP ptr, SEXP path, SEXP mode){
   reset_resheaders(get_ref(ptr));
 
   /* open file */
-  FILE *dest = fopen(translateCharUTF8(asChar(path)), CHAR(asChar(mode)));
+  FILE *dest = fopen(CHAR(asChar(path)), CHAR(asChar(mode)));
   if(!dest)
-    error("Failed to open file %s.", translateCharUTF8(asChar(path)));
+    error("Failed to open file %s.", CHAR(asChar(path)));
   curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, push_disk);
   curl_easy_setopt(handle, CURLOPT_WRITEDATA, dest);
 

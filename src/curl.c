@@ -238,7 +238,7 @@ SEXP R_curl_connection(SEXP url, SEXP mode, SEXP ptr, SEXP stop_on_error) {
   con->fgetc_internal = rcurl_fgetc;
 
   /* open connection  */
-  const char *smode = translateCharUTF8(asChar(mode));
+  const char *smode = CHAR(asChar(mode));
   if(!strcmp(smode, "r") || !strcmp(smode, "rb")){
     strcpy(con->mode, smode);
     rcurl_open(con);

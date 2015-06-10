@@ -13,11 +13,11 @@ struct curl_httppost* make_form(SEXP form){
       curl_formadd(&post, &last, CURLFORM_COPYNAME, name, CURLFORM_COPYCONTENTS, RAW(val), CURLFORM_CONTENTSLENGTH, (long) length(val), CURLFORM_END);
     } else if(isVector(val)){
       //assume a form_upload value
-      const char* path = translateCharUTF8(asChar(VECTOR_ELT(val, 0)));
+      const char* path = CHAR(asChar(VECTOR_ELT(val, 0)));
       if(VECTOR_ELT(val, 1) == R_NilValue){
         curl_formadd(&post, &last, CURLFORM_COPYNAME, name, CURLFORM_FILE, path, CURLFORM_END);
       } else {
-        const char *content_type = translateCharUTF8(asChar(VECTOR_ELT(val, 1)));
+        const char *content_type = CHAR(asChar(VECTOR_ELT(val, 1)));
         curl_formadd(&post, &last, CURLFORM_COPYNAME, name, CURLFORM_FILE, path, CURLFORM_CONTENTTYPE, content_type, CURLFORM_END);
       }
     } else {
