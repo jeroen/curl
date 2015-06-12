@@ -80,3 +80,15 @@ test_that("Downloading to a file", {
   expect_equal(jsonlite::fromJSON(tmp)$cookies$foo, "123")
   suppressWarnings(gc())
 })
+
+test_that("handle_setopt validates options", {
+  h <- new_handle()
+  expect_identical(class(h), "curl_handle")
+  expect_error(handle_setopt(h, invalid.option="foo"),
+    "Unknown option: invalid.option")
+  expect_error(handle_setopt(h, badopt1="foo", badopt2="bar"),
+    "Unknown options: badopt1, badopt2")
+  expect_identical(class(handle_setopt(h, username="foo")),
+    "curl_handle") ## i.e. that's a valid option, so it succeeds
+  suppressWarnings(gc())
+})

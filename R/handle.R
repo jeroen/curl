@@ -54,9 +54,12 @@ new_handle <- function(...){
 #' @rdname handle
 handle_setopt <- function(handle, ..., .list = list()){
   values <- c(list(...), .list)
-  keys <- as.integer(curl_options()[tolower(names(values))])
+  opt_names <- tolower(names(values))
+  keys <- as.integer(curl_options()[opt_names])
   if(anyNA(keys)){
-    stop("Unknown options.")
+    bad_opts <- opt_names[is.na(keys)]
+    stop("Unknown option", ifelse(length(bad_opts) > 1, "s: ", ": "),
+      paste(bad_opts, collapse=", "))
   }
   stopifnot(length(keys) == length(values))
   .Call(R_handle_setopt, handle, keys, values)
