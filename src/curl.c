@@ -25,6 +25,11 @@
 #error "Unsupported connections API version"
 #endif
 
+/* Define BSWAP_32 for OpenBSD */
+#if (defined(__OpenBSD__))
+#define BSWAP_32(x) swap32(x)
+#endif
+
 #define min(a, b) (((a) < (b)) ? (a) : (b))
 #define R_EOF -1
 
