@@ -13,6 +13,7 @@
  * function is only used when a connection is recycled after auto-open.
  */
 #include "curl-common.h"
+#include <Rconfig.h>
 
 /* defines _BIG_ENDIAN used below */
 #if (defined(__sun) && defined(__SVR4))
@@ -133,7 +134,7 @@ static size_t rcurl_read(void *target, size_t sz, size_t ni, Rconnection con) {
 /* naive implementation of readLines */
 static int rcurl_fgetc(Rconnection con) {
   int x = 0;
-#ifdef _BIG_ENDIAN
+#ifdef WORDS_BIGENDIAN
   return rcurl_read(&x, 1, 1, con) ? BSWAP_32(x) : R_EOF;
 #else
   return rcurl_read(&x, 1, 1, con) ? x : R_EOF;
