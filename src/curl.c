@@ -15,20 +15,20 @@
 #include "curl-common.h"
 #include <Rconfig.h>
 
-/* defines _BIG_ENDIAN used below */
+/* Define BSWAP_32 on Big Endian systems */
 #if (defined(__sun) && defined(__SVR4))
 #include <sys/byteorder.h>
+#elif (defined(__APPLE__) && defined(__ppc__) || defined(__ppc64__))
+#include <libkern/OSByteOrder.h>
+#define BSWAP_32 OSSwapInt32
+#elif (defined(__OpenBSD__))
+#define BSWAP_32(x) swap32(x)
 #endif
 
 /* the RConnection API is experimental and subject to change */
 #include <R_ext/Connections.h>
 #if ! defined(R_CONNECTIONS_VERSION) || R_CONNECTIONS_VERSION != 1
 #error "Unsupported connections API version"
-#endif
-
-/* Define BSWAP_32 for OpenBSD */
-#if (defined(__OpenBSD__))
-#define BSWAP_32(x) swap32(x)
 #endif
 
 #define min(a, b) (((a) < (b)) ? (a) : (b))
