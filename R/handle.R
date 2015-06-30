@@ -53,7 +53,7 @@ new_handle <- function(...){
 #'   a list of options elsewhere, avoiding the use of \code{do.call()}.
 #' @rdname handle
 handle_setopt <- function(handle, ..., .list = list()){
-  stopifnot(is(handle, "curl_handle"))
+  stopifnot(inherits(handle, "curl_handle"))
   values <- c(list(...), .list)
   opt_names <- tolower(names(values))
   keys <- as.integer(curl_options()[opt_names])
@@ -71,7 +71,7 @@ handle_setopt <- function(handle, ..., .list = list()){
 #' @useDynLib curl R_handle_setheaders
 #' @rdname handle
 handle_setheaders <- function(handle, ..., .list = list()){
-  stopifnot(is(handle, "curl_handle"))
+  stopifnot(inherits(handle, "curl_handle"))
   opts <- c(list(...), .list)
   if(!all(vapply(opts, is.character, logical(1)))){
     stop("All headers must be strings.")
@@ -87,11 +87,11 @@ handle_setheaders <- function(handle, ..., .list = list()){
 #' @useDynLib curl R_handle_setform
 #' @rdname handle
 handle_setform <- function(handle, ..., .list = list()){
-  stopifnot(is(handle, "curl_handle"))
+  stopifnot(inherits(handle, "curl_handle"))
   form <- c(list(...), .list)
   for(i in seq_along(form)){
     val <- form[[i]];
-    if(!is.character(val) && !is.raw(val) && !is(val, "form_file")){
+    if(!is.character(val) && !is.raw(val) && !inherits(val, "form_file")){
       stop("Insupported value type for form field '", names(form[i]), "'.")
     }
   }
@@ -103,7 +103,7 @@ handle_setform <- function(handle, ..., .list = list()){
 #' @rdname handle
 #' @useDynLib curl R_handle_reset
 handle_reset <- function(handle){
-  stopifnot(is(handle, "curl_handle"))
+  stopifnot(inherits(handle, "curl_handle"))
   .Call(R_handle_reset, handle)
   invisible(handle)
 }
@@ -133,7 +133,7 @@ handle_reset <- function(handle){
 #' handle_reset(h)
 #' handle_cookies(h)
 handle_cookies <- function(handle){
-  stopifnot(is(handle, "curl_handle"))
+  stopifnot(inherits(handle, "curl_handle"))
   cookies <- .Call(R_get_handle_cookies, handle)
   df <- if(length(cookies)){
     values <- lapply(strsplit(cookies, split="\t"), `[`, 1:7)
