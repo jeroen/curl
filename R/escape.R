@@ -16,11 +16,11 @@
 #' curl_escape(mu)
 #' curl_unescape(curl_escape(mu))
 curl_escape <- function(url){
-  .Call(R_curl_escape, url, FALSE);
+  .Call(R_curl_escape, as.character(url), FALSE);
 }
 
 #' @rdname curl_escape
 #' @export
 curl_unescape <- function(url){
-  .Call(R_curl_escape, url, TRUE);
+  .Call(R_curl_escape, as.character(url), TRUE);
 }
