@@ -1,5 +1,5 @@
 0.9.1
- - Always coerse 'url' agument to utf8 strings in escape/unescape
+ - Convert url argument to utf8 strings in escape/unescape
  - Endian fix for BSD systems
  - Add support for setting curlopt_xxx_large options
 
