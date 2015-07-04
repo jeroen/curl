@@ -180,7 +180,7 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
       if(!isNumeric(val) || length(val) != 1) {
         error("Value for option %s (%d) must be a number.", optname, key);
       }
-      assert(curl_easy_setopt(handle, key, (long long) asReal(val)));
+      assert(curl_easy_setopt(handle, key, (curl_off_t) asReal(val)));
     } else {
       error("Option %s (%d) not supported.", optname, key);
     }
