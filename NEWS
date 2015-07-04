@@ -1,7 +1,7 @@
 0.9.1
  - Always coerse 'url' agument to utf8 strings in escape/unescape
- - Fix for BSD systems
- - Add support for setting non-integer 'number' options
+ - Endian fix for BSD systems
+ - Add support for setting curlopt_xxx_large options
 
 0.9
  - Fix for very old versions of libcurl (RHEL 5)
