@@ -15,7 +15,7 @@ SEXP R_curl_escape(SEXP url, SEXP unescape_) {
   SEXP output = PROTECT(allocVector(STRSXP, n));
 
   for (int i = 0; i < n; ++i) {
-    const char *in = translateCharUTF8(STRING_ELT(url, i));
+    const char *in = CHAR(STRING_ELT(url, i));
     char *out;
     if (unescape) {
       out = curl_easy_unescape(curl, in, 0, NULL);
@@ -23,7 +23,7 @@ SEXP R_curl_escape(SEXP url, SEXP unescape_) {
       out = curl_easy_escape(curl, in, 0);
     }
 
-    SET_STRING_ELT(output, i, mkChar(out));
+    SET_STRING_ELT(output, i, mkCharCE(out, CE_UTF8));
     curl_free(out);
   }
 

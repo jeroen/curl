@@ -22,7 +22,5 @@ curl_escape <- function(url){
 #' @rdname curl_escape
 #' @export
 curl_unescape <- function(url){
-  out <- .Call(R_curl_escape, as.character(url), TRUE);
-  Encoding(out) <- "UTF-8"
-  out
+  .Call(R_curl_escape, enc2utf8(as.character(url)), TRUE);
 }
