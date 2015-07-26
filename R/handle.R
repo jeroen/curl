@@ -57,8 +57,9 @@ handle_setopt <- function(handle, ..., .list = list()){
   values <- c(list(...), .list)
   opt_names <- tolower(names(values))
   keys <- as.integer(curl_options()[opt_names])
-  if(anyNA(keys)){
-    bad_opts <- opt_names[is.na(keys)]
+  na_keys <- is.na(keys)
+  if(any(na_keys)){
+    bad_opts <- opt_names[na_keys]
     stop("Unknown option", ifelse(length(bad_opts) > 1, "s: ", ": "),
       paste(bad_opts, collapse=", "))
   }
