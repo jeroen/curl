@@ -6,7 +6,11 @@
 library(inline)
 getsymbol <- function(name){
   cat("Checking:", name, "\n")
-  cfunction(cppargs="-I/usr/local/opt/curl/include", includes = '#include <curl/curl.h>', body = paste("return ScalarInteger((int)", name, ");"))()
+  cfunction(
+    cppargs="-I/usr/local/opt/curl/include",
+    includes = '#include <curl/curl.h>',
+    body = paste("return ScalarInteger((int)", name, ");")
+  )()
 }
 
 # The symbols-in-versions file is included with libcurl
