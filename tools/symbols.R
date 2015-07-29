@@ -5,6 +5,7 @@
 # Function to read a symbol
 library(inline)
 getsymbol <- function(name){
+  cat("Checking:", name, "\n")
   cfunction(cppargs="-I/usr/local/opt/curl/include", includes = '#include <curl/curl.h>', body = paste("return ScalarInteger((int)", name, ");"))()
 }
 
@@ -22,9 +23,7 @@ symbols$value <- NA_integer_;
 symbols$value[avail] <- vapply(symbols$name[avail], getsymbol, integer(1))
 
 # Compute type for options
-
 type_name <- c("integer", "string", "function", "number")
-
 type <- cut(symbols$value, c(-Inf, 0, 10000, 20000, 30000, 40000, Inf),
   labels = FALSE, right = FALSE)
 type[is.na(type)] <- 1
@@ -36,5 +35,4 @@ symbols$type[!option] <- NA
 
 # Save as lazy data
 curl_symbols <- symbols[order(symbols$name), ]
-
 devtools::use_data(curl_symbols, overwrite = TRUE)
