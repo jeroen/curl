@@ -8,3 +8,4 @@ EXPORTS
 Private1@20
 SvchostPushServiceGlobals@4
 WinHttpGetIEProxyConfigForCurrentUser@4
+WinHttpGetProxyForUrl@16
