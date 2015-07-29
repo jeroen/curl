@@ -1,5 +1,5 @@
 Used msys2 to compile libcurl with slighly modified PKGBUILD to
-avoid strtok_r which seems to be introduced in GCC 5.1:
+avoid strtok_r which seems to be introduced in recent mingw-w64:
 
   curl_disallow_strtok_r=yes ../${_realname}-${pkgver}/configure \
     --prefix=${MINGW_PREFIX} \
@@ -17,4 +17,5 @@ avoid strtok_r which seems to be introduced in GCC 5.1:
 
 All static dependency libraries were grabbed from msys2 repos except for
 librtmp.a which I kept from the previous version (from the libcurl website).
+Note that libintl is part of gettext.
 
