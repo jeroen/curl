@@ -1,3 +1,11 @@
+0.9.2
+ - Updated the static libraries on Windows:
+    * libcurl 7.43.0
+    * openssl 1.0.2d
+    * libssh2 1.6.0
+    * libiconv 1.14-5
+    * libidn 1.31-1
+
 0.9.1
  - Convert url argument to utf8 strings in escape/unescape
  - Endian fix for BSD systems
