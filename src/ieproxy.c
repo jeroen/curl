@@ -59,40 +59,41 @@ SEXP R_proxy_info(){
   return vec;
 }
 
-SEXP R_get_proxy_for_url(SEXP target_url, SEXP autoproxy_url){
-  //convert argument
-  wchar_t *longurl = (wchar_t *) malloc(1000);
+SEXP R_get_proxy_for_url(SEXP target_url, SEXP auto_detect, SEXP autoproxy_url){
+  // Convert char to windows strings
+  wchar_t *longurl = (wchar_t *) calloc(10000, sizeof(int));
   mbstowcs(longurl, CHAR(STRING_ELT(target_url, 0)), LENGTH(STRING_ELT(target_url, 0)));
 
-  wchar_t *autourl = (wchar_t *) malloc(1000);
+  wchar_t *autourl = (wchar_t *) calloc(10000, sizeof(int));
   mbstowcs(autourl, CHAR(STRING_ELT(autoproxy_url, 0)), LENGTH(STRING_ELT(autoproxy_url, 0)));
 
-  //some variables
-  HINTERNET hHttpSession = NULL;
+  // Some settings
   WINHTTP_AUTOPROXY_OPTIONS AutoProxyOptions;
   WINHTTP_PROXY_INFO ProxyInfo;
 
-  //allocate
+  // Clear memory
   ZeroMemory( &AutoProxyOptions, sizeof(AutoProxyOptions) );
   ZeroMemory( &ProxyInfo, sizeof(ProxyInfo) );
 
   // Create the WinHTTP session.
-  if(!hHttpSession){
-    hHttpSession = WinHttpOpen( L"WinHTTP AutoProxy Sample/1.0",
+  HINTERNET hHttpSession = WinHttpOpen( L"WinHTTP AutoProxy Sample/1.0",
       WINHTTP_ACCESS_TYPE_NO_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
-  }
 
   // Exit if WinHttpOpen failed.
   if( !hHttpSession )
     error("Call to WinHttpOpen failed.");
 
   // Auto-detection doesn't work very well
-  //AutoProxyOptions.dwFlags = WINHTTP_AUTOPROXY_AUTO_DETECT;
-  //AutoProxyOptions.dwAutoDetectFlags = WINHTTP_AUTO_DETECT_TYPE_DHCP | WINHTTP_AUTO_DETECT_TYPE_DNS_A;
+  if(asLogical(auto_detect)){
+    AutoProxyOptions.dwFlags = WINHTTP_AUTOPROXY_AUTO_DETECT;
+    AutoProxyOptions.dwAutoDetectFlags = WINHTTP_AUTO_DETECT_TYPE_DHCP | WINHTTP_AUTO_DETECT_TYPE_DNS_A;
+  }
 
   // Use manual URL instead
-  AutoProxyOptions.dwFlags = WINHTTP_AUTOPROXY_CONFIG_URL;
-  AutoProxyOptions.lpszAutoConfigUrl = autourl;
+  if(isString(autoproxy_url)){
+    AutoProxyOptions.dwFlags = WINHTTP_AUTOPROXY_CONFIG_URL;
+    AutoProxyOptions.lpszAutoConfigUrl = autourl;
+  }
 
   // Use DHCP and DNS-based auto-detection.
   AutoProxyOptions.fAutoLogonIfChallenged = TRUE;
