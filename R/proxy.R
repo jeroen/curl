@@ -19,9 +19,11 @@ ie_proxy_info <- function(){
 }
 
 #' @useDynLib curl R_get_proxy_for_url
+#' @param target_url url with host for which to lookup the proxy server
 #' @export
 #' @rdname ie_proxy
-ie_get_proxy_for_url <- function(target_url){
+ie_get_proxy_for_url <- function(target_url = "http://www.google.com"){
+  stopifnot(is.character(target_url))
   info <- ie_proxy_info()
   if(length(info$Proxy)){
     if(isTRUE(grepl("<local>", info$ProxyBypass, fixed = TRUE)) &&

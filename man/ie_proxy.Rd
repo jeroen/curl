@@ -8,7 +8,10 @@
 \usage{
 ie_proxy_info()
 
-ie_get_proxy_for_url(target_url)
+ie_get_proxy_for_url(target_url = "http://www.google.com")
+}
+\arguments{
+\item{target_url}{url with host for which to lookup the proxy server}
 }
 \description{
 Lookup and mimic the system proxy settings on Windows as set by Internet
