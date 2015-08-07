@@ -104,8 +104,8 @@ size_t append_buffer(void *contents, size_t sz, size_t nmemb, void *ctx) {
   memory *mem = (memory*) ctx;
 
   /* increase buffer to nearest 2^n */
-  int oldsize = exp2(ceil(log2(mem->size)));
-  int newsize = exp2(ceil(log2(mem->size + realsize)));
+  size_t oldsize = exp2(ceil(log2(mem->size)));
+  size_t newsize = exp2(ceil(log2(mem->size + realsize)));
   if(newsize > oldsize){
     mem->buf = realloc(mem->buf, newsize);
     if (!mem->buf)
