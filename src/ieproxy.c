@@ -87,7 +87,7 @@ SEXP R_get_proxy_for_url(SEXP target_url, SEXP auto_detect, SEXP autoproxy_url){
   }
 
   // Use manual URL instead
-  if(isString(autoproxy_url)){
+  if(isString(autoproxy_url) && LENGTH(autoproxy_url)){
     wchar_t *autourl = (wchar_t *) calloc(10000, sizeof(int));
     mbstowcs(autourl, CHAR(STRING_ELT(autoproxy_url, 0)), LENGTH(STRING_ELT(autoproxy_url, 0)));
     AutoProxyOptions.dwFlags = WINHTTP_AUTOPROXY_CONFIG_URL;
