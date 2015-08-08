@@ -127,7 +127,9 @@ SEXP R_get_proxy_for_url(SEXP target_url, SEXP auto_detect, SEXP autoproxy_url){
   //store output data
   char buffer[500];
   SEXP vec = PROTECT(allocVector(VECSXP, 3));
-  SET_VECTOR_ELT(vec, 0, ScalarLogical(ProxyInfo.dwAccessType == WINHTTP_ACCESS_TYPE_NAMED_PROXY));
+  SET_VECTOR_ELT(vec, 0, ScalarLogical(
+      ProxyInfo.dwAccessType == WINHTTP_ACCESS_TYPE_NAMED_PROXY ||
+      ProxyInfo.dwAccessType == WINHTTP_ACCESS_TYPE_DEFAULT_PROXY));
 
   if(ProxyInfo.lpszProxy != NULL) {
     wcstombs(buffer, ProxyInfo.lpszProxy, 500);
