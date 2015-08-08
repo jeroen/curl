@@ -1,5 +1,5 @@
 0.9.2
- - Optimization for realloc to make curl_fetch_memory on windows
+ - Optimization for windows to make realloc in curl_fetch_memory faster
  - Updated the curl_symbols table to 7.43
  - Updated the static libraries on Windows:
     * libcurl 7.43.0
