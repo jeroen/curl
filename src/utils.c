@@ -103,14 +103,15 @@ size_t append_buffer(void *contents, size_t sz, size_t nmemb, void *ctx) {
   size_t realsize = sz * nmemb;
   memory *mem = (memory*) ctx;
 
-  /* increase buffer to nearest 2^n */
-  size_t oldsize = exp2(ceil(log2(mem->size)));
-  size_t newsize = exp2(ceil(log2(mem->size + realsize)));
-  if(newsize > oldsize){
-    mem->buf = realloc(mem->buf, newsize);
-    if (!mem->buf)
-      return 0;
-  }
+  /* realloc is slow on windows, therefore increase buffer to nearest 2^n */
+  #ifdef _WIN32
+    mem->buf = realloc(mem->buf, exp2(ceil(log2(mem->size + realsize))));
+  #else
+    mem->buf = realloc(mem->buf, mem->size + realsize);
+  #endif
+
+  if (!mem->buf)
+    return 0;
 
   /* append data and increment size */
   memcpy(&(mem->buf[mem->size]), contents, realsize);
