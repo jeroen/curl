@@ -16,17 +16,14 @@ curl_version <- function(){
 #' symbols (including options) provides more information about the symbols,
 #' including when support was added/removed from libcurl.
 #'
-#' @useDynLib curl R_curl_options
 #' @export
-#' @examples
-#' # List available curl options
+#' @examples #Available curl options
 #' curl_options()
-#' # See all symbols
+#'
+#' # List all symbols
 #' head(curl_symbols)
 curl_options <- function(){
-  opts <- .Call(R_curl_options)
-  names(opts) <- tolower(names(opts))
-  opts
+  return(option_table)
 }
 
 #' @rdname curl_options

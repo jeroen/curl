@@ -1,26 +1,69 @@
-# On most systems the curl headers will be found automatically.
-# You can use CURL_INCLUDES to set a custom include dir.
-if [ "$CURL_INCLUDES" ]; then
-  echo "Using libcurl from: $CURL_INCLUDES"
-elif [ -r /usr/local/include/curl/curl.h ]; then
-  CURL_INCLUDES="/usr/local/include"
-elif [ -r /usr/include/curl/curl.h ]; then
-  CURL_INCLUDES="/usr/include"
-elif [ -r /opt/csw/include/curl/curl.h ]; then
-  CURL_INCLUDES="/opt/csw/include/"
-  LDFLAGS="-L/opt/csw/lib"
+#!/bin/bash
+# Anticonf (tm) script by Jeroen Ooms (2015)
+# This script will query 'pkg-config' for the required cflags and ldflags.
+# If pkg-config is unavailable or does not find the library, try setting
+# INCLUDE_DIR and LIB_DIR manually via e.g:
+# R CMD INSTALL --configure-vars='INCLUDE_DIR=/.../include LIB_DIR=/.../lib'
+
+# Library settings
+PKG_CONFIG_NAME="libcurl"
+PKG_DEB_NAME="libcurl4-openssl-dev"
+PKG_RPM_NAME="libcurl-devel"
+PKG_CSW_NAME="libcurl_dev"
+PKG_TEST_HEADER="<curl/curl.h>"
+LDFLAGS_DEFAULT="-lcurl"
+CFLAGS_DEFAULT=""
+
+# Use pkg-config if available
+PKGCONFIG=$(command -v pkg-config)
+if [ "$PKGCONFIG" ]; then
+  PKGCONFIG_CFLAGS=$(pkg-config --cflags ${PKG_CONFIG_NAME})
+  PKGCONFIG_LIBS=$(pkg-config --libs ${PKG_CONFIG_NAME})
 fi
 
-if [ -r "$CURL_INCLUDES/curl/curl.h" ]; then
-  # Grep the CURL_OPTION values from curl.h
-  echo "Found libcurl in $CURL_INCLUDES/curl/curl.h"
-  grep "^[ \t]*CINIT(" "$CURL_INCLUDES/curl/curl.h" > src/option_table.h
-  echo "PKG_CPPFLAGS= -I$CURL_INCLUDES" > src/Makevars
+# Note that cflags may be empty in case of success
+if [ "$PKG_CFLAGS" ] || [ "$PKG_LIBS" ]; then
+  echo "Found custom cflags and libs!"
+elif [ "$INCLUDE_DIR" ] || [ "$LIB_DIR" ]; then
+  echo "Found INCLUDE_DIR and/or LIB_DIR!"
+  PKG_CFLAGS="-I$INCLUDE_DIR $CFLAGS_DEFAULT"
+  PKG_LIBS="-L$LIB_DIR $LDFLAGS_DEFAULT"
+elif [ "$PKGCONFIG_CFLAGS" ] || [ "$PKGCONFIG_LIBS" ]; then
+  echo "Found pkg-config cflags and libs!"
+  PKG_CFLAGS=${PKGCONFIG_CFLAGS}
+  PKG_LIBS=${PKGCONFIG_LIBS}
 else
-  echo "File curl.h not found. Make sure the curl development library is installed, e.g. libcurl4-openssl-dev (deb) or libcurl-devel (rpm)."
-  exit 1
+  PKG_CFLAGS=${CFLAGS_DEFAULT}
+  PKG_LIBS=${LDFLAGS_DEFAULT}
 fi
 
-echo "PKG_LIBS=$LDFLAGS -lcurl" >> src/Makevars
+# For debugging
+echo "Using cflags=$PKG_CFLAGS" 1>&2
+echo "Using libs=$PKG_LIBS" 1>&2
 
+# Test configuration
+echo "#include $PKG_TEST_HEADER" | cc $PKG_CFLAGS -std=gnu99 -E -xc - >/dev/null 2>&1 || R_CONFIG_ERROR=1;
+
+# Customize the error
+if [ $R_CONFIG_ERROR ]; then
+  echo "------------------------- ANTICONF ERROR ---------------------------" 1>&2
+  echo "Configuration failed because $PKG_CONFIG_NAME was not found. Try installing:" 1>&2
+  echo " * deb: $PKG_DEB_NAME (Debian, Ubuntu, etc)" 1>&2
+  echo " * rpm: $PKG_RPM_NAME (Fedora, CentOS, RHEL)" 1>&2
+  echo " * csw: $PKG_CSW_NAME (Solaris)" 1>&2
+  echo "If $PKG_CONFIG_NAME is already installed, check that 'pkg-config' is in your" 1>&2
+  echo "PATH and PKG_CONFIG_PATH contains a $PKG_CONFIG_NAME.pc file. If pkg-config" 1>&2
+  echo "is unavailable you can set INCLUDE_DIR and LIB_DIR manually via:" 1>&2
+  echo "R CMD INSTALL --configure-vars='INCLUDE_DIR=... LIB_DIR=...'" 1>&2
+  echo "--------------------------------------------------------------------" 1>&2
+  exit 1;
+fi
+
+# Write to Makevars
+sed -e "s|@cflags@|$PKG_CFLAGS|" -e "s|@libs@|$PKG_LIBS|" src/Makevars.in > src/Makevars
+
+# Extract curlopt symbols
+echo '#include <curl/curl.h>' | cc $CFLAGS -std=gnu99 -E -xc - | grep "^[ \t]*CURLOPT_.*," | sed s/,// > tools/option_table.txt
+
+# Success
 exit 0

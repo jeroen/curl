@@ -9,7 +9,8 @@ clean:
 
 winlibs:
 	"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" "../tools/winlibs.R"
-	grep "^\W*CINIT(" "../windows/libcurl-7.43.0/include/curl/curl.h" > option_table.h
+	echo '#include <curl/curl.h>' | cc $(PKG_CPPFLAGS) -std=gnu99 -E -xc - | grep "^[ \t]*CURLOPT_.*," | sed s/,// > ../tools/options.txt
+	"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" "../tools/options.R"
 
 winhttp:
 ifeq "${R_ARCH}" "/i386"

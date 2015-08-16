@@ -1,0 +1,7 @@
+PKG_CFLAGS=@cflags@
+PKG_LIBS=@libs@
+
+all: options
+
+options:
+	"${R_HOME}/bin/Rscript" "../tools/options.R"

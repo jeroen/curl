@@ -30,9 +30,10 @@ including when support was added/removed from libcurl.
 \examples{
 # Curl/ssl version info
 curl_version()
-# List available curl options
+#Available curl options
 curl_options()
-# See all symbols
+
+# List all symbols
 head(curl_symbols)
 }
 \keyword{datasets}
