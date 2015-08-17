@@ -42,7 +42,7 @@ echo "Using PKG_CFLAGS=$PKG_CFLAGS"
 echo "Using PKG_LIBS=$PKG_LIBS"
 
 # Test configuration
-echo "#include $PKG_TEST_HEADER" | ${CC} ${CPPFLAGS} ${PKG_CFLAGS} ${CFLAGS} -E -xc - >/dev/null || R_CONFIG_ERROR=1;
+echo "#include $PKG_TEST_HEADER" | ${CC} ${CPPFLAGS} ${PKG_CFLAGS} ${CFLAGS} -E -xc - >/dev/null 2>&1 || R_CONFIG_ERROR=1;
 
 # Customize the error
 if [ $R_CONFIG_ERROR ]; then
