@@ -1,4 +1,4 @@
-PKG_CFLAGS=@cflags@
+PKG_CPPFLAGS=@cflags@
 PKG_LIBS=@libs@
 
 all: options

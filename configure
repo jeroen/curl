@@ -11,55 +11,51 @@ PKG_DEB_NAME="libcurl4-openssl-dev"
 PKG_RPM_NAME="libcurl-devel"
 PKG_CSW_NAME="libcurl_dev"
 PKG_TEST_HEADER="<curl/curl.h>"
-LDFLAGS_DEFAULT="-lcurl"
-CFLAGS_DEFAULT=""
+PKG_LIBS="-lcurl"
+PKG_CFLAGS=""
 
 # Use pkg-config if available
 PKGCONFIG=$(command -v pkg-config)
 if [ "$PKGCONFIG" ]; then
-  PKGCONFIG_CFLAGS=$(pkg-config --cflags ${PKG_CONFIG_NAME})
-  PKGCONFIG_LIBS=$(pkg-config --libs ${PKG_CONFIG_NAME})
+  PKGCONFIG_CFLAGS=$(pkg-config --cflags ${PKG_CONFIG_NAME}) 2>&1
+  PKGCONFIG_LIBS=$(pkg-config --libs ${PKG_CONFIG_NAME}) 2>&1
 fi
 
 # Note that cflags may be empty in case of success
-if [ "$PKG_CFLAGS" ] || [ "$PKG_LIBS" ]; then
-  echo "Found custom cflags and libs!"
-elif [ "$INCLUDE_DIR" ] || [ "$LIB_DIR" ]; then
+if [ "$INCLUDE_DIR" ] || [ "$LIB_DIR" ]; then
   echo "Found INCLUDE_DIR and/or LIB_DIR!"
-  PKG_CFLAGS="-I$INCLUDE_DIR $CFLAGS_DEFAULT"
-  PKG_LIBS="-L$LIB_DIR $LDFLAGS_DEFAULT"
+  PKG_CFLAGS="-I$INCLUDE_DIR $PKG_CFLAGS"
+  PKG_LIBS="-L$LIB_DIR $PKG_LIBS"
 elif [ "$PKGCONFIG_CFLAGS" ] || [ "$PKGCONFIG_LIBS" ]; then
   echo "Found pkg-config cflags and libs!"
   PKG_CFLAGS=${PKGCONFIG_CFLAGS}
   PKG_LIBS=${PKGCONFIG_LIBS}
-else
-  PKG_CFLAGS=${CFLAGS_DEFAULT}
-  PKG_LIBS=${LDFLAGS_DEFAULT}
 fi
 
 # Find compiler
 CC=$(${R_HOME}/bin/R CMD config CC)
+CFLAGS=$(${R_HOME}/bin/R CMD config CFLAGS)
+CPPFLAGS=$(${R_HOME}/bin/R CMD config CPPFLAGS)
 
 # For debugging
-echo "Using cc=$CC" 1>&2
-echo "Using cflags=$PKG_CFLAGS" 1>&2
-echo "Using libs=$PKG_LIBS" 1>&2
+echo "Using PKG_CFLAGS=$PKG_CFLAGS"
+echo "Using PKG_LIBS=$PKG_LIBS"
 
 # Test configuration
-echo "#include $PKG_TEST_HEADER" | ${CC} ${PKG_CFLAGS} -std=gnu99 -E -xc - >/dev/null 2>&1 || R_CONFIG_ERROR=1;
+echo "#include $PKG_TEST_HEADER" | ${CC} ${CPPFLAGS} ${PKG_CFLAGS} ${CFLAGS} -E -xc - >/dev/null || R_CONFIG_ERROR=1;
 
 # Customize the error
 if [ $R_CONFIG_ERROR ]; then
-  echo "------------------------- ANTICONF ERROR ---------------------------" 1>&2
-  echo "Configuration failed because $PKG_CONFIG_NAME was not found. Try installing:" 1>&2
-  echo " * deb: $PKG_DEB_NAME (Debian, Ubuntu, etc)" 1>&2
-  echo " * rpm: $PKG_RPM_NAME (Fedora, CentOS, RHEL)" 1>&2
-  echo " * csw: $PKG_CSW_NAME (Solaris)" 1>&2
-  echo "If $PKG_CONFIG_NAME is already installed, check that 'pkg-config' is in your" 1>&2
-  echo "PATH and PKG_CONFIG_PATH contains a $PKG_CONFIG_NAME.pc file. If pkg-config" 1>&2
-  echo "is unavailable you can set INCLUDE_DIR and LIB_DIR manually via:" 1>&2
-  echo "R CMD INSTALL --configure-vars='INCLUDE_DIR=... LIB_DIR=...'" 1>&2
-  echo "--------------------------------------------------------------------" 1>&2
+  echo "------------------------- ANTICONF ERROR ---------------------------"
+  echo "Configuration failed because $PKG_CONFIG_NAME was not found. Try installing:"
+  echo " * deb: $PKG_DEB_NAME (Debian, Ubuntu, etc)"
+  echo " * rpm: $PKG_RPM_NAME (Fedora, CentOS, RHEL)"
+  echo " * csw: $PKG_CSW_NAME (Solaris)"
+  echo "If $PKG_CONFIG_NAME is already installed, check that 'pkg-config' is in your"
+  echo "PATH and PKG_CONFIG_PATH contains a $PKG_CONFIG_NAME.pc file. If pkg-config"
+  echo "is unavailable you can set INCLUDE_DIR and LIB_DIR manually via:"
+  echo "R CMD INSTALL --configure-vars='INCLUDE_DIR=... LIB_DIR=...'"
+  echo "--------------------------------------------------------------------"
   exit 1;
 fi
 
@@ -67,7 +63,7 @@ fi
 sed -e "s|@cflags@|$PKG_CFLAGS|" -e "s|@libs@|$PKG_LIBS|" src/Makevars.in > src/Makevars
 
 # Extract curlopt symbols
-echo '#include <curl/curl.h>' | ${CC} ${PKG_CFLAGS} -std=gnu99 -E -xc - | grep "^[ \t]*CURLOPT_.*," | sed s/,// > tools/option_table.txt
+echo '#include <curl/curl.h>' | ${CC} ${CPPFLAGS} ${PKG_CFLAGS} ${CFLAGS} -E -xc - | grep "^[ \t]*CURLOPT_.*," | sed s/,// > tools/option_table.txt
 
 # Success
 exit 0
