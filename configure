@@ -37,12 +37,16 @@ else
   PKG_LIBS=${LDFLAGS_DEFAULT}
 fi
 
+# Find compiler
+CC=$(${R_HOME}/bin/R CMD config CC)
+
 # For debugging
+echo "Using cc=$CC" 1>&2
 echo "Using cflags=$PKG_CFLAGS" 1>&2
 echo "Using libs=$PKG_LIBS" 1>&2
 
 # Test configuration
-echo "#include $PKG_TEST_HEADER" | cc $PKG_CFLAGS -std=gnu99 -E -xc - >/dev/null 2>&1 || R_CONFIG_ERROR=1;
+echo "#include $PKG_TEST_HEADER" | ${CC} ${PKG_CFLAGS} -std=gnu99 -E -xc - >/dev/null 2>&1 || R_CONFIG_ERROR=1;
 
 # Customize the error
 if [ $R_CONFIG_ERROR ]; then
@@ -63,7 +67,7 @@ fi
 sed -e "s|@cflags@|$PKG_CFLAGS|" -e "s|@libs@|$PKG_LIBS|" src/Makevars.in > src/Makevars
 
 # Extract curlopt symbols
-echo '#include <curl/curl.h>' | cc $PKG_CFLAGS -std=gnu99 -E -xc - | grep "^[ \t]*CURLOPT_.*," | sed s/,// > tools/option_table.txt
+echo '#include <curl/curl.h>' | ${CC} ${PKG_CFLAGS} -std=gnu99 -E -xc - | grep "^[ \t]*CURLOPT_.*," | sed s/,// > tools/option_table.txt
 
 # Success
 exit 0
