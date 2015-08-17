@@ -17,8 +17,8 @@ PKG_CFLAGS=""
 # Use pkg-config if available
 PKGCONFIG=$(command -v pkg-config)
 if [ "$PKGCONFIG" ]; then
-  PKGCONFIG_CFLAGS=$(pkg-config --cflags ${PKG_CONFIG_NAME}) 2>&1
-  PKGCONFIG_LIBS=$(pkg-config --libs ${PKG_CONFIG_NAME}) 2>&1
+  PKGCONFIG_CFLAGS=$(pkg-config --cflags ${PKG_CONFIG_NAME})
+  PKGCONFIG_LIBS=$(pkg-config --libs ${PKG_CONFIG_NAME})
 fi
 
 # Note that cflags may be empty in case of success
