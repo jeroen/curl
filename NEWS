@@ -1,3 +1,8 @@
+0.9.3
+ - Refactor configure script to use pkg-config
+ - Use the preprocessor to extract CURLOPT symbols during install
+ - Don't use setInternet2() in R > 3.2.2
+
 0.9.2
  - Optimization for windows to make realloc in curl_fetch_memory faster
  - Updated the curl_symbols table to 7.43
