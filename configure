@@ -64,7 +64,6 @@ sed -e "s|@cflags@|$PKG_CFLAGS|" -e "s|@libs@|$PKG_LIBS|" src/Makevars.in > src/
 
 # Extract curlopt symbols
 echo '#include <curl/curl.h>' | ${CC} ${CPPFLAGS} ${PKG_CFLAGS} ${CFLAGS} -E -xc - | grep "^[ \t]*CURLOPT_.*," | sed s/,// > tools/option_table.txt
-
 ${R_HOME}/bin/R --slave --no-restore --file=tools/options.R
 
 # Success
