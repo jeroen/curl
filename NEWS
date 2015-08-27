@@ -1,3 +1,7 @@
+0.9.4
+ - Move the creation of the option table to ./R/options.R
+ - The curl_options() function gains an argument to filter by name
+
 0.9.3
  - Refactor configure script to use pkg-config
  - Use the preprocessor to extract CURLOPT symbols during install

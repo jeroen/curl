@@ -8,24 +8,6 @@ curl_version <- function(){
   .Call(R_curl_version);
 }
 
-#' List curl version and options.
-#'
-#' \code{curl_version()} shows the versions of libcurl, libssl and zlib and
-#' supported protocols. \code{curl_options()} lists all options available in
-#' the current version of libcurl.  The dataset \code{curl_symbols} lists all
-#' symbols (including options) provides more information about the symbols,
-#' including when support was added/removed from libcurl.
-#'
-#' @export
-#' @examples #Available curl options
-#' curl_options()
-#'
-#' # List all symbols
-#' head(curl_symbols)
-curl_options <- function(){
-  return(option_table)
-}
-
 #' @rdname curl_options
 #' @format A data frame with columns:
 #' \describe{
