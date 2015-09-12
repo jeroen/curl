@@ -12,8 +12,9 @@ winlibs:
 	echo '#include <curl/curl.h>' | $(CC) $(PKG_CPPFLAGS) -std=gnu99 -E -xc - | grep "^[ \t]*CURLOPT_.*," | sed s/,// > ../tools/option_table.txt
 
 winhttp:
-ifeq "${R_ARCH}" "/i386"
+	ISDWARF=$(CC) --version | grep 'dwarf' || true
+ifeq "${R_ARCH}${ISDWARF}" "/i386"
 	dlltool -k --output-lib libwinhttp.a --def winhttp32.def
 else
-	dlltool -m i386:x86-64 --as-flags --64 --output-lib libwinhttp.a --def winhttp64.def
+	dlltool $(DT_ARCH) --output-lib libwinhttp.a --def winhttp64.def
 endif
