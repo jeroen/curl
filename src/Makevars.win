@@ -1,6 +1,6 @@
 PKG_CPPFLAGS= -I../windows/libcurl-7.43.0/include
 PKG_CFLAGS= -DCURL_STATICLIB
-PKG_LIBS= -L../windows/libcurl-7.43.0/lib${R_ARCH} -L. -lwinhttp -lwinhttp32 -lcurl -lssl -lcrypto -lssh2 -lrtmp -lidn -lintl -liconv -lgdi32 -lcrypt32 -lz -lws2_32 -lcrypt32 -lwldap32 -lwinmm
+PKG_LIBS= -L../windows/libcurl-7.43.0/lib${R_ARCH} -L. -lwinhttp -lcurl -lssl -lcrypto -lssh2 -lrtmp -lidn -lintl -liconv -lgdi32 -lcrypt32 -lz -lws2_32 -lcrypt32 -lwldap32 -lwinmm
 
 all: winlibs winhttp
 
@@ -12,5 +12,8 @@ winlibs: clean
 	echo '#include <curl/curl.h>' | $(CC) $(PKG_CPPFLAGS) -std=gnu99 -E -xc - | grep "^[ \t]*CURLOPT_.*," | sed s/,// > ../tools/option_table.txt
 
 winhttp: clean
-	dlltool -k -d winhttp32.def -l libwinhttp32.a
+ifeq "${R_ARCH}" "/i386"
+	dlltool -k -d winhttp32.def -l libwinhttp.a
+else
 	dlltool $(DT_ARCH) -d winhttp64.def -l libwinhttp.a
+endif
