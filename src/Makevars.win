@@ -14,4 +14,3 @@ winlibs: clean
 winhttp.def:
 	cp winhttp$(WIN).def.in winhttp.def
 
-libwinhttp.dll.a: winhttp.def
