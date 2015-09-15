@@ -11,3 +11,4 @@ README.md
 ^src/Makevars$
 ^tools/option_table.txt$
 ^R/sysdata.rda$
+^src/*.def$
