@@ -8,8 +8,8 @@ clean:
 	rm -f *.o *.a *.dll *.def
 
 winlibs: clean
-	"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" "../tools/winlibs.R"
-	echo '#include <curl/curl.h>' | $(CC) $(PKG_CPPFLAGS) -std=gnu99 -E -xc - | grep "^[ \t]*CURLOPT_.*," | sed s/,// > ../tools/option_table.txt
+	"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" "../tools/winlibs.R" "$(M_ARCH)"
+	echo '#include <curl/curl.h>' | $(CPP) $(PKG_CPPFLAGS) -std=gnu99 -xc - | grep "^[ \t]*CURLOPT_.*," | sed s/,// > ../tools/option_table.txt
 
 winhttp.def:
 	cp winhttp$(WIN).def.in winhttp.def
