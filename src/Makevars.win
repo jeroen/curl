@@ -2,18 +2,15 @@ PKG_CPPFLAGS= -I../windows/libcurl-7.43.0/include
 PKG_CFLAGS= -DCURL_STATICLIB
 PKG_LIBS= -L../windows/libcurl-7.43.0/lib${R_ARCH} -L. -lwinhttp -lcurl -lssl -lcrypto -lssh2 -lrtmp -lidn -lintl -liconv -lgdi32 -lcrypt32 -lz -lws2_32 -lcrypt32 -lwldap32 -lwinmm
 
-all: clean winlibs winhttp
+all: winlibs libwinhttp.dll.a
 
 clean:
-	rm -f $(OBJECTS) curl.dll
+	rm -f *.o *.a *.dll *.def
 
-winlibs:
-	"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" "../tools/winlibs.R"
-	echo '#include <curl/curl.h>' | $(CC) $(PKG_CPPFLAGS) -std=gnu99 -E -xc - | grep "^[ \t]*CURLOPT_.*," | sed s/,// > ../tools/option_table.txt
+winlibs: clean
+	"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" "../tools/winlibs.R" "$(M_ARCH)"
+	echo '#include <curl/curl.h>' | $(CPP) $(PKG_CPPFLAGS) -std=gnu99 -xc - | grep "^[ \t]*CURLOPT_.*," | sed s/,// > ../tools/option_table.txt
 
-winhttp:
-ifeq "${R_ARCH}" "/i386"
-	dlltool -k --output-lib libwinhttp.a --def winhttp32.def
-else
-	dlltool -m i386:x86-64 --as-flags --64 --output-lib libwinhttp.a --def winhttp64.def
-endif
+winhttp.def:
+	cp winhttp$(WIN).def.in winhttp.def
+

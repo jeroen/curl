@@ -6,6 +6,7 @@ src/*.o
 src/*.so
 src/*.dll
 src/*.a
+src/*.def
 src/Makevars
 tools/option_table.txt
 inst/doc
