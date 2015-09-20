@@ -23,7 +23,14 @@ curl_options <- function(filter = ""){
 
 option_table <- (function(){
   env <- new.env()
-  source("tools/option_table.txt", env)
+  if(file.exists("tools/option_table.txt")){
+    source("tools/option_table.txt", env)
+  } else if(file.exists("../tools/option_table.txt")){
+    source("../tools/option_table.txt", env)
+  } else {
+    stop("Failed to find 'tools/option_table.txt' from:", getwd())
+  }
+
   option_table <- unlist(as.list(env))
   names(option_table) <- sub("^curlopt_", "", tolower(names(option_table)))
   option_table[order(names(option_table))]
