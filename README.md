@@ -2,6 +2,7 @@ A Connection Interface to Libcurl
 ---------------------------------
 
 [![Build Status](https://travis-ci.org/jeroenooms/curl.svg?branch=master)](https://travis-ci.org/jeroenooms/curl)
+[![Coverage Status](https://img.shields.io/codecov/c/github/jeroenooms/curl/master.svg)](https://codecov.io/github/jeroenooms/curl?branch=master)
 
 > The curl() function provides a drop-in replacement for base url()
   with better performance and support for http 2.0, ssl (https://, ftps://),
