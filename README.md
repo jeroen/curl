@@ -10,4 +10,4 @@ A Connection Interface to Libcurl
   both binary and text streams. If you are looking for a more-user-friendly
   http client, try the RCurl or httr packages instead.
 
-Have a look at the [vignette](http://rpubs.com/jeroenooms/curl) to get started!
+Have a look at the [vignette](https://cran.r-project.org/web/packages/curl/vignettes/intro.html) to get started!
