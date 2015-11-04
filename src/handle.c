@@ -142,12 +142,18 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
     if(val == R_NilValue){
       assert(curl_easy_setopt(handle, key, NULL));
     } else if (key == CURLOPT_PROGRESSFUNCTION) {
-      if (TYPEOF(val) != CLOSXP)
-        error("Value for option %s (%d) must be a function.", optname, key);
+      if (TYPEOF(val) != CLOSXP || ! isNull(val))
+        error("Value for option %s (%d) must be a function or NULL.", optname, key);
 
-      assert(curl_easy_setopt(handle, CURLOPT_PROGRESSFUNCTION,
-        (curl_progress_callback) R_curl_callback_progress));
-      assert(curl_easy_setopt(handle, CURLOPT_PROGRESSDATA, val));
+      /* Disable or replace a curl progress callback */
+      if(isNull(val))
+      {
+        assert(curl_easy_setopt(handle, CURLOPT_NOPROGRESS, 1L));
+      } else {
+        assert(curl_easy_setopt(handle, CURLOPT_PROGRESSFUNCTION,
+          (curl_progress_callback) R_curl_callback_progress));
+        assert(curl_easy_setopt(handle, CURLOPT_PROGRESSDATA, val));
+      }
     } else if (key == CURLOPT_READFUNCTION) {
       if (TYPEOF(val) != CLOSXP)
         error("Value for option %s (%d) must be a function.", optname, key);
