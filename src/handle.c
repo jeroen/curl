@@ -84,6 +84,12 @@ void set_handle_defaults(reference *ref){
   /* allow all authentication methods */
   assert(curl_easy_setopt(handle, CURLOPT_HTTPAUTH, CURLAUTH_ANY));
   assert(curl_easy_setopt(handle, CURLOPT_UNRESTRICTED_AUTH, 1L));
+
+  /* a default progress callback for signal handling */
+  assert(curl_easy_setopt(handle, CURLOPT_XFERINFOFUNCTION,
+         default_callback_progress));
+  assert(curl_easy_setopt(handle, CURLOPT_XFERINFODATA, NULL));
+  assert(curl_easy_setopt(handle, CURLOPT_NOPROGRESS, 0L));
 }
 
 SEXP R_new_handle(){
