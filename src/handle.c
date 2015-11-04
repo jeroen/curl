@@ -86,9 +86,15 @@ void set_handle_defaults(reference *ref){
   assert(curl_easy_setopt(handle, CURLOPT_UNRESTRICTED_AUTH, 1L));
 
   /* a default progress callback for signal handling */
+#if LIBCURL_VERSION_NUM >= 0x072000
   assert(curl_easy_setopt(handle, CURLOPT_XFERINFOFUNCTION,
          default_callback_progress));
   assert(curl_easy_setopt(handle, CURLOPT_XFERINFODATA, NULL));
+#else
+  assert(curl_easy_setopt(handle, CURLOPT_PROGRESSFUNCTION,
+         default_callback_progress));
+  assert(curl_easy_setopt(handle, CURLOPT_PROGRESSDATA, NULL));
+#endif
   assert(curl_easy_setopt(handle, CURLOPT_NOPROGRESS, 0L));
 }
 
