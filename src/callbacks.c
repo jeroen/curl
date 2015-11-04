@@ -1,8 +1,8 @@
 #include "curl-common.h"
 #include "utils.h"
 
-int default_callback_progress(void *p, 
-                              double dltotal, double dlnow, 
+int default_callback_progress(void *dummy,
+                              double dltotal, double dlnow,
                               double ultotal, double ulnow)
 {
   return !(R_ToplevelExec(check_interrupt_fn, NULL));
