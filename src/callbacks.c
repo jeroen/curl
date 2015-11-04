@@ -1,17 +1,9 @@
 #include "curl-common.h"
 #include "utils.h"
 
-int default_callback_progress
-(
-  void *dummy,
-#if LIBCURL_VERSION_NUM >= 0x072000
-  curl_off_t dltotal, curl_off_t dlnow,
-  curl_off_t ultotal, curl_off_t ulnow
-#else
-  double dltotal, double dlnow,
-  double ultotal, double ulnow
-#endif
-)
+int default_callback_progress(void *dummy,
+                              double dltotal, double dlnow,
+                              double ultotal, double ulnow)
 {
   return !(R_ToplevelExec(check_interrupt_fn, NULL));
 }
