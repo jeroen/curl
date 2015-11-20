@@ -1,6 +1,7 @@
 0.9.4
  - Move the creation of the option table to ./R/options.R
  - The curl_options() function gains an argument to filter by name
+ - Properly invoke winhttp.def file in Makevars.win (required for new toolchain)
 
 0.9.3
  - Refactor configure script to use pkg-config
