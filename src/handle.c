@@ -84,6 +84,12 @@ void set_handle_defaults(reference *ref){
   /* allow all authentication methods */
   assert(curl_easy_setopt(handle, CURLOPT_HTTPAUTH, CURLAUTH_ANY));
   assert(curl_easy_setopt(handle, CURLOPT_UNRESTRICTED_AUTH, 1L));
+
+  /* a default progress callback for signal handling */
+  assert(curl_easy_setopt(handle, CURLOPT_PROGRESSFUNCTION,
+         default_callback_progress));
+  assert(curl_easy_setopt(handle, CURLOPT_PROGRESSDATA, NULL));
+  assert(curl_easy_setopt(handle, CURLOPT_NOPROGRESS, 0L));
 }
 
 SEXP R_new_handle(){
@@ -136,12 +142,16 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
     if(val == R_NilValue){
       assert(curl_easy_setopt(handle, key, NULL));
     } else if (key == CURLOPT_PROGRESSFUNCTION) {
-      if (TYPEOF(val) != CLOSXP)
-        error("Value for option %s (%d) must be a function.", optname, key);
-
-      assert(curl_easy_setopt(handle, CURLOPT_PROGRESSFUNCTION,
-        (curl_progress_callback) R_curl_callback_progress));
-      assert(curl_easy_setopt(handle, CURLOPT_PROGRESSDATA, val));
+      /* Disable or replace a curl progress callback */
+      if(isNull(val)) {
+        assert(curl_easy_setopt(handle, CURLOPT_NOPROGRESS, 1L));
+      } else if (TYPEOF(val) == CLOSXP) {
+        assert(curl_easy_setopt(handle, CURLOPT_PROGRESSFUNCTION,
+          (curl_progress_callback) R_curl_callback_progress));
+        assert(curl_easy_setopt(handle, CURLOPT_PROGRESSDATA, val));
+      } else {
+        error("Value for option %s (%d) must be a function or NULL.", optname, key);
+      }
     } else if (key == CURLOPT_READFUNCTION) {
       if (TYPEOF(val) != CLOSXP)
         error("Value for option %s (%d) must be a function.", optname, key);
