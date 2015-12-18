@@ -1,7 +1,7 @@
 Package: curl
 Type: Package
 Title: A Modern and Flexible Web Client for R
-Version: 0.9.4
+Version: 0.9.4.9000
 Authors@R: c(
     person("Jeroen", "Ooms", , "jeroen.ooms@stat.ucla.edu", role = c("cre", "aut")),
     person("Hadley", "Wickham", , "hadley@rstudio.com", role = "ctb"),
@@ -9,12 +9,12 @@ Authors@R: c(
     )
 Description: The curl() and curl_download() functions provide highly configurable
     drop-in replacements for base url() and download.file() with better performance,
-    support for encryption (https://, ftps://), 'gzip' compression, authentication,
-    and other 'libcurl' goodies. The core of the package implements a framework for
-    performing fully customized requests where data can be processed either in memory,
-    on disk, or streaming via the callback or connection interfaces. Some knowledge of
-    'libcurl' is recommended; for a more-user-friendly web client see the 'httr' package
-    which builds on this package with HTTP specific tools and logic.
+    support for encryption (https, ftps), gzip compression, authentication, and other
+    libcurl goodies. The core of the package implements a framework for performing fully
+    customized requests where data can be processed either in memory, on disk, or
+    streaming via the callback or connection interfaces. Some knowledge of libcurl is
+    recommended; for a more-user-friendly web client see the 'httr' package which builds
+    on this package with http specific tools and logic.
 License: MIT + file LICENSE
 SystemRequirements: libcurl: libcurl-devel (rpm) or libcurl4-openssl-dev (deb).
 URL: https://github.com/jeroenooms/curl, https://www.opencpu.org/posts/curl-release-0-8/
