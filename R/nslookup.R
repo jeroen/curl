@@ -1,12 +1,14 @@
 #' Lookup a hostname
 #'
-#' Similar to \code{nsl} but works on all platforms and can resolve ipv6
-#' addresses on supported platforms. Default behavior raises an error if
-#' lookup fails.
+#' The \code{nslookup} function is similar to \code{nsl} but works on all platforms
+#' and can resolve ipv6 addresses if supported by the OS. Default behavior raises an
+#' error if lookup fails. The \code{has_internet} function returns if we have a working
+#' internet connection (including dns) by resovling a random address.
 #'
 #' @export
 #' @param host a string with a hostname
 #' @param error raise an error for failed DNS lookup. Otherwise returns \code{NULL}.
+#' @rdname nslookup
 #' @useDynLib curl R_nslookup
 #' @examples nslookup("www.r-project.org")
 #'
@@ -20,4 +22,10 @@ nslookup <- function(host, error = TRUE){
   if(isTRUE(error) && is.null(out))
     stop("Unable to resolve host: ", host)
   out
+}
+
+#' @export
+#' @rdname nslookup
+has_internet <- function(){
+  !is.null(nslookup("r-project.org", error = FALSE))
 }
