@@ -1,5 +1,5 @@
 0.9.5
- - Added nslookup() as alternative to nsl()
+ - Added nslookup() as cross-platform alternative to nsl()
 
 0.9.4
  - Move the creation of the option table to ./R/options.R
