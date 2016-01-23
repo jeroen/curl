@@ -20,7 +20,7 @@ SEXP R_nslookup(SEXP hostname) {
   /* Because gethostbyname() is deprecated */
   struct addrinfo *addr;
   if(getaddrinfo(CHAR(STRING_ELT(hostname, 0)), "http", &hints, &addr))
-    error("Failed to resolve hostname");
+    return R_NilValue;
 
   /* For debugging */
   struct sockaddr *sa = addr->ai_addr;

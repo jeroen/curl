@@ -1,15 +1,20 @@
 #' Lookup a hostname
 #'
-#' The same thing as \link{nsl} but supports IPv6 and works on all platforms.
+#' Similar to \link{nsl} but supports IPv6 and works on all platforms.
+#' Default behavior raises an error if lookup fails.
 #'
 #' @export
-#' @param hostname a string with a hostname
+#' @param host a string with a hostname
+#' @param error raise an error for failed DNS lookup. Otherwise returns \code{NULL}.
 #' @useDynLib curl R_nslookup
 #' @examples nslookup("www.r-project.org")
 #' nslookup("ipv6.test-ipv6.com")
-nslookup <- function(host){
+nslookup <- function(host, error = TRUE){
   stopifnot(is.character(host))
   if(grepl("://", host, fixed = TRUE))
     stop("This looks like a URL, not a hostname")
-  .Call(R_nslookup, host[1])
+  out <- .Call(R_nslookup, host[1])
+  if(isTRUE(error) && is.null(out))
+    stop("Unable to resolve host: ", host)
+  out
 }

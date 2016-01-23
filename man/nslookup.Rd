@@ -4,13 +4,16 @@
 \alias{nslookup}
 \title{Lookup a hostname}
 \usage{
-nslookup(host)
+nslookup(host, error = TRUE)
 }
 \arguments{
-\item{hostname}{a string with a hostname}
+\item{host}{a string with a hostname}
+
+\item{error}{raise an error for failed DNS lookup. Otherwise returns \code{NULL}.}
 }
 \description{
-The same thing as \link{nsl} but supports IPv6 and works on all platforms.
+Similar to \link{nsl} but supports IPv6 and works on all platforms.
+Default behavior raises an error if lookup fails.
 }
 \examples{
 nslookup("www.r-project.org")
