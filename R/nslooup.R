@@ -8,7 +8,9 @@
 #' @param error raise an error for failed DNS lookup. Otherwise returns \code{NULL}.
 #' @useDynLib curl R_nslookup
 #' @examples nslookup("www.r-project.org")
-#' nslookup("ipv6.test-ipv6.com")
+#'
+#' # If your OS supports IPv6
+#' \dontrun{nslookup("ipv6.test-ipv6.com")}
 nslookup <- function(host, error = TRUE){
   stopifnot(is.character(host))
   if(grepl("://", host, fixed = TRUE))
