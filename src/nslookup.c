@@ -11,15 +11,9 @@ const char *inet_ntop(int af, const void *src, char *dst, socklen_t size);
 #endif
 
 SEXP R_nslookup(SEXP hostname) {
-  /* The 'hints' arg is only needed for solaris */
-  struct addrinfo hints;
-  memset(&hints,0,sizeof(hints));
-  hints.ai_socktype = SOCK_STREAM;
-  hints.ai_family = PF_UNSPEC;
-
   /* Because gethostbyname() is deprecated */
   struct addrinfo *addr;
-  if(getaddrinfo(CHAR(STRING_ELT(hostname, 0)), "http", &hints, &addr))
+  if(getaddrinfo(CHAR(STRING_ELT(hostname, 0)), NULL, NULL, &addr))
     return R_NilValue;
 
   /* For debugging */
