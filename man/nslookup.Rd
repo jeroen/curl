@@ -21,6 +21,7 @@ error if lookup fails. The \code{has_internet} function tests the internet
 connection by resovling a random address.
 }
 \examples{
+# Should always work if we are online
 nslookup("www.r-project.org")
 
 # If your OS supports IPv6

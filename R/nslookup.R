@@ -10,7 +10,8 @@
 #' @param error raise an error for failed DNS lookup. Otherwise returns \code{NULL}.
 #' @rdname nslookup
 #' @useDynLib curl R_nslookup
-#' @examples nslookup("www.r-project.org")
+#' @examples # Should always work if we are online
+#' nslookup("www.r-project.org")
 #'
 #' # If your OS supports IPv6
 #' nslookup("ipv6.test-ipv6.com", error = FALSE)
