@@ -10,7 +10,7 @@
 #' @examples nslookup("www.r-project.org")
 #'
 #' # If your OS supports IPv6
-#' \dontrun{nslookup("ipv6.test-ipv6.com")}
+#' nslookup("ipv6.test-ipv6.com", error = FALSE)
 nslookup <- function(host, error = TRUE){
   stopifnot(is.character(host))
   if(grepl("://", host, fixed = TRUE))
