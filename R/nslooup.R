@@ -1,6 +1,6 @@
 #' Lookup a hostname
 #'
-#' Similar to \link{nsl} but supports IPv6 and works on all platforms.
+#' Similar to \code{\link[utils:nsl]{nsl}} but supports IPv6 and works on all platforms.
 #' Default behavior raises an error if lookup fails.
 #'
 #' @export

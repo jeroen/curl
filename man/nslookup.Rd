@@ -12,11 +12,13 @@ nslookup(host, error = TRUE)
 \item{error}{raise an error for failed DNS lookup. Otherwise returns \code{NULL}.}
 }
 \description{
-Similar to \link{nsl} but supports IPv6 and works on all platforms.
+Similar to \code{\link[utils:nsl]{nsl}} but supports IPv6 and works on all platforms.
 Default behavior raises an error if lookup fails.
 }
 \examples{
 nslookup("www.r-project.org")
-nslookup("ipv6.test-ipv6.com")
+
+# If your OS supports IPv6
+nslookup("ipv6.test-ipv6.com", error = FALSE)
 }
 
