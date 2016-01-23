@@ -7,9 +7,13 @@
 nslookup(host)
 }
 \arguments{
-\item{hostname}{a string with a host}
+\item{hostname}{a string with a hostname}
 }
 \description{
 The same thing as \link{nsl} but supports IPv6 and works on all platforms.
+}
+\examples{
+nslookup("www.r-project.org")
+nslookup("ipv6.test-ipv6.com")
 }
 
