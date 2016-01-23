@@ -17,8 +17,8 @@ has_internet()
 \description{
 The \code{nslookup} function is similar to \code{nsl} but works on all platforms
 and can resolve ipv6 addresses if supported by the OS. Default behavior raises an
-error if lookup fails. The \code{has_internet} function returns if we have a working
-internet connection (including dns) by resovling a random address.
+error if lookup fails. The \code{has_internet} function tests the internet
+connection by resovling a random address.
 }
 \examples{
 nslookup("www.r-project.org")
