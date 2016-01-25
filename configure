@@ -21,6 +21,11 @@ if [ "$PKGCONFIG" ]; then
   PKGCONFIG_LIBS=$(pkg-config --libs ${PKG_CONFIG_NAME})
 fi
 
+# Hack for Snow-Leopard CRAN server
+if [ -e "/Volumes/XT3/Builds/R-dev-web/QA/Simon" ]; then
+  PKGCONFIG_LIBS=$(pkg-config --libs --static ${PKG_CONFIG_NAME})
+fi
+
 # Note that cflags may be empty in case of success
 if [ "$INCLUDE_DIR" ] || [ "$LIB_DIR" ]; then
   echo "Found INCLUDE_DIR and/or LIB_DIR!"

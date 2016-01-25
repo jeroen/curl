@@ -1,3 +1,7 @@
+0.9.6
+ - Fix for Snow Leopard CRAN build server
+ - Added has_internet() function
+
 0.9.5
  - Added nslookup() as cross-platform alternative to nsl()
 
