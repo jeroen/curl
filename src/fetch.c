@@ -24,7 +24,8 @@ SEXP R_curl_fetch_memory(SEXP url, SEXP ptr){
   curl_easy_setopt(handle, CURLOPT_WRITEDATA, &body);
 
   /* perform blocking request */
-  CURLcode status = curl_easy_perform(handle);
+  //CURLcode status = curl_easy_perform(handle);
+  CURLcode status = curl_perform_with_interrupt(handle);
 
   /* Reset for reuse */
   curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, NULL);
@@ -72,7 +73,8 @@ SEXP R_curl_fetch_disk(SEXP url, SEXP ptr, SEXP path, SEXP mode){
   curl_easy_setopt(handle, CURLOPT_WRITEDATA, dest);
 
   /* perform blocking request */
-  CURLcode status = curl_easy_perform(handle);
+  //CURLcode status = curl_easy_perform(handle);
+  CURLcode status = curl_perform_with_interrupt(handle);
 
   /* cleanup */
   curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, NULL);
