@@ -21,8 +21,8 @@ if [ "$PKGCONFIG" ]; then
   PKGCONFIG_LIBS=$(pkg-config --libs ${PKG_CONFIG_NAME})
 fi
 
-# Hack for Snow-Leopard CRAN server
-if [ -e "/Volumes/XT3/Builds/R-dev-web/QA/Simon" ]; then
+# Needed for static linking
+if [[ $PKGCONFIG_CFLAGS =~ "CURL_STATICLIB" ]]; then
   PKGCONFIG_LIBS=$(pkg-config --libs --static ${PKG_CONFIG_NAME})
 fi
 
