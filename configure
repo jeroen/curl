@@ -1,4 +1,3 @@
-#!/bin/bash
 # Anticonf (tm) script by Jeroen Ooms (2015)
 # This script will query 'pkg-config' for the required cflags and ldflags.
 # If pkg-config is unavailable or does not find the library, try setting
@@ -15,12 +14,12 @@ PKG_LIBS="-lcurl"
 PKG_CFLAGS=""
 
 # Use pkg-config if available
-PKGCONFIG=$(command -v pkg-config)
-if [ "$PKGCONFIG" ]; then
-  PKGCONFIG_CFLAGS=$(pkg-config --cflags ${PKG_CONFIG_NAME})
+pkg-config --version >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+  PKGCONFIG_CFLAGS=`pkg-config --cflags ${PKG_CONFIG_NAME}`
   case "$PKGCONFIG_CFLAGS" in
-    *CURL_STATICLIB*) PKGCONFIG_LIBS=$(pkg-config --libs --static ${PKG_CONFIG_NAME});;
-    *) PKGCONFIG_LIBS=$(pkg-config --libs ${PKG_CONFIG_NAME});;
+    *CURL_STATICLIB*) PKGCONFIG_LIBS=`pkg-config --libs --static ${PKG_CONFIG_NAME}`;;
+    *) PKGCONFIG_LIBS=`pkg-config --libs ${PKG_CONFIG_NAME}`;;
   esac
 fi
 
@@ -36,9 +35,9 @@ elif [ "$PKGCONFIG_CFLAGS" ] || [ "$PKGCONFIG_LIBS" ]; then
 fi
 
 # Find compiler
-CC=$(${R_HOME}/bin/R CMD config CC)
-CFLAGS=$(${R_HOME}/bin/R CMD config CFLAGS)
-CPPFLAGS=$(${R_HOME}/bin/R CMD config CPPFLAGS)
+CC=`${R_HOME}/bin/R CMD config CC`
+CFLAGS=`${R_HOME}/bin/R CMD config CFLAGS`
+CPPFLAGS=`${R_HOME}/bin/R CMD config CPPFLAGS`
 
 # For debugging
 echo "Using PKG_CFLAGS=$PKG_CFLAGS"
