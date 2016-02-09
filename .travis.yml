@@ -3,8 +3,14 @@ language: r
 warnings_are_errors: true
 #r_check_revdep: true
 
+r_packages:
+  - covr
+
 apt_packages:
   - libcurl4-openssl-dev
+
+after_success:
+  - Rscript -e 'covr::codecov()'
 
 notifications:
   email:
