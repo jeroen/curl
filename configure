@@ -18,12 +18,10 @@ PKG_CFLAGS=""
 PKGCONFIG=$(command -v pkg-config)
 if [ "$PKGCONFIG" ]; then
   PKGCONFIG_CFLAGS=$(pkg-config --cflags ${PKG_CONFIG_NAME})
-  PKGCONFIG_LIBS=$(pkg-config --libs ${PKG_CONFIG_NAME})
-fi
-
-# Needed for static linking
-if [[ $PKGCONFIG_CFLAGS =~ "CURL_STATICLIB" ]]; then
-  PKGCONFIG_LIBS=$(pkg-config --libs --static ${PKG_CONFIG_NAME})
+  case "$PKGCONFIG_CFLAGS" in
+    *CURL_STATICLIB*) PKGCONFIG_LIBS=$(pkg-config --libs --static ${PKG_CONFIG_NAME});;
+    *) PKGCONFIG_LIBS=$(pkg-config --libs ${PKG_CONFIG_NAME});;
+  esac
 fi
 
 # Note that cflags may be empty in case of success
