@@ -5,6 +5,10 @@
 #include <Rinternals.h>
 #include <curl/curl.h>
 
+#if LIBCURL_VERSION_MAJOR > 7 || (LIBCURL_VERSION_MAJOR == 7 && LIBCURL_VERSION_MINOR >= 28)
+#define HAS_MULTI_WAIT 1
+#endif
+
 /* Check for interrupt without long jumping */
 void check_interrupt_fn(void *dummy) {
   R_CheckUserInterrupt();
@@ -35,10 +39,12 @@ CURLcode curl_perform_with_interrupt(CURL *handle){
       break;
     }
 
+#ifdef HAS_MULTI_WAIT
     /* wait for activity, timeout or "nothing" */
     int numfds;
     if(curl_multi_wait(multi_handle, NULL, 0, 1000, &numfds) != CURLM_OK)
       break;
+#endif
 
     /* Required by old versions of libcurl */
     CURLMcode res = CURLM_CALL_MULTI_PERFORM;
