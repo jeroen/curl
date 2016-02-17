@@ -1,13 +1,5 @@
 #include "curl-common.h"
 
-void check_interrupt_fn(void *dummy) {
-  R_CheckUserInterrupt();
-}
-
-int pending_interrupt() {
-  return !(R_ToplevelExec(check_interrupt_fn, NULL));
-}
-
 CURL* get_handle(SEXP ptr){
   if(!R_ExternalPtrAddr(ptr))
     error("handle is dead");
@@ -90,14 +82,14 @@ SEXP slist_to_vec(struct curl_slist *slist){
 }
 
 size_t push_disk(void* contents, size_t sz, size_t nmemb, FILE *ctx) {
-  if (pending_interrupt())
-    return 0;
+  //if (pending_interrupt())
+  //  return 0;
   return fwrite(contents, sz, nmemb, ctx);
 }
 
 size_t append_buffer(void *contents, size_t sz, size_t nmemb, void *ctx) {
-  if (pending_interrupt())
-    return 0;
+//if (pending_interrupt())
+  //  return 0;
 
   /* avoids compiler warning on windows */
   size_t realsize = sz * nmemb;

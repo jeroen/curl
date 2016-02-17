@@ -16,7 +16,7 @@ int R_curl_callback_progress(SEXP fun,
   int ok;
   SEXP res = PROTECT(R_tryEval(call, R_GlobalEnv, &ok));
 
-  if (ok != 0 || pending_interrupt()) {
+  if (ok != 0) {
     UNPROTECT(4);
     return 0;
   }
@@ -38,7 +38,7 @@ size_t R_curl_callback_read(char *buffer, size_t size, size_t nitems, SEXP fun) 
   int ok;
   SEXP res = PROTECT(R_tryEval(call, R_GlobalEnv, &ok));
 
-  if (ok != 0 || pending_interrupt()) {
+  if (ok != 0) {
     UNPROTECT(3);
     return CURL_READFUNC_ABORT;
   }
