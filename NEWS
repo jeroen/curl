@@ -1,4 +1,5 @@
 0.9.6
+ - Configure script no longer assumes bash so it works on OpenBSD
  - Fix for Snow Leopard CRAN build server
  - Added has_internet() function
 
