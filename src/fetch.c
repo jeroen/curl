@@ -4,6 +4,7 @@
  */
 
 #include "curl-common.h"
+#include <Rinterface.h>
 
 SEXP R_curl_fetch_memory(SEXP url, SEXP ptr){
   if (!isString(url) || length(url) != 1)
@@ -24,8 +25,9 @@ SEXP R_curl_fetch_memory(SEXP url, SEXP ptr){
   curl_easy_setopt(handle, CURLOPT_WRITEDATA, &body);
 
   /* perform blocking request */
-  //CURLcode status = curl_easy_perform(handle);
-  CURLcode status = curl_perform_with_interrupt(handle);
+  CURLcode status = R_Interactive ?
+  curl_perform_with_interrupt(handle):
+    curl_easy_perform(handle);
 
   /* Reset for reuse */
   curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, NULL);
@@ -73,8 +75,9 @@ SEXP R_curl_fetch_disk(SEXP url, SEXP ptr, SEXP path, SEXP mode){
   curl_easy_setopt(handle, CURLOPT_WRITEDATA, dest);
 
   /* perform blocking request */
-  //CURLcode status = curl_easy_perform(handle);
-  CURLcode status = curl_perform_with_interrupt(handle);
+  CURLcode status = R_Interactive ?
+    curl_perform_with_interrupt(handle):
+    curl_easy_perform(handle);
 
   /* cleanup */
   curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, NULL);
