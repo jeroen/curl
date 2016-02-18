@@ -30,7 +30,8 @@
 #'   cat(rawToChar(x))
 #' })
 curl_fetch_memory <- function(url, handle = new_handle()){
-  output <- .Call(R_curl_fetch_memory, url, handle)
+  nonblocking <- interactive()
+  output <- .Call(R_curl_fetch_memory, url, handle, nonblocking)
   res <- handle_response_data(handle)
   res$content <- output
   res
@@ -41,8 +42,9 @@ curl_fetch_memory <- function(url, handle = new_handle()){
 #' @rdname curl_fetch
 #' @useDynLib curl R_curl_fetch_disk
 curl_fetch_disk <- function(url, path, handle = new_handle()){
+  nonblocking <- interactive()
   path <- normalizePath(path, mustWork = FALSE)
-  output <- .Call(R_curl_fetch_disk, url, handle, path, "wb")
+  output <- .Call(R_curl_fetch_disk, url, handle, path, "wb", nonblocking)
   res <- handle_response_data(handle)
   res$content <- output
   res

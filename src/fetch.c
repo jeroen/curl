@@ -4,9 +4,8 @@
  */
 
 #include "curl-common.h"
-#include <Rinterface.h>
 
-SEXP R_curl_fetch_memory(SEXP url, SEXP ptr){
+SEXP R_curl_fetch_memory(SEXP url, SEXP ptr, SEXP nonblocking){
   if (!isString(url) || length(url) != 1)
     error("Argument 'url' must be string.");
 
@@ -25,9 +24,8 @@ SEXP R_curl_fetch_memory(SEXP url, SEXP ptr){
   curl_easy_setopt(handle, CURLOPT_WRITEDATA, &body);
 
   /* perform blocking request */
-  CURLcode status = R_Interactive ?
-  curl_perform_with_interrupt(handle):
-    curl_easy_perform(handle);
+  CURLcode status = asLogical(nonblocking) ?
+    curl_perform_with_interrupt(handle) : curl_easy_perform(handle);
 
   /* Reset for reuse */
   curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, NULL);
@@ -52,7 +50,7 @@ SEXP R_curl_fetch_memory(SEXP url, SEXP ptr){
   return out;
 }
 
-SEXP R_curl_fetch_disk(SEXP url, SEXP ptr, SEXP path, SEXP mode){
+SEXP R_curl_fetch_disk(SEXP url, SEXP ptr, SEXP path, SEXP mode, SEXP nonblocking){
   if (!isString(url) || length(url) != 1)
     error("Argument 'url' must be string.");
   if (!isString(path) || length(path) != 1)
@@ -75,9 +73,8 @@ SEXP R_curl_fetch_disk(SEXP url, SEXP ptr, SEXP path, SEXP mode){
   curl_easy_setopt(handle, CURLOPT_WRITEDATA, dest);
 
   /* perform blocking request */
-  CURLcode status = R_Interactive ?
-    curl_perform_with_interrupt(handle):
-    curl_easy_perform(handle);
+  CURLcode status = asLogical(nonblocking) ?
+    curl_perform_with_interrupt(handle): curl_easy_perform(handle);
 
   /* cleanup */
   curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, NULL);
