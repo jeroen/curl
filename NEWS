@@ -1,3 +1,6 @@
+0.9.7
+ - The non-blocking download method is now only used in interactive mode
+
 0.9.6
  - Use non-blocking code in curl_fetch_memory to support user interruptions.
  - Configure script no longer assumes bash so it works on OpenBSD.
