@@ -6,6 +6,7 @@
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/jeroenooms/curl?branch=master&svg=true)](https://ci.appveyor.com/project/jeroenooms/curl)
 [![Coverage Status](https://codecov.io/github/jeroenooms/curl/coverage.svg?branch=master)](https://codecov.io/github/jeroenooms/curl?branch=master)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/curl)](http://cran.r-project.org/package=curl)
+[![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/curl)](http://cran.r-project.org/web/packages/curl/index.html)
 
 > The curl() and curl_download() functions provide highly
   configurable drop-in replacements for base url() and download.file() with
