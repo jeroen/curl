@@ -1,13 +1,14 @@
 language: r
+sudo: false
+cache: packages
+
+addons:
+  apt:
+    packages:
+      - libcurl4-openssl-dev
 
 warnings_are_errors: true
 #r_check_revdep: true
-
-apt_packages:
-  - libcurl4-openssl-dev
-
-r_packages:
-  - rmarkdown
 
 notifications:
   email:
