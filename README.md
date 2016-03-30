@@ -1,5 +1,5 @@
 # curl
-## *A Modern and Flexible Web Client for R*
+### *A Modern and Flexible Web Client for R*
 
 
 [![Build Status](https://travis-ci.org/jeroenooms/curl.svg?branch=master)](https://travis-ci.org/jeroenooms/curl)
