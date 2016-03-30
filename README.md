@@ -1,6 +1,6 @@
 # curl
-### *A Modern and Flexible Web Client for R*
 
+#### *A Modern and Flexible Web Client for R*
 
 [![Build Status](https://travis-ci.org/jeroenooms/curl.svg?branch=master)](https://travis-ci.org/jeroenooms/curl)
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/jeroenooms/curl?branch=master&svg=true)](https://ci.appveyor.com/project/jeroenooms/curl)
