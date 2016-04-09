@@ -7,7 +7,6 @@
 [![Coverage Status](https://codecov.io/github/jeroenooms/curl/coverage.svg?branch=master)](https://codecov.io/github/jeroenooms/curl?branch=master)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/curl)](http://cran.r-project.org/package=curl)
 [![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/curl)](http://cran.r-project.org/web/packages/curl/index.html)
-[![total downloads](http://cranlogs.r-pkg.org/badges/grand-total/curl)](http://cranlogs.r-pkg.org/badges/grand-total/curl)
 [![Research software impact](http://depsy.org/api/package/cran/curl/badge.svg)](http://depsy.org/package/r/curl)
 ![Github Stars](https://img.shields.io/github/stars/jeroenooms/opencpu.svg?style=social&label=Star)
 
