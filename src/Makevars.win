@@ -5,7 +5,7 @@ PKG_LIBS= -L../windows/libcurl-7.47.1/lib${R_ARCH} -L. -lwinhttp -lcurl -lssl -l
 all: winlibs libwinhttp.dll.a
 
 clean:
-	rm -f *.o *.a *.dll *.def
+	rm -f $(OBJECTS) curl.dll libwinhttp.dll.a winhttp.def
 
 winlibs: clean
 	"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" "../tools/winlibs.R" "$(M_ARCH)"
@@ -13,4 +13,6 @@ winlibs: clean
 
 winhttp.def:
 	cp winhttp$(WIN).def.in winhttp.def
+
+.PHONY: all winlibs clean
 
