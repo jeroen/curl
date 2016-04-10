@@ -8,7 +8,7 @@
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/curl)](http://cran.r-project.org/package=curl)
 [![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/curl)](http://cran.r-project.org/web/packages/curl/index.html)
 [![Research software impact](http://depsy.org/api/package/cran/curl/badge.svg)](http://depsy.org/package/r/curl)
-[![Github Stars](https://img.shields.io/github/stars/jeroenooms/opencpu.svg?style=social&label=Github)](https://github.com/jeroenooms/curl)
+[![Github Stars](https://img.shields.io/github/stars/jeroenooms/curl.svg?style=social&label=Github)](https://github.com/jeroenooms/curl)
 
 > The curl() and curl_download() functions provide highly
   configurable drop-in replacements for base url() and download.file() with
