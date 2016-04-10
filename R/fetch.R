@@ -10,6 +10,11 @@
 #' you need to check the status code of http requests yourself in the response,
 #' and deal with it accordingly.
 #'
+#' Both \code{curl_fetch_memory} and \code{curl_fetch_disk} can run either in
+#' blocking or non-blocking mode in C. The latter is slightly slower but allows
+#' for interrupting (CTRL+C or ESC). Non-blocking mode is used when R runs in
+#' interactive mode or when \code{getOption("curl_nonblocking") == TRUE}.
+#'
 #' @param url A character string naming the URL of a resource to be downloaded.
 #' @param handle a curl handle object
 #' @export
