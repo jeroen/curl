@@ -32,7 +32,7 @@ SEXP R_curl_version() {
   SET_STRING_ELT(names, 1, mkChar("ssl_version"));
   SET_STRING_ELT(names, 2, mkChar("libz_version"));
   SET_STRING_ELT(names, 3, mkChar("libssh_version"));
-  SET_STRING_ELT(names, 4, mkChar("libidn"));
+  SET_STRING_ELT(names, 4, mkChar("libidn_version"));
   SET_STRING_ELT(names, 5, mkChar("host"));
   SET_STRING_ELT(names, 6, mkChar("protocols"));
   setAttrib(list, R_NamesSymbol, names);
