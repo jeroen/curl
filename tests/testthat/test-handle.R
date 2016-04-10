@@ -30,8 +30,8 @@ test_that("Compression", {
 })
 
 test_that("Connection interface", {
-  expect_equal(jsonlite::fromJSON(readLines(curl("http://httpbin.org/get?test=blabla", handle = h)))$args$test, "blabla")
-  expect_equal(jsonlite::fromJSON(readLines(curl("http://httpbin.org/cookies", handle = h)))$cookies$foo, "123")
+  expect_equal(jsonlite::fromJSON(curl("http://httpbin.org/get?test=blabla", handle = h))$args$test, "blabla")
+  expect_equal(jsonlite::fromJSON(curl("http://httpbin.org/cookies", handle = h))$cookies$foo, "123")
   expect_error(readLines(curl("http://httpbin.org/status/418")))
 })
 
