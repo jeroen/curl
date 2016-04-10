@@ -47,10 +47,10 @@ Use \code{new_handle()} to create a new clean curl handle that can be
 configured with custom options and headers. Note that \code{handle_setopt}
 appends or overrides options in the handle, whereas \code{handle_setheaders}
 replaces the entire set of headers with the new ones. The \code{handle_reset}
-funtion resets only options/headers/forms in the handle. It does not affect
+function resets only options/headers/forms in the handle. It does not affect
 active connections, cookies or response data from previous requests. The safest
 way to perform multiple independent requests is by using a separate handle for
-earch request. There is very little performance overhead in creating handles.
+each request. There is very little performance overhead in creating handles.
 }
 \examples{
 h <- new_handle()

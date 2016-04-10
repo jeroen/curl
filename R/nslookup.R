@@ -3,7 +3,7 @@
 #' The \code{nslookup} function is similar to \code{nsl} but works on all platforms
 #' and can resolve ipv6 addresses if supported by the OS. Default behavior raises an
 #' error if lookup fails. The \code{has_internet} function tests the internet
-#' connection by resovling a random address.
+#' connection by resolving a random address.
 #'
 #' @export
 #' @param host a string with a hostname
