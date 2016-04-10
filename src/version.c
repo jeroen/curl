@@ -1,16 +1,18 @@
 #include <curl/curl.h>
 #include <Rinternals.h>
 
+#define make_string(x) x ? Rf_mkString(x) : ScalarString(NA_STRING)
+
 SEXP R_curl_version() {
   /* retrieve info from curl */
   const curl_version_info_data *data = curl_version_info(CURLVERSION_NOW);
 
   /* put stuff in a list */
   SEXP list = PROTECT(allocVector(VECSXP, 5));
-  SET_VECTOR_ELT(list, 0, mkString(data->version));
-  SET_VECTOR_ELT(list, 1, mkString(data->ssl_version));
-  SET_VECTOR_ELT(list, 2, mkString(data->libz_version));
-  SET_VECTOR_ELT(list, 3, mkString(data->host));
+  SET_VECTOR_ELT(list, 0, make_string(data->version));
+  SET_VECTOR_ELT(list, 1, make_string(data->ssl_version));
+  SET_VECTOR_ELT(list, 2, make_string(data->libz_version));
+  SET_VECTOR_ELT(list, 3, make_string(data->host));
 
   /* create vector of protocols */
   const char *const * temp = data->protocols;
