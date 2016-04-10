@@ -26,13 +26,14 @@ test_that("Compression", {
   expect_equal(jsonlite::fromJSON(rawToChar(curl_fetch_memory("http://httpbin.org/deflate", handle = h)$content))$deflate, TRUE)
   expect_equal(jsonlite::fromJSON(readLines(curl("http://httpbin.org/gzip", handle = h)))$gzipped, TRUE)
   expect_equal(jsonlite::fromJSON(rawToChar(curl_fetch_memory("http://httpbin.org/gzip", handle = h)$content))$gzipped, TRUE)
-  suppressWarnings(gc())
+  closeAllConnections()
 })
 
 test_that("Connection interface", {
   expect_equal(jsonlite::fromJSON(curl("http://httpbin.org/get?test=blabla", handle = h))$args$test, "blabla")
   expect_equal(jsonlite::fromJSON(curl("http://httpbin.org/cookies", handle = h))$cookies$foo, "123")
   expect_error(readLines(curl("http://httpbin.org/status/418")))
+  closeAllConnections()
 })
 
 test_that("Opening and closing a connection",{
