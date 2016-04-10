@@ -1,6 +1,6 @@
-PKG_CPPFLAGS= -I../windows/libcurl-7.43.0/include
+PKG_CPPFLAGS= -I../windows/libcurl-7.47.1/include
 PKG_CFLAGS= -DCURL_STATICLIB
-PKG_LIBS= -L../windows/libcurl-7.43.0/lib${R_ARCH} -L. -lwinhttp -lcurl -lssl -lcrypto -lssh2 -lrtmp -lidn -lintl -liconv -lgdi32 -lcrypt32 -lz -lws2_32 -lcrypt32 -lwldap32 -lwinmm
+PKG_LIBS= -L../windows/libcurl-7.47.1/lib${R_ARCH} -L. -lwinhttp -lcurl -lssl -lcrypto -lssh2 -lrtmp -lidn -lintl -liconv -lgdi32 -lcrypt32 -lz -lws2_32 -lcrypt32 -lwldap32 -lwinmm
 
 all: winlibs libwinhttp.dll.a
 
