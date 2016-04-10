@@ -1,6 +1,6 @@
 0.9.7
  - The non-blocking download method is now only used in interactive mode
- - Use options("curl_nonblocking") to manually set blocking/nonblocking mode
+ - Use options(curl_interrupt = TRUE) to force nonblocking in non-interactive mode
  - Updated libcurl on windows to 7.47.1. This should fix IPv6 problems.
  - Update the curl_symbols table to 7.48
 
