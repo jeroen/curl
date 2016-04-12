@@ -18,7 +18,7 @@ Description: The curl() and curl_download() functions provide highly
     specific tools and logic.
 License: MIT + file LICENSE
 SystemRequirements: libcurl: libcurl-devel (rpm) or libcurl4-openssl-dev (deb).
-URL: https://github.com/jeroenooms/curl https://www.opencpu.org/posts/curl-release-0-8/
+URL: https://github.com/jeroenooms/curl#readme
 BugReports: https://github.com/jeroenooms/curl/issues
 Suggests:
     testthat,
