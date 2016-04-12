@@ -32,7 +32,7 @@ Other resources:
 
 ## Hello World
 
-There are three download interfaces (memory, disk and streaming). Always start setting up a request handle:
+There are three download interfaces (memory, disk and streaming). Always start by setting up a request handle:
 
 ```r
 library(curl)
