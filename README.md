@@ -104,3 +104,5 @@ On __OS-X__ libcurl is included with the system so nothing extra is needed. Howe
 brew install curl
 brew link --force curl
 ```
+
+Note that on OS-X you **must** recompile the R package from source after force-linking curl, otherwise you get a version conflict with the system version of libcurl.
