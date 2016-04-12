@@ -61,7 +61,7 @@ Or alternatively, write response to disk:
 ```r
 tmp <- tempfile()
 curl_download("https://httpbin.org/post", tmp, handle = h)
-cat(readLines(tmp), sep = "\n")
+readLines(tmp)
 ```
 
 Or stream response via Connection interface:
@@ -71,13 +71,11 @@ con <- curl("https://httpbin.org/post", handle = h)
 open(con)
 
 # Get 3 lines
-out <- readLines(con, n = 3)
-cat(out, sep = "\n")
+readLines(con, n = 3)
 
-# Get remaining lines
-out <- readLines(con)
+# Get remaining lines and close connection
+readLines(con)
 close(con)
-cat(out, sep = "\n")
 ```
 
 ## Installation
