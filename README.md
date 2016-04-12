@@ -86,7 +86,7 @@ Binary packages for __OS-X__ or __Windows__ can be installed directly from CRAN:
 install.packages("curl")
 ```
 
-Installation from source on Linux or OSX requires [`libcurl`](https://curl.haxx.se/libcurl/). On __Debian__ or __Ubuntu__:
+Installation from source on Linux requires [`libcurl`](https://curl.haxx.se/libcurl/). On __Debian__ or __Ubuntu__:
 
 ```
 sudo apt-get install -y libcurl-dev
