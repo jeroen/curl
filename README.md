@@ -20,4 +20,89 @@
   web client see the 'httr' package which builds on this package with http
   specific tools and logic.
 
-Have a look at the [vignette](https://cran.r-project.org/web/packages/curl/vignettes/intro.html) to get started!
+## Getting Started
+
+About the R package:
+
+ - Vignette: [curl: A Modern and Flexible Web Client for R](https://cran.r-project.org/web/packages/curl/vignettes/intro.html)
+
+Other resources:
+
+ - [libcurl handle options overview](https://curl.haxx.se/libcurl/c/curl_easy_setopt.html) (use with `handle_setopt` in R)
+
+## Hello World
+
+There are three download interfaces (memory, disk and streaming). Always start setting up a request handle:
+
+```r
+library(curl)
+h <- new_handle(copypostfields = "moo=moomooo")
+handle_setheaders(h,
+  "Content-Type" = "text/moo",
+  "Cache-Control" = "no-cache",
+  "User-Agent" = "A cow"
+)
+```
+
+Perform request and download response in memory:
+
+```r
+# Perform the request
+req <- curl_fetch_memory("http://httpbin.org/post", handle = h)
+
+# Show some outputs
+parse_headers(req$headers)
+cat(rawToChar(req$content))
+str(req)
+```
+
+Or alternatively, write response to disk:
+
+```r
+tmp <- tempfile()
+curl_download("https://httpbin.org/post", tmp, handle = h)
+cat(readLines(tmp), sep = "\n")
+```
+
+Or stream response via Connection interface:
+
+```r
+con <- curl("https://httpbin.org/post", handle = h)
+open(con)
+
+# Get 3 lines
+out <- readLines(con, n = 3)
+cat(out, sep = "\n")
+
+# Get remaining lines
+out <- readLines(con)
+close(con)
+cat(out, sep = "\n")
+```
+
+## Installation
+
+Binary packages for __OS-X__ or __Windows__ can be installed directly from CRAN:
+
+```r
+install.packages("curl")
+```
+
+Installation from source on Linux or OSX requires [`libcurl`](https://curl.haxx.se/libcurl/). On __Debian__ or __Ubuntu 14.04:
+
+```
+sudo apt-get install -y libcurl-dev
+```
+
+On __Fedora__, __CentOS or RHEL__ :
+
+```
+sudo yum install curl-devel
+````
+
+On __OS-X__ libcurl is included with the system so nothing extra is needed. However you can choose to build against a more recent version of libcurl from homebrew:
+
+```
+brew install curl
+brew link --force curl
+```
