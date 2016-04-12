@@ -20,7 +20,7 @@
   web client see the 'httr' package which builds on this package with http
   specific tools and logic.
 
-## Getting Started
+## Documentation
 
 About the R package:
 
