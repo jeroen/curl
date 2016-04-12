@@ -88,7 +88,7 @@ Binary packages for __OS-X__ or __Windows__ can be installed directly from CRAN:
 install.packages("curl")
 ```
 
-Installation from source on Linux or OSX requires [`libcurl`](https://curl.haxx.se/libcurl/). On __Debian__ or __Ubuntu 14.04:
+Installation from source on Linux or OSX requires [`libcurl`](https://curl.haxx.se/libcurl/). On __Debian__ or __Ubuntu__:
 
 ```
 sudo apt-get install -y libcurl-dev
@@ -100,7 +100,7 @@ On __Fedora__, __CentOS or RHEL__ :
 sudo yum install curl-devel
 ````
 
-On __OS-X__ libcurl is included with the system so nothing extra is needed. However you can choose to build against a more recent version of libcurl from homebrew:
+On __OS-X__ libcurl is included with the system so nothing extra is needed. However you can choose to build against a more recent version of libcurl from homebrew by force linking:
 
 ```
 brew install curl
