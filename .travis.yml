@@ -20,4 +20,4 @@ notifications:
     on_failure: change
 
 after_success:
-  - Rscript -e 'covr::codecov(type = "all", code = testInstalledPackage("httr"))'
+  - Rscript -e 'covr::codecov(type = "all")'
