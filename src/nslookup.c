@@ -9,6 +9,7 @@ const char *inet_ntop(int af, const void *src, char *dst, socklen_t size);
 #include <sys/socket.h>
 #include <netdb.h>
 #include <arpa/inet.h>
+#include <netinet/in.h>
 #endif
 
 SEXP R_nslookup(SEXP hostname) {
