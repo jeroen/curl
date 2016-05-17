@@ -1,3 +1,6 @@
+0.9.8
+ - Fix for FreeBSD
+
 0.9.7
  - The non-blocking download method is now only used in interactive mode
  - Use options(curl_interrupt = TRUE) to force nonblocking in non-interactive mode
