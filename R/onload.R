@@ -22,7 +22,7 @@
   if(identical(Sys.info()[["sysname"]], "Linux")){
     if(grepl("GnuTLS", curl_version()$ssl_version) && grepl("Debian|Ubuntu", sessionInfo()$running)){
       packageStartupMessage("curl was compiled against libcurl4-gnutls-dev which is known to have issues.
-It is recommended to install libcurl4-openssl-dev and reinstalling the 'curl' package in R.")
+It is recommended to install libcurl4-openssl-dev and recompile the 'curl' package in R.")
     }
   }
 }
