@@ -1,5 +1,6 @@
 0.9.8
  - Fix for FreeBSD
+ - On Debian/Ubuntu warn about GnuTLS when attaching the package
 
 0.9.7
  - The non-blocking download method is now only used in interactive mode
