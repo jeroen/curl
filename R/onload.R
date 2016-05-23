@@ -21,7 +21,7 @@
   # Check for GnuTLS on Ubuntu
   if(identical(Sys.info()[["sysname"]], "Linux")){
     if(grepl("GnuTLS", curl_version()$ssl_version) && grepl("Debian|Ubuntu", sessionInfo()$running)){
-      packageStartupMessage("curl was compiled against libcurl4-gnutls-dev which is known to have issues.
+      packageStartupMessage("This version of curl was compiled against libcurl4-gnutls-dev which is known to have https issues.
 It is recommended to install libcurl4-openssl-dev and recompile the 'curl' package in R.")
     }
   }
