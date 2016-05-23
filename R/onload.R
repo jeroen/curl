@@ -17,6 +17,14 @@
     # CRAN does not like warnings for r-oldrel. Fix once R 3.3 is out:
     #warning("No CA bundle found. SSL validation disabled.", call. = FALSE)
   }
+
+  # Check for GnuTLS on Ubuntu
+  if(identical(Sys.info()[["sysname"]], "Linux")){
+    if(grepl("GnuTLS", curl_version()$ssl_version) && grepl("Debian|Ubuntu", sessionInfo()$running)){
+      packageStartupMessage("curl was compiled against libcurl4-gnutls-dev which is known to have issues.
+It is recommended to install libcurl4-openssl-dev and reinstalling the 'curl' package in R.")
+    }
+  }
 }
 
 #' @useDynLib curl R_set_bundle
