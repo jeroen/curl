@@ -21,19 +21,33 @@ test_that("Cookies", {
   expect_equal(jsonlite::fromJSON(rawToChar(curl_fetch_memory("http://httpbin.org/cookies", handle = h)$content))$cookies$bar, NULL)
 })
 
-test_that("Compression", {
-  expect_equal(jsonlite::fromJSON(readLines(curl("http://httpbin.org/deflate", handle = h)))$deflate, TRUE)
+test_that("Compression and destorying connection", {
+  con <- curl("http://httpbin.org/deflate", handle = h)
+  expect_equal(jsonlite::fromJSON(readLines(con))$deflate, TRUE)
+  expect_false(isOpen(con))
+  close(con) #destroy
+
   expect_equal(jsonlite::fromJSON(rawToChar(curl_fetch_memory("http://httpbin.org/deflate", handle = h)$content))$deflate, TRUE)
-  expect_equal(jsonlite::fromJSON(readLines(curl("http://httpbin.org/gzip", handle = h)))$gzipped, TRUE)
+
+  con <- curl("http://httpbin.org/gzip", handle = h)
+  expect_equal(jsonlite::fromJSON(readLines(con))$gzipped, TRUE)
+  expect_false(isOpen(con))
+  close(con) #destroy
+
   expect_equal(jsonlite::fromJSON(rawToChar(curl_fetch_memory("http://httpbin.org/gzip", handle = h)$content))$gzipped, TRUE)
-  closeAllConnections()
 })
 
 test_that("Connection interface", {
-  expect_equal(jsonlite::fromJSON(curl("http://httpbin.org/get?test=blabla", handle = h))$args$test, "blabla")
-  expect_equal(jsonlite::fromJSON(curl("http://httpbin.org/cookies", handle = h))$cookies$foo, "123")
-  expect_error(readLines(curl("http://httpbin.org/status/418")))
-  closeAllConnections()
+  # note: jsonlite automatically destroys auto-opened connection
+  con <- curl("http://httpbin.org/get?test=blabla", handle = h)
+  expect_equal(jsonlite::fromJSON(con)$args$test, "blabla")
+  con <- curl("http://httpbin.org/cookies", handle = h)
+  expect_equal(jsonlite::fromJSON(con)$cookies$foo, "123")
+
+  # test error
+  con <- curl("http://httpbin.org/status/418")
+  expect_error(readLines(con))
+  close(con) #destroy
 })
 
 test_that("Opening and closing a connection",{
@@ -64,9 +78,8 @@ test_that("Opening and closing a connection",{
   #if(compareVersion(curl_version()$version, "7.37") > 0){
   #  expect_error(curl_fetch_memory("http://httpbin.org/get", handle = h))
   #}
-
+  close(con)
   rm(con)
-  suppressWarnings(gc())
   expect_equal(curl_fetch_memory("http://httpbin.org/get", handle = h)$status, 200)
 })
 
