@@ -1,6 +1,7 @@
 0.9.8
  - Fix for FreeBSD
  - Simplify handle refCount system
+ - Better handle locking to prevent using/modifying open handles
  - Make unit tests always close connection to prevent 'unused connection' warnings
  - On Debian/Ubuntu warn about GnuTLS when attaching the package
 
