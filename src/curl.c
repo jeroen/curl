@@ -147,7 +147,7 @@ void cleanup(Rconnection con) {
 
   /* delayed finalizer cleanup */
   reference *ref = req->ref;
-  (ref->inUse)--;
+  (ref->refCount)--;
   clean_handle(ref);
 
   /* clean up connection */
@@ -253,7 +253,7 @@ SEXP R_curl_connection(SEXP url, SEXP mode, SEXP ptr, SEXP stop_on_error) {
   }
 
   /* lock the handle */
-  (req->ref->inUse)++;
+  (req->ref->refCount)++;
 
   UNPROTECT(1);
   return rc;

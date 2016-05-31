@@ -17,7 +17,7 @@ SEXP R_get_bundle(){
 }
 
 void clean_handle(reference *ref){
-  if(ref->garbage && !(ref->inUse)){
+  if(ref->refCount == 0){
     //Rprintf("cleaning easy handle\n");
     if(ref->headers)
       curl_slist_free_all(ref->headers);
@@ -35,7 +35,7 @@ void fin_handle(SEXP ptr){
   //Rprintf("finalizing handle\n");
   reference *ref = (reference*) R_ExternalPtrAddr(ptr);
   if(ref){
-    ref->garbage = 1;
+    (ref->refCount)--;
     clean_handle(ref);
   }
   R_ClearExternalPtr(ptr);
@@ -88,6 +88,7 @@ void set_handle_defaults(reference *ref){
 
 SEXP R_new_handle(){
   reference *ref = calloc(1, sizeof(reference));
+  ref->refCount = 1;
   ref->handle = curl_easy_init();
   set_handle_defaults(ref);
   SEXP ptr = PROTECT(R_MakeExternalPtr(ref, R_NilValue, R_NilValue));

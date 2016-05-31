@@ -14,8 +14,7 @@ typedef struct {
   struct curl_httppost *form;
   struct curl_slist *headers;
   memory resheaders;
-  int inUse;
-  int garbage;
+  int refCount;
 } reference;
 
 CURL* get_handle(SEXP ptr);
