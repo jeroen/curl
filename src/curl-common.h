@@ -15,6 +15,7 @@ typedef struct {
   struct curl_slist *headers;
   memory resheaders;
   int refCount;
+  int locked;
 } reference;
 
 CURL* get_handle(SEXP ptr);

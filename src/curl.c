@@ -150,8 +150,11 @@ void cleanup(Rconnection con) {
   (ref->refCount)--;
   clean_handle(ref);
 
-  /* clean up connection */
+  /* free thee handle connection */
   curl_multi_remove_handle(req->manager, req->handle);
+  ref->locked = 0;
+
+  /* clean up connection */
   curl_multi_cleanup(req->manager);
   free(req->buf);
   free(req->url);
@@ -163,6 +166,7 @@ void reset(Rconnection con) {
   //Rprintf("Resetting connection object.\n");
   request *req = (request*) con->private;
   curl_multi_remove_handle(req->manager, req->handle);
+  req->ref->locked = 0;
   con->isopen = FALSE;
   con->text = TRUE;
   strcpy(con->mode, "r");
@@ -172,12 +176,18 @@ static Rboolean rcurl_open(Rconnection con) {
   request *req = (request*) con->private;
   //Rprintf("Opening URL:%s\n", req->url);
 
+  if(req->ref->locked)
+    Rf_error("Handle is already in use elsewhere.");
+
   /* init a multi stack with callback */
   CURL *handle = req->handle;
   assert(curl_easy_setopt(handle, CURLOPT_URL, req->url));
   assert(curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, push));
   assert(curl_easy_setopt(handle, CURLOPT_WRITEDATA, req));
+
+  /* add the handle to the pool and lock it */
   massert(curl_multi_add_handle(req->manager, handle));
+  req->ref->locked = 1;
 
   /* reset the state */
   req->handle = handle;
