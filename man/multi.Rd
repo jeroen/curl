@@ -52,8 +52,9 @@ to retrieve additional information.
 \examples{
 pool <- multi_new()
 h1 <- new_handle(url = "https://httpbin.org/get")
-h2 <- new_handle(url = "https://httpbin.org/post", httppost = TRUE)
-multi_add(pool, )
-multi_add(pool, )
+h2 <- new_handle(url = "https://httpbin.org/post", postfields = "bla bla")
+multi_add(pool, h1, function(res){print(res)})
+multi_add(pool, h2, function(res){print(res)})
+multi_run(pool)
 }
 
