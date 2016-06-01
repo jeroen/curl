@@ -46,6 +46,7 @@ void set_handle_defaults(reference *ref){
 
   /* the actual curl handle */
   CURL *handle = ref->handle;
+  assert(curl_easy_setopt(handle, CURLOPT_PRIVATE, ref));
 
   /* set the response header collector */
   reset_resheaders(ref);
