@@ -3,6 +3,7 @@
  - Simplify handle refCount system
  - Better handle locking to prevent using/modifying open handles
  - Make unit tests always close connection to prevent 'unused connection' warnings
+ - Add support for interruptions in curl_download()
  - On Debian/Ubuntu warn about GnuTLS when attaching the package
 
 0.9.7
