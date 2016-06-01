@@ -3,7 +3,7 @@
  */
 #include "curl-common.h"
 
-SEXP R_download_curl(SEXP url, SEXP destfile, SEXP quiet, SEXP mode, SEXP ptr) {
+SEXP R_download_curl(SEXP url, SEXP destfile, SEXP quiet, SEXP mode, SEXP ptr, SEXP nonblocking) {
   if(!isString(url))
     error("Argument 'url' must be string.");
 
@@ -31,7 +31,8 @@ SEXP R_download_curl(SEXP url, SEXP destfile, SEXP quiet, SEXP mode, SEXP ptr) {
   curl_easy_setopt(handle, CURLOPT_WRITEDATA, dest);
 
   /* perform blocking request */
-  CURLcode status = curl_easy_perform(handle);
+  CURLcode status = asLogical(nonblocking) ?
+    curl_perform_with_interrupt(handle) : curl_easy_perform(handle);
 
   /* cleanup */
   curl_easy_setopt(handle, CURLOPT_URL, NULL);

@@ -30,6 +30,7 @@
 #' }
 curl_download <- function(url, destfile, quiet = TRUE, mode = "wb", handle = new_handle()){
   destfile <- normalizePath(destfile, mustWork = FALSE)
-  .Call(R_download_curl, url, destfile, quiet, mode, handle)
+  nonblocking <- isTRUE(getOption("curl_interrupt", interactive()))
+  .Call(R_download_curl, url, destfile, quiet, mode, handle, nonblocking)
   invisible(destfile)
 }
