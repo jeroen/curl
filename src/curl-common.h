@@ -21,6 +21,7 @@ typedef struct {
 CURL* get_handle(SEXP ptr);
 reference* get_ref(SEXP ptr);
 void assert(CURLcode res);
+void massert(CURLMcode res);
 void stop_for_status(CURL *http_handle);
 SEXP slist_to_vec(struct curl_slist *slist);
 struct curl_slist* vec_to_slist(SEXP vec);

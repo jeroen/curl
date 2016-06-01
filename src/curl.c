@@ -87,11 +87,6 @@ static size_t pop(void *target, size_t max, request *req){
   return copy_size;
 }
 
-void massert(CURLMcode res){
-  if(res != CURLM_OK)
-    error(curl_multi_strerror(res));
-}
-
 void check_manager(CURLM *manager) {
   for(int msg = 1; msg > 0;){
     CURLMsg *out = curl_multi_info_read(manager, &msg);
