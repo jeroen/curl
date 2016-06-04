@@ -23,14 +23,13 @@
 #' @export
 #' @useDynLib curl R_multi_add
 #' @rdname multi
-#' @examples pool <- multi_new()
-#' h1 <- new_handle(url = "https://httpbin.org/get")
+#' @examples h1 <- new_handle(url = "https://httpbin.org/delay/3")
 #' h2 <- new_handle(url = "https://httpbin.org/post", postfields = "bla bla")
 #' h3 <- new_handle(url = "https://urldoesnotexist.xyz")
-#' multi_add(pool, h1, function(res){print(res)})
-#' multi_add(pool, h2, function(res){print(res)})
-#' multi_add(pool, h3)
-#' multi_run(pool)
+#' multi_add(h1, function(res){print(res)})
+#' multi_add(h2, function(res){print(res)})
+#' multi_add(h3)
+#' multi_run()
 multi_add <- function(handle, complete = identity, error = identity){
   stopifnot(inherits(handle, "curl_handle"))
   stopifnot(is.function(complete))
@@ -46,8 +45,8 @@ multi_remove <- function(handle){
   .Call(R_multi_remove, handle)
 }
 
-#' @param timeout max seconds the pool is allowed to run. Use \code{0} to run pool until
-#' all requests have completed.
+#' @param timeout max seconds the pool is allowed to run. Use \code{0} to just poll for
+#' results without waiting. Use \code{-1} to wait untill all requests have completed.
 #' @param multiplex enable HTTP/2 multiplexing if supported
 #' @param connections max number of concurrent connections
 #' @param verbose prints requests status messages to terminal

@@ -25,8 +25,8 @@ multi_run(multiplex = TRUE, connections = 6, timeout = -1,
 
 \item{connections}{max number of concurrent connections}
 
-\item{timeout}{max seconds the pool is allowed to run. Use \code{0} to run pool until
-all requests have completed.}
+\item{timeout}{max seconds the pool is allowed to run. Use \code{0} to just poll for
+results without waiting. Use \code{-1} to wait untill all requests have completed.}
 
 \item{verbose}{prints requests status messages to terminal}
 }
@@ -49,13 +49,12 @@ be useful in situations where a given response requires subsequent requests
 to retrieve additional information.
 }
 \examples{
-pool <- multi_new()
-h1 <- new_handle(url = "https://httpbin.org/get")
+h1 <- new_handle(url = "https://httpbin.org/delay/3")
 h2 <- new_handle(url = "https://httpbin.org/post", postfields = "bla bla")
 h3 <- new_handle(url = "https://urldoesnotexist.xyz")
-multi_add(pool, h1, function(res){print(res)})
-multi_add(pool, h2, function(res){print(res)})
-multi_add(pool, h3)
-multi_run(pool)
+multi_add(h1, function(res){print(res)})
+multi_add(h2, function(res){print(res)})
+multi_add(h3)
+multi_run()
 }
 
