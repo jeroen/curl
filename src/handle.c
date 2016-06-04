@@ -18,7 +18,7 @@ SEXP R_get_bundle(){
 
 void clean_handle(reference *ref){
   if(ref->refCount == 0){
-    Rprintf("cleaning easy handle\n");
+    //Rprintf("cleaning easy handle\n");
     if(ref->headers)
       curl_slist_free_all(ref->headers);
     if(ref->form)

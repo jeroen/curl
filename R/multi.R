@@ -1,20 +1,13 @@
 #' Async multi download
 #'
 #' Performs multiple concurrent requests, possibly using HTTP/2 multiplexing.
-#' Advanced use only!
-#'
-#' Schedule a series of requests to be executed simultaneously. Results are
-#' available via callback functions, or at the end when all requests have
-#' completed.
+#' Results are only available via callback functions. Advanced use only!
 #'
 #' A single handle cannot be used for multiple simultaneous requests. However
-#' it is possible (and often sensible) to re-use a handle within the callback
-#' of a request from that same handle. It is up to the user to make sure the
-#' same handle is not used in concurrent requests.
-#'
-#' It is possible to add new requests to a pool while it is running. This can
-#' be useful in situations where a given response requires subsequent requests
-#' to retrieve additional information.
+#' it is possible to add new requests to a pool while it is running, so you
+#' can re-use a handle within the callback of a request from that same handle.
+#' It is up to the user to make sure the same handle is not used in concurrent
+#' requests.
 #'
 #' @name multi
 #' @param handle a prepared handle
@@ -49,10 +42,9 @@ multi_remove <- function(handle){
 #' results without waiting. Use \code{-1} to wait untill all requests have completed.
 #' @param multiplex enable HTTP/2 multiplexing if supported
 #' @param connections max number of concurrent connections
-#' @param verbose prints requests status messages to terminal
 #' @export
 #' @useDynLib curl R_multi_run
 #' @rdname multi
-multi_run <- function(multiplex = TRUE, connections = 6, timeout = -1, verbose = FALSE){
+multi_run <- function(multiplex = TRUE, connections = 6, timeout = -1){
   .Call(R_multi_run, multiplex, connections, timeout)
 }
