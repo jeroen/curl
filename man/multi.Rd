@@ -49,12 +49,12 @@ be useful in situations where a given response requires subsequent requests
 to retrieve additional information.
 }
 \examples{
-h1 <- new_handle(url = "https://httpbin.org/delay/3")
+h1 <- new_handle(url = "https://httpbin.org/delay/5")
 h2 <- new_handle(url = "https://httpbin.org/post", postfields = "bla bla")
 h3 <- new_handle(url = "https://urldoesnotexist.xyz")
 multi_add(h1, function(res){print(res)})
 multi_add(h2, function(res){print(res)})
 multi_add(h3)
-multi_run()
+multi_run(timeout = 3)
 }
 

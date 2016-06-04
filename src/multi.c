@@ -62,7 +62,7 @@ SEXP R_multi_run(SEXP multiplex, SEXP connections, SEXP timeout){
 
   clock_t time_start = clock();
   double seconds_elapsed = 0;
-  while(still_running) {
+  do {
     if(pending_interrupt())
       break;
     /* Required by old versions of libcurl */
@@ -104,11 +104,16 @@ SEXP R_multi_run(SEXP multiplex, SEXP connections, SEXP timeout){
         ref->refCount--;
         clean_handle(ref);
       }
-      /* check for timeout */
+    } while (msgq > 0);
+
+    /* check for timeout */
+    if(time_max > 0){
       seconds_elapsed = (double) (clock() - time_start) / CLOCKS_PER_SEC;
-      Rprintf("elapsed: %f, max: %f\n", seconds_elapsed, time_max);
-    } while (msgq > 0 && seconds_elapsed < time_max);
-  }
+      if(seconds_elapsed > time_max)
+        break;
+    }
+  } while(still_running && time_max);
+
   SEXP res = PROTECT(Rf_list3(
     ScalarInteger(total_success),
     ScalarInteger(total_fail),
