@@ -3,28 +3,27 @@
 \name{multi}
 \alias{multi}
 \alias{multi_add}
-\alias{multi_new}
+\alias{multi_remove}
 \alias{multi_run}
 \title{Async multi download}
 \usage{
-multi_new(connections = 6, multiplex = FALSE)
+multi_add(handle, complete = identity, error = identity)
 
-multi_add(multi, handle, complete = identity, error = identity)
+multi_remove(handle)
 
-multi_run(multi, timeout = 0, verbose = FALSE)
+multi_run(multiplex = TRUE, connections = 6, timeout = -1,
+  verbose = FALSE)
 }
 \arguments{
-\item{connections}{value for \code{CURLMOPT_MAX_TOTAL_CONNECTIONS}}
-
-\item{multiplex}{uses HTTP/2 multiplexing when supported}
-
-\item{multi}{a new handle pool}
-
 \item{handle}{a prepared handle}
 
 \item{complete}{callback on complete}
 
 \item{error}{callback on error}
+
+\item{multiplex}{enable HTTP/2 multiplexing if supported}
+
+\item{connections}{max number of concurrent connections}
 
 \item{timeout}{max seconds the pool is allowed to run. Use \code{0} to run pool until
 all requests have completed.}
@@ -53,8 +52,10 @@ to retrieve additional information.
 pool <- multi_new()
 h1 <- new_handle(url = "https://httpbin.org/get")
 h2 <- new_handle(url = "https://httpbin.org/post", postfields = "bla bla")
+h3 <- new_handle(url = "https://urldoesnotexist.xyz")
 multi_add(pool, h1, function(res){print(res)})
 multi_add(pool, h2, function(res){print(res)})
+multi_add(pool, h3)
 multi_run(pool)
 }
 
