@@ -36,10 +36,10 @@ SEXP R_multi_add(SEXP handle_ptr, SEXP complete, SEXP error){
   if(ref->locked)
     Rf_errorcall(R_NilValue, "Handle is locked. Probably in use in a connection or async request.");
 
-  /* buffer body */
-  //memory body = {NULL, 0};
-  //curl_easy_setopt(ref->handle, CURLOPT_WRITEFUNCTION, append_buffer);
-  //curl_easy_setopt(ref->handle, CURLOPT_WRITEDATA, &body);
+  /* placeholder body */
+  memory *body = calloc(1, sizeof(memory));
+  curl_easy_setopt(ref->handle, CURLOPT_WRITEFUNCTION, append_buffer);
+  curl_easy_setopt(ref->handle, CURLOPT_WRITEDATA, body);
 
   /* add to scheduler */
   massert(curl_multi_add_handle(global_multi, ref->handle));
