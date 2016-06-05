@@ -257,7 +257,7 @@ SEXP R_curl_connection(SEXP url, SEXP mode, SEXP ptr, SEXP stop_on_error) {
     error("Invalid mode: %s", smode);
   }
 
-  /* lock the handle */
+  /* protect the handle */
   (req->ref->refCount)++;
 
   UNPROTECT(1);
