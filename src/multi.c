@@ -5,6 +5,10 @@
 #define HAS_MULTI_WAIT 1
 #endif
 
+#if LIBCURL_VERSION_MAJOR > 7 || (LIBCURL_VERSION_MAJOR == 7 && LIBCURL_VERSION_MINOR >= 30)
+#define HAS_CURLMOPT_MAX_TOTAL_CONNECTIONS 1
+#endif
+
 CURLM *global_multi = NULL;
 int global_pending = 0;
 
@@ -46,15 +50,16 @@ SEXP R_multi_add(SEXP handle_ptr, SEXP complete, SEXP error){
   return handle_ptr;
 }
 
-
-SEXP R_multi_run(SEXP timeout, SEXP connections, SEXP multiplex){
+SEXP R_multi_run(SEXP timeout, SEXP total_con, SEXP host_con, SEXP multiplex){
 
   #ifdef CURLPIPE_MULTIPLEX
     if(asLogical(multiplex))
       massert(curl_multi_setopt(global_multi, CURLMOPT_PIPELINING, CURLPIPE_MULTIPLEX));
   #endif
-  #ifdef CURLMOPT_MAX_TOTAL_CONNECTIONS
-    massert(curl_multi_setopt(global_multi, CURLMOPT_MAX_TOTAL_CONNECTIONS, asInteger(connections)));
+
+  #ifdef HAS_CURLMOPT_MAX_TOTAL_CONNECTIONS
+    massert(curl_multi_setopt(global_multi, CURLMOPT_MAX_TOTAL_CONNECTIONS, (long) asInteger(total_con)));
+    massert(curl_multi_setopt(global_multi, CURLMOPT_MAX_HOST_CONNECTIONS, (long) asInteger(host_con)));
   #endif
 
   int still_running = 1;

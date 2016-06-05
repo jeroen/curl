@@ -9,7 +9,8 @@
 \usage{
 multi_add(handle, complete = identity, error = identity)
 
-multi_run(timeout = Inf, connections = 6, multiplex = TRUE)
+multi_run(timeout = Inf, total_connetions = 100, host_connections = 6,
+  multiplex = TRUE)
 
 multi_remove(handle)
 }
@@ -20,12 +21,14 @@ multi_remove(handle)
 
 \item{error}{callback on error}
 
-\item{timeout}{max seconds the pool is allowed to run. Use \code{0} to just poll for
-results without waiting. Use \code{-1} to wait untill all requests have completed.}
+\item{timeout}{max time in seconds to wait for results. Use \code{0} to poll for results without
+waiting at all.}
 
-\item{connections}{max number of concurrent connections}
+\item{total_connetions}{limit total concurrent connections}
 
-\item{multiplex}{enable HTTP/2 multiplexing if supported}
+\item{host_connections}{limit concurrent connections per host}
+
+\item{multiplex}{enable HTTP/2 multiplexing if supported by host and client}
 }
 \description{
 AJAX style concurrent requests, possibly using HTTP/2 multiplexing.

@@ -35,12 +35,11 @@ SEXP R_curl_version() {
   SET_STRING_ELT(names, 4, mkChar("libidn_version"));
   SET_STRING_ELT(names, 5, mkChar("host"));
   SET_STRING_ELT(names, 6, mkChar("protocols"));
-  SET_STRING_ELT(names, 7, mkChar("multiplex"));
+  SET_STRING_ELT(names, 7, mkChar("http2"));
   setAttrib(list, R_NamesSymbol, names);
 
-  /* http/2 features */
-  #ifdef CURLPIPE_MULTIPLEX
-  SET_VECTOR_ELT(list, 7, ScalarLogical(1));
+  #ifdef CURL_VERSION_HTTP2
+  SET_VECTOR_ELT(list, 7, ScalarLogical(data->features & CURL_VERSION_HTTP2));
   #else
   SET_VECTOR_ELT(list, 7, ScalarLogical(0));
   #endif

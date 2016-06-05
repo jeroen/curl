@@ -30,15 +30,16 @@ multi_add <- function(handle, complete = identity, error = identity){
   .Call(R_multi_add, handle, complete, error)
 }
 
-#' @param timeout max seconds the pool is allowed to run. Use \code{0} to just poll for
-#' results without waiting. Use \code{-1} to wait untill all requests have completed.
-#' @param multiplex enable HTTP/2 multiplexing if supported
-#' @param connections max number of concurrent connections
+#' @param timeout max time in seconds to wait for results. Use \code{0} to poll for results without
+#' waiting at all.
+#' @param total_connetions limit total concurrent connections
+#' @param host_connections limit concurrent connections per host
+#' @param multiplex enable HTTP/2 multiplexing if supported by host and client
 #' @export
 #' @useDynLib curl R_multi_run
 #' @rdname multi
-multi_run <- function(timeout = Inf, connections = 6, multiplex = TRUE){
-  .Call(R_multi_run, timeout, connections, multiplex)
+multi_run <- function(timeout = Inf, total_connetions = 100, host_connections = 6, multiplex = TRUE){
+  .Call(R_multi_run, timeout, total_connetions, host_connections, multiplex)
 }
 
 #' @export
