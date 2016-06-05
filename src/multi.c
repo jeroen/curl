@@ -121,11 +121,11 @@ SEXP R_multi_run(SEXP timeout, SEXP total_con, SEXP host_con, SEXP multiplex){
     }
   } while(still_running && time_max);
 
-  SEXP res = PROTECT(Rf_list3(
-    ScalarInteger(total_success),
-    ScalarInteger(total_fail),
-    ScalarInteger(global_pending)
-  ));
+  SEXP res = PROTECT(allocVector(VECSXP, 3));
+  SET_VECTOR_ELT(res, 0, ScalarInteger(total_success));
+  SET_VECTOR_ELT(res, 1, ScalarInteger(total_fail));
+  SET_VECTOR_ELT(res, 2, ScalarInteger(global_pending));
+
   SEXP names = PROTECT(allocVector(STRSXP, 3));
   SET_STRING_ELT(names, 0, mkChar("success"));
   SET_STRING_ELT(names, 1, mkChar("error"));
