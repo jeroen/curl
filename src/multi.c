@@ -47,7 +47,7 @@ SEXP R_multi_add(SEXP handle_ptr, SEXP complete, SEXP error){
 }
 
 
-SEXP R_multi_run(SEXP multiplex, SEXP connections, SEXP timeout){
+SEXP R_multi_run(SEXP timeout, SEXP connections, SEXP multiplex){
 
   #ifdef CURLPIPE_MULTIPLEX
     if(asLogical(multiplex))

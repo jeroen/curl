@@ -11,7 +11,7 @@ multi_add(handle, complete = identity, error = identity)
 
 multi_remove(handle)
 
-multi_run(multiplex = TRUE, connections = 6, timeout = -1)
+multi_run(timeout = Inf, connections = 6, multiplex = TRUE)
 }
 \arguments{
 \item{handle}{a prepared handle}
@@ -20,12 +20,12 @@ multi_run(multiplex = TRUE, connections = 6, timeout = -1)
 
 \item{error}{callback on error}
 
-\item{multiplex}{enable HTTP/2 multiplexing if supported}
+\item{timeout}{max seconds the pool is allowed to run. Use \code{0} to just poll for
+results without waiting. Use \code{-1} to wait untill all requests have completed.}
 
 \item{connections}{max number of concurrent connections}
 
-\item{timeout}{max seconds the pool is allowed to run. Use \code{0} to just poll for
-results without waiting. Use \code{-1} to wait untill all requests have completed.}
+\item{multiplex}{enable HTTP/2 multiplexing if supported}
 }
 \description{
 Performs multiple concurrent requests, possibly using HTTP/2 multiplexing.

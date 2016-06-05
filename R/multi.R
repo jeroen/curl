@@ -45,6 +45,6 @@ multi_remove <- function(handle){
 #' @export
 #' @useDynLib curl R_multi_run
 #' @rdname multi
-multi_run <- function(multiplex = TRUE, connections = 6, timeout = -1){
-  .Call(R_multi_run, multiplex, connections, timeout)
+multi_run <- function(timeout = Inf, connections = 6, multiplex = TRUE){
+  .Call(R_multi_run, timeout, connections, multiplex)
 }
