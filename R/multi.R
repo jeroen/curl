@@ -1,6 +1,6 @@
-#' Async multi download
+#' Async Multi Download
 #'
-#' Performs multiple concurrent requests, possibly using HTTP/2 multiplexing.
+#' AJAX style concurrent requests, possibly using HTTP/2 multiplexing.
 #' Results are only available via callback functions. Advanced use only!
 #'
 #' A single handle cannot be used for multiple simultaneous requests. However
