@@ -37,11 +37,11 @@ Results are only available via callback functions. Advanced use only!
 \details{
 Requests are created in the usual way using a curl \link{handle} and added
 to the scheduler with \link{multi_add}. This function returns immediately
-and does not perform the request yet. After zero or more handles have been
-added, the \code{multi_run} function performs all requests concurrently.
-It returns when all requests have completed or when \code{timeout} has
-passed, or when the user interrupts by pressing \code{ESC} or \code{CTRL+C}.
-The \code{multi_run} function can be called to resume requests.
+and does not perform the request yet. The user needs to call \code{multi_run}
+which performs all scheduled requests concurrently. It returns when all
+requests have completed, or case of a \code{timeout} or \code{SIGINT} (e.g.
+if the user presses \code{ESC} or \code{CTRL+C} in the console). To resume
+pending requests simply call \code{multi_run} again.
 
 A single handle cannot be used for multiple simultaneous requests. However
 it is possible to add new requests to a pool while it is running, so you
@@ -50,7 +50,7 @@ It is up to the user to make sure the same handle is not used in concurrent
 requests.
 
 The \link{multi_cancel} function can be used to cancel a pending request.
-It has no effect if the request was already completed or canceled before.
+It has no effect if the request was already completed or canceled.
 }
 \examples{
 h1 <- new_handle(url = "https://httpbin.org/delay/5")
