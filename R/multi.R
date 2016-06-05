@@ -30,14 +30,6 @@ multi_add <- function(handle, complete = identity, error = identity){
   .Call(R_multi_add, handle, complete, error)
 }
 
-#' @export
-#' @useDynLib curl R_multi_remove
-#' @rdname multi
-multi_remove <- function(handle){
-  stopifnot(inherits(handle, "curl_handle"))
-  .Call(R_multi_remove, handle)
-}
-
 #' @param timeout max seconds the pool is allowed to run. Use \code{0} to just poll for
 #' results without waiting. Use \code{-1} to wait untill all requests have completed.
 #' @param multiplex enable HTTP/2 multiplexing if supported
@@ -48,3 +40,12 @@ multi_remove <- function(handle){
 multi_run <- function(timeout = Inf, connections = 6, multiplex = TRUE){
   .Call(R_multi_run, timeout, connections, multiplex)
 }
+
+#' @export
+#' @useDynLib curl R_multi_remove
+#' @rdname multi
+multi_remove <- function(handle){
+  stopifnot(inherits(handle, "curl_handle"))
+  .Call(R_multi_remove, handle)
+}
+

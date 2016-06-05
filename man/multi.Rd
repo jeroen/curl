@@ -5,13 +5,13 @@
 \alias{multi_add}
 \alias{multi_remove}
 \alias{multi_run}
-\title{Async multi download}
+\title{Async Multi Download}
 \usage{
 multi_add(handle, complete = identity, error = identity)
 
-multi_remove(handle)
-
 multi_run(timeout = Inf, connections = 6, multiplex = TRUE)
+
+multi_remove(handle)
 }
 \arguments{
 \item{handle}{a prepared handle}
@@ -28,7 +28,7 @@ results without waiting. Use \code{-1} to wait untill all requests have complete
 \item{multiplex}{enable HTTP/2 multiplexing if supported}
 }
 \description{
-Performs multiple concurrent requests, possibly using HTTP/2 multiplexing.
+AJAX style concurrent requests, possibly using HTTP/2 multiplexing.
 Results are only available via callback functions. Advanced use only!
 }
 \details{
