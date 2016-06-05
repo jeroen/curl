@@ -92,6 +92,9 @@ SEXP R_multi_run(SEXP timeout, SEXP total_con, SEXP host_con, SEXP multiplex){
 
         // release the handle so that it can be reused in callback
         massert(curl_multi_remove_handle(global_multi, handle));
+        curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, NULL);
+        curl_easy_setopt(handle, CURLOPT_WRITEDATA, NULL);
+
         global_pending--;
         ref->busy = 0;
         ref->locked = 0;
