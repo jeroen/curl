@@ -5,11 +5,19 @@
 #'
 #' Requests are created in the usual way using a curl \link{handle} and added
 #' to the scheduler with \link{multi_add}. This function returns immediately
-#' and does not perform the request yet. The user needs to call \code{multi_run}
+#' and does not perform the request yet. The user needs to call \link{multi_run}
 #' which performs all scheduled requests concurrently. It returns when all
 #' requests have completed, or case of a \code{timeout} or \code{SIGINT} (e.g.
-#' if the user presses \code{ESC} or \code{CTRL+C} in the console). To resume
-#' pending requests simply call \code{multi_run} again.
+#' if the user presses \code{ESC} or \code{CTRL+C} in the console). In case of
+#' the latter, simply call \link{multi_run} again to resume pending requests.
+#'
+#' When the request succeeded, the \code{complete} callback gets triggerd with
+#' the response data. The structure if this data is identical to \link{curl_fetch_memory}.
+#' When the request fails, the \code{error} callback is triggered with an error
+#' message. Note that failure means something went wrong in performing the
+#' request such as a connection failure, not that the HTTP status code implies
+#' success. Similar to  \link{curl_fetch_memory}, the user has to implement
+#' application logic.
 #'
 #' A single handle cannot be used for multiple simultaneous requests. However
 #' it is possible to add new requests to a pool while it is running, so you
