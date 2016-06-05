@@ -53,7 +53,9 @@ SEXP R_multi_run(SEXP timeout, SEXP connections, SEXP multiplex){
     if(asLogical(multiplex))
       massert(curl_multi_setopt(global_multi, CURLMOPT_PIPELINING, CURLPIPE_MULTIPLEX));
   #endif
-  massert(curl_multi_setopt(global_multi, CURLMOPT_MAX_TOTAL_CONNECTIONS, asInteger(connections)));
+  #ifdef CURLMOPT_MAX_TOTAL_CONNECTIONS
+    massert(curl_multi_setopt(global_multi, CURLMOPT_MAX_TOTAL_CONNECTIONS, asInteger(connections)));
+  #endif
 
   int still_running = 1;
   int total_success = 0;
