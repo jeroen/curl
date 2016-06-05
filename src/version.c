@@ -8,7 +8,7 @@ SEXP R_curl_version() {
   const curl_version_info_data *data = curl_version_info(CURLVERSION_NOW);
 
   /* put stuff in a list */
-  SEXP list = PROTECT(allocVector(VECSXP, 7));
+  SEXP list = PROTECT(allocVector(VECSXP, 8));
   SET_VECTOR_ELT(list, 0, make_string(data->version));
   SET_VECTOR_ELT(list, 1, make_string(data->ssl_version));
   SET_VECTOR_ELT(list, 2, make_string(data->libz_version));
@@ -27,7 +27,7 @@ SEXP R_curl_version() {
   SET_VECTOR_ELT(list, 6, protocols);
 
   /* add list names */
-  SEXP names = PROTECT(allocVector(STRSXP, 7));
+  SEXP names = PROTECT(allocVector(STRSXP, 8));
   SET_STRING_ELT(names, 0, mkChar("version"));
   SET_STRING_ELT(names, 1, mkChar("ssl_version"));
   SET_STRING_ELT(names, 2, mkChar("libz_version"));
@@ -35,7 +35,15 @@ SEXP R_curl_version() {
   SET_STRING_ELT(names, 4, mkChar("libidn_version"));
   SET_STRING_ELT(names, 5, mkChar("host"));
   SET_STRING_ELT(names, 6, mkChar("protocols"));
+  SET_STRING_ELT(names, 7, mkChar("multiplex"));
   setAttrib(list, R_NamesSymbol, names);
+
+  /* http/2 features */
+  #ifdef CURLPIPE_MULTIPLEX
+  SET_VECTOR_ELT(list, 7, ScalarLogical(1));
+  #else
+  SET_VECTOR_ELT(list, 7, ScalarLogical(0));
+  #endif
 
   /* return */
   UNPROTECT(3);
