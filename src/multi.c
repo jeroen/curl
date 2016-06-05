@@ -18,7 +18,7 @@ int global_pending = 0;
  * The ref->locked is used to lock the handle for any use.
  */
 
-SEXP R_multi_remove(SEXP handle_ptr){
+SEXP R_multi_cancel(SEXP handle_ptr){
   reference *ref = get_ref(handle_ptr);
   if(ref->busy){
     massert(curl_multi_remove_handle(global_multi, ref->handle));

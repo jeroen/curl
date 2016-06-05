@@ -3,7 +3,7 @@
 \name{multi}
 \alias{multi}
 \alias{multi_add}
-\alias{multi_remove}
+\alias{multi_cancel}
 \alias{multi_run}
 \title{Async Multi Download}
 \usage{
@@ -12,7 +12,7 @@ multi_add(handle, complete = NULL, error = NULL)
 multi_run(timeout = Inf, total_connetions = 100, host_connections = 6,
   multiplex = TRUE)
 
-multi_remove(handle)
+multi_cancel(handle)
 }
 \arguments{
 \item{handle}{a prepared handle}
@@ -48,6 +48,9 @@ it is possible to add new requests to a pool while it is running, so you
 can re-use a handle within the callback of a request from that same handle.
 It is up to the user to make sure the same handle is not used in concurrent
 requests.
+
+The \link{multi_cancel} function can be used to cancel a pending request.
+It has no effect if the request was already completed or canceled before.
 }
 \examples{
 h1 <- new_handle(url = "https://httpbin.org/delay/5")

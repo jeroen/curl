@@ -17,6 +17,9 @@
 #' It is up to the user to make sure the same handle is not used in concurrent
 #' requests.
 #'
+#' The \link{multi_cancel} function can be used to cancel a pending request.
+#' It has no effect if the request was already completed or canceled.
+#'
 #' @name multi
 #' @param handle a prepared handle
 #' @param complete callback on complete
@@ -51,10 +54,10 @@ multi_run <- function(timeout = Inf, total_connetions = 100, host_connections = 
 }
 
 #' @export
-#' @useDynLib curl R_multi_remove
+#' @useDynLib curl R_multi_cancel
 #' @rdname multi
-multi_remove <- function(handle){
+multi_cancel <- function(handle){
   stopifnot(inherits(handle, "curl_handle"))
-  .Call(R_multi_remove, handle)
+  .Call(R_multi_cancel, handle)
 }
 
