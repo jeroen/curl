@@ -1,7 +1,8 @@
 context("Multi handle")
 
 test_that("Max connections works", {
-  skipifnot(curl_version()$version >= as.numeric_version("7.30"))
+  skip_if_not(curl_version()$version >= as.numeric_version("7.30"),
+    "libcurl does not support host_connections")
   for(i in 1:3){
     multi_add(new_handle(url = "https://httpbin.org/delay/3"))
   }
