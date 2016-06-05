@@ -1,15 +1,23 @@
 context("Multi handle")
 
 test_that("Max connections works", {
-  multi_add(new_handle(url = "https://httpbin.org/delay/3"))
-  multi_add(new_handle(url = "https://httpbin.org/delay/3"))
-  multi_add(new_handle(url = "https://httpbin.org/delay/3"))
+  for(i in 1:3){
+    multi_add(new_handle(url = "https://httpbin.org/delay/3"))
+  }
   out <- multi_run(host_connections = 1, timeout = 5)
   expect_equal(out, list(success=1, error=0, pending=2))
   out <- multi_run(3, host_connections = 1)
   expect_equal(out, list(success=1, error=0, pending=1))
   out <- multi_run(host_connections = 1)
   expect_equal(out, list(success=1, error=0, pending=0))
+})
+
+test_that("Max connections reset", {
+  for(i in 1:3){
+    multi_add(new_handle(url = "https://httpbin.org/delay/3"))
+  }
+  out <- multi_run(host_connections = 6, timeout = 5)
+  expect_equal(out, list(success=3, error=0, pending=0))
 })
 
 test_that("Timeout works", {
