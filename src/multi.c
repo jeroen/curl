@@ -22,6 +22,8 @@ SEXP R_multi_cancel(SEXP handle_ptr){
   reference *ref = get_ref(handle_ptr);
   if(ref->busy){
     massert(curl_multi_remove_handle(global_multi, ref->handle));
+    R_ReleaseObject(ref->complete);
+    R_ReleaseObject(ref->error);
     ref->busy = 0;
     ref->locked = 0;
     ref->refCount--;
@@ -31,7 +33,7 @@ SEXP R_multi_cancel(SEXP handle_ptr){
   return handle_ptr;
 }
 
-SEXP R_multi_add(SEXP handle_ptr, SEXP complete, SEXP error){
+SEXP R_multi_add(SEXP handle_ptr, SEXP cb_complete, SEXP cb_error){
   reference *ref = get_ref(handle_ptr);
   if(ref->locked)
     Rf_errorcall(R_NilValue, "Handle is locked. Probably in use in a connection or async request.");
@@ -43,6 +45,11 @@ SEXP R_multi_add(SEXP handle_ptr, SEXP complete, SEXP error){
 
   /* add to scheduler */
   massert(curl_multi_add_handle(global_multi, ref->handle));
+
+  /* store callbacks */
+  R_PreserveObject(ref->complete = cb_complete);
+  R_PreserveObject(ref->error = cb_error);
+
   global_pending++;
   ref->refCount++;
   ref->locked = 1;
@@ -100,21 +107,41 @@ SEXP R_multi_run(SEXP timeout, SEXP total_con, SEXP host_con, SEXP multiplex){
         ref->locked = 0;
 
         // execute the success or error callback
+        PROTECT(ref->complete);
+        PROTECT(ref->error);
+        R_ReleaseObject(ref->complete);
+        R_ReleaseObject(ref->error);
+
         // callbacks must be trycatch! we should continue the loop
         CURLcode status = m->data.result;
         if(status == CURLE_OK){
           total_success++;
-          //placeholder for success callback
-          Rprintf("Success! total data: %d\n", ref->content.size);
-          if(ref->content.buf)
-            free(ref->content.buf);
+          if(Rf_isFunction(ref->complete)){
+            int ok;
+            //copy and reset buffer so that callback can re-use ref->content
+            SEXP buf = PROTECT(allocVector(RAWSXP, ref->content.size));
+            if(ref->content.buf && ref->content.size)
+              memcpy(RAW(buf), ref->content.buf, ref->content.size);
+            reset_content(ref);
+            SEXP out = PROTECT(make_handle_response(ref));
+            SET_VECTOR_ELT(out, 5, buf);
+            SEXP call = PROTECT(LCONS(ref->complete, LCONS(out, R_NilValue)));
+            SEXP res = PROTECT(R_tryEvalSilent(call, R_GlobalEnv, &ok));
+            UNPROTECT(4);
+          }
         } else {
           total_fail++;
-          //placeholder for error callback
-          Rprintf("Error: %s\n", curl_easy_strerror(status));
+          if(Rf_isFunction(ref->error)){
+            int ok;
+            SEXP buf = PROTECT(mkString(curl_easy_strerror(status)));
+            SEXP call = PROTECT(LCONS(ref->error, LCONS(buf, R_NilValue)));
+            SEXP res = PROTECT(R_tryEvalSilent(call, R_GlobalEnv, &ok));
+            UNPROTECT(3);
+          }
         }
 
-        // collect garbage after executing callbacks
+        // watch out: ref/handle might be modified by callback functions!
+        UNPROTECT(2);
         ref->refCount--;
         clean_handle(ref);
       }

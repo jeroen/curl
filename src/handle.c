@@ -283,12 +283,13 @@ SEXP make_rawvec(unsigned char *ptr, size_t size){
 }
 
 SEXP make_namesvec(){
-  SEXP names = PROTECT(allocVector(STRSXP, 5));
+  SEXP names = PROTECT(allocVector(STRSXP, 6));
   SET_STRING_ELT(names, 0, mkChar("url"));
   SET_STRING_ELT(names, 1, mkChar("status_code"));
   SET_STRING_ELT(names, 2, mkChar("headers"));
   SET_STRING_ELT(names, 3, mkChar("modified"));
   SET_STRING_ELT(names, 4, mkChar("times"));
+  SET_STRING_ELT(names, 5, mkChar("content"));
   UNPROTECT(1);
   return names;
 }
@@ -297,19 +298,22 @@ SEXP R_get_handle_cookies(SEXP ptr){
   return make_cookievec(get_handle(ptr));
 }
 
-SEXP R_get_handle_response(SEXP ptr){
-  /* get the handle */
-  reference *ref = get_ref(ptr);
-  CURL *handle = get_handle(ptr);
-
-  /* grab output data */
-  SEXP res = PROTECT(allocVector(VECSXP, 5));
+SEXP make_handle_response(reference *ref){
+  CURL *handle = ref->handle;
+  SEXP res = PROTECT(allocVector(VECSXP, 6));
   SET_VECTOR_ELT(res, 0, make_url(handle));
   SET_VECTOR_ELT(res, 1, make_status(handle));
   SET_VECTOR_ELT(res, 2, make_rawvec(ref->resheaders.buf, ref->resheaders.size));
   SET_VECTOR_ELT(res, 3, make_filetime(handle));
   SET_VECTOR_ELT(res, 4, make_timevec(handle));
+  SET_VECTOR_ELT(res, 5, R_NilValue);
   setAttrib(res, R_NamesSymbol, make_namesvec());
   UNPROTECT(1);
   return res;
+}
+
+SEXP R_get_handle_response(SEXP ptr){
+  /* get the handle */
+  reference *ref = get_ref(ptr);
+  return make_handle_response(ref);
 }
