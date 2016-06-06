@@ -37,9 +37,9 @@ SEXP R_multi_add(SEXP handle_ptr, SEXP complete, SEXP error){
     Rf_errorcall(R_NilValue, "Handle is locked. Probably in use in a connection or async request.");
 
   /* placeholder body */
-  memory *body = calloc(1, sizeof(memory));
+  reset_content(ref);
   curl_easy_setopt(ref->handle, CURLOPT_WRITEFUNCTION, append_buffer);
-  curl_easy_setopt(ref->handle, CURLOPT_WRITEDATA, body);
+  curl_easy_setopt(ref->handle, CURLOPT_WRITEDATA, &(ref->content));
 
   /* add to scheduler */
   massert(curl_multi_add_handle(global_multi, ref->handle));
@@ -104,10 +104,14 @@ SEXP R_multi_run(SEXP timeout, SEXP total_con, SEXP host_con, SEXP multiplex){
         CURLcode status = m->data.result;
         if(status == CURLE_OK){
           total_success++;
-          Rprintf("Success!\n"); //placeholder for success callback
+          //placeholder for success callback
+          Rprintf("Success! total data: %d\n", ref->content.size);
+          if(ref->content.buf)
+            free(ref->content.buf);
         } else {
           total_fail++;
-          Rprintf("Error: %s\n", curl_easy_strerror(status)); //placeholder for error callback
+          //placeholder for error callback
+          Rprintf("Error: %s\n", curl_easy_strerror(status));
         }
 
         // collect garbage after executing callbacks

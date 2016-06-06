@@ -35,6 +35,13 @@ void reset_resheaders(reference *ref){
   ref->resheaders.size = 0;
 }
 
+void reset_content(reference *ref){
+  if(ref->content.buf)
+    free(ref->content.buf);
+  ref->content.buf = NULL;
+  ref->content.size = 0;
+}
+
 void assert(CURLcode res){
   if(res != CURLE_OK)
     error(curl_easy_strerror(res));
