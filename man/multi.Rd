@@ -15,7 +15,7 @@ multi_run(timeout = Inf, total_connetions = 100, host_connections = 6,
 multi_cancel(handle)
 }
 \arguments{
-\item{handle}{a curl \link{handle} handle with a valid \code{url} option set}
+\item{handle}{a curl \link{handle} with \code{url} option already set.}
 
 \item{complete}{callback function for successful request. Single argument with
 response data in same structure as \link{curl_fetch_memory}.}
@@ -26,11 +26,11 @@ error message.}
 \item{timeout}{max time in seconds to wait for results. Use \code{0} to poll for results without
 waiting at all.}
 
-\item{total_connetions}{limit total concurrent connections}
+\item{total_connetions}{max total concurrent connections.}
 
-\item{host_connections}{limit concurrent connections per host}
+\item{host_connections}{max concurrent connections per host.}
 
-\item{multiplex}{enable HTTP/2 multiplexing if supported by host and client}
+\item{multiplex}{enable HTTP/2 multiplexing if supported by host and client.}
 }
 \description{
 AJAX style concurrent requests, possibly using HTTP/2 multiplexing.

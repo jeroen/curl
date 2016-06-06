@@ -30,7 +30,7 @@
 #' It has no effect if the request was already completed or canceled.
 #'
 #' @name multi
-#' @param handle a curl \link{handle} handle with a valid \code{url} option set
+#' @param handle a curl \link{handle} with \code{url} option already set.
 #' @param complete callback function for successful request. Single argument with
 #' response data in same structure as \link{curl_fetch_memory}.
 #' @param error callback function called on failed request. Argument contains
@@ -55,9 +55,9 @@ multi_add <- function(handle, complete = NULL, error = NULL){
 
 #' @param timeout max time in seconds to wait for results. Use \code{0} to poll for results without
 #' waiting at all.
-#' @param total_connetions limit total concurrent connections
-#' @param host_connections limit concurrent connections per host
-#' @param multiplex enable HTTP/2 multiplexing if supported by host and client
+#' @param total_connetions max total concurrent connections.
+#' @param host_connections max concurrent connections per host.
+#' @param multiplex enable HTTP/2 multiplexing if supported by host and client.
 #' @export
 #' @useDynLib curl R_multi_run
 #' @rdname multi
