@@ -15,11 +15,13 @@ multi_run(timeout = Inf, total_connetions = 100, host_connections = 6,
 multi_cancel(handle)
 }
 \arguments{
-\item{handle}{a prepared handle}
+\item{handle}{a curl \link{handle} handle with a valid \code{url} option set}
 
-\item{complete}{callback on complete}
+\item{complete}{callback function for successful request. Single argument with
+response data in same structure as \link{curl_fetch_memory}.}
 
-\item{error}{callback on error}
+\item{error}{callback function called on failed request. Argument contains
+error message.}
 
 \item{timeout}{max time in seconds to wait for results. Use \code{0} to poll for results without
 waiting at all.}

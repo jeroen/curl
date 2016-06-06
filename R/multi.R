@@ -30,9 +30,11 @@
 #' It has no effect if the request was already completed or canceled.
 #'
 #' @name multi
-#' @param handle a prepared handle
-#' @param complete callback on complete
-#' @param error callback on error
+#' @param handle a curl \link{handle} handle with a valid \code{url} option set
+#' @param complete callback function for successful request. Single argument with
+#' response data in same structure as \link{curl_fetch_memory}.
+#' @param error callback function called on failed request. Argument contains
+#' error message.
 #' @export
 #' @useDynLib curl R_multi_add
 #' @rdname multi
