@@ -64,13 +64,13 @@ The \link{multi_cancel} function can be used to cancel a pending request.
 It has no effect if the request was already completed or canceled.
 }
 \examples{
-h1 <- new_handle(url = "https://httpbin.org/delay/5")
+h1 <- new_handle(url = "https://httpbin.org/delay/3")
 h2 <- new_handle(url = "https://httpbin.org/post", postfields = "bla bla")
 h3 <- new_handle(url = "https://urldoesnotexist.xyz")
 multi_add(h1, complete = print, error = print)
 multi_add(h2, complete = print, error = print)
 multi_add(h3, complete = print, error = print)
-multi_run(timeout = 3)
+multi_run(timeout = 2)
 multi_run()
 }
 

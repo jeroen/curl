@@ -38,13 +38,13 @@
 #' @export
 #' @useDynLib curl R_multi_add
 #' @rdname multi
-#' @examples h1 <- new_handle(url = "https://httpbin.org/delay/5")
+#' @examples h1 <- new_handle(url = "https://httpbin.org/delay/3")
 #' h2 <- new_handle(url = "https://httpbin.org/post", postfields = "bla bla")
 #' h3 <- new_handle(url = "https://urldoesnotexist.xyz")
 #' multi_add(h1, complete = print, error = print)
 #' multi_add(h2, complete = print, error = print)
 #' multi_add(h3, complete = print, error = print)
-#' multi_run(timeout = 3)
+#' multi_run(timeout = 2)
 #' multi_run()
 multi_add <- function(handle, complete = NULL, error = NULL){
   stopifnot(inherits(handle, "curl_handle"))
