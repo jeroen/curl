@@ -126,8 +126,8 @@ SEXP R_multi_run(SEXP timeout, SEXP total_con, SEXP host_con, SEXP multiplex){
             SEXP out = PROTECT(make_handle_response(ref));
             SET_VECTOR_ELT(out, 5, buf);
             SEXP call = PROTECT(LCONS(cb_complete, LCONS(out, R_NilValue)));
-            SEXP res = PROTECT(R_tryEval(call, R_GlobalEnv, &ok));
-            UNPROTECT(3);
+            R_tryEval(call, R_GlobalEnv, &ok);
+            UNPROTECT(2);
           }
         } else {
           total_fail++;
@@ -135,8 +135,8 @@ SEXP R_multi_run(SEXP timeout, SEXP total_con, SEXP host_con, SEXP multiplex){
             int ok;
             SEXP buf = PROTECT(mkString(curl_easy_strerror(status)));
             SEXP call = PROTECT(LCONS(cb_error, LCONS(buf, R_NilValue)));
-            SEXP res = PROTECT(R_tryEval(call, R_GlobalEnv, &ok));
-            UNPROTECT(3);
+            R_tryEval(call, R_GlobalEnv, &ok);
+            UNPROTECT(2);
           }
         }
 
