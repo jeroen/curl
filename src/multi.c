@@ -152,7 +152,7 @@ SEXP R_multi_run(SEXP timeout, SEXP total_con, SEXP host_con, SEXP multiplex){
       if(seconds_elapsed > time_max)
         break;
     }
-  } while(dirty || (total_pending && time_max));
+  } while((dirty || total_pending) && time_max);
 
   SEXP res = PROTECT(allocVector(VECSXP, 3));
   SET_VECTOR_ELT(res, 0, ScalarInteger(total_success));
