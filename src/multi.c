@@ -95,6 +95,7 @@ SEXP R_multi_run(SEXP timeout, SEXP total_con, SEXP host_con, SEXP multiplex){
         dirty = 1;
         reference *ref = NULL;
         CURL *handle = m->easy_handle;
+        CURLcode status = m->data.result;
         assert(curl_easy_getinfo(handle, CURLINFO_PRIVATE, &ref));
 
         // release the handle so that it can be reused in callback
@@ -118,7 +119,6 @@ SEXP R_multi_run(SEXP timeout, SEXP total_con, SEXP host_con, SEXP multiplex){
         reset_multi(ref);
 
         // callbacks must be trycatch! we should continue the loop
-        CURLcode status = m->data.result;
         if(status == CURLE_OK){
           total_success++;
           if(Rf_isFunction(cb_complete)){
