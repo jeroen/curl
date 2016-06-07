@@ -51,3 +51,13 @@ test_that("Callbacks work", {
   expect_equal(out, list(success=2, error=0, pending=0))
   expect_equal(total, 2)
 })
+
+test_that("Multi cancel works", {
+  h1 <- new_handle(url = "https://httpbin.org/get")
+  multi_add(h1)
+  expect_error(multi_add(h1), "locked")
+  expect_equal(multi_run(0), list(success = 0, error = 0, pending = 1))
+  expect_is(multi_cancel(h1), "curl_handle")
+  expect_is(multi_add(h1), "curl_handle")
+  expect_equal(multi_run(), list(success = 1, error = 0, pending = 0))
+})
