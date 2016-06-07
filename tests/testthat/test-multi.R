@@ -23,7 +23,7 @@ test_that("Max connections reset", {
 })
 
 test_that("Timeout works", {
-  h1 <- new_handle(url = "https://httpbin.org/delay/2")
+  h1 <- new_handle(url = "https://httpbin.org/delay/3")
   h2 <- new_handle(url = "https://httpbin.org/post", postfields = "bla bla")
   h3 <- new_handle(url = "https://urldoesnotexist.xyz", connecttimeout = 1)
   h4 <- new_handle(url = "http://localhost:14", connecttimeout = 1)
