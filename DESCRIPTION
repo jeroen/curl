@@ -21,7 +21,7 @@ SystemRequirements: libcurl: libcurl-devel (rpm) or libcurl4-openssl-dev (deb).
 URL: https://github.com/jeroenooms/curl#readme
 BugReports: https://github.com/jeroenooms/curl/issues
 Suggests:
-    testthat,
+    testthat (>= 1.0.0),
     knitr,
     jsonlite,
     rmarkdown,
