@@ -10,7 +10,6 @@
 #endif
 
 CURLM *global_multi = NULL;
-int dirty = 0;
 
 /* Important:
  * The ref->busy field means the handle is used by global_multi system
@@ -44,7 +43,6 @@ SEXP R_multi_add(SEXP handle_ptr, SEXP cb_complete, SEXP cb_error){
 
   /* add to scheduler */
   massert(curl_multi_add_handle(global_multi, ref->handle));
-  dirty = 1;
 
   /* store callbacks */
   R_PreserveObject(ref->complete = cb_complete);
@@ -71,11 +69,13 @@ SEXP R_multi_run(SEXP timeout, SEXP total_con, SEXP host_con, SEXP multiplex){
   int total_pending = 0;
   int total_success = 0;
   int total_fail = 0;
+  int dirty = 0;
   double time_max = asReal(timeout);
 
   clock_t time_start = clock();
   double seconds_elapsed = 0;
   do {
+    dirty = 0;
     if(pending_interrupt())
       break;
     /* Required by old versions of libcurl */
@@ -89,10 +89,10 @@ SEXP R_multi_run(SEXP timeout, SEXP total_con, SEXP host_con, SEXP multiplex){
 
     /* check for completed requests */
     int msgq = 0;
-    dirty = 0;
     do {
       CURLMsg *m = curl_multi_info_read(global_multi, &msgq);
       if(m && (m->msg == CURLMSG_DONE)){
+        dirty = 1;
         reference *ref = NULL;
         CURL *handle = m->easy_handle;
         assert(curl_easy_getinfo(handle, CURLINFO_PRIVATE, &ref));
