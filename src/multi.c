@@ -96,7 +96,7 @@ SEXP R_multi_run(SEXP timeout, SEXP total_con, SEXP host_con, SEXP multiplex){
         reference *ref = NULL;
         CURL *handle = m->easy_handle;
         CURLcode status = m->data.result;
-        assert(curl_easy_getinfo(handle, CURLINFO_PRIVATE, &ref));
+        assert(curl_easy_getinfo(handle, CURLINFO_PRIVATE, (char**) &ref));
 
         // release the handle so that it can be reused in callback
         massert(curl_multi_remove_handle(global_multi, handle));
