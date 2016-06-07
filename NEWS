@@ -1,4 +1,5 @@
 0.9.8
+ - New multi API for concurrent aync requests
  - Fix for FreeBSD
  - Simplify handle refCount system
  - Better handle locking to prevent using/modifying open handles
