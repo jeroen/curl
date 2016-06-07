@@ -10,6 +10,7 @@
 #endif
 
 CURLM *global_multi = NULL;
+int dirty = 0;
 
 /* Important:
  * The ref->busy field means the handle is used by global_multi system
@@ -43,6 +44,7 @@ SEXP R_multi_add(SEXP handle_ptr, SEXP cb_complete, SEXP cb_error){
 
   /* add to scheduler */
   massert(curl_multi_add_handle(global_multi, ref->handle));
+  dirty = 1;
 
   /* store callbacks */
   R_PreserveObject(ref->complete = cb_complete);
@@ -66,7 +68,7 @@ SEXP R_multi_run(SEXP timeout, SEXP total_con, SEXP host_con, SEXP multiplex){
     massert(curl_multi_setopt(global_multi, CURLMOPT_MAX_HOST_CONNECTIONS, (long) asInteger(host_con)));
   #endif
 
-  int total_pending = 1;
+  int total_pending = 0;
   int total_success = 0;
   int total_fail = 0;
   double time_max = asReal(timeout);
@@ -87,6 +89,7 @@ SEXP R_multi_run(SEXP timeout, SEXP total_con, SEXP host_con, SEXP multiplex){
 
     /* check for completed requests */
     int msgq = 0;
+    dirty = 0;
     do {
       CURLMsg *m = curl_multi_info_read(global_multi, &msgq);
       if(m && (m->msg == CURLMSG_DONE)){
@@ -149,7 +152,7 @@ SEXP R_multi_run(SEXP timeout, SEXP total_con, SEXP host_con, SEXP multiplex){
       if(seconds_elapsed > time_max)
         break;
     }
-  } while(total_pending && time_max);
+  } while(dirty || (total_pending && time_max));
 
   SEXP res = PROTECT(allocVector(VECSXP, 3));
   SET_VECTOR_ELT(res, 0, ScalarInteger(total_success));
