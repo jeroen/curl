@@ -1,5 +1,6 @@
 0.9.8
  - New multi API for concurrent aync requests
+ - Added 'ipv6' and 'http2' to curl_version() output
  - Fix for FreeBSD
  - Simplify handle refCount system
  - Better handle locking to prevent using/modifying open handles
