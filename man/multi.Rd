@@ -51,8 +51,8 @@ When the request fails, the \code{error} callback is triggered with an error
 message. Note that failure here means something went wrong in performing the
 request such as a connection failure, not that the HTTP returned 200. Similar
 to  \link{curl_fetch_memory}, the user has to implement application logic.
-Raising an error in a callback function stops execution of that function, but
-does not affect other requests.
+Raising an error within a callback function stops execution of that function
+but does not affect other requests.
 
 A single handle cannot be used for multiple simultaneous requests. However
 it is possible to add new requests to a pool while it is running, so you

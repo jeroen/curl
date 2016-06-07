@@ -10,7 +10,6 @@
 #endif
 
 CURLM *global_multi = NULL;
-int global_pending = 0;
 
 /* Important:
  * The ref->busy field means the handle is used by global_multi system
@@ -28,7 +27,6 @@ SEXP R_multi_cancel(SEXP handle_ptr){
     ref->locked = 0;
     ref->refCount--;
     clean_handle(ref);
-    global_pending--;
   }
   return handle_ptr;
 }
@@ -50,7 +48,6 @@ SEXP R_multi_add(SEXP handle_ptr, SEXP cb_complete, SEXP cb_error){
   R_PreserveObject(ref->complete = cb_complete);
   R_PreserveObject(ref->error = cb_error);
 
-  global_pending++;
   ref->refCount++;
   ref->locked = 1;
   ref->busy = 1;
@@ -69,7 +66,7 @@ SEXP R_multi_run(SEXP timeout, SEXP total_con, SEXP host_con, SEXP multiplex){
     massert(curl_multi_setopt(global_multi, CURLMOPT_MAX_HOST_CONNECTIONS, (long) asInteger(host_con)));
   #endif
 
-  int still_running = 1;
+  int total_pending = 1;
   int total_success = 0;
   int total_fail = 0;
   double time_max = asReal(timeout);
@@ -82,7 +79,7 @@ SEXP R_multi_run(SEXP timeout, SEXP total_con, SEXP host_con, SEXP multiplex){
     /* Required by old versions of libcurl */
     CURLMcode res = CURLM_CALL_MULTI_PERFORM;
     while(res == CURLM_CALL_MULTI_PERFORM)
-      res = curl_multi_perform(global_multi, &(still_running));
+      res = curl_multi_perform(global_multi, &(total_pending));
 
     /* check for multi errors */
     if(res != CURLM_OK)
@@ -102,7 +99,6 @@ SEXP R_multi_run(SEXP timeout, SEXP total_con, SEXP host_con, SEXP multiplex){
         curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, NULL);
         curl_easy_setopt(handle, CURLOPT_WRITEDATA, NULL);
 
-        global_pending--;
         ref->busy = 0;
         ref->locked = 0;
 
@@ -153,12 +149,12 @@ SEXP R_multi_run(SEXP timeout, SEXP total_con, SEXP host_con, SEXP multiplex){
       if(seconds_elapsed > time_max)
         break;
     }
-  } while(still_running && time_max);
+  } while(total_pending && time_max);
 
   SEXP res = PROTECT(allocVector(VECSXP, 3));
   SET_VECTOR_ELT(res, 0, ScalarInteger(total_success));
   SET_VECTOR_ELT(res, 1, ScalarInteger(total_fail));
-  SET_VECTOR_ELT(res, 2, ScalarInteger(global_pending));
+  SET_VECTOR_ELT(res, 2, ScalarInteger(total_pending));
 
   SEXP names = PROTECT(allocVector(STRSXP, 3));
   SET_STRING_ELT(names, 0, mkChar("success"));
