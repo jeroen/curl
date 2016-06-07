@@ -46,6 +46,7 @@ test_that("Callbacks work", {
       total <<- total + 1
     })
   })
+  gc() # test that callback functions are protected
   out <- multi_run()
   expect_equal(out, list(success=2, error=0, pending=0))
   expect_equal(total, 2)
