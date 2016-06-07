@@ -55,14 +55,14 @@ multi_add <- function(handle, complete = NULL, error = NULL){
 
 #' @param timeout max time in seconds to wait for results. Use \code{0} to poll for results without
 #' waiting at all.
-#' @param total_connetions max total concurrent connections.
+#' @param total_connections max total concurrent connections.
 #' @param host_connections max concurrent connections per host.
 #' @param multiplex enable HTTP/2 multiplexing if supported by host and client.
 #' @export
 #' @useDynLib curl R_multi_run
 #' @rdname multi
-multi_run <- function(timeout = Inf, total_connetions = 100, host_connections = 6, multiplex = TRUE){
-  .Call(R_multi_run, timeout, total_connetions, host_connections, multiplex)
+multi_run <- function(timeout = Inf, total_connections = 100, host_connections = 6, multiplex = TRUE){
+  .Call(R_multi_run, timeout, total_connections, host_connections, multiplex)
 }
 
 #' @export

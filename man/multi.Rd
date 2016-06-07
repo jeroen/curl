@@ -9,7 +9,7 @@
 \usage{
 multi_add(handle, complete = NULL, error = NULL)
 
-multi_run(timeout = Inf, total_connetions = 100, host_connections = 6,
+multi_run(timeout = Inf, total_connections = 100, host_connections = 6,
   multiplex = TRUE)
 
 multi_cancel(handle)
@@ -26,7 +26,7 @@ error message.}
 \item{timeout}{max time in seconds to wait for results. Use \code{0} to poll for results without
 waiting at all.}
 
-\item{total_connetions}{max total concurrent connections.}
+\item{total_connections}{max total concurrent connections.}
 
 \item{host_connections}{max concurrent connections per host.}
 
