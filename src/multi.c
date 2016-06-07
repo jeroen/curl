@@ -19,11 +19,11 @@ CURLM *global_multi = NULL;
 
 SEXP R_multi_cancel(SEXP handle_ptr){
   reference *ref = get_ref(handle_ptr);
-  if(ref->busy){
+  if(ref->multi.busy){
     massert(curl_multi_remove_handle(global_multi, ref->handle));
-    R_ReleaseObject(ref->complete);
-    R_ReleaseObject(ref->error);
-    ref->busy = 0;
+    R_ReleaseObject(ref->multi.complete);
+    R_ReleaseObject(ref->multi.error);
+    ref->multi.busy = 0;
     ref->locked = 0;
     ref->refCount--;
     clean_handle(ref);
@@ -37,20 +37,20 @@ SEXP R_multi_add(SEXP handle_ptr, SEXP cb_complete, SEXP cb_error){
     Rf_errorcall(R_NilValue, "Handle is locked. Probably in use in a connection or async request.");
 
   /* placeholder body */
-  reset_content(ref);
+  reset_multi(ref);
   curl_easy_setopt(ref->handle, CURLOPT_WRITEFUNCTION, append_buffer);
-  curl_easy_setopt(ref->handle, CURLOPT_WRITEDATA, &(ref->content));
+  curl_easy_setopt(ref->handle, CURLOPT_WRITEDATA, &(ref->multi.content));
 
   /* add to scheduler */
   massert(curl_multi_add_handle(global_multi, ref->handle));
 
   /* store callbacks */
-  R_PreserveObject(ref->complete = cb_complete);
-  R_PreserveObject(ref->error = cb_error);
+  R_PreserveObject(ref->multi.complete = cb_complete);
+  R_PreserveObject(ref->multi.error = cb_error);
 
   ref->refCount++;
   ref->locked = 1;
-  ref->busy = 1;
+  ref->multi.busy = 1;
   return handle_ptr;
 }
 
@@ -102,38 +102,38 @@ SEXP R_multi_run(SEXP timeout, SEXP total_con, SEXP host_con, SEXP multiplex){
         curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, NULL);
         curl_easy_setopt(handle, CURLOPT_WRITEDATA, NULL);
 
-        ref->busy = 0;
+        ref->multi.busy = 0;
         ref->locked = 0;
 
         // execute the success or error callback
-        PROTECT(ref->complete);
-        PROTECT(ref->error);
-        R_ReleaseObject(ref->complete);
-        R_ReleaseObject(ref->error);
+        SEXP cb_complete = PROTECT(ref->multi.complete);
+        SEXP cb_error = PROTECT(ref->multi.error);
+        R_ReleaseObject(ref->multi.complete);
+        R_ReleaseObject(ref->multi.error);
 
         // callbacks must be trycatch! we should continue the loop
         CURLcode status = m->data.result;
         if(status == CURLE_OK){
           total_success++;
-          if(Rf_isFunction(ref->complete)){
+          if(Rf_isFunction(cb_complete)){
             int ok;
             //copy and reset buffer so that callback can re-use ref->content
-            SEXP buf = PROTECT(allocVector(RAWSXP, ref->content.size));
-            if(ref->content.buf && ref->content.size)
-              memcpy(RAW(buf), ref->content.buf, ref->content.size);
-            reset_content(ref);
+            SEXP buf = PROTECT(allocVector(RAWSXP, ref->multi.content.size));
+            if(ref->multi.content.buf && ref->multi.content.size)
+              memcpy(RAW(buf), ref->multi.content.buf, ref->multi.content.size);
+            reset_multi(ref);
             SEXP out = PROTECT(make_handle_response(ref));
             SET_VECTOR_ELT(out, 5, buf);
-            SEXP call = PROTECT(LCONS(ref->complete, LCONS(out, R_NilValue)));
+            SEXP call = PROTECT(LCONS(cb_complete, LCONS(out, R_NilValue)));
             SEXP res = PROTECT(R_tryEval(call, R_GlobalEnv, &ok));
             UNPROTECT(4);
           }
         } else {
           total_fail++;
-          if(Rf_isFunction(ref->error)){
+          if(Rf_isFunction(cb_error)){
             int ok;
             SEXP buf = PROTECT(mkString(curl_easy_strerror(status)));
-            SEXP call = PROTECT(LCONS(ref->error, LCONS(buf, R_NilValue)));
+            SEXP call = PROTECT(LCONS(cb_error, LCONS(buf, R_NilValue)));
             SEXP res = PROTECT(R_tryEval(call, R_GlobalEnv, &ok));
             UNPROTECT(3);
           }

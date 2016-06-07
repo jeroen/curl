@@ -35,11 +35,13 @@ void reset_resheaders(reference *ref){
   ref->resheaders.size = 0;
 }
 
-void reset_content(reference *ref){
-  if(ref->content.buf)
-    free(ref->content.buf);
-  ref->content.buf = NULL;
-  ref->content.size = 0;
+void reset_multi(reference *ref){
+  if(ref->multi.content.buf)
+    free(ref->multi.content.buf);
+  ref->multi.content.buf = NULL;
+  ref->multi.content.size = 0;
+  ref->multi.complete = NULL;
+  ref->multi.error = NULL;
 }
 
 void assert(CURLcode res){

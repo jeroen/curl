@@ -27,8 +27,6 @@ void clean_handle(reference *ref){
       curl_easy_cleanup(ref->handle);
     if(ref->resheaders.buf)
       free(ref->resheaders.buf);
-    if(ref->content.buf)
-      free(ref->content.buf);
     free(ref);
   }
 }
@@ -52,7 +50,7 @@ void set_handle_defaults(reference *ref){
 
   /* set the response header collector */
   reset_resheaders(ref);
-  reset_content(ref);
+  reset_multi(ref);
   curl_easy_setopt(handle, CURLOPT_HEADERFUNCTION, append_buffer);
   curl_easy_setopt(handle, CURLOPT_HEADERDATA, &(ref->resheaders));
 
