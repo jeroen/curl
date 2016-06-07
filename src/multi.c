@@ -34,7 +34,7 @@ SEXP R_multi_cancel(SEXP handle_ptr){
 SEXP R_multi_add(SEXP handle_ptr, SEXP cb_complete, SEXP cb_error){
   reference *ref = get_ref(handle_ptr);
   if(ref->locked)
-    Rf_errorcall(R_NilValue, "Handle is locked. Probably in use in a connection or async request.");
+    Rf_error("Handle is locked. Probably in use in a connection or async request.");
 
   /* placeholder body */
   curl_easy_setopt(ref->handle, CURLOPT_WRITEFUNCTION, append_buffer);
