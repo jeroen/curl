@@ -50,7 +50,6 @@ void set_handle_defaults(reference *ref){
 
   /* set the response header collector */
   reset_resheaders(ref);
-  reset_multi(ref);
   curl_easy_setopt(handle, CURLOPT_HEADERFUNCTION, append_buffer);
   curl_easy_setopt(handle, CURLOPT_HEADERDATA, &(ref->resheaders));
 

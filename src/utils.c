@@ -42,6 +42,7 @@ void reset_multi(reference *ref){
   ref->multi.content.size = 0;
   ref->multi.complete = NULL;
   ref->multi.error = NULL;
+  ref->multi.busy = 0;
 }
 
 void assert(CURLcode res){
