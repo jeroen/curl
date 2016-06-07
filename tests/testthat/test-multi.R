@@ -37,3 +37,16 @@ test_that("Timeout works", {
   expect_equal(out, list(success=1, error=0, pending=0))
 })
 
+test_that("Callbacks work", {
+  total = 0;
+  h1 <- new_handle(url = "https://httpbin.org/get")
+  multi_add(h1, complete = function(...){
+    total <<- total + 1
+    multi_add(h1, complete = function(...){
+      total <<- total + 1
+    })
+  })
+  out <- multi_run()
+  expect_equal(out, list(success=2, error=0, pending=0))
+  expect_equal(total, 2)
+})
