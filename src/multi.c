@@ -47,6 +47,10 @@ void multi_release(reference *ref){
   ref->locked = 0;
 }
 
+SEXP R_multi_default(){
+  return global_multi;
+}
+
 SEXP R_multi_cancel(SEXP handle_ptr){
   reference *ref = get_ref(handle_ptr);
   if(ref->async.m){
@@ -57,9 +61,10 @@ SEXP R_multi_cancel(SEXP handle_ptr){
   return handle_ptr;
 }
 
-SEXP R_multi_add(SEXP handle_ptr, SEXP cb_complete, SEXP cb_error){
+SEXP R_multi_add(SEXP handle_ptr, SEXP cb_complete, SEXP cb_error, SEXP pool_ptr){
   /* for now everything is global */
-  CURLM *multi = get_multiref(global_multi)->m;
+  multiref *mref = get_multiref(pool_ptr);
+  CURLM *multi = mref->m;
 
   reference *ref = get_ref(handle_ptr);
   if(ref->locked)
@@ -83,9 +88,10 @@ SEXP R_multi_add(SEXP handle_ptr, SEXP cb_complete, SEXP cb_error){
   return handle_ptr;
 }
 
-SEXP R_multi_run(SEXP timeout, SEXP total_con, SEXP host_con, SEXP multiplex){
+SEXP R_multi_run(SEXP pool_ptr, SEXP timeout, SEXP total_con, SEXP host_con, SEXP multiplex){
   /* for now everything is global */
-  CURLM *multi = get_multiref(global_multi)->m;
+  multiref *mref = get_multiref(pool_ptr);
+  CURLM *multi = mref->m;
 
   #ifdef CURLPIPE_MULTIPLEX
     if(asLogical(multiplex))
@@ -192,8 +198,8 @@ SEXP R_multi_run(SEXP timeout, SEXP total_con, SEXP host_con, SEXP multiplex){
 
 void fin_multi(SEXP ptr){
   multiref *ref = (multiref*) R_ExternalPtrAddr(ptr);
-  CURLM *m = ref->m;
-  curl_multi_cleanup(m);
+  if(ref && ref->m)
+    curl_multi_cleanup(ref->m);
   R_ClearExternalPtr(ptr);
 }
 
@@ -202,7 +208,7 @@ SEXP R_new_multi(){
   ref->m = curl_multi_init();
   SEXP ptr = PROTECT(R_MakeExternalPtr(ref, R_NilValue, R_NilValue));
   R_RegisterCFinalizerEx(ptr, fin_multi, 1);
-  setAttrib(ptr, R_ClassSymbol, mkString("multi_handle"));
+  setAttrib(ptr, R_ClassSymbol, mkString("curl_multi"));
   UNPROTECT(1);
   return ptr;
 }

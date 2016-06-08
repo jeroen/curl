@@ -46,11 +46,12 @@
 #' multi_add(h3, complete = print, error = print)
 #' multi_run(timeout = 2)
 #' multi_run()
-multi_add <- function(handle, complete = NULL, error = NULL){
+multi_add <- function(handle, complete = NULL, error = NULL, pool = multi_default()){
   stopifnot(inherits(handle, "curl_handle"))
+  stopifnot(inherits(pool, "curl_multi"))
   stopifnot(is.null(complete) || is.function(complete))
   stopifnot(is.null(error) || is.function(error))
-  .Call(R_multi_add, handle, complete, error)
+  .Call(R_multi_add, handle, complete, error, pool)
 }
 
 #' @param timeout max time in seconds to wait for results. Use \code{0} to poll for results without
@@ -61,8 +62,13 @@ multi_add <- function(handle, complete = NULL, error = NULL){
 #' @export
 #' @useDynLib curl R_multi_run
 #' @rdname multi
-multi_run <- function(timeout = Inf, total_connections = 100, host_connections = 6, multiplex = TRUE){
-  .Call(R_multi_run, timeout, total_connections, host_connections, multiplex)
+multi_run <- function(pool = multi_default(), timeout = Inf, total_connections = 100, host_connections = 6, multiplex = TRUE){
+  stopifnot(is.numeric(timeout))
+  stopifnot(inherits(pool, "curl_multi"))
+  stopifnot(is.numeric(total_connections))
+  stopifnot(is.numeric(host_connections))
+  stopifnot(is.logical(multiplex))
+  .Call(R_multi_run, pool, timeout, total_connections, host_connections, multiplex)
 }
 
 #' @export
@@ -73,3 +79,16 @@ multi_cancel <- function(handle){
   .Call(R_multi_cancel, handle)
 }
 
+#' @export
+#' @useDynLib curl R_multi_default
+#' @rdname multi
+multi_default <- function(){
+  .Call(R_multi_default)
+}
+
+#' @export
+#' @useDynLib curl R_multi_default
+#' @rdname multi
+multi_new <- function(){
+  .Call(R_new_multi)
+}

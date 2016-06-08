@@ -4,15 +4,21 @@
 \alias{multi}
 \alias{multi_add}
 \alias{multi_cancel}
+\alias{multi_default}
+\alias{multi_new}
 \alias{multi_run}
 \title{Async Multi Download}
 \usage{
-multi_add(handle, complete = NULL, error = NULL)
+multi_add(handle, complete = NULL, error = NULL, pool = multi_default())
 
-multi_run(timeout = Inf, total_connections = 100, host_connections = 6,
-  multiplex = TRUE)
+multi_run(pool = multi_default(), timeout = Inf, total_connections = 100,
+  host_connections = 6, multiplex = TRUE)
 
 multi_cancel(handle)
+
+multi_default()
+
+multi_new()
 }
 \arguments{
 \item{handle}{a curl \link{handle} with \code{url} option already set.}
