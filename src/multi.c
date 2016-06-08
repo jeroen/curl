@@ -9,11 +9,18 @@
 #define HAS_CURLMOPT_MAX_TOTAL_CONNECTIONS 1
 #endif
 
-CURLM *global_multi = NULL;
+SEXP global_multi = NULL;
 
 /* Currently there is no way to query the multi handle for pending handles
  * The ref->locked is used to lock the handle for any use.
  */
+
+multiref *get_multiref(SEXP ptr){
+  multiref *ref = (multiref*) R_ExternalPtrAddr(ptr);
+  if(!ref)
+    Rf_error("multiref pointer is dead");
+  return ref;
+}
 
 void multi_release(reference *ref){
   /* Release the easy-handle */
@@ -52,7 +59,7 @@ SEXP R_multi_cancel(SEXP handle_ptr){
 
 SEXP R_multi_add(SEXP handle_ptr, SEXP cb_complete, SEXP cb_error){
   /* for now everything is global */
-  CURLM * multi = global_multi;
+  CURLM *multi = get_multiref(global_multi)->m;
 
   reference *ref = get_ref(handle_ptr);
   if(ref->locked)
@@ -78,7 +85,7 @@ SEXP R_multi_add(SEXP handle_ptr, SEXP cb_complete, SEXP cb_error){
 
 SEXP R_multi_run(SEXP timeout, SEXP total_con, SEXP host_con, SEXP multiplex){
   /* for now everything is global */
-  CURLM * multi = global_multi;
+  CURLM *multi = get_multiref(global_multi)->m;
 
   #ifdef CURLPIPE_MULTIPLEX
     if(asLogical(multiplex))
@@ -181,4 +188,30 @@ SEXP R_multi_run(SEXP timeout, SEXP total_con, SEXP host_con, SEXP multiplex){
   setAttrib(res, R_NamesSymbol, names);
   UNPROTECT(2);
   return res;
+}
+
+void fin_multi(SEXP ptr){
+  multiref *ref = (multiref*) R_ExternalPtrAddr(ptr);
+  CURLM *m = ref->m;
+  curl_multi_cleanup(m);
+  R_ClearExternalPtr(ptr);
+}
+
+SEXP R_new_multi(){
+  multiref *ref = calloc(1, sizeof(multiref));
+  ref->m = curl_multi_init();
+  SEXP ptr = PROTECT(R_MakeExternalPtr(ref, R_NilValue, R_NilValue));
+  R_RegisterCFinalizerEx(ptr, fin_multi, 1);
+  setAttrib(ptr, R_ClassSymbol, mkString("multi_handle"));
+  UNPROTECT(1);
+  return ptr;
+}
+
+void global_multi_init(){
+  global_multi = R_new_multi();
+  R_PreserveObject(global_multi);
+}
+
+void global_multi_cleanup(){
+  R_ReleaseObject(global_multi);
 }

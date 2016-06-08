@@ -26,6 +26,10 @@ typedef struct {
   int locked;
 } reference;
 
+typedef struct {
+  CURLM *m;
+} multiref;
+
 CURL* get_handle(SEXP ptr);
 reference* get_ref(SEXP ptr);
 void assert(CURLcode res);
@@ -43,4 +47,3 @@ size_t append_buffer(void *contents, size_t sz, size_t nmemb, void *ctx);
 CURLcode curl_perform_with_interrupt(CURL *handle);
 int pending_interrupt();
 SEXP make_handle_response(reference *ref);
-
