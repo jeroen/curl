@@ -31,14 +31,14 @@
 #' h <- new_handle()
 #' handle_setopt(h, customrequest = "PUT")
 #' handle_setform(h, a = "1", b = "2")
-#' r <- curl_fetch_memory("http://httpbin.org/put", h)
+#' r <- curl_fetch_memory("http://eu.httpbin.org/put", h)
 #' cat(rawToChar(r$content))
 #'
 #' # Or use the list form
 #' h <- new_handle()
 #' handle_setopt(h, .list = list(customrequest = "PUT"))
 #' handle_setform(h, .list = list(a = "1", b = "2"))
-#' r <- curl_fetch_memory("http://httpbin.org/put", h)
+#' r <- curl_fetch_memory("http://eu.httpbin.org/put", h)
 #' cat(rawToChar(r$content))
 new_handle <- function(...){
   h <- .Call(R_new_handle)
@@ -123,11 +123,11 @@ handle_reset <- function(handle){
 #' handle_cookies(h)
 #'
 #' # Server sets cookies
-#' req <- curl_fetch_memory("http://httpbin.org/cookies/set?foo=123&bar=ftw", handle = h)
+#' req <- curl_fetch_memory("http://eu.httpbin.org/cookies/set?foo=123&bar=ftw", handle = h)
 #' handle_cookies(h)
 #'
 #' # Server deletes cookies
-#' req <- curl_fetch_memory("http://httpbin.org/cookies/delete?foo", handle = h)
+#' req <- curl_fetch_memory("http://eu.httpbin.org/cookies/delete?foo", handle = h)
 #' handle_cookies(h)
 #'
 #' # Cookies will survive a reset!

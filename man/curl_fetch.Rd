@@ -42,16 +42,16 @@ is enabled when R runs in interactive mode or when
 }
 \examples{
 # Load in memory
-res <- curl_fetch_memory("http://httpbin.org/cookies/set?foo=123&bar=ftw")
+res <- curl_fetch_memory("http://eu.httpbin.org/cookies/set?foo=123&bar=ftw")
 res$content
 
 # Save to disk
-res <- curl_fetch_disk("http://httpbin.org/stream/10", tempfile())
+res <- curl_fetch_disk("http://eu.httpbin.org/stream/10", tempfile())
 res$content
 readLines(res$content)
 
 # Stream with callback
-res <- curl_fetch_stream("http://httpbin.org/stream/20", function(x){
+res <- curl_fetch_stream("http://eu.httpbin.org/stream/20", function(x){
   cat(rawToChar(x))
 })
 }

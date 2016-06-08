@@ -8,7 +8,7 @@
 #' @param txt raw or character vector with the header data
 #' @param multiple parse multiple sets of headers separated by a blank line. See details.
 #' @export
-#' @examples req <- curl_fetch_memory("https://httpbin.org/redirect/3")
+#' @examples req <- curl_fetch_memory("https://eu.httpbin.org/redirect/3")
 #' parse_headers(req$headers)
 #' parse_headers(req$headers, multiple = TRUE)
 parse_headers <- function(txt, multiple = FALSE){

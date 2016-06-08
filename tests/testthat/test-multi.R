@@ -4,7 +4,7 @@ test_that("Max connections works", {
   skip_if_not(curl_version()$version >= as.numeric_version("7.30"),
     "libcurl does not support host_connections")
   for(i in 1:3){
-    multi_add(new_handle(url = "https://httpbin.org/delay/2"))
+    multi_add(new_handle(url = "https://eu.httpbin.org/delay/2"))
   }
   out <- multi_run(timeout = 3, host_connections = 1)
   expect_equal(out, list(success = 1, error = 0, pending = 2))
@@ -16,15 +16,15 @@ test_that("Max connections works", {
 
 test_that("Max connections reset", {
   for(i in 1:3){
-    multi_add(new_handle(url = "https://httpbin.org/delay/2"))
+    multi_add(new_handle(url = "https://eu.httpbin.org/delay/2"))
   }
   out <- multi_run(host_connections = 6, timeout = 4)
   expect_equal(out, list(success = 3, error = 0, pending = 0))
 })
 
 test_that("Timeout works", {
-  h1 <- new_handle(url = "https://httpbin.org/delay/3")
-  h2 <- new_handle(url = "https://httpbin.org/post", postfields = "bla bla")
+  h1 <- new_handle(url = "https://eu.httpbin.org/delay/3")
+  h2 <- new_handle(url = "https://eu.httpbin.org/post", postfields = "bla bla")
   h3 <- new_handle(url = "https://urldoesnotexist.xyz", connecttimeout = 1)
   h4 <- new_handle(url = "http://localhost:14", connecttimeout = 1)
   multi_add(h1)
@@ -43,7 +43,7 @@ test_that("Timeout works", {
 
 test_that("Callbacks work", {
   total = 0;
-  h1 <- new_handle(url = "https://httpbin.org/get")
+  h1 <- new_handle(url = "https://eu.httpbin.org/get")
   multi_add(h1, complete = function(...){
     total <<- total + 1
     multi_add(h1, complete = function(...){
@@ -57,7 +57,7 @@ test_that("Callbacks work", {
 })
 
 test_that("Multi cancel works", {
-  h1 <- new_handle(url = "https://httpbin.org/get")
+  h1 <- new_handle(url = "https://eu.httpbin.org/get")
   multi_add(h1)
   expect_error(multi_add(h1), "locked")
   expect_equal(multi_run(0), list(success = 0, error = 0, pending = 1))

@@ -11,7 +11,7 @@
 #'   initially. Currently only "r" and "rb" are supported.
 #' @param handle a curl handle object
 #' @examples \dontrun{
-#' con <- curl("https://httpbin.org/get")
+#' con <- curl("https://eu.httpbin.org/get")
 #' readLines(con)
 #'
 #' # Auto-opened connections can be recycled
@@ -21,20 +21,20 @@
 #' rawToChar(bin)
 #'
 #' # HTTP error
-#' curl("https://httpbin.org/status/418", "r")
+#' curl("https://eu.httpbin.org/status/418", "r")
 #'
 #' # Follow redirects
-#' readLines(curl("https://httpbin.org/redirect/3"))
+#' readLines(curl("https://eu.httpbin.org/redirect/3"))
 #'
 #' # Error after redirect
-#' curl("https://httpbin.org/redirect-to?url=http://httpbin.org/status/418", "r")
+#' curl("https://eu.httpbin.org/redirect-to?url=http://eu.httpbin.org/status/418", "r")
 #'
 #' # Auto decompress Accept-Encoding: gzip / deflate (rfc2616 #14.3)
-#' readLines(curl("http://httpbin.org/gzip"))
-#' readLines(curl("http://httpbin.org/deflate"))
+#' readLines(curl("http://eu.httpbin.org/gzip"))
+#' readLines(curl("http://eu.httpbin.org/deflate"))
 #'
 #' # Binary support
-#' buf <- readBin(curl("http://httpbin.org/bytes/98765", "rb"), raw(), 1e5)
+#' buf <- readBin(curl("http://eu.httpbin.org/bytes/98765", "rb"), raw(), 1e5)
 #' length(buf)
 #'
 #' # Read file from disk
@@ -58,6 +58,6 @@
 #' nycflights <- stream_in(con)
 #' }
 #'
-curl <- function(url = "http://httpbin.org/get", open = "", handle = new_handle()){
+curl <- function(url = "http://eu.httpbin.org/get", open = "", handle = new_handle()){
   .Call(R_curl_connection, url, open, handle, TRUE)
 }

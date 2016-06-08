@@ -18,7 +18,7 @@ when multiple = TRUE, the function returns a list with the response headers
 for each request. By default it only returns the headers of the final request.
 }
 \examples{
-req <- curl_fetch_memory("https://httpbin.org/redirect/3")
+req <- curl_fetch_memory("https://eu.httpbin.org/redirect/3")
 parse_headers(req$headers)
 parse_headers(req$headers, multiple = TRUE)
 }

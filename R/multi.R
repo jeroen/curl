@@ -38,8 +38,8 @@
 #' @export
 #' @useDynLib curl R_multi_add
 #' @rdname multi
-#' @examples h1 <- new_handle(url = "https://httpbin.org/delay/3")
-#' h2 <- new_handle(url = "https://httpbin.org/post", postfields = "bla bla")
+#' @examples h1 <- new_handle(url = "https://eu.httpbin.org/delay/3")
+#' h2 <- new_handle(url = "https://eu.httpbin.org/post", postfields = "bla bla")
 #' h3 <- new_handle(url = "https://urldoesnotexist.xyz")
 #' multi_add(h1, complete = print, error = print)
 #' multi_add(h2, complete = print, error = print)
