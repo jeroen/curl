@@ -14,14 +14,14 @@ typedef struct {
   memory content;
   SEXP complete;
   SEXP error;
-} multireq;
+} async;
 
 typedef struct {
   CURL *handle;
   struct curl_httppost *form;
   struct curl_slist *headers;
   memory resheaders;
-  multireq multi;
+  async async;
   int refCount;
   int locked;
 } reference;

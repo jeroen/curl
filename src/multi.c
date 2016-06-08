@@ -18,23 +18,23 @@ CURLM *global_multi = NULL;
 void multi_release(reference *ref){
   /* Release the easy-handle */
   CURL *handle = ref->handle;
-  CURLM *multi = ref->multi.m;
+  CURLM *multi = ref->async.m;
   massert(curl_multi_remove_handle(multi, handle));
   curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, NULL);
   curl_easy_setopt(handle, CURLOPT_WRITEDATA, NULL);
 
   /* Unprotect R callbacks */
-  R_ReleaseObject(ref->multi.complete);
-  R_ReleaseObject(ref->multi.error);
+  R_ReleaseObject(ref->async.complete);
+  R_ReleaseObject(ref->async.error);
 
   /* Reset multi state struct */
-  if(ref->multi.content.buf)
-    free(ref->multi.content.buf);
-  ref->multi.content.buf = NULL;
-  ref->multi.content.size = 0;
-  ref->multi.complete = NULL;
-  ref->multi.error = NULL;
-  ref->multi.m = NULL;
+  if(ref->async.content.buf)
+    free(ref->async.content.buf);
+  ref->async.content.buf = NULL;
+  ref->async.content.size = 0;
+  ref->async.complete = NULL;
+  ref->async.error = NULL;
+  ref->async.m = NULL;
 
   /* Unlock handle (but don't decrement refcount yet) */
   ref->locked = 0;
@@ -42,7 +42,7 @@ void multi_release(reference *ref){
 
 SEXP R_multi_cancel(SEXP handle_ptr){
   reference *ref = get_ref(handle_ptr);
-  if(ref->multi.m){
+  if(ref->async.m){
     multi_release(ref);
     ref->refCount--;
     clean_handle(ref);
@@ -51,21 +51,24 @@ SEXP R_multi_cancel(SEXP handle_ptr){
 }
 
 SEXP R_multi_add(SEXP handle_ptr, SEXP cb_complete, SEXP cb_error){
+  /* for now everything is global */
+  CURLM * multi = global_multi;
+
   reference *ref = get_ref(handle_ptr);
   if(ref->locked)
     Rf_error("Handle is locked. Probably in use in a connection or async request.");
 
   /* placeholder body */
   curl_easy_setopt(ref->handle, CURLOPT_WRITEFUNCTION, append_buffer);
-  curl_easy_setopt(ref->handle, CURLOPT_WRITEDATA, &(ref->multi.content));
+  curl_easy_setopt(ref->handle, CURLOPT_WRITEDATA, &(ref->async.content));
 
   /* add to scheduler */
-  massert(curl_multi_add_handle(global_multi, ref->handle));
+  massert(curl_multi_add_handle(multi, ref->handle));
 
   /* set multi callbacks */
-  ref->multi.m = global_multi;
-  R_PreserveObject(ref->multi.complete = cb_complete);
-  R_PreserveObject(ref->multi.error = cb_error);
+  ref->async.m = multi;
+  R_PreserveObject(ref->async.complete = cb_complete);
+  R_PreserveObject(ref->async.error = cb_error);
 
   /* lock and protect handle */
   ref->refCount++;
@@ -74,15 +77,17 @@ SEXP R_multi_add(SEXP handle_ptr, SEXP cb_complete, SEXP cb_error){
 }
 
 SEXP R_multi_run(SEXP timeout, SEXP total_con, SEXP host_con, SEXP multiplex){
+  /* for now everything is global */
+  CURLM * multi = global_multi;
 
   #ifdef CURLPIPE_MULTIPLEX
     if(asLogical(multiplex))
-      massert(curl_multi_setopt(global_multi, CURLMOPT_PIPELINING, CURLPIPE_MULTIPLEX));
+      massert(curl_multi_setopt(multi, CURLMOPT_PIPELINING, CURLPIPE_MULTIPLEX));
   #endif
 
   #ifdef HAS_CURLMOPT_MAX_TOTAL_CONNECTIONS
-    massert(curl_multi_setopt(global_multi, CURLMOPT_MAX_TOTAL_CONNECTIONS, (long) asInteger(total_con)));
-    massert(curl_multi_setopt(global_multi, CURLMOPT_MAX_HOST_CONNECTIONS, (long) asInteger(host_con)));
+    massert(curl_multi_setopt(multi, CURLMOPT_MAX_TOTAL_CONNECTIONS, (long) asInteger(total_con)));
+    massert(curl_multi_setopt(multi, CURLMOPT_MAX_HOST_CONNECTIONS, (long) asInteger(host_con)));
   #endif
 
   int total_pending = 0;
@@ -100,7 +105,7 @@ SEXP R_multi_run(SEXP timeout, SEXP total_con, SEXP host_con, SEXP multiplex){
     /* Required by old versions of libcurl */
     CURLMcode res = CURLM_CALL_MULTI_PERFORM;
     while(res == CURLM_CALL_MULTI_PERFORM)
-      res = curl_multi_perform(global_multi, &(total_pending));
+      res = curl_multi_perform(multi, &(total_pending));
 
     /* check for multi errors */
     if(res != CURLM_OK)
@@ -109,7 +114,7 @@ SEXP R_multi_run(SEXP timeout, SEXP total_con, SEXP host_con, SEXP multiplex){
     /* check for completed requests */
     int msgq = 0;
     do {
-      CURLMsg *m = curl_multi_info_read(global_multi, &msgq);
+      CURLMsg *m = curl_multi_info_read(multi, &msgq);
       if(m && (m->msg == CURLMSG_DONE)){
         dirty = 1;
         reference *ref = NULL;
@@ -118,11 +123,11 @@ SEXP R_multi_run(SEXP timeout, SEXP total_con, SEXP host_con, SEXP multiplex){
         assert(curl_easy_getinfo(handle, CURLINFO_PRIVATE, (char**) &ref));
 
         // prepare for callback
-        SEXP cb_complete = PROTECT(ref->multi.complete);
-        SEXP cb_error = PROTECT(ref->multi.error);
-        SEXP buf = PROTECT(allocVector(RAWSXP, ref->multi.content.size));
-        if(ref->multi.content.buf && ref->multi.content.size)
-          memcpy(RAW(buf), ref->multi.content.buf, ref->multi.content.size);
+        SEXP cb_complete = PROTECT(ref->async.complete);
+        SEXP cb_error = PROTECT(ref->async.error);
+        SEXP buf = PROTECT(allocVector(RAWSXP, ref->async.content.size));
+        if(ref->async.content.buf && ref->async.content.size)
+          memcpy(RAW(buf), ref->async.content.buf, ref->async.content.size);
 
         //release handle for use by callbacks
         multi_release(ref);
