@@ -17,14 +17,33 @@ CURLM *global_multi = NULL;
  * The ref->locked is used to lock the handle for any use.
  */
 
+void multi_release(reference *ref){
+  /* Release the easy-handle */
+  CURL *handle = ref->handle;
+  CURLM *multi = ref->multi.m;
+  massert(curl_multi_remove_handle(multi, handle));
+  curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, NULL);
+  curl_easy_setopt(handle, CURLOPT_WRITEDATA, NULL);
+
+  /* Unprotect callbacks */
+  R_ReleaseObject(ref->multi.complete);
+  R_ReleaseObject(ref->multi.error);
+
+  /* Remove multi state stuff */
+  if(ref->multi.content.buf)
+    free(ref->multi.content.buf);
+  ref->multi.content.buf = NULL;
+  ref->multi.content.size = 0;
+  ref->multi.complete = NULL;
+  ref->multi.error = NULL;
+  ref->multi.m = NULL;
+  ref->locked = 0;
+}
+
 SEXP R_multi_cancel(SEXP handle_ptr){
   reference *ref = get_ref(handle_ptr);
-  if(ref->multi.busy){
-    massert(curl_multi_remove_handle(global_multi, ref->handle));
-    R_ReleaseObject(ref->multi.complete);
-    R_ReleaseObject(ref->multi.error);
-    reset_multi(ref);
-    ref->locked = 0;
+  if(ref->multi.m){
+    multi_release(ref);
     ref->refCount--;
     clean_handle(ref);
   }
@@ -44,7 +63,7 @@ SEXP R_multi_add(SEXP handle_ptr, SEXP cb_complete, SEXP cb_error){
   massert(curl_multi_add_handle(global_multi, ref->handle));
 
   /* set multi callbacks */
-  ref->multi.busy = 1;
+  ref->multi.m = global_multi;
   R_PreserveObject(ref->multi.complete = cb_complete);
   R_PreserveObject(ref->multi.error = cb_error);
 
@@ -98,25 +117,15 @@ SEXP R_multi_run(SEXP timeout, SEXP total_con, SEXP host_con, SEXP multiplex){
         CURLcode status = m->data.result;
         assert(curl_easy_getinfo(handle, CURLINFO_PRIVATE, (char**) &ref));
 
-        // release the handle so that it can be reused in callback
-        massert(curl_multi_remove_handle(global_multi, handle));
-        curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, NULL);
-        curl_easy_setopt(handle, CURLOPT_WRITEDATA, NULL);
-
-        // execute the success or error callback
+        // prepare for callback
         SEXP cb_complete = PROTECT(ref->multi.complete);
         SEXP cb_error = PROTECT(ref->multi.error);
-        R_ReleaseObject(ref->multi.complete);
-        R_ReleaseObject(ref->multi.error);
-
-        //copy buffer before releasing handle
         SEXP buf = PROTECT(allocVector(RAWSXP, ref->multi.content.size));
         if(ref->multi.content.buf && ref->multi.content.size)
           memcpy(RAW(buf), ref->multi.content.buf, ref->multi.content.size);
 
         //release handle for use by callbacks
-        ref->locked = 0;
-        reset_multi(ref);
+        multi_release(ref);
 
         // callbacks must be trycatch! we should continue the loop
         if(status == CURLE_OK){

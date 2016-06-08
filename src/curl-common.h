@@ -10,7 +10,7 @@ typedef struct {
 } memory;
 
 typedef struct {
-  int busy;
+  CURLM *m;
   memory content;
   SEXP complete;
   SEXP error;
@@ -37,7 +37,6 @@ struct curl_httppost* make_form(SEXP form);
 void set_form(reference *ref, struct curl_httppost* newform);
 void set_headers(reference *ref, struct curl_slist *newheaders);
 void reset_resheaders(reference *ref);
-void reset_multi(reference *ref);
 void clean_handle(reference *ref);
 size_t push_disk(void* contents, size_t sz, size_t nmemb, FILE *ctx);
 size_t append_buffer(void *contents, size_t sz, size_t nmemb, void *ctx);

@@ -35,16 +35,6 @@ void reset_resheaders(reference *ref){
   ref->resheaders.size = 0;
 }
 
-void reset_multi(reference *ref){
-  if(ref->multi.content.buf)
-    free(ref->multi.content.buf);
-  ref->multi.content.buf = NULL;
-  ref->multi.content.size = 0;
-  ref->multi.complete = NULL;
-  ref->multi.error = NULL;
-  ref->multi.busy = 0;
-}
-
 void assert(CURLcode res){
   if(res != CURLE_OK)
     error(curl_easy_strerror(res));
