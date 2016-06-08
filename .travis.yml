@@ -8,7 +8,7 @@ addons:
       - libcurl4-openssl-dev
 
 before_install:
-  - mkdir -p ~/.R/Makevars
+  - mkdir -p ~/.R
   - echo "CFLAGS = -g -O2 -Wall -Wno-unused -pedantic" >> ~/.R/Makevars
 
 r_github_packages:
