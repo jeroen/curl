@@ -11,9 +11,7 @@
 
 CURLM *global_multi = NULL;
 
-/* Important:
- * The ref->busy field means the handle is used by global_multi system
- * We need this because there is no way to query the multi handle for pending handles
+/* Currently there is no way to query the multi handle for pending handles
  * The ref->locked is used to lock the handle for any use.
  */
 
@@ -25,11 +23,11 @@ void multi_release(reference *ref){
   curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, NULL);
   curl_easy_setopt(handle, CURLOPT_WRITEDATA, NULL);
 
-  /* Unprotect callbacks */
+  /* Unprotect R callbacks */
   R_ReleaseObject(ref->multi.complete);
   R_ReleaseObject(ref->multi.error);
 
-  /* Remove multi state stuff */
+  /* Reset multi state struct */
   if(ref->multi.content.buf)
     free(ref->multi.content.buf);
   ref->multi.content.buf = NULL;
@@ -37,6 +35,8 @@ void multi_release(reference *ref){
   ref->multi.complete = NULL;
   ref->multi.error = NULL;
   ref->multi.m = NULL;
+
+  /* Unlock handle (but don't decrement refcount yet) */
   ref->locked = 0;
 }
 
