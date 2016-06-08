@@ -12,4 +12,5 @@ void R_init_curl(DllInfo *info) {
 
 void R_unload_curl(DllInfo *info) {
   global_multi_cleanup();
+  curl_global_cleanup();
 }
