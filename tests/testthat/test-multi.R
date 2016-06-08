@@ -3,14 +3,15 @@ context("Multi handle")
 test_that("Max connections works", {
   skip_if_not(curl_version()$version >= as.numeric_version("7.30"),
     "libcurl does not support host_connections")
+  multi_set(host_con = 1, multiplex = FALSE)
   for(i in 1:3){
     multi_add(new_handle(url = "https://eu.httpbin.org/delay/2"))
   }
-  out <- multi_run(timeout = 3, host_connections = 1)
+  out <- multi_run(timeout = 3)
   expect_equal(out, list(success = 1, error = 0, pending = 2))
-  out <- multi_run(timeout = 2, host_connections = 1)
+  out <- multi_run(timeout = 2)
   expect_equal(out, list(success = 1, error = 0, pending = 1))
-  out <- multi_run(host_connections = 1)
+  out <- multi_run()
   expect_equal(out, list(success = 1, error = 0, pending = 0))
 })
 
@@ -18,7 +19,8 @@ test_that("Max connections reset", {
   for(i in 1:3){
     multi_add(new_handle(url = "https://eu.httpbin.org/delay/2"))
   }
-  out <- multi_run(host_connections = 6, timeout = 4)
+  multi_set(host_con = 6)
+  out <- multi_run(timeout = 4)
   expect_equal(out, list(success = 3, error = 0, pending = 0))
 })
 

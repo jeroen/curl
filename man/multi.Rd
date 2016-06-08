@@ -4,24 +4,23 @@
 \alias{multi}
 \alias{multi_add}
 \alias{multi_cancel}
-\alias{multi_default}
 \alias{multi_new}
 \alias{multi_run}
+\alias{multi_set}
 \title{Async Multi Download}
 \usage{
-multi_add(handle, complete = NULL, error = NULL, pool = multi_default())
+multi_add(handle, complete = NULL, error = NULL, pool = NULL)
 
-multi_run(pool = multi_default(), timeout = Inf, total_connections = 100,
-  host_connections = 6, multiplex = TRUE)
+multi_run(timeout = Inf, pool = NULL)
+
+multi_set(total_con = 100, host_con = 6, multiplex = TRUE, pool = NULL)
 
 multi_cancel(handle)
-
-multi_default()
 
 multi_new()
 }
 \arguments{
-\item{handle}{a curl \link{handle} with \code{url} option already set.}
+\item{handle}{a curl \link{handle} with preconfigured \code{url} option.}
 
 \item{complete}{callback function for successful request. Single argument with
 response data in same structure as \link{curl_fetch_memory}.}
@@ -29,12 +28,14 @@ response data in same structure as \link{curl_fetch_memory}.}
 \item{error}{callback function called on failed request. Argument contains
 error message.}
 
+\item{pool}{a multi handle created by \link{multi_new}. Default uses a global pool.}
+
 \item{timeout}{max time in seconds to wait for results. Use \code{0} to poll for results without
 waiting at all.}
 
-\item{total_connections}{max total concurrent connections.}
+\item{total_con}{max total concurrent connections.}
 
-\item{host_connections}{max concurrent connections per host.}
+\item{host_con}{max concurrent connections per host.}
 
 \item{multiplex}{enable HTTP/2 multiplexing if supported by host and client.}
 }

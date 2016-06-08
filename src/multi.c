@@ -9,8 +9,6 @@
 #define HAS_CURLMOPT_MAX_TOTAL_CONNECTIONS 1
 #endif
 
-SEXP global_multi = NULL;
-
 /* Currently there is no way to query the multi handle for pending handles
  * The ref->locked is used to lock the handle for any use.
  */
@@ -45,10 +43,6 @@ void multi_release(reference *ref){
 
   /* Unlock handle (but don't decrement refcount yet) */
   ref->locked = 0;
-}
-
-SEXP R_multi_default(){
-  return global_multi;
 }
 
 SEXP R_multi_cancel(SEXP handle_ptr){
@@ -88,20 +82,10 @@ SEXP R_multi_add(SEXP handle_ptr, SEXP cb_complete, SEXP cb_error, SEXP pool_ptr
   return handle_ptr;
 }
 
-SEXP R_multi_run(SEXP pool_ptr, SEXP timeout, SEXP total_con, SEXP host_con, SEXP multiplex){
+SEXP R_multi_run(SEXP pool_ptr, SEXP timeout){
   /* for now everything is global */
   multiref *mref = get_multiref(pool_ptr);
   CURLM *multi = mref->m;
-
-  #ifdef CURLPIPE_MULTIPLEX
-    if(asLogical(multiplex))
-      massert(curl_multi_setopt(multi, CURLMOPT_PIPELINING, CURLPIPE_MULTIPLEX));
-  #endif
-
-  #ifdef HAS_CURLMOPT_MAX_TOTAL_CONNECTIONS
-    massert(curl_multi_setopt(multi, CURLMOPT_MAX_TOTAL_CONNECTIONS, (long) asInteger(total_con)));
-    massert(curl_multi_setopt(multi, CURLMOPT_MAX_HOST_CONNECTIONS, (long) asInteger(host_con)));
-  #endif
 
   int total_pending = 0;
   int total_success = 0;
@@ -203,7 +187,7 @@ void fin_multi(SEXP ptr){
   R_ClearExternalPtr(ptr);
 }
 
-SEXP R_new_multi(){
+SEXP R_multi_new(){
   multiref *ref = calloc(1, sizeof(multiref));
   ref->m = curl_multi_init();
   SEXP ptr = PROTECT(R_MakeExternalPtr(ref, R_NilValue, R_NilValue));
@@ -213,11 +197,17 @@ SEXP R_new_multi(){
   return ptr;
 }
 
-void global_multi_init(){
-  global_multi = R_new_multi();
-  R_PreserveObject(global_multi);
-}
+SEXP R_multi_setopt(SEXP pool_ptr, SEXP total_con, SEXP host_con, SEXP multiplex){
+  multiref *mref = get_multiref(pool_ptr);
+  CURLM *multi = mref->m;
+  #ifdef CURLPIPE_MULTIPLEX
+    if(asLogical(multiplex))
+      massert(curl_multi_setopt(multi, CURLMOPT_PIPELINING, CURLPIPE_MULTIPLEX));
+  #endif
 
-void global_multi_cleanup(){
-  R_ReleaseObject(global_multi);
+  #ifdef HAS_CURLMOPT_MAX_TOTAL_CONNECTIONS
+    massert(curl_multi_setopt(multi, CURLMOPT_MAX_TOTAL_CONNECTIONS, (long) asInteger(total_con)));
+    massert(curl_multi_setopt(multi, CURLMOPT_MAX_HOST_CONNECTIONS, (long) asInteger(host_con)));
+  #endif
+  return pool_ptr;
 }

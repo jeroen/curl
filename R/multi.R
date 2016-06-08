@@ -30,14 +30,15 @@
 #' It has no effect if the request was already completed or canceled.
 #'
 #' @name multi
-#' @param handle a curl \link{handle} with \code{url} option already set.
+#' @rdname multi
+#' @useDynLib curl R_multi_add
+#' @param handle a curl \link{handle} with preconfigured \code{url} option.
 #' @param complete callback function for successful request. Single argument with
 #' response data in same structure as \link{curl_fetch_memory}.
 #' @param error callback function called on failed request. Argument contains
 #' error message.
+#' @param pool a multi handle created by \link{multi_new}. Default uses a global pool.
 #' @export
-#' @useDynLib curl R_multi_add
-#' @rdname multi
 #' @examples h1 <- new_handle(url = "https://eu.httpbin.org/delay/3")
 #' h2 <- new_handle(url = "https://eu.httpbin.org/post", postfields = "bla bla")
 #' h3 <- new_handle(url = "https://urldoesnotexist.xyz")
@@ -46,7 +47,9 @@
 #' multi_add(h3, complete = print, error = print)
 #' multi_run(timeout = 2)
 #' multi_run()
-multi_add <- function(handle, complete = NULL, error = NULL, pool = multi_default()){
+multi_add <- function(handle, complete = NULL, error = NULL, pool = NULL){
+  if(is.null(pool))
+    pool <- multi_default()
   stopifnot(inherits(handle, "curl_handle"))
   stopifnot(inherits(pool, "curl_multi"))
   stopifnot(is.null(complete) || is.function(complete))
@@ -56,19 +59,31 @@ multi_add <- function(handle, complete = NULL, error = NULL, pool = multi_defaul
 
 #' @param timeout max time in seconds to wait for results. Use \code{0} to poll for results without
 #' waiting at all.
-#' @param total_connections max total concurrent connections.
-#' @param host_connections max concurrent connections per host.
-#' @param multiplex enable HTTP/2 multiplexing if supported by host and client.
 #' @export
 #' @useDynLib curl R_multi_run
 #' @rdname multi
-multi_run <- function(pool = multi_default(), timeout = Inf, total_connections = 100, host_connections = 6, multiplex = TRUE){
+multi_run <- function(timeout = Inf, pool = NULL){
+  if(is.null(pool))
+    pool <- multi_default()
   stopifnot(is.numeric(timeout))
   stopifnot(inherits(pool, "curl_multi"))
-  stopifnot(is.numeric(total_connections))
-  stopifnot(is.numeric(host_connections))
+  .Call(R_multi_run, pool, timeout)
+}
+
+#' @param total_con max total concurrent connections.
+#' @param host_con max concurrent connections per host.
+#' @param multiplex enable HTTP/2 multiplexing if supported by host and client.
+#' @export
+#' @useDynLib curl R_multi_setopt
+#' @rdname multi
+multi_set <- function(total_con = 100, host_con = 6, multiplex = TRUE, pool = NULL){
+  if(is.null(pool))
+    pool <- multi_default()
+  stopifnot(inherits(pool, "curl_multi"))
+  stopifnot(is.numeric(total_con))
+  stopifnot(is.numeric(host_con))
   stopifnot(is.logical(multiplex))
-  .Call(R_multi_run, pool, timeout, total_connections, host_connections, multiplex)
+  .Call(R_multi_setopt, pool, total_con, host_con, multiplex)
 }
 
 #' @export
@@ -80,15 +95,20 @@ multi_cancel <- function(handle){
 }
 
 #' @export
-#' @useDynLib curl R_multi_default
-#' @rdname multi
-multi_default <- function(){
-  .Call(R_multi_default)
-}
-
-#' @export
-#' @useDynLib curl R_multi_default
+#' @useDynLib curl R_multi_new
 #' @rdname multi
 multi_new <- function(){
-  .Call(R_new_multi)
+  pool <- .Call(R_multi_new)
+  multi_set(pool = pool)
 }
+
+multi_default <- local({
+  global_multi_handle <- NULL
+  function(){
+    if(is.null(global_multi_handle)){
+      global_multi_handle <<- multi_new()
+    }
+    stopifnot(inherits(global_multi_handle, "curl_multi"))
+    return(global_multi_handle)
+  }
+})
