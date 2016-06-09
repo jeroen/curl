@@ -3,6 +3,7 @@
 \name{curl_fetch_memory}
 \alias{curl_fetch_disk}
 \alias{curl_fetch_memory}
+\alias{curl_fetch_multi}
 \alias{curl_fetch_stream}
 \title{Fetch the contents of a URL}
 \usage{
@@ -11,6 +12,9 @@ curl_fetch_memory(url, handle = new_handle())
 curl_fetch_disk(url, path, handle = new_handle())
 
 curl_fetch_stream(url, fun, handle = new_handle())
+
+curl_fetch_multi(url, complete = NULL, error = NULL, pool = NULL,
+  handle = new_handle())
 }
 \arguments{
 \item{url}{A character string naming the URL of a resource to be downloaded.}
@@ -21,6 +25,14 @@ curl_fetch_stream(url, fun, handle = new_handle())
 
 \item{fun}{Callback function. Should have one argument, which will be
 a raw vector.}
+
+\item{complete}{callback function for successful request. Single argument with
+response data in same structure as \link{curl_fetch_memory}.}
+
+\item{error}{callback function called on failed request. Argument contains
+error message.}
+
+\item{pool}{a multi handle created by \link{multi_new}. Default uses a global pool.}
 }
 \description{
 Low-level bindings to write data from a URL into memory, disk or a callback
@@ -39,6 +51,13 @@ non-blocking C implementation. The latter is slightly slower but allows for
 interrupting the download prematurely (using e.g. CTRL+C or ESC). Interrupting
 is enabled when R runs in interactive mode or when
 \code{getOption("curl_interrupt") == TRUE}.
+
+The \code{curl_fetch_multi} function is the asyncronous equivalent of
+\code{curl_fetch_memory}. It wraps \code{multi_add} to schedule requests which
+are executed concurrently when calling \code{multi_run}. For each successful
+request the \code{complete} callback is triggered with response data. For failed
+requests (when \code{curl_fetch_memory} would raise an error), the \code{error}
+function is triggered with the error message.
 }
 \examples{
 # Load in memory

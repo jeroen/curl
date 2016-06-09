@@ -16,6 +16,13 @@
 #' is enabled when R runs in interactive mode or when
 #' \code{getOption("curl_interrupt") == TRUE}.
 #'
+#' The \code{curl_fetch_multi} function is the asyncronous equivalent of
+#' \code{curl_fetch_memory}. It wraps \code{multi_add} to schedule requests which
+#' are executed concurrently when calling \code{multi_run}. For each successful
+#' request the \code{complete} callback is triggered with response data. For failed
+#' requests (when \code{curl_fetch_memory} would raise an error), the \code{error}
+#' function is triggered with the error message.
+#'
 #' @param url A character string naming the URL of a resource to be downloaded.
 #' @param handle a curl handle object
 #' @export
@@ -68,4 +75,14 @@ curl_fetch_stream <- function(url, fun, handle = new_handle()){
     fun(bin)
   }
   handle_response_data(handle)
+}
+
+#' @export
+#' @rdname curl_fetch
+#' @inheritParams multi
+#' @useDynLib curl R_curl_connection
+curl_fetch_multi <- function(url, complete = NULL, error = NULL, pool = NULL, handle = new_handle()){
+  handle_setopt(handle, url = url)
+  multi_add(handle = handle, complete = complete, error = error, pool = pool)
+  TRUE
 }
