@@ -11,12 +11,13 @@
 #' if the user presses \code{ESC} or \code{CTRL+C} in the console). In case of
 #' the latter, simply call \link{multi_run} again to resume pending requests.
 #'
-#' When the request succeeded, the \code{complete} callback gets triggerd with
+#' When the request succeeded, the \code{done} callback gets triggerd with
 #' the response data. The structure if this data is identical to \link{curl_fetch_memory}.
-#' When the request fails, the \code{error} callback is triggered with an error
+#' When the request fails, the \code{fail} callback is triggered with an error
 #' message. Note that failure here means something went wrong in performing the
-#' request such as a connection failure, not that the HTTP returned 200. Similar
-#' to  \link{curl_fetch_memory}, the user has to implement application logic.
+#' request such as a connection failure, it does not check the http status code.
+#' Just like \link{curl_fetch_memory}, the user has to implement application logic.
+#'
 #' Raising an error within a callback function stops execution of that function
 #' but does not affect other requests.
 #'
@@ -33,28 +34,28 @@
 #' @rdname multi
 #' @useDynLib curl R_multi_add
 #' @param handle a curl \link{handle} with preconfigured \code{url} option.
-#' @param complete callback function for successful request. Single argument with
+#' @param done callback function for completed request. Single argument with
 #' response data in same structure as \link{curl_fetch_memory}.
-#' @param error callback function called on failed request. Argument contains
+#' @param fail callback function called on failed request. Argument contains
 #' error message.
 #' @param pool a multi handle created by \link{multi_new}. Default uses a global pool.
 #' @export
 #' @examples h1 <- new_handle(url = "https://eu.httpbin.org/delay/3")
 #' h2 <- new_handle(url = "https://eu.httpbin.org/post", postfields = "bla bla")
 #' h3 <- new_handle(url = "https://urldoesnotexist.xyz")
-#' multi_add(h1, complete = print, error = print)
-#' multi_add(h2, complete = print, error = print)
-#' multi_add(h3, complete = print, error = print)
+#' multi_add(h1, done = print, fail = print)
+#' multi_add(h2, done = print, fail = print)
+#' multi_add(h3, done = print, fail = print)
 #' multi_run(timeout = 2)
 #' multi_run()
-multi_add <- function(handle, complete = NULL, error = NULL, pool = NULL){
+multi_add <- function(handle, done = NULL, fail = NULL, pool = NULL){
   if(is.null(pool))
     pool <- multi_default()
   stopifnot(inherits(handle, "curl_handle"))
   stopifnot(inherits(pool, "curl_multi"))
-  stopifnot(is.null(complete) || is.function(complete))
-  stopifnot(is.null(error) || is.function(error))
-  .Call(R_multi_add, handle, complete, error, pool)
+  stopifnot(is.null(done) || is.function(done))
+  stopifnot(is.null(fail) || is.function(fail))
+  .Call(R_multi_add, handle, done, fail, pool)
 }
 
 #' @param timeout max time in seconds to wait for results. Use \code{0} to poll for results without

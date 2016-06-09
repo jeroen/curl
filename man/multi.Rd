@@ -9,7 +9,7 @@
 \alias{multi_set}
 \title{Async Multi Download}
 \usage{
-multi_add(handle, complete = NULL, error = NULL, pool = NULL)
+multi_add(handle, done = NULL, fail = NULL, pool = NULL)
 
 multi_run(timeout = Inf, pool = NULL)
 
@@ -22,10 +22,10 @@ multi_new()
 \arguments{
 \item{handle}{a curl \link{handle} with preconfigured \code{url} option.}
 
-\item{complete}{callback function for successful request. Single argument with
+\item{done}{callback function for completed request. Single argument with
 response data in same structure as \link{curl_fetch_memory}.}
 
-\item{error}{callback function called on failed request. Argument contains
+\item{fail}{callback function called on failed request. Argument contains
 error message.}
 
 \item{pool}{a multi handle created by \link{multi_new}. Default uses a global pool.}
@@ -52,12 +52,13 @@ requests have completed, or case of a \code{timeout} or \code{SIGINT} (e.g.
 if the user presses \code{ESC} or \code{CTRL+C} in the console). In case of
 the latter, simply call \link{multi_run} again to resume pending requests.
 
-When the request succeeded, the \code{complete} callback gets triggerd with
+When the request succeeded, the \code{done} callback gets triggerd with
 the response data. The structure if this data is identical to \link{curl_fetch_memory}.
-When the request fails, the \code{error} callback is triggered with an error
+When the request fails, the \code{fail} callback is triggered with an error
 message. Note that failure here means something went wrong in performing the
-request such as a connection failure, not that the HTTP returned 200. Similar
-to  \link{curl_fetch_memory}, the user has to implement application logic.
+request such as a connection failure, it does not check the http status code.
+Just like \link{curl_fetch_memory}, the user has to implement application logic.
+
 Raising an error within a callback function stops execution of that function
 but does not affect other requests.
 
@@ -74,9 +75,9 @@ It has no effect if the request was already completed or canceled.
 h1 <- new_handle(url = "https://eu.httpbin.org/delay/3")
 h2 <- new_handle(url = "https://eu.httpbin.org/post", postfields = "bla bla")
 h3 <- new_handle(url = "https://urldoesnotexist.xyz")
-multi_add(h1, complete = print, error = print)
-multi_add(h2, complete = print, error = print)
-multi_add(h3, complete = print, error = print)
+multi_add(h1, done = print, fail = print)
+multi_add(h2, done = print, fail = print)
+multi_add(h3, done = print, fail = print)
 multi_run(timeout = 2)
 multi_run()
 }

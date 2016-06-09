@@ -46,9 +46,9 @@ test_that("Timeout works", {
 test_that("Callbacks work", {
   total = 0;
   h1 <- new_handle(url = "https://eu.httpbin.org/get")
-  multi_add(h1, complete = function(...){
+  multi_add(h1, done = function(...){
     total <<- total + 1
-    multi_add(h1, complete = function(...){
+    multi_add(h1, done = function(...){
       total <<- total + 1
     })
   })

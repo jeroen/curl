@@ -13,7 +13,7 @@ curl_fetch_disk(url, path, handle = new_handle())
 
 curl_fetch_stream(url, fun, handle = new_handle())
 
-curl_fetch_multi(url, complete = NULL, error = NULL, pool = NULL,
+curl_fetch_multi(url, done = NULL, fail = NULL, pool = NULL,
   handle = new_handle())
 }
 \arguments{
@@ -26,10 +26,10 @@ curl_fetch_multi(url, complete = NULL, error = NULL, pool = NULL,
 \item{fun}{Callback function. Should have one argument, which will be
 a raw vector.}
 
-\item{complete}{callback function for successful request. Single argument with
+\item{done}{callback function for completed request. Single argument with
 response data in same structure as \link{curl_fetch_memory}.}
 
-\item{error}{callback function called on failed request. Argument contains
+\item{fail}{callback function called on failed request. Argument contains
 error message.}
 
 \item{pool}{a multi handle created by \link{multi_new}. Default uses a global pool.}
@@ -55,8 +55,8 @@ is enabled when R runs in interactive mode or when
 The \code{curl_fetch_multi} function is the asyncronous equivalent of
 \code{curl_fetch_memory}. It wraps \code{multi_add} to schedule requests which
 are executed concurrently when calling \code{multi_run}. For each successful
-request the \code{complete} callback is triggered with response data. For failed
-requests (when \code{curl_fetch_memory} would raise an error), the \code{error}
+request the \code{done} callback is triggered with response data. For failed
+requests (when \code{curl_fetch_memory} would raise an error), the \code{fail}
 function is triggered with the error message.
 }
 \examples{
@@ -83,9 +83,9 @@ success <- function(res){
 failure <- function(msg){
   cat("Oh noes! Request failed!", msg, "\\n")
 }
-curl_fetch_multi("http://httpbin.org/get", complete = success, error = failure)
-curl_fetch_multi("http://httpbin.org/status/418", complete = success, error = failure)
-curl_fetch_multi("https://urldoesnotexist.xyz", complete = success, error = failure)
+curl_fetch_multi("http://httpbin.org/get", success, failure)
+curl_fetch_multi("http://httpbin.org/status/418", success, failure)
+curl_fetch_multi("https://urldoesnotexist.xyz", success, failure)
 multi_run()
 str(data)
 }
