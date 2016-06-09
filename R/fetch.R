@@ -42,6 +42,21 @@
 #' res <- curl_fetch_stream("http://eu.httpbin.org/stream/20", function(x){
 #'   cat(rawToChar(x))
 #' })
+#'
+#' # Async API
+#' data <- list()
+#' success <- function(res){
+#'   cat("Request done! Status:", res$status, "\n")
+#'   data <<- c(data, list(res))
+#' }
+#' failure <- function(msg){
+#'   cat("Oh noes! Request failed!", msg, "\n")
+#' }
+#' curl_fetch_multi("http://httpbin.org/get", complete = success, error = failure)
+#' curl_fetch_multi("http://httpbin.org/status/418", complete = success, error = failure)
+#' curl_fetch_multi("https://urldoesnotexist.xyz", complete = success, error = failure)
+#' multi_run()
+#' str(data)
 curl_fetch_memory <- function(url, handle = new_handle()){
   nonblocking <- isTRUE(getOption("curl_interrupt", interactive()))
   output <- .Call(R_curl_fetch_memory, url, handle, nonblocking)
