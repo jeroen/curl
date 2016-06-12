@@ -9,21 +9,17 @@
 #define HAS_CURLMOPT_MAX_TOTAL_CONNECTIONS 1
 #endif
 
-/* Currently there is no way to query the multi handle for pending handles
- * The ref->locked is used to lock the handle for any use.
- */
-
 multiref *get_multiref(SEXP ptr){
-  multiref *ref = (multiref*) R_ExternalPtrAddr(ptr);
-  if(!ref)
+  multiref *mref = (multiref*) R_ExternalPtrAddr(ptr);
+  if(!mref)
     Rf_error("multiref pointer is dead");
-  return ref;
+  return mref;
 }
 
 void multi_release(reference *ref){
   /* Release the easy-handle */
   CURL *handle = ref->handle;
-  CURLM *multi = ref->async.m;
+  CURLM *multi = ref->async.mref->m;
   massert(curl_multi_remove_handle(multi, handle));
   curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, NULL);
   curl_easy_setopt(handle, CURLOPT_WRITEDATA, NULL);
@@ -32,26 +28,32 @@ void multi_release(reference *ref){
   R_ReleaseObject(ref->async.complete);
   R_ReleaseObject(ref->async.error);
 
+  /* Remove the node from its multihandle request-list */
+  refnode_remove(ref);
+
   /* Reset multi state struct */
-  if(ref->async.content.buf)
+  if(ref->async.content.buf){
     free(ref->async.content.buf);
+    ref->async.content.buf = NULL;
+    ref->async.content.size = 0;
+  }
+  ref->async.mref = NULL;
   ref->async.content.buf = NULL;
   ref->async.content.size = 0;
   ref->async.complete = NULL;
   ref->async.error = NULL;
-  ref->async.m = NULL;
+  ref->async.node = NULL;
 
-  /* Unlock handle (but don't decrement refcount yet) */
+  /* Unlock handle (and cleanup if needed) */
   ref->locked = 0;
+  ref->refCount--;
+  clean_handle(ref);
 }
 
 SEXP R_multi_cancel(SEXP handle_ptr){
   reference *ref = get_ref(handle_ptr);
-  if(ref->async.m){
+  if(ref->async.mref)
     multi_release(ref);
-    ref->refCount--;
-    clean_handle(ref);
-  }
   return handle_ptr;
 }
 
@@ -71,8 +73,11 @@ SEXP R_multi_add(SEXP handle_ptr, SEXP cb_complete, SEXP cb_error, SEXP pool_ptr
   /* add to scheduler */
   massert(curl_multi_add_handle(multi, ref->handle));
 
+  /* create node in ref */
+  ref->async.mref = mref;
+  mref->list = refnode_add(mref->list, ref);
+
   /* set multi callbacks */
-  ref->async.m = multi;
   R_PreserveObject(ref->async.complete = cb_complete);
   R_PreserveObject(ref->async.error = cb_error);
 
@@ -134,9 +139,11 @@ SEXP R_multi_run(SEXP pool_ptr, SEXP timeout){
           total_success++;
           if(Rf_isFunction(cb_complete)){
             int ok;
+            int arglen = Rf_length(FORMALS(cb_complete));
+            //if(arglen == 1 && TAG(FORMALS(cb_complete)) == R_DotsSymbol) arglen = 99;
             SEXP out = PROTECT(make_handle_response(ref));
             SET_VECTOR_ELT(out, 5, buf);
-            SEXP call = PROTECT(LCONS(cb_complete, LCONS(out, R_NilValue)));
+            SEXP call = PROTECT(LCONS(cb_complete, arglen ? LCONS(out, R_NilValue) : R_NilValue));
             R_tryEval(call, R_GlobalEnv, &ok);
             UNPROTECT(2);
           }
@@ -144,8 +151,10 @@ SEXP R_multi_run(SEXP pool_ptr, SEXP timeout){
           total_fail++;
           if(Rf_isFunction(cb_error)){
             int ok;
+            int arglen = Rf_length(FORMALS(cb_complete));
+            //if(arglen == 1 && TAG(FORMALS(cb_complete)) == R_DotsSymbol) arglen = 99;
             SEXP buf = PROTECT(mkString(curl_easy_strerror(status)));
-            SEXP call = PROTECT(LCONS(cb_error, LCONS(buf, R_NilValue)));
+            SEXP call = PROTECT(LCONS(cb_error, arglen ? LCONS(buf, R_NilValue) : R_NilValue));
             R_tryEval(call, R_GlobalEnv, &ok);
             UNPROTECT(2);
           }
@@ -153,8 +162,6 @@ SEXP R_multi_run(SEXP pool_ptr, SEXP timeout){
 
         // watch out: ref/handle might be modified by callback functions!
         UNPROTECT(3);
-        ref->refCount--;
-        clean_handle(ref);
       }
     } while (msgq > 0);
 
@@ -181,15 +188,19 @@ SEXP R_multi_run(SEXP pool_ptr, SEXP timeout){
 }
 
 void fin_multi(SEXP ptr){
-  multiref *ref = (multiref*) R_ExternalPtrAddr(ptr);
-  if(ref && ref->m)
-    curl_multi_cleanup(ref->m);
+  multiref *mref = (multiref*) R_ExternalPtrAddr(ptr);
+  if(mref){
+    while(mref->list->ref)
+      multi_release(mref->list->ref);
+    curl_multi_cleanup(mref->m);
+  }
   R_ClearExternalPtr(ptr);
 }
 
 SEXP R_multi_new(){
   multiref *ref = calloc(1, sizeof(multiref));
   ref->m = curl_multi_init();
+  ref->list = refnode_init();
   SEXP ptr = PROTECT(R_MakeExternalPtr(ref, R_NilValue, R_NilValue));
   R_RegisterCFinalizerEx(ptr, fin_multi, 1);
   setAttrib(ptr, R_ClassSymbol, mkString("curl_multi"));

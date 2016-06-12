@@ -11,6 +11,12 @@ typedef struct {
 
 typedef struct {
   CURLM *m;
+  struct refnode *list;
+} multiref;
+
+typedef struct {
+  multiref *mref;
+  struct refnode *node;
   memory content;
   SEXP complete;
   SEXP error;
@@ -26,9 +32,11 @@ typedef struct {
   int locked;
 } reference;
 
-typedef struct {
-  CURLM *m;
-} multiref;
+struct refnode {
+  struct refnode *prev;
+  struct refnode *next;
+  reference *ref;
+};
 
 CURL* get_handle(SEXP ptr);
 reference* get_ref(SEXP ptr);
@@ -47,3 +55,8 @@ size_t append_buffer(void *contents, size_t sz, size_t nmemb, void *ctx);
 CURLcode curl_perform_with_interrupt(CURL *handle);
 int pending_interrupt();
 SEXP make_handle_response(reference *ref);
+
+/* refnode.c */
+struct refnode *refnode_init();
+struct refnode *refnode_add(struct refnode *head, reference *ptr);
+reference * refnode_remove(reference * ref);
