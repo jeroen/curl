@@ -59,7 +59,6 @@ SEXP R_multi_cancel(SEXP handle_ptr){
 }
 
 SEXP R_multi_add(SEXP handle_ptr, SEXP cb_complete, SEXP cb_error, SEXP pool_ptr){
-  /* for now everything is global */
   multiref *mref = get_multiref(pool_ptr);
   CURLM *multi = mref->m;
 
@@ -90,7 +89,6 @@ SEXP R_multi_add(SEXP handle_ptr, SEXP cb_complete, SEXP cb_error, SEXP pool_ptr
 }
 
 SEXP R_multi_run(SEXP pool_ptr, SEXP timeout){
-  /* for now everything is global */
   multiref *mref = get_multiref(pool_ptr);
   CURLM *multi = mref->m;
 
@@ -190,14 +188,12 @@ SEXP R_multi_run(SEXP pool_ptr, SEXP timeout){
 }
 
 void fin_multi(SEXP ptr){
-  multiref *mref = (multiref*) R_ExternalPtrAddr(ptr);
-  if(mref){
-    while(mref->list->ref)
-      multi_release(mref->list->ref);
-    curl_multi_cleanup(mref->m);
-    free(mref->list);
-    free(mref);
-  }
+  multiref *mref = get_multiref(ptr);
+  while(mref->list->ref)
+    multi_release(mref->list->ref);
+  curl_multi_cleanup(mref->m);
+  free(mref->list);
+  free(mref);
   R_ClearExternalPtr(ptr);
 }
 
@@ -228,7 +224,7 @@ SEXP R_multi_setopt(SEXP pool_ptr, SEXP total_con, SEXP host_con, SEXP multiplex
 }
 
 SEXP R_multi_list(SEXP pool_ptr){
-  multiref *mref = (multiref*) R_ExternalPtrAddr(pool_ptr);
+  multiref *mref = get_multiref(pool_ptr);
   int len = 0;
   struct refnode * node = mref->list;
   while((node = node->prev))
