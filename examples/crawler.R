@@ -44,6 +44,6 @@ crawl <- function(startpage, timeout = 120, slots = 100){
   return(pages)
 }
 
-# 30 sec of CPU time
+# Crawl for 30 sec
 pages <- crawl(start = 'https://news.ycombinator.com', timeout = 30)
 names(pages)
