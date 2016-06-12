@@ -14,7 +14,7 @@ multi_add(handle, done = NULL, fail = NULL, pool = NULL)
 
 multi_run(timeout = Inf, pool = NULL)
 
-multi_set(total_con = 100, host_con = 6, multiplex = TRUE, pool = NULL)
+multi_set(total_con = 50, host_con = 6, multiplex = TRUE, pool = NULL)
 
 multi_list(pool = NULL)
 

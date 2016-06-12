@@ -77,7 +77,7 @@ multi_run <- function(timeout = Inf, pool = NULL){
 #' @export
 #' @useDynLib curl R_multi_setopt
 #' @rdname multi
-multi_set <- function(total_con = 100, host_con = 6, multiplex = TRUE, pool = NULL){
+multi_set <- function(total_con = 50, host_con = 6, multiplex = TRUE, pool = NULL){
   if(is.null(pool))
     pool <- multi_default()
   stopifnot(inherits(pool, "curl_multi"))
