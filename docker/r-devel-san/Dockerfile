@@ -2,9 +2,13 @@ FROM rocker/r-devel-san
 
 RUN apt-get update -qq \
 	&& apt-get dist-upgrade -y \
-	&& apt-get install pandoc libcurl4-openssl-dev -y
+	&& apt-get install git pandoc pandoc-citeproc libcurl4-openssl-dev -y
 
-RUN RD -e 'install.packages("curl", dependencies = TRUE)' \
-	&& RD -e 'install.packages("https://github.com/jeroenooms/curl/archive/master.tar.gz", repos = NULL, INSTALL_opts = "--install-tests")'
+RUN git clone https://github.com/jeroenooms/curl \
+  && RD -e 'install.packages("curl", dependencies = TRUE)' \
+  && RD CMD build curl --no-build-vignettes \
+	&& RD CMD INSTALL curl_*.tar.gz --install-tests
 
-RUN RD -e 'testthat::test_package("curl"); q("no");'
+RUN RD -e 'testthat::test_package("curl"); q("no");' || TRUE
+
+RUN RD CMD check curl_*.tar.gz
