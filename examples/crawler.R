@@ -8,13 +8,13 @@ get_links <- function(res){
     links <- xml2::xml_attr(nodes, "href")
     links <- xml2:::url_absolute(links, res$url)
     links <- grep("^https?://", links, value = TRUE)
-    sub("#.*", "", links)
+    unique(sub("#.*", "", links))
   }, error = function(e){character()})
 }
 
-crawl <- function(startpage, timeout = 120){
+crawl <- function(startpage, timeout = 120, slots = 100){
   pages <- new.env()
-  pool <- curl::new_pool(total_con = 20, host_con = 6)
+  pool <- curl::new_pool(total_con = 50, host_con = 6)
 
   crawl_page <- function(url){
     h <- curl::new_handle(maxfilesize = 1e6)
@@ -22,12 +22,16 @@ crawl <- function(startpage, timeout = 120){
     curl::curl_fetch_multi(url, handle = h, pool = pool, done = function(res){
       if(res$status == 200){
         links = get_links(res)
-        cat(sprintf("Done: %s (%d links)\n", url, length(links)))
+        cat(sprintf("Done (%d): %s (%d links)\n", length(pages), url, length(links)))
         pages[[url]] = links
-        lapply(links, function(href){
-          if(is.null(pages[[href]]))
-            crawl_page(href)
-        })
+        pending <- length(curl::multi_list(pool))
+        if(pending < slots){
+          links <- sample(links, min(5, length(links), slots - pending))
+          lapply(links, function(href){
+            if(is.null(pages[[href]]))
+              crawl_page(href)
+          })
+        }
       } else {
         cat(sprintf("Skipping page: %s (http %d)\n", url, res$status))
       }
@@ -37,6 +41,9 @@ crawl <- function(startpage, timeout = 120){
   }
   crawl_page(startpage)
   curl::multi_run(pool = pool, timeout = timeout)
+  return(pages)
 }
 
-crawl(start = 'http://www.nu.nl')
+# 30 sec of CPU time
+pages <- crawl(start = 'http://www.nu.nl', timeout = 30)
+names(pages)
