@@ -108,9 +108,9 @@ multi_cancel <- function(handle){
 #' @export
 #' @useDynLib curl R_multi_new
 #' @rdname multi
-new_pool <- function(){
+new_pool <- function(total_con = 100, host_con = 6, multiplex = TRUE){
   pool <- .Call(R_multi_new)
-  multi_set(pool = pool)
+  multi_set(pool = pool, total_con = total_con, host_con = host_con, multiplex = multiplex)
 }
 
 multi_default <- local({

@@ -20,7 +20,7 @@ multi_list(pool = NULL)
 
 multi_cancel(handle)
 
-new_pool()
+new_pool(total_con = 100, host_con = 6, multiplex = TRUE)
 }
 \arguments{
 \item{handle}{a curl \link{handle} with preconfigured \code{url} option.}
