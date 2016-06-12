@@ -4,9 +4,10 @@
 \alias{multi}
 \alias{multi_add}
 \alias{multi_cancel}
-\alias{multi_new}
+\alias{multi_list}
 \alias{multi_run}
 \alias{multi_set}
+\alias{new_pool}
 \title{Async Multi Download}
 \usage{
 multi_add(handle, done = NULL, fail = NULL, pool = NULL)
@@ -15,9 +16,11 @@ multi_run(timeout = Inf, pool = NULL)
 
 multi_set(total_con = 100, host_con = 6, multiplex = TRUE, pool = NULL)
 
+multi_list(pool = NULL)
+
 multi_cancel(handle)
 
-multi_new()
+new_pool()
 }
 \arguments{
 \item{handle}{a curl \link{handle} with preconfigured \code{url} option.}
@@ -28,7 +31,7 @@ response data in same structure as \link{curl_fetch_memory}.}
 \item{fail}{callback function called on failed request. Argument contains
 error message.}
 
-\item{pool}{a multi handle created by \link{multi_new}. Default uses a global pool.}
+\item{pool}{a multi handle created by \link{new_pool}. Default uses a global pool.}
 
 \item{timeout}{max time in seconds to wait for results. Use \code{0} to poll for results without
 waiting at all.}

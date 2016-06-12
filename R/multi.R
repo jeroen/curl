@@ -38,7 +38,7 @@
 #' response data in same structure as \link{curl_fetch_memory}.
 #' @param fail callback function called on failed request. Argument contains
 #' error message.
-#' @param pool a multi handle created by \link{multi_new}. Default uses a global pool.
+#' @param pool a multi handle created by \link{new_pool}. Default uses a global pool.
 #' @export
 #' @examples h1 <- new_handle(url = "https://eu.httpbin.org/delay/3")
 #' h2 <- new_handle(url = "https://eu.httpbin.org/post", postfields = "bla bla")
@@ -88,6 +88,16 @@ multi_set <- function(total_con = 100, host_con = 6, multiplex = TRUE, pool = NU
 }
 
 #' @export
+#' @useDynLib curl R_multi_list
+#' @rdname multi
+multi_list <- function(pool = NULL){
+  if(is.null(pool))
+    pool <- multi_default()
+  stopifnot(inherits(pool, "curl_multi"))
+  .Call(R_multi_list, pool)
+}
+
+#' @export
 #' @useDynLib curl R_multi_cancel
 #' @rdname multi
 multi_cancel <- function(handle){
@@ -98,7 +108,7 @@ multi_cancel <- function(handle){
 #' @export
 #' @useDynLib curl R_multi_new
 #' @rdname multi
-multi_new <- function(){
+new_pool <- function(){
   pool <- .Call(R_multi_new)
   multi_set(pool = pool)
 }
@@ -107,7 +117,7 @@ multi_default <- local({
   global_multi_handle <- NULL
   function(){
     if(is.null(global_multi_handle)){
-      global_multi_handle <<- multi_new()
+      global_multi_handle <<- new_pool()
     }
     stopifnot(inherits(global_multi_handle, "curl_multi"))
     return(global_multi_handle)

@@ -32,7 +32,7 @@ response data in same structure as \link{curl_fetch_memory}.}
 \item{fail}{callback function called on failed request. Argument contains
 error message.}
 
-\item{pool}{a multi handle created by \link{multi_new}. Default uses a global pool.}
+\item{pool}{a multi handle created by \link{new_pool}. Default uses a global pool.}
 }
 \description{
 Low-level bindings to write data from a URL into memory, disk or a callback

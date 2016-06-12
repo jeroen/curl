@@ -23,6 +23,7 @@ typedef struct {
 } async;
 
 typedef struct {
+  SEXP handleptr;
   CURL *handle;
   struct curl_httppost *form;
   struct curl_slist *headers;

@@ -27,6 +27,7 @@ void multi_release(reference *ref){
   /* Unprotect R callbacks */
   R_ReleaseObject(ref->async.complete);
   R_ReleaseObject(ref->async.error);
+  R_ReleaseObject(ref->handleptr);
 
   /* Remove the node from its multihandle request-list */
   refnode_remove(ref);
@@ -80,6 +81,7 @@ SEXP R_multi_add(SEXP handle_ptr, SEXP cb_complete, SEXP cb_error, SEXP pool_ptr
   /* set multi callbacks */
   R_PreserveObject(ref->async.complete = cb_complete);
   R_PreserveObject(ref->async.error = cb_error);
+  R_PreserveObject(ref->handleptr);
 
   /* lock and protect handle */
   ref->refCount++;
@@ -223,4 +225,20 @@ SEXP R_multi_setopt(SEXP pool_ptr, SEXP total_con, SEXP host_con, SEXP multiplex
     massert(curl_multi_setopt(multi, CURLMOPT_MAX_HOST_CONNECTIONS, (long) asInteger(host_con)));
   #endif
   return pool_ptr;
+}
+
+SEXP R_multi_list(SEXP pool_ptr){
+  multiref *mref = (multiref*) R_ExternalPtrAddr(pool_ptr);
+  int len = 0;
+  struct refnode * node = mref->list;
+  while((node = node->prev))
+    len++;
+  SEXP out = PROTECT(allocVector(VECSXP, len));
+  node = mref->list;
+  for(int i = 0; i < len; i++){
+    SET_VECTOR_ELT(out, i, node->ref->handleptr);
+    node = node->prev;
+  }
+  UNPROTECT(1);
+  return out;
 }

@@ -32,12 +32,9 @@ void clean_handle(reference *ref){
 }
 
 void fin_handle(SEXP ptr){
-  //Rprintf("finalizing handle\n");
   reference *ref = (reference*) R_ExternalPtrAddr(ptr);
-  if(ref){
-    (ref->refCount)--;
-    clean_handle(ref);
-  }
+  ref->refCount--;
+  clean_handle(ref);
   R_ClearExternalPtr(ptr);
 }
 
@@ -96,6 +93,7 @@ SEXP R_new_handle(){
   R_RegisterCFinalizerEx(ptr, fin_handle, 1);
   setAttrib(ptr, R_ClassSymbol, mkString("curl_handle"));
   UNPROTECT(1);
+  ref->handleptr = ptr;
   return ptr;
 }
 
