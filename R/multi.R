@@ -123,3 +123,9 @@ multi_default <- local({
     return(global_multi_handle)
   }
 })
+
+#' @export
+print.curl_multi <- function(x, ...){
+  len <- length(multi_list(x))
+  cat(sprintf("<curl multi-pool> (%d pending requests)\n", len))
+}
