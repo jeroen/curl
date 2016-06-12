@@ -98,7 +98,8 @@ SEXP R_multi_run(SEXP pool_ptr, SEXP timeout){
   int dirty = 0;
   double time_max = asReal(timeout);
 
-  clock_t time_start = clock();
+  time_t time_start = time(NULL);
+
   double seconds_elapsed = 0;
   do {
     dirty = 0;
@@ -173,7 +174,7 @@ SEXP R_multi_run(SEXP pool_ptr, SEXP timeout){
 
     /* check for timeout */
     if(time_max > 0){
-      seconds_elapsed = (double) (clock() - time_start) / CLOCKS_PER_SEC;
+      seconds_elapsed = (double) (time(NULL) - time_start);
       if(seconds_elapsed > time_max)
         break;
     }
