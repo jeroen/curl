@@ -193,8 +193,9 @@ void fin_multi(SEXP ptr){
     while(mref->list->ref)
       multi_release(mref->list->ref);
     curl_multi_cleanup(mref->m);
+    free(mref->list);
+    free(mref);
   }
-  free(mref);
   R_ClearExternalPtr(ptr);
 }
 
