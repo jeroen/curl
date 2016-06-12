@@ -9,6 +9,6 @@ RUN git clone https://github.com/jeroenooms/curl \
   && RD CMD build curl --no-build-vignettes \
 	&& RD CMD INSTALL curl_*.tar.gz --install-tests
 
-RUN RD -e 'testthat::test_package("curl"); q("no");' || TRUE
+RUN RD -e 'testthat::test_package("curl"); q("no");' || true
 
 RUN RD CMD check curl_*.tar.gz
