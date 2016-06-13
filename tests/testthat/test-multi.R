@@ -7,7 +7,7 @@ test_that("Max connections works", {
   for(i in 1:3){
     multi_add(new_handle(url = "https://eu.httpbin.org/delay/2"))
   }
-  out <- multi_run(timeout = 3)
+  out <- multi_run(timeout = 3.5)
   expect_equal(out, list(success = 1, error = 0, pending = 2))
   out <- multi_run(timeout = 2)
   expect_equal(out, list(success = 1, error = 0, pending = 1))
