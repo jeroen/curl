@@ -1,11 +1,14 @@
 FROM rocker/r-devel-san
 
-RUN apt-get update -qq \
-	&& apt-get dist-upgrade -y \
-	&& apt-get install git pandoc pandoc-citeproc libcurl4-openssl-dev -y
+RUN apt-get -qq update \
+	&& apt-get -qq dist-upgrade -y \
+	&& apt-get -qq install git pandoc pandoc-citeproc libssl-dev libcurl4-openssl-dev -y
+
+RUN RD -e 'install.packages("devtools")' \
+  && RD -e 'install.packages("curl", dependencies = TRUE)' \
+  && RD -e 'devtools::install_github('jeroenooms/jsonlite')'
 
 RUN git clone https://github.com/jeroenooms/curl \
-  && RD -e 'install.packages("curl", dependencies = TRUE)' \
   && RD CMD build curl --no-build-vignettes \
 	&& RD CMD INSTALL curl_*.tar.gz --install-tests
 
