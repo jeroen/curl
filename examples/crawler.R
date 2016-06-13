@@ -15,6 +15,7 @@ get_links <- function(res){
 crawl <- function(startpage, timeout = 120, slots = 100){
   pages <- new.env()
   pool <- curl::new_pool(total_con = 50, host_con = 6)
+  on.exit(rm(pool))
 
   crawl_page <- function(url){
     h <- curl::new_handle(maxfilesize = 1e6)
