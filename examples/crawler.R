@@ -1,3 +1,7 @@
+## Requires dev version of curl!
+install.packages("https://github.com/jeroenooms/curl/archive/master.tar.gz", repos = NULL)
+####
+
 get_links <- function(res){
   tryCatch({
     headers <- curl::parse_headers(res$headers)
