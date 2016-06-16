@@ -152,8 +152,8 @@ SEXP R_multi_run(SEXP pool_ptr, SEXP timeout){
           total_fail++;
           if(Rf_isFunction(cb_error)){
             int ok;
-            int arglen = Rf_length(FORMALS(cb_complete));
-            //if(arglen == 1 && TAG(FORMALS(cb_complete)) == R_DotsSymbol) arglen = 99;
+            int arglen = Rf_length(FORMALS(cb_error));
+            //if(arglen == 1 && TAG(FORMALS(cb_error)) == R_DotsSymbol) arglen = 99;
             SEXP buf = PROTECT(mkString(curl_easy_strerror(status)));
             SEXP call = PROTECT(LCONS(cb_error, arglen ? LCONS(buf, R_NilValue) : R_NilValue));
             R_tryEval(call, R_GlobalEnv, &ok);
