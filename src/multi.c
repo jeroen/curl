@@ -163,12 +163,6 @@ SEXP R_multi_run(SEXP pool_ptr, SEXP timeout){
 
         // watch out: ref/handle might be modified by callback functions!
         UNPROTECT(3);
-
-        // trick to break from outer loop on interrupt
-        if(pending_interrupt()){
-          time_max = 0;
-          break;
-        }
       }
     } while (msgq > 0);
 
