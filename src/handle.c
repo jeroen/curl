@@ -32,6 +32,7 @@ void clean_handle(reference *ref){
 }
 
 void fin_handle(SEXP ptr){
+  //Rprintf("running finalizer...\n");
   reference *ref = (reference*) R_ExternalPtrAddr(ptr);
   ref->refCount--;
   clean_handle(ref);

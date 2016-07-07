@@ -96,6 +96,7 @@ SEXP R_multi_run(SEXP pool_ptr, SEXP timeout){
   int total_success = 0;
   int total_fail = 0;
   int dirty = 0;
+  int cbfail = 0;
   double time_max = asReal(timeout);
 
   time_t time_start = time(NULL);
@@ -139,30 +140,33 @@ SEXP R_multi_run(SEXP pool_ptr, SEXP timeout){
         if(status == CURLE_OK){
           total_success++;
           if(Rf_isFunction(cb_complete)){
-            int ok;
+            int ok = 0;
             int arglen = Rf_length(FORMALS(cb_complete));
             //if(arglen == 1 && TAG(FORMALS(cb_complete)) == R_DotsSymbol) arglen = 99;
             SEXP out = PROTECT(make_handle_response(ref));
             SET_VECTOR_ELT(out, 5, buf);
             SEXP call = PROTECT(LCONS(cb_complete, arglen ? LCONS(out, R_NilValue) : R_NilValue));
             R_tryEval(call, R_GlobalEnv, &ok);
+            cbfail += ok;
             UNPROTECT(2);
           }
         } else {
           total_fail++;
           if(Rf_isFunction(cb_error)){
-            int ok;
+            int ok = 0;
             int arglen = Rf_length(FORMALS(cb_error));
             //if(arglen == 1 && TAG(FORMALS(cb_error)) == R_DotsSymbol) arglen = 99;
             SEXP buf = PROTECT(mkString(curl_easy_strerror(status)));
             SEXP call = PROTECT(LCONS(cb_error, arglen ? LCONS(buf, R_NilValue) : R_NilValue));
             R_tryEval(call, R_GlobalEnv, &ok);
+            cbfail += ok;
             UNPROTECT(2);
           }
         }
 
         // watch out: ref/handle might be modified by callback functions!
         UNPROTECT(3);
+        //R_gc();
       }
     } while (msgq > 0);
 
@@ -172,7 +176,7 @@ SEXP R_multi_run(SEXP pool_ptr, SEXP timeout){
       if(seconds_elapsed > time_max)
         break;
     }
-  } while((dirty || total_pending) && time_max);
+  } while((dirty || total_pending) && time_max && !cbfail);
 
   SEXP res = PROTECT(allocVector(VECSXP, 3));
   SET_VECTOR_ELT(res, 0, ScalarInteger(total_success));
@@ -189,6 +193,7 @@ SEXP R_multi_run(SEXP pool_ptr, SEXP timeout){
 }
 
 void fin_multi(SEXP ptr){
+  //Rprintf("running multi finalizer...\n");
   multiref *mref = get_multiref(ptr);
   while(mref->list->ref)
     multi_release(mref->list->ref);
