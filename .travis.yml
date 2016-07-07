@@ -11,12 +11,9 @@ matrix:
       env: R_CODECOV=true
     - os: osx
       osx_image: xcode7.2
-      brew_packages: curl
-      env: BREW_FORCE: true
-      latex: false
-    - os: osx
-      osx_image: xcode7.2
-      disable_homebrew: true
+      before_install:
+        - brew install curl
+        - brew link --force curl
       latex: false
     - os: osx
       osx_image: beta-xcode6.1
@@ -37,9 +34,6 @@ notifications:
   email:
     on_success: change
     on_failure: change
-
-before_install:
-  - if [ "${BREW_FORCE}" ]; brew link --force curl; fi
 
 after_success:
   - if [[ "${R_CODECOV}" ]]; then R -e 'covr::codecov()'; fi
