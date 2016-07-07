@@ -16,6 +16,7 @@ test_that("Max connections works", {
 })
 
 test_that("Max connections reset", {
+  multi_set(host_con = 6, multiplex = TRUE)
   for(i in 1:3){
     multi_add(new_handle(url = "https://test.opencpu.org/delay/2"))
   }
