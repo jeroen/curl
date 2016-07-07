@@ -9,6 +9,7 @@ matrix:
     - os: linux
       dist: precise
       sudo: false
+      r_build_args: '--no-build-vignettes'
       r_check_args: '--ignore-vignettes --no-examples'
     - os: linux
       dist: trusty
@@ -19,10 +20,12 @@ matrix:
         - brew install curl
         - brew link --force curl
       latex: false
+      r_build_args: '--no-build-vignettes'
       r_check_args: '--ignore-vignettes --no-examples'
     - os: osx
       osx_image: xcode7.3
       latex: false
+      r_build_args: '--no-build-vignettes'
       r_check_args: '--ignore-vignettes --no-examples'
     - os: osx
       osx_image: beta-xcode6.1
