@@ -1,6 +1,11 @@
 #include "curl-common.h"
 #include <time.h>
 
+/* Notes:
+ *  - First check for unhandled messages in curl_multi_info_read() before curl_multi_perform()
+ *  - Use eval() to callback instead of R_tryEval() to propagate interrupt or error back to C
+ */
+
 #if LIBCURL_VERSION_MAJOR > 7 || (LIBCURL_VERSION_MAJOR == 7 && LIBCURL_VERSION_MINOR >= 28)
 #define HAS_MULTI_WAIT 1
 #endif
@@ -92,32 +97,18 @@ SEXP R_multi_run(SEXP pool_ptr, SEXP timeout){
   multiref *mref = get_multiref(pool_ptr);
   CURLM *multi = mref->m;
 
-  int total_pending = 0;
+  int total_pending = -1;
   int total_success = 0;
   int total_fail = 0;
-  int dirty = 0;
-  int cbfail = 0;
   double time_max = asReal(timeout);
-
   time_t time_start = time(NULL);
 
   double seconds_elapsed = 0;
-  do {
-    dirty = 0;
-    if(pending_interrupt())
-      break;
-    /* Required by old versions of libcurl */
-    CURLMcode res = CURLM_CALL_MULTI_PERFORM;
-    while(res == CURLM_CALL_MULTI_PERFORM)
-      res = curl_multi_perform(multi, &(total_pending));
-
-    /* check for multi errors */
-    if(res != CURLM_OK)
-      break;
-
+  while(1) {
     /* check for completed requests */
-    int msgq = 0;
-    do {
+    int dirty = 0;
+    int msgq = 1;
+    while (msgq > 0) {
       CURLMsg *m = curl_multi_info_read(multi, &msgq);
       if(m && (m->msg == CURLMSG_DONE)){
         dirty = 1;
@@ -140,43 +131,54 @@ SEXP R_multi_run(SEXP pool_ptr, SEXP timeout){
         if(status == CURLE_OK){
           total_success++;
           if(Rf_isFunction(cb_complete)){
-            int ok = 0;
             int arglen = Rf_length(FORMALS(cb_complete));
-            //if(arglen == 1 && TAG(FORMALS(cb_complete)) == R_DotsSymbol) arglen = 99;
             SEXP out = PROTECT(make_handle_response(ref));
             SET_VECTOR_ELT(out, 5, buf);
             SEXP call = PROTECT(LCONS(cb_complete, arglen ? LCONS(out, R_NilValue) : R_NilValue));
-            R_tryEval(call, R_GlobalEnv, &ok);
-            cbfail += ok;
+            //R_tryEval(call, R_GlobalEnv, &cbfail);
+            eval(call, R_GlobalEnv); //OK to error here
             UNPROTECT(2);
           }
         } else {
           total_fail++;
           if(Rf_isFunction(cb_error)){
-            int ok = 0;
             int arglen = Rf_length(FORMALS(cb_error));
-            //if(arglen == 1 && TAG(FORMALS(cb_error)) == R_DotsSymbol) arglen = 99;
             SEXP buf = PROTECT(mkString(curl_easy_strerror(status)));
             SEXP call = PROTECT(LCONS(cb_error, arglen ? LCONS(buf, R_NilValue) : R_NilValue));
-            R_tryEval(call, R_GlobalEnv, &ok);
-            cbfail += ok;
+            //R_tryEval(call, R_GlobalEnv, &cbfail);
+            eval(call, R_GlobalEnv); //OK to error here
             UNPROTECT(2);
           }
         }
-
-        // watch out: ref/handle might be modified by callback functions!
         UNPROTECT(3);
         //R_gc();
       }
-    } while (msgq > 0);
+    }
+
+    /* check for user interruptions */
+    //if(pending_interrupt())  break;
+    R_CheckUserInterrupt();
 
     /* check for timeout */
-    if(time_max > 0){
+    if(time_max == 0 && total_pending != -1){
+      break;
+    } else if(time_max > 0){
       seconds_elapsed = (double) (time(NULL) - time_start);
       if(seconds_elapsed > time_max)
         break;
     }
-  } while((dirty || total_pending) && time_max && !cbfail);
+
+    /* check if we are done */
+    if(total_pending == 0 && !dirty)
+      break;
+
+    /* poll libcurl for new data - updates total_pending */
+    CURLMcode res = CURLM_CALL_MULTI_PERFORM;
+    while(res == CURLM_CALL_MULTI_PERFORM)
+      res = curl_multi_perform(multi, &(total_pending));
+    if(res != CURLM_OK)
+      break;
+  }
 
   SEXP res = PROTECT(allocVector(VECSXP, 3));
   SET_VECTOR_ELT(res, 0, ScalarInteger(total_success));

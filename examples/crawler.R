@@ -1,5 +1,5 @@
 ## Requires dev version of curl!
-install.packages("https://github.com/jeroenooms/curl/archive/master.tar.gz", repos = NULL)
+# install.packages("https://github.com/jeroenooms/curl/archive/master.tar.gz", repos = NULL)
 ####
 
 get_links <- function(res){
@@ -12,11 +12,13 @@ get_links <- function(res){
     links <- xml2::xml_attr(nodes, "href")
     links <- xml2:::url_absolute(links, res$url)
     links <- grep("^https?://", links, value = TRUE)
-    unique(sub("#.*", "", links))
+    links <- sub("#.*", "", links)
+    links <- sub("index.html$", "", links)
+    unique(sub("/$", "", links))
   }, error = function(e){character()})
 }
 
-crawl <- function(startpage, timeout = 120, slots = 100){
+crawl <- function(startpage, timeout = 60, slots = 100){
   pages <- new.env()
   pool <- curl::new_pool(total_con = 50, host_con = 6)
   on.exit(rm(pool))
@@ -49,6 +51,4 @@ crawl <- function(startpage, timeout = 120, slots = 100){
   return(pages)
 }
 
-# Crawl for 30 sec
-pages <- crawl(start = 'https://news.ycombinator.com', timeout = 30)
-names(pages)
+system.time(pages <- crawl(startpage = 'https://news.ycombinator.com/'))
