@@ -3,23 +3,22 @@ context("Multi handle")
 test_that("Max connections works", {
   skip_if_not(curl_version()$version >= as.numeric_version("7.30"),
     "libcurl does not support host_connections")
-  multi_set(host_con = 1, multiplex = FALSE)
+  multi_set(host_con = 2, multiplex = FALSE)
   for(i in 1:3){
     multi_add(new_handle(url = "https://test.opencpu.org/delay/2"))
   }
   out <- multi_run(timeout = 3.5)
-  expect_equal(out, list(success = 1, error = 0, pending = 2))
+  expect_equal(out, list(success = 2, error = 0, pending = 1))
   out <- multi_run(timeout = 2)
-  expect_equal(out, list(success = 1, error = 0, pending = 1))
-  out <- multi_run()
   expect_equal(out, list(success = 1, error = 0, pending = 0))
+  out <- multi_run()
+  expect_equal(out, list(success = 0, error = 0, pending = 0))
 })
 
 test_that("Max connections reset", {
   for(i in 1:3){
     multi_add(new_handle(url = "https://test.opencpu.org/delay/2"))
   }
-  multi_set(host_con = 6)
   out <- multi_run(timeout = 4)
   expect_equal(out, list(success = 3, error = 0, pending = 0))
 })
@@ -29,17 +28,18 @@ test_that("Timeout works", {
   h2 <- new_handle(url = "https://test.opencpu.org/post", postfields = "bla bla")
   h3 <- new_handle(url = "https://urldoesnotexist.xyz", connecttimeout = 1)
   h4 <- new_handle(url = "http://localhost:14", connecttimeout = 1)
-  multi_add(h1)
-  multi_add(h2)
-  multi_add(h3)
-  multi_add(h4)
+  m <- new_pool()
+  multi_add(h1, pool = m)
+  multi_add(h2, pool = m)
+  multi_add(h3, pool = m)
+  multi_add(h4, pool = m)
   rm(h1, h2, h3, h4)
   gc()
-  out <- multi_run(timeout = 2)
+  out <- multi_run(timeout = 2, pool = m)
   expect_equal(out, list(success = 1, error = 2, pending = 1))
-  out <- multi_run(timeout = 0)
+  out <- multi_run(timeout = 0, pool = m)
   expect_equal(out, list(success = 0, error = 0, pending = 1))
-  out <- multi_run()
+  out <- multi_run(pool = m)
   expect_equal(out, list(success = 1, error = 0, pending = 0))
 })
 
