@@ -151,8 +151,8 @@ SEXP R_multi_run(SEXP pool_ptr, SEXP timeout){
           }
         }
         UNPROTECT(3);
-        //R_gc();
       }
+      R_CheckUserInterrupt();
     }
 
     /* check for user interruptions */
