@@ -13,4 +13,4 @@ README.md
 ^R/sysdata.rda$
 ^src/*.def$
 ^appveyor\.yml$
-^revdep/
+^revdep
