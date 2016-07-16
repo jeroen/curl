@@ -1,4 +1,4 @@
-0.9.8
+1.0
  - Fix for FreeBSD
  - Simplify handle refCount system
  - Better handle locking to prevent using/modifying open handles
