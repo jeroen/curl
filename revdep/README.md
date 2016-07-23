@@ -10,18 +10,17 @@
 |language |(EN)                         |
 |collate  |en_US.UTF-8                  |
 |tz       |Europe/Amsterdam             |
-|date     |2016-07-16                   |
+|date     |2016-07-23                   |
 
 ## Packages
 
-|package   |*  |version |date       |source                       |
-|:---------|:--|:-------|:----------|:----------------------------|
-|curl      |   |1.0     |2016-07-16 |local (NA/NA@NA)             |
-|knitr     |   |1.13.6  |2016-07-16 |Github (yihui/knitr@0652b6e) |
-|rmarkdown |   |1.0     |2016-07-08 |cran (@1.0)                  |
+|package |*  |version |date       |source                       |
+|:-------|:--|:-------|:----------|:----------------------------|
+|curl    |   |1.0     |2016-07-23 |local (NA/NA@NA)             |
+|knitr   |   |1.13.7  |2016-07-23 |Github (yihui/knitr@89de8c0) |
 
 # Check results
-45 packages
+47 packages
 
 ## abbyyR (0.5.0)
 Maintainer: Gaurav Sood <gsood07@gmail.com>  
@@ -95,13 +94,13 @@ checking tests ... ERROR
 Running the tests in ‘tests/tests.R’ failed.
 Last 13 lines of output:
   > y = with(DT, eval(ll)) 
-  First 6 of 649 :[1] 931 546 577 121 398 146
-  forder decreasing argument test: seed = 1468661457  colorder = 5,1,4,2,3 
+  First 6 of 652 :[1] 733 986 206 451 879 336
+  forder decreasing argument test: seed = 1469269595  colorder = 5,4,3,2,1 
   Tests 1372.3+ not run. If required call library(GenomicRanges) first.
   Tests 1441-1444 not run. If required install the 'fr_FR.utf8' locale.
   
   Error in eval(expr, envir, enclos) : 
-    6 errors out of 4390 (lastID=1557.4, endian=little, sizeof(long double)==16) in inst/tests/tests.Rraw on Sat Jul 16 11:31:06 2016. Search tests.Rraw for test numbers: 1253.28, 1253.282, 1253.392, 1253.394, 1253.4, 1253.402.
+    18 errors out of 4390 (lastID=1557.4, endian=little, sizeof(long double)==16) in inst/tests/tests.Rraw on Sat Jul 23 12:26:41 2016. Search tests.Rraw for test numbers: 1253.224, 1253.226, 1253.228, 1253.23, 1253.264, 1253.266, 1253.312, 1253.314, 1253.316, 1253.318, 1253.36, 1253.362, 1253.364, 1253.366, 1253.456, 1253.458, 1253.46, 1253.462.
   Calls: test.data.table -> sys.source -> eval -> eval
   In addition: Warning message:
   In library(package, lib.loc = lib.loc, character.only = TRUE, logical.return = TRUE,  :
@@ -154,6 +153,11 @@ Bug reports: https://github.com/rOpenGov/federalregister/issues
 ## geoknife (1.3.0)
 Maintainer: Jordan Read <jread@usgs.gov>  
 Bug reports: https://github.com/USGS-R/geoknife/issues
+
+0 errors | 0 warnings | 0 notes
+
+## GetHFData (1.0.0)
+Maintainer: Marcelo Perlin <marceloperlin@gmail.com>
 
 0 errors | 0 warnings | 0 notes
 
@@ -308,7 +312,13 @@ Bug reports: http://github.com/lbraglia/telegram/issues
 
 0 errors | 0 warnings | 0 notes
 
-## V8 (1.0.3)
+## udapi (0.1.0)
+Maintainer: Oliver Keyes <ironholds@gmail.com>  
+Bug reports: https://github.com/Ironholds/udapi/issues
+
+0 errors | 0 warnings | 0 notes
+
+## V8 (1.1)
 Maintainer: Jeroen Ooms <jeroen.ooms@stat.ucla.edu>  
 Bug reports: https://github.com/jeroenooms/v8/issues
 
