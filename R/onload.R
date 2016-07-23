@@ -12,18 +12,7 @@
 
 .onAttach <- function(libname, pkgname){
   if (grepl("mingw", R.Version()$platform) && !file.exists(get_bundle())){
-    packageStartupMessage("No CA bundle found. SSL validation disabled.")
-
-    # CRAN does not like warnings for r-oldrel. Fix once R 3.3 is out:
-    #warning("No CA bundle found. SSL validation disabled.", call. = FALSE)
-  }
-
-  # Check for GnuTLS on Ubuntu
-  if(identical(Sys.info()[["sysname"]], "Linux")){
-    if(grepl("GnuTLS", curl_version()$ssl_version) && grepl("Debian|Ubuntu", utils::sessionInfo()$running)){
-      packageStartupMessage("This version of curl was compiled against libcurl4-gnutls-dev which is known to have https issues.
-It is recommended to install libcurl4-openssl-dev and recompile the 'curl' package in R.")
-    }
+    warning("No CA bundle found. SSL validation disabled.", call. = FALSE)
   }
 }
 
