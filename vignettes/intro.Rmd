@@ -83,7 +83,8 @@ open(con)
 ```
 
 ```{r, echo = FALSE, message = FALSE, warning=FALSE}
-invisible(gc())
+close(con)
+rm(con)
 ```
 
 ## Handles
@@ -128,9 +129,6 @@ curl_download("http://httpbin.org/post", destfile = tmp, handle = h)
 cat(readLines(tmp), sep = "\n")
 ```
 
-```{r, echo = FALSE, message = FALSE, warning=FALSE}
-invisible(gc())
-```
 
 ### Cookies
 
