@@ -144,15 +144,15 @@ static int rcurl_fgetc(Rconnection con) {
 void cleanup(Rconnection con) {
   //Rprintf("Destroying connection.\n");
   request *req = (request*) con->private;
-
-  /* delayed finalizer cleanup */
   reference *ref = req->ref;
-  (ref->refCount)--;
-  clean_handle(ref);
 
   /* free thee handle connection */
   curl_multi_remove_handle(req->manager, req->handle);
   ref->locked = 0;
+
+  /* delayed finalizer cleanup */
+  (ref->refCount)--;
+  clean_handle(ref);
 
   /* clean up connection */
   curl_multi_cleanup(req->manager);
