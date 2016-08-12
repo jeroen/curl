@@ -92,7 +92,7 @@ SEXP R_new_handle(){
   ref->handle = curl_easy_init();
   set_handle_defaults(ref);
   SEXP ptr = PROTECT(R_MakeExternalPtr(ref, R_NilValue, R_NilValue));
-  R_RegisterCFinalizerEx(ptr, fin_handle, 1);
+  R_RegisterCFinalizerEx(ptr, fin_handle, TRUE);
   setAttrib(ptr, R_ClassSymbol, mkString("curl_handle"));
   UNPROTECT(1);
   return ptr;
