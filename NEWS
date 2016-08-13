@@ -1,5 +1,5 @@
 1.2
- - Fix for getaddrinfo GNU extension on some obscure platforms
+ - Fix for getaddrinfo GNU extension on some unix platforms
 
 1.1
  - Fix ASAN warning in curl.c (reference after free)
