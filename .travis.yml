@@ -1,15 +1,44 @@
 language: r
-sudo: false
 cache: packages
+
+# Note: http test servers are flaky and we want to minimze false positives
+# so we skip examples and vignettes (but not unit tests) on OS X.
+
+matrix:
+  include:
+    - os: linux
+      dist: precise
+      sudo: false
+      r_build_args: '--no-build-vignettes'
+      r_check_args: '--ignore-vignettes --no-examples'
+    - os: linux
+      dist: trusty
+      sudo: required
+      env: R_CODECOV=true
+    - os: osx
+      osx_image: xcode8
+      before_install:
+        - brew install curl
+        - brew link --force curl
+      latex: false
+      r_build_args: '--no-build-vignettes'
+      r_check_args: '--ignore-vignettes --no-examples'
+    - os: osx
+      osx_image: xcode7.3
+      latex: false
+      r_build_args: '--no-build-vignettes'
+      r_check_args: '--ignore-vignettes --no-examples'
+    - os: osx
+      osx_image: beta-xcode6.1
+      disable_homebrew: true
 
 addons:
   apt:
     packages:
-      - libcurl4-openssl-dev
+    - libcurl4-openssl-dev
 
 r_github_packages:
   - jimhester/covr
-  - hadley/httr
 
 warnings_are_errors: true
 #r_check_revdep: true
@@ -20,4 +49,4 @@ notifications:
     on_failure: change
 
 after_success:
-  - Rscript -e 'covr::codecov(type = "all")'
+  - if [[ "${R_CODECOV}" ]]; then R -e 'covr::codecov()'; fi
