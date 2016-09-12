@@ -133,3 +133,4 @@ install.packages("https://github.com/jeroenooms/curl/archive/master.tar.gz", rep
 ```
 
 Check again `curl_version()` to see if HTTP/2 is enabled now.
+
