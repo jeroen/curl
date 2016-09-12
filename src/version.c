@@ -17,9 +17,9 @@ SEXP R_curl_version() {
   SET_VECTOR_ELT(list, 5, make_string(data->host));
 
   /* create vector of protocols */
+  int len = 0;
   const char *const * temp = data->protocols;
-  while(*temp) temp++;
-  int len = temp - data->protocols;
+  while(*temp++) len++;
   SEXP protocols = PROTECT(allocVector(STRSXP, len));
   for (int i = 0; i < len; i++){
     SET_STRING_ELT(protocols, i, mkChar(*(data->protocols + i)));

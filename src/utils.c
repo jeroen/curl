@@ -40,6 +40,11 @@ void assert(CURLcode res){
     error(curl_easy_strerror(res));
 }
 
+void massert(CURLMcode res){
+  if(res != CURLM_OK)
+    error(curl_multi_strerror(res));
+}
+
 void stop_for_status(CURL *http_handle){
   long status = 0;
   assert(curl_easy_getinfo(http_handle, CURLINFO_RESPONSE_CODE, &status));

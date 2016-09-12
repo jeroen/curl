@@ -106,3 +106,30 @@ brew link --force curl
 ```
 
 Note that on OS-X you **must** recompile the R package from source after force-linking curl, otherwise you get a version conflict with the system version of libcurl.
+
+## Development version
+
+Because `devtools` and `httr` depend on `curl`, installing with `install_github` does not work well. The easiest way to install the development version of `curl` is a clean R session:
+
+```r
+install.packages("https://github.com/jeroenooms/curl/archive/master.tar.gz", repos = NULL)
+```
+
+Of course windows users need [Rtools](https://cran.r-project.org/bin/windows/Rtools/) to compile from source.
+
+## Enable HTTP/2
+
+To use HTTP/2 the `libcurl` library has to be built `--with-nghttp2` which is usually not the default. Use `curl_version()` in R to check if it is enabled. To enable it on OSX use:
+
+```
+brew install curl --with-nghttp2
+brew link curl --force
+```
+
+And then reinstall the `curl` package from source:
+
+```r
+install.packages("https://github.com/jeroenooms/curl/archive/master.tar.gz", repos = NULL)
+```
+
+Check again `curl_version()` to see if HTTP/2 is enabled now.
