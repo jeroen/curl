@@ -10,8 +10,9 @@ typedef struct {
 } memory;
 
 typedef struct {
+  SEXP multiptr;
+  SEXP handles;
   CURLM *m;
-  struct refnode *list;
 } multiref;
 
 typedef struct {
@@ -33,12 +34,6 @@ typedef struct {
   int locked;
 } reference;
 
-struct refnode {
-  struct refnode *prev;
-  struct refnode *next;
-  reference *ref;
-};
-
 CURL* get_handle(SEXP ptr);
 reference* get_ref(SEXP ptr);
 void assert(CURLcode res);
@@ -57,7 +52,7 @@ CURLcode curl_perform_with_interrupt(CURL *handle);
 int pending_interrupt();
 SEXP make_handle_response(reference *ref);
 
-/* refnode.c */
-struct refnode *refnode_init();
-struct refnode *refnode_add(struct refnode *head, reference *ptr);
-reference * refnode_remove(reference * ref);
+/* reflist.c */
+SEXP reflist_init();
+SEXP reflist_add(SEXP x, SEXP target);
+SEXP reflist_remove(SEXP x, SEXP target);

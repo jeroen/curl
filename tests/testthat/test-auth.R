@@ -23,3 +23,8 @@ test_that("Auth username and password", {
   expect_equal(curl_fetch_memory("http://httpbin.org/hidden-basic-auth/jerry/secret", handle = h)$status, 200)
   expect_equal(curl_fetch_memory("http://httpbin.org/digest-auth/auth/jerry/secret", handle = h)$status, 200)
 })
+
+test_that("GC works", {
+  gc()
+  expect_equal(total_handles(), 0L)
+})

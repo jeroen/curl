@@ -92,7 +92,6 @@ test_that("Downloading to a file", {
 
   curl_download("http://httpbin.org/cookies", tmp, handle = h)
   expect_equal(jsonlite::fromJSON(tmp)$cookies$foo, "123")
-  suppressWarnings(gc())
 })
 
 test_that("handle_setopt validates options", {
@@ -104,5 +103,10 @@ test_that("handle_setopt validates options", {
     "Unknown options: badopt1, badopt2")
   expect_identical(class(handle_setopt(h, username="foo")),
     "curl_handle") ## i.e. that's a valid option, so it succeeds
-  suppressWarnings(gc())
+})
+
+rm(h)
+test_that("GC works", {
+  gc()
+  expect_equal(total_handles(), 0L)
 })

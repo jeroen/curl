@@ -16,9 +16,10 @@ SEXP R_get_bundle(){
   return mkString(CA_BUNDLE);
 }
 
+int total_handles = 0;
+
 void clean_handle(reference *ref){
   if(ref->refCount == 0){
-    //Rprintf("cleaning easy handle\n");
     if(ref->headers)
       curl_slist_free_all(ref->headers);
     if(ref->form)
@@ -28,15 +29,21 @@ void clean_handle(reference *ref){
     if(ref->resheaders.buf)
       free(ref->resheaders.buf);
     free(ref);
+    total_handles--;
   }
 }
 
 void fin_handle(SEXP ptr){
-  //Rprintf("running finalizer...\n");
   reference *ref = (reference*) R_ExternalPtrAddr(ptr);
+
+  //this kind of strange but the multi finalizer needs the ptr value
+  //if it is still pending
   ref->refCount--;
+  if(ref->refCount == 0)
+    R_ClearExternalPtr(ptr);
+
+  //free stuff
   clean_handle(ref);
-  R_ClearExternalPtr(ptr);
 }
 
 /* These are defaulst that we always want to set */
@@ -55,7 +62,6 @@ void set_handle_defaults(reference *ref){
   if(CA_BUNDLE != NULL && strlen(CA_BUNDLE)){
     /* on windows a cert bundle is included with R version 3.2.0 */
     curl_easy_setopt(handle, CURLOPT_CAINFO, CA_BUNDLE);
-    //Rprintf("Using bundle %s\n", CA_BUNDLE);
   } else {
     /* disable cert validation for older versions of R */
     curl_easy_setopt(handle, CURLOPT_SSL_VERIFYHOST, 0L);
@@ -89,6 +95,7 @@ SEXP R_new_handle(){
   reference *ref = calloc(1, sizeof(reference));
   ref->refCount = 1;
   ref->handle = curl_easy_init();
+  total_handles++;
   set_handle_defaults(ref);
   SEXP ptr = PROTECT(R_MakeExternalPtr(ref, R_NilValue, R_NilValue));
   R_RegisterCFinalizerEx(ptr, fin_handle, TRUE);
@@ -273,7 +280,8 @@ SEXP make_filetime(CURL *handle){
 
 SEXP make_rawvec(unsigned char *ptr, size_t size){
   SEXP out = PROTECT(allocVector(RAWSXP, size));
-  memcpy(RAW(out), ptr, size);
+  if(size > 0)
+    memcpy(RAW(out), ptr, size);
   UNPROTECT(1);
   return out;
 }
@@ -312,4 +320,8 @@ SEXP R_get_handle_response(SEXP ptr){
   /* get the handle */
   reference *ref = get_ref(ptr);
   return make_handle_response(ref);
+}
+
+SEXP R_total_handles(){
+  return(ScalarInteger(total_handles));
 }

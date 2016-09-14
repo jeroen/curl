@@ -164,3 +164,9 @@ print.curl_handle <- function(x, ...){
   if(!nchar(url)) url <- "empty"
   cat(sprintf("<curl handle> (%s)\n", url))
 }
+
+# Only for testing memory leaks
+#' @useDynLib curl R_total_handles
+total_handles <- function(){
+  .Call(R_total_handles)
+}

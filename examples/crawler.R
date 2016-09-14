@@ -21,7 +21,7 @@ get_links <- function(res){
 crawl <- function(startpage, timeout = 60, slots = 100){
   pages <- new.env()
   pool <- curl::new_pool(total_con = 50, host_con = 6)
-  on.exit(rm(pool))
+  #on.exit(rm(pool))
 
   crawl_page <- function(url){
     h <- curl::new_handle(maxfilesize = 1e6)
@@ -48,7 +48,7 @@ crawl <- function(startpage, timeout = 60, slots = 100){
   }
   crawl_page(startpage)
   curl::multi_run(pool = pool, timeout = timeout)
-  return(pages)
+  as.list(pages)
 }
 
 system.time(pages <- crawl(startpage = 'https://news.ycombinator.com/'))

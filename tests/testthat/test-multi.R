@@ -68,3 +68,10 @@ test_that("Multi cancel works", {
   expect_is(multi_add(h1), "curl_handle")
   expect_equal(multi_run(), list(success = 1, error = 0, pending = 0))
 })
+
+
+test_that("GC works", {
+  gc()
+  expect_equal(total_handles(), 0L)
+})
+

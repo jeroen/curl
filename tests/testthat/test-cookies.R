@@ -38,3 +38,9 @@ test_that("Overwrite a cookie", {
   expect_equal(bar$value, "999")
   expect_true(all(cookies$expiration == Inf))
 })
+
+rm(h)
+test_that("GC works", {
+  gc()
+  expect_equal(total_handles(), 0L)
+})

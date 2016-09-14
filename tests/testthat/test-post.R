@@ -67,3 +67,10 @@ test_that("Multipart form post", {
   expect_equal(sort(names(res$files)), c("description", "logo"))
   expect_equal(sort(names(res$form)), c("bar", "foo"))
 })
+
+rm(h)
+test_that("GC works", {
+  gc()
+  expect_equal(total_handles(), 0L)
+})
+
