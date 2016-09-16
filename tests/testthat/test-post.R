@@ -58,7 +58,7 @@ test_that("Multipart form post", {
     foo = "blabla",
     bar = charToRaw("boeboe"),
     description = form_file(system.file("DESCRIPTION")),
-    logo = form_file(file.path(Sys.getenv("R_DOC_DIR"), "html/logo.jpg"), "image/jpeg")
+    logo = form_file(R.home('doc/html/logo.jpg'), "image/jpeg")
   )
   req <- curl_fetch_memory("http://httpbin.org/post", handle = h)
   res <- jsonlite::fromJSON(rawToChar(req$content))
