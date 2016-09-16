@@ -195,6 +195,10 @@ con <- curl("http://httpbin.org/post", handle = h)
 cat(readLines(con), sep = "\n")
 ```
 
+```{r, echo = FALSE, message = FALSE, warning=FALSE}
+close(con)
+```
+
 Or we can use `curl_download` to write the response to disk:
 
 ```{r}
