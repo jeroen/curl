@@ -75,6 +75,27 @@ test_that("Multi cancel works", {
   expect_length(multi_list(), 0)
 })
 
+test_that("Errors in Callbacks", {
+  pool <- new_pool()
+  cb <- function(req){
+    stop("testerror in callback!")
+  }
+  curl_fetch_multi('https://httpbin.org/get', pool = pool, done = cb)
+  curl_fetch_multi('https://httpbin.org/status/404', pool = pool, done = cb)
+  curl_fetch_multi('https://urldoesnotexist.xyz', pool = pool, fail = cb)
+  gc()
+  expect_equal(total_handles(), 3)
+  expect_error(multi_run(pool = pool), "testerror")
+  gc()
+  expect_equal(total_handles(), 2)
+  expect_error(multi_run(pool = pool), "testerror")
+  gc()
+  expect_equal(total_handles(), 1)
+  expect_error(multi_run(pool = pool), "testerror")
+  gc()
+  expect_equal(total_handles(), 0)
+  expect_equal(multi_run(pool = pool), list(success = 0, error = 0, pending = 0))
+})
 
 test_that("GC works", {
   gc()
