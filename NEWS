@@ -1,6 +1,7 @@
 2.0
  - New multi interface for concurrent async requests!
- - Export handle_data() to get current handle state
+ - Updated vignette with simple multi examples
+ - Export handle_data() to get handle state
 
 1.2
  - Fix for getaddrinfo GNU extension on some unix platforms
