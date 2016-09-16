@@ -203,6 +203,17 @@ curl_download("http://httpbin.org/post", destfile = tmp, handle = h)
 cat(readLines(tmp), sep = "\n")
 ```
 
+Or perform the same request with a multi pool:
+
+```{r}
+curl_fetch_multi("http://httpbin.org/post", handle = h, done = function(res){
+  cat("Request complete! Response content:\n")
+  cat(rawToChar(res$content))
+})
+
+# Perform the request
+out <- multi_run()
+```
 
 ### Reading cookies
 
