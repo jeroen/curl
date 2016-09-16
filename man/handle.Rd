@@ -2,6 +2,7 @@
 % Please edit documentation in R/handle.R
 \name{handle}
 \alias{handle}
+\alias{handle_data}
 \alias{handle_reset}
 \alias{handle_setform}
 \alias{handle_setheaders}
@@ -18,6 +19,8 @@ handle_setheaders(handle, ..., .list = list())
 handle_setform(handle, ..., .list = list())
 
 handle_reset(handle)
+
+handle_data(handle)
 }
 \arguments{
 \item{...}{named options / headers to be set in the handle.

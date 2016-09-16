@@ -153,14 +153,18 @@ handle_cookies <- function(handle){
 
 }
 
+#' @export
+#' @rdname handle
 #' @useDynLib curl R_get_handle_response
-handle_response_data <- function(handle){
-  .Call(R_get_handle_response, handle)
+handle_data <- function(handle){
+  out <- .Call(R_get_handle_response, handle)
+  out$content = NULL
+  out
 }
 
 #' @export
 print.curl_handle <- function(x, ...){
-  url <- handle_response_data(x)$url
+  url <- handle_data(x)$url
   if(!nchar(url)) url <- "empty"
   cat(sprintf("<curl handle> (%s)\n", url))
 }

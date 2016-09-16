@@ -94,7 +94,7 @@ multi_list <- function(pool = NULL){
   if(is.null(pool))
     pool <- multi_default()
   stopifnot(inherits(pool, "curl_multi"))
-  .Call(R_multi_list, pool)
+  as.list(.Call(R_multi_list, pool))
 }
 
 #' @export

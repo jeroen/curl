@@ -60,7 +60,7 @@
 curl_fetch_memory <- function(url, handle = new_handle()){
   nonblocking <- isTRUE(getOption("curl_interrupt", interactive()))
   output <- .Call(R_curl_fetch_memory, url, handle, nonblocking)
-  res <- handle_response_data(handle)
+  res <- handle_data(handle)
   res$content <- output
   res
 }
@@ -73,7 +73,7 @@ curl_fetch_disk <- function(url, path, handle = new_handle()){
   nonblocking <- isTRUE(getOption("curl_interrupt", interactive()))
   path <- normalizePath(path, mustWork = FALSE)
   output <- .Call(R_curl_fetch_disk, url, handle, path, "wb", nonblocking)
-  res <- handle_response_data(handle)
+  res <- handle_data(handle)
   res$content <- output
   res
 }
@@ -89,7 +89,7 @@ curl_fetch_stream <- function(url, fun, handle = new_handle()){
   while(length(bin <- readBin(con, raw(), 8192L))){
     fun(bin)
   }
-  handle_response_data(handle)
+  handle_data(handle)
 }
 
 #' @export
