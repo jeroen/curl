@@ -2,11 +2,17 @@
 title: "The curl package: a modern R interface to libcurl"
 date: "`r Sys.Date()`"
 output:
-  html_document
+  html_document:
+    fig_caption: false
+    toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: false
+    toc_depth: 3
 vignette: >
   %\VignetteIndexEntry{The curl package: a modern R interface to libcurl}
   %\VignetteEngine{knitr::rmarkdown}
-  \usepackage[utf8]{inputenc}
+  %\VignetteEncoding{UTF-8}
 ---
 
 
@@ -17,9 +23,20 @@ library(curl)
 
 The curl package provides bindings to the [libcurl](http://curl.haxx.se/libcurl/) C library for R. The package supports retrieving data in-memory, downloading to disk, or streaming using the [R "connection" interface](https://stat.ethz.ch/R-manual/R-devel/library/base/html/connections.html). Some knowledge of curl is recommended to use this package. For a more user-friendly HTTP client, have a look at the  [httr](http://cran.r-project.org/web/packages/httr/vignettes/quickstart.html) package which builds on curl with HTTP specific tools and logic.
 
-### Download in memory
+## Request interfaces
 
-The curl package implements three ways to retrieve data from a URL. The `curl_fetch_memory` function is a synchronous interface which returns a list with contents of the server response.
+The curl package implements several interfaces to retrieve data from a URL:
+
+ - `curl_fetch_memory()`  saves response in memory
+ - `curl_download()` or `curl_fetch_disk()`  writes response to disk
+ - `curl()` or `curl_fetch_stream()` streams response data
+ - `curl_fetch_multi()` (Advanced) process responses via callback functions
+ 
+Each interface performs the same HTTP request, they only differ in how response data is processed.
+
+### Getting in memory
+
+The `curl_fetch_memory` function is a blocking interface which waits for the request to complete and returns a list with all content (data, headers, status, timings) of the server response.
 
 
 ```{r}
@@ -29,9 +46,9 @@ parse_headers(req$headers)
 cat(rawToChar(req$content))
 ```
 
-The `curl_fetch_memory` interface is the easiest interface and most powerful for buidling API clients. However because it is fully in-memory, it is not suitable for downloading really large files. If you are expecting 100G of data, you probably need one of the other interfaces.
+The `curl_fetch_memory` interface is the easiest interface and most powerful for buidling API clients. However it is not suitable for downloading really large files because it is fully in-memory. If you are expecting 100G of data, you probably need one of the other interfaces.
 
-### Download to disk
+### Downloading to disk
 
 The second method is `curl_download`, which has been designed as a drop-in replacement for `download.file` in r-base. It writes the response straight to disk, which is useful for downloading (large) files.
 
@@ -41,7 +58,7 @@ curl_download("https://httpbin.org/get", tmp)
 cat(readLines(tmp), sep = "\n")
 ```
 
-### Streaming
+### Streaming data
 
 The most flexible interface is the `curl` function, which has been designed as a drop-in replacement for base `url`. It will create a so-called connection object, which allows for incremental (asynchronous) reading of the response.
 
@@ -65,20 +82,54 @@ cat(out, sep = "\n")
 
 The example shows how to use `readLines` on an opened connection to read `n` lines at a time. Similarly `readBin` is used to read `n` bytes at a time for stream parsing binary data.
 
-### Status codes
+### Non-blocking requests
 
-It is important to note that `curl_fetch_memory` will **not** automatically raise an error if the request was completed but returned a non-200 status code. When using `curl_fetch_memory` you need to implement the application logic yourself.
+As of `curl 2.0` the package provides a non-blocking interface which can perform multiple simultaneous requests. The `curl_fetch_multi` adds a request to a pool and returns immediately; it does not actually perform the request. 
 
 ```{r}
-req <- curl_fetch_memory("https://httpbin.org/status/418")
-print(req$status_code)
+pool <- new_pool()
+cb <- function(req){cat("done:", req$url, ": HTTP:", req$status, "\n")}
+curl_fetch_multi('https://www.google.com', done = cb, pool = pool)
+curl_fetch_multi('https://cloud.r-project.org', done = cb, pool = pool)
+curl_fetch_multi('https://httpbin.org/blabla', done = cb, pool = pool)
 ```
 
-The `curl` and `curl_download` functions on the other hand will automatically raise an error if the HTTP response was non successful, as would the base functions `url` and `download.file` do.
+When we call `multi_run()`, all scheduled requests are performed concurrently. The callback functions get triggered when the request completes.
+
+```{r}
+# This actually performs requests:
+out <- multi_run(pool = pool)
+print(out)
+```
+
+The system allows for running many concurrent non-blocking requests. However it is quite complex and requires careful specification of handler functions.
+
+## Exception handling
+
+When performing a HTTP requests we can encounter two sorts of errors:
+
+ 1. Connection failure: network down, host not found, invalid SSL certficate, etc
+ 2. HTTP non-success status: 401 (DENIED), 404 (NOT FOUND), 503 (SERVER PROBLEM), etc
+
+The first type of errors (connection failures) will always raise an error in R for each interface. However if the requests succeeds and the server returns a non-success HTTP status code, only `curl()` and `curl_download()` will raise an error. Let's dive a little deeper into this.
+
+### Error automatically
+
+The `curl` and `curl_download` functions are safest to use because they automatically raise an error if the request was completed but the server returned a non-success (400 or higher) HTTP status. This mimics behavior of base functions `url` and `download.file`. Therefore we can safely write code like this:
+
+```{r}
+# This is OK
+curl_download('https://cran.r-project.org/CRAN_mirrors.csv', 'mirrors.csv')
+mirros <- read.csv('mirrors.csv')
+unlink('mirrors.csv')
+```
+
+If the HTTP request was unsuccesful, R will not continue:
 
 ```{r, error=TRUE, purl = FALSE}
-curl_download("https://httpbin.org/status/418", tempfile())
-con <- curl("https://httpbin.org/status/418")
+# Oops! A typo in the URL!
+curl_download('https://cran.r-project.org/CRAN_mirrorZ.csv', 'mirrors.csv')
+con <- curl('https://cran.r-project.org/CRAN_mirrorZ.csv')
 open(con)
 ```
 
@@ -87,7 +138,30 @@ close(con)
 rm(con)
 ```
 
-## Handles
+
+### Check manually
+
+When using any of the `curl_fetch_*` functions it is important to realize that these do **not** raise an error if the request was completed but returned a non-200 status code. When using `curl_fetch_memory` or `curl_fetch_disk` you need to implement such application logic yourself and check if the response was successful.
+
+```{r}
+req <- curl_fetch_memory('https://cran.r-project.org/CRAN_mirrors.csv')
+print(req$status_code)
+```
+
+Same for downloading to disk. If you do not check your status, you might have downloaded an error page!
+
+```{r}
+# Oops a typo!
+req <- curl_fetch_disk('https://cran.r-project.org/CRAN_mirrorZ.csv', 'mirrors.csv')
+print(req$status_code)
+
+# This is not the CSV file we were expecting!
+head(readLines('mirrors.csv'))
+unlink('mirrors.csv')
+```
+
+
+## Customizing requests
 
 By default libcurl uses HTTP GET to issue a request to an HTTP url. To send a customized request, we first need to create and configure a curl handle object that is passed to the specific download interface.  
 
@@ -130,7 +204,7 @@ cat(readLines(tmp), sep = "\n")
 ```
 
 
-### Cookies
+### Reading cookies
 
 Curl handles automatically keep track of cookies set by the server. At any given point we can use `handle_cookies` to see a list of current cookies in the handle.
 
@@ -151,7 +225,7 @@ handle_cookies(h)
 The `handle_cookies` function returns a data frame with 7 columns as specified in the [netscape cookie file format](http://www.cookiecentral.com/faq/#3.5).
 
 
-### On re-using handles
+### Re-using handles
 
 As we have already seen, curl allows for reusing a single handle for multiple requests. However it is not always a good idea to do so. The performance overhead of creating and configuring a new handle object is usually negligible. The safest way to issue mutiple requests, either to a single server or multiple servers is by using a separate handle for each request. 
 
@@ -178,7 +252,7 @@ handle_reset(h)
 
 The `handle_reset` function will reset all curl options and request headers to the default values. It will **not** erease cookies and it will still keep alive the connections. Therefore it is good practice to call `handle_reset` after performing a request if you want to reuse the handle for a subsequent request. Still it is always safer to create a new fresh handle when possible, rather than recycling old ones.
 
-### Forms
+### Posting forms
 
 The `handle_setform` function is used to perform a `multipart/form-data` HTTP POST request (a.k.a. posting a form). Values can be either strings, raw vectors (for binary data) or files. 
 

@@ -99,5 +99,5 @@ curl_fetch_stream <- function(url, fun, handle = new_handle()){
 curl_fetch_multi <- function(url, done = NULL, fail = NULL, pool = NULL, handle = new_handle()){
   handle_setopt(handle, url = url)
   multi_add(handle = handle, done = done, fail = fail, pool = pool)
-  TRUE
+  invisible(handle)
 }
