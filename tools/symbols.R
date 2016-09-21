@@ -2,15 +2,21 @@
 # Therefore you should only update the symbol table using the latest version of libcurl.
 # On Mac: 'brew install curl' will install to /usr/local/opt/curl
 
+blacklist <- c("CURL_DID_MEMORY_FUNC_TYPEDEFS", "CURL_STRICTER")
+
 # Function to read a symbol
 library(inline)
 getsymbol <- function(name){
-  cat("Checking:", name, "\n")
-  cfunction(
+  if(name %in% blacklist) return(NA_integer_)
+  fun = cfunction(
     cppargs="-I/usr/local/opt/curl/include",
     includes = '#include <curl/curl.h>',
     body = paste("return ScalarInteger((int)", name, ");")
-  )()
+  )
+  val = fun()
+  rm(fun); gc();
+  cat("Found:", name, "=", val, "\n")
+  return(val)
 }
 
 # The symbols-in-versions file is included with libcurl
@@ -24,7 +30,8 @@ avail <- is.na(symbols$removed)
 
 # Lookup all symbol values from curl.h (takes a while)
 symbols$value <- NA_integer_;
-symbols$value[avail] <- vapply(symbols$name[avail], getsymbol, integer(1))
+available_symbols <- symbols$name[avail]
+symbols$value[avail] <- vapply(available_symbols, getsymbol, integer(1))
 
 # Compute type for options
 type_name <- c("integer", "string", "function", "number")
@@ -39,4 +46,5 @@ symbols$type[!option] <- NA
 
 # Save as lazy data
 curl_symbols <- symbols[order(symbols$name), ]
+row.names(curl_symbols) = NULL
 devtools::use_data(curl_symbols, overwrite = TRUE)
