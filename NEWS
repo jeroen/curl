@@ -1,3 +1,6 @@
+2.1
+ - Fix a unit test that would fail on fast servers
+
 2.0
  - New multi interface for concurrent async requests!
  - Updated vignette with simple multi examples

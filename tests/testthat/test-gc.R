@@ -50,8 +50,8 @@ test3 <- function(){
 
 test_that("Clean up hanging requests", {
   pool <- test3()
-  multi_run(0, pool = pool)
   expect_equal(total_handles(), 2L)
+  multi_run(0, pool = pool)
   rm(pool)
   gc()
   expect_equal(total_handles(), 0L)
