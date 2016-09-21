@@ -1,4 +1,6 @@
 2.1
+ - If libcurl >= 7.47 and was built --with-nghttp2, automatically enable HTTP/2
+   on HTTPS connections (matches behavior of 'curl' cmd util)
  - Upgrade to libcurl 7.50.3 (--with-nghttp2) on Windows (Adds HTTP/2 support)
  - Fix a unit test that would fail on fast servers
 

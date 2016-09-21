@@ -5,6 +5,10 @@
 #define MAX_PATH 1024
 #endif
 
+#if LIBCURL_VERSION_MAJOR > 7 || (LIBCURL_VERSION_MAJOR == 7 && LIBCURL_VERSION_MINOR >= 47)
+#define HAS_HTTP_VERSION_2TLS 1
+#endif
+
 char CA_BUNDLE[MAX_PATH];
 
 SEXP R_set_bundle(SEXP path){
@@ -89,6 +93,12 @@ void set_handle_defaults(reference *ref){
   /* allow all authentication methods */
   assert(curl_easy_setopt(handle, CURLOPT_HTTPAUTH, CURLAUTH_ANY));
   assert(curl_easy_setopt(handle, CURLOPT_UNRESTRICTED_AUTH, 1L));
+
+  /* enables HTTP2 on HTTPS (match behavior of curl cmd util) */
+#if defined(CURL_VERSION_HTTP2) && defined(HAS_HTTP_VERSION_2TLS)
+  if(curl_version_info(CURLVERSION_NOW)->features & CURL_VERSION_HTTP2)
+    assert(curl_easy_setopt(handle, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2TLS));
+#endif
 }
 
 SEXP R_new_handle(){
