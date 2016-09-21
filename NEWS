@@ -1,4 +1,5 @@
 2.1
+ - Upgrade to libcurl 7.50.3 (--with-nghttp2) on Windows (Adds HTTP/2 support)
  - Fix a unit test that would fail on fast servers
 
 2.0
