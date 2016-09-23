@@ -21,37 +21,39 @@ get_links <- function(res){
   }, error = function(e){character()})
 }
 
-crawl <- function(startpage, timeout = 60, slots = 100){
+crawl <- function(root, timeout = 300){
   pages <- new.env()
-  pool <- curl::new_pool(total_con = 50, host_con = 6)
-  #on.exit(rm(pool))
+  pool <- curl::new_pool(total_con = 100, host_con = 100)
 
   crawl_page <- function(url){
-    h <- curl::new_handle(maxfilesize = 1e6)
     pages[[url]] <- NA
-    curl::curl_fetch_multi(url, handle = h, pool = pool, done = function(res){
-      if(res$status == 200){
-        links = get_links(res)
-        cat(sprintf("Done (%d): %s (%d links)\n", length(pages), url, length(links)))
-        pages[[url]] = links
-        pending <- length(curl::multi_list(pool))
-        if(pending < slots){
-          links <- sample(links, min(5, length(links), slots - pending))
+    h <- curl::new_handle(failonerror = TRUE, nobody = TRUE)
+    curl_fetch_multi(url, handle = h, pool = pool, done = function(res){
+      headers <- curl::parse_headers(res$headers)
+      ctype <- headers[grepl("^content-type", headers, ignore.case = TRUE)]
+      cat(sprintf("Found a %s file at: %s\n", ctype, url))
+      if(isTRUE(grepl("text/html", ctype))){
+        handle_setopt(h, nobody = FALSE, maxfilesize = 1e6)
+        curl::curl_fetch_multi(url, handle = h, pool = pool, done = function(res){
+          links = get_links(res)
+          cat(sprintf("Done (%d): %s (%d links)\n", length(pages), url, length(links)))
+          links <- grep(paste0("^", root), links, value = TRUE)
+          pages[[url]] <- links
           lapply(links, function(href){
             if(is.null(pages[[href]]))
               crawl_page(href)
           })
-        }
-      } else {
-        cat(sprintf("Skipping page: %s (http %d)\n", url, res$status))
+        }, fail = function(errmsg){
+          cat(sprintf("Fail: %s (%s)\n", url, errmsg))
+        })
       }
     }, fail = function(errmsg){
       cat(sprintf("Fail: %s (%s)\n", url, errmsg))
     })
   }
-  crawl_page(startpage)
+  crawl_page(root)
   curl::multi_run(pool = pool, timeout = timeout)
   as.list(pages)
 }
 
-system.time(pages <- crawl(startpage = 'https://news.ycombinator.com/', 300))
+sitemap <- crawl(root = 'https://cloud.r-project.org')
