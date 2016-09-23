@@ -1,3 +1,16 @@
+### R sitemap example, Jeroen Ooms, 2016
+#
+# This code demonstrates the new multi-request features in curl 2.0. It creates
+# an index of all files on a web server with a given prefix by recursively following
+# hyperlinks that appear in HTML pages.
+#
+# For each URL, we first perform a HTTP HEAD (via curlopt_nobody) to retrieve
+# the content-type header of the URL. If the server returns 'text/html', then we
+# perform a subsequent request which downloads the page to look for hyperlinks.
+#
+# WARNING: Don't target small servers, you might accidentally take them down and
+# get banned for DOS. Hits 300req/sec on my home wifi.
+
 library(curl)
 library(xml2)
 
