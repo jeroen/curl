@@ -21,7 +21,7 @@ knitr::opts_chunk$set(comment = "")
 library(curl)
 ```
 
-The curl package provides bindings to the [libcurl](http://curl.haxx.se/libcurl/) C library for R. The package supports retrieving data in-memory, downloading to disk, or streaming using the [R "connection" interface](https://stat.ethz.ch/R-manual/R-devel/library/base/html/connections.html). Some knowledge of curl is recommended to use this package. For a more user-friendly HTTP client, have a look at the  [httr](https://cran.r-project.org/web/packages/httr/vignettes/quickstart.html) package which builds on curl with HTTP specific tools and logic.
+The curl package provides bindings to the [libcurl](http://curl.haxx.se/libcurl/) C library for R. The package supports retrieving data in-memory, downloading to disk, or streaming using the [R "connection" interface](https://stat.ethz.ch/R-manual/R-devel/library/base/html/connections.html). Some knowledge of curl is recommended to use this package. For a more user-friendly HTTP client, have a look at the  [httr](https://cran.r-project.org/package=httr/vignettes/quickstart.html) package which builds on curl with HTTP specific tools and logic.
 
 ## Request interfaces
 
