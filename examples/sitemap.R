@@ -76,5 +76,8 @@ crawl <- function(root, timeout = 300){
   as.list(pages)
 }
 
+# Create a sitemap
 sitemap <- crawl(root = 'https://cloud.r-project.org/web/packages', timeout = Inf)
-names(sitemap)
+
+# Show me all PDF files!
+grep("\\.pdf$", names(sitemap), value = TRUE)
