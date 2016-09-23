@@ -9,7 +9,7 @@
 # perform a subsequent request which downloads the page to look for hyperlinks.
 #
 # WARNING: Don't target small servers, you might accidentally take them down and
-# get banned for DOS. Hits 300req/sec on my home wifi.
+# get banned for DOS. Hits up to 300req/sec on my home wifi.
 
 library(curl)
 library(xml2)
@@ -77,3 +77,4 @@ crawl <- function(root, timeout = 300){
 }
 
 sitemap <- crawl(root = 'https://cloud.r-project.org/web/packages', timeout = Inf)
+names(sitemap)
