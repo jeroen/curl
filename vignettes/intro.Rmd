@@ -106,7 +106,7 @@ The system allows for running many concurrent non-blocking requests. However it 
 
 ## Exception handling
 
-When performing a HTTP requests we can encounter two sorts of errors:
+A HTTP requests can encounter two types of errors:
 
  1. Connection failure: network down, host not found, invalid SSL certficate, etc
  2. HTTP non-success status: 401 (DENIED), 404 (NOT FOUND), 503 (SERVER PROBLEM), etc
@@ -160,6 +160,12 @@ head(readLines('mirrors.csv'))
 unlink('mirrors.csv')
 ```
 
+If you *do* want the `curl_fetch_*` functions to automatically raise an error, you should set the [`FAILONERROR`](https://curl.haxx.se/libcurl/c/CURLOPT_FAILONERROR.html) option to `TRUE` in the handle of the request.
+
+```{r, error=TRUE, purl = FALSE}
+h <- new_handle(failonerror = TRUE)
+curl_fetch_memory('https://cran.r-project.org/CRAN_mirrorZ.csv', handle = h)
+```
 
 ## Customizing requests
 
