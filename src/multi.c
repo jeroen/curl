@@ -204,7 +204,7 @@ void fin_multi(SEXP ptr){
   R_ClearExternalPtr(ptr);
 }
 
-SEXP R_multi_new(SEXP finalizer){
+SEXP R_multi_new(){
   multiref *ref = calloc(1, sizeof(multiref));
   ref->m = curl_multi_init();
   ref->handles = reflist_init();
