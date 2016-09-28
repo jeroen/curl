@@ -36,7 +36,7 @@ get_links <- function(html, url){
 crawl <- function(root, timeout = 300){
   total_visited = 0
   pages <- new.env()
-  pool <- curl::new_pool(total_con = 500, host_con = 100)
+  pool <- curl::new_pool(total_con = 50, host_con = 6, multiplex = TRUE)
 
   crawl_page <- function(url){
     pages[[url]] <- NA
@@ -56,9 +56,9 @@ crawl <- function(root, timeout = 300){
           total_visited <<- total_visited + 1
           links <- get_links(res$content, res$url)
           cat(sprintf("[%d] Extracted %d hyperlinks from %s\n", total_visited, length(links), url))
-          locallinks <- grep(root, links, value = TRUE, fixed = TRUE)
-          pages[[url]] <- locallinks
-          lapply(locallinks, function(href){
+          followlinks <- grep(paste0("^", root), links, value = TRUE)
+          pages[[url]] <- followlinks
+          lapply(followlinks, function(href){
             if(is.null(pages[[href]]))
               crawl_page(href)
           })
@@ -76,7 +76,7 @@ crawl <- function(root, timeout = 300){
 }
 
 # Create a sitemap
-sitemap <- crawl(root = 'https://cloud.r-project.org/web/packages', timeout = Inf)
+sitemap <- crawl(root = 'https://cran.jeroenooms.com/web/packages', timeout = Inf)
 
 # Show me all PDF files!
 grep("\\.pdf$", names(sitemap), value = TRUE)
