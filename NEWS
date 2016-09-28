@@ -1,3 +1,6 @@
+2.2
+ - Fixed bug in multi that did not actually enable multiplexing.
+
 2.1
  - If libcurl >= 7.47 and was built --with-nghttp2, automatically enable HTTP/2
    on HTTPS connections (matches behavior of 'curl' cmd util)
