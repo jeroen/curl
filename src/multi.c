@@ -220,10 +220,10 @@ SEXP R_multi_setopt(SEXP pool_ptr, SEXP total_con, SEXP host_con, SEXP multiplex
   multiref *mref = get_multiref(pool_ptr);
   CURLM *multi = mref->m;
   if(asLogical(multiplex))
+
+  // NOTE: CURLPIPE_HTTP1 is unsafe for non idempotent requests
   #ifdef CURLPIPE_MULTIPLEX
-    massert(curl_multi_setopt(multi, CURLMOPT_PIPELINING, CURLPIPE_HTTP1 | CURLPIPE_MULTIPLEX));
-  #else
-    massert(curl_multi_setopt(multi, CURLMOPT_PIPELINING, (long) 1));
+    massert(curl_multi_setopt(multi, CURLMOPT_PIPELINING, CURLPIPE_MULTIPLEX));
   #endif
 
   #ifdef HAS_CURLMOPT_MAX_TOTAL_CONNECTIONS
