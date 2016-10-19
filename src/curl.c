@@ -23,6 +23,9 @@
 #define BSWAP_32 OSSwapInt32
 #elif (defined(__OpenBSD__))
 #define BSWAP_32(x) swap32(x)
+#elif (defined(__GLIBC__))
+#include <byteswap.h>
+#define BSWAP_32(x) bswap_32(x)
 #endif
 
 /* the RConnection API is experimental and subject to change */

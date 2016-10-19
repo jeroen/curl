@@ -1,5 +1,6 @@
 2.2
  - Fixed bug in multi that did not actually enable multiplexing.
+ - Fix big endian build on GLIBC systems (tnx Aurelien Jarno and Andreas Tille)
 
 2.1
  - If libcurl >= 7.47 and was built --with-nghttp2, automatically enable HTTP/2
