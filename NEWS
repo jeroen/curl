@@ -1,5 +1,6 @@
 2.2
- - Fixed bug in multi that did not actually enable multiplexing.
+ - Fixed bug in multi that did not actually enable or disable multiplexing.
+ - Switch unit tests to HTTP/2 server to get HTTP/2 testing coverage
  - Fix big endian build on GLIBC systems (tnx Aurelien Jarno and Andreas Tille)
 
 2.1
