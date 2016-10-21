@@ -16,6 +16,7 @@
 #include <Rconfig.h>
 
 /* Define BSWAP_32 on Big Endian systems */
+#ifdef WORDS_BIGENDIAN
 #if (defined(__sun) && defined(__SVR4))
 #include <sys/byteorder.h>
 #elif (defined(__APPLE__) && defined(__ppc__) || defined(__ppc64__))
@@ -26,6 +27,7 @@
 #elif (defined(__GLIBC__))
 #include <byteswap.h>
 #define BSWAP_32(x) bswap_32(x)
+#endif
 #endif
 
 /* the RConnection API is experimental and subject to change */
