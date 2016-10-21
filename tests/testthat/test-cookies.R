@@ -9,7 +9,7 @@ test_that("No cookies", {
 })
 
 test_that("Add some cookies", {
-  req <- curl_fetch_memory("http://httpbin.org/cookies/set?foo=123&bar=ftw", handle = h)
+  req <- curl_fetch_memory(httpbin("cookies/set?foo=123&bar=ftw"), handle = h)
   cookies <- handle_cookies(h);
   expect_is(cookies, "data.frame")
   expect_equal(nrow(cookies), 2)
@@ -19,7 +19,7 @@ test_that("Add some cookies", {
 })
 
 test_that("Delete a cookie", {
-  req <- curl_fetch_memory("http://httpbin.org/cookies/delete?foo", handle = h)
+  req <- curl_fetch_memory(httpbin("cookies/delete?foo"), handle = h)
   cookies <- handle_cookies(h)
   foo <- subset(cookies, name == "foo")
   bar <- subset(cookies, name == "bar")
@@ -30,7 +30,7 @@ test_that("Delete a cookie", {
 })
 
 test_that("Overwrite a cookie", {
-  req <- curl_fetch_memory("http://httpbin.org/cookies/set?foo=888&bar=999", handle = h)
+  req <- curl_fetch_memory(httpbin("cookies/set?foo=888&bar=999"), handle = h)
   cookies <- handle_cookies(h)
   foo <- subset(cookies, name == "foo")
   bar <- subset(cookies, name == "bar")

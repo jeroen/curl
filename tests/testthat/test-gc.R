@@ -1,4 +1,4 @@
-context("Garbage Collection")
+context("Garbage collection")
 
 h1 <- new_handle()
 test <- function(){
