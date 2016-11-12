@@ -2,6 +2,7 @@
  - All interruptable handles now use a global pool to share connections. Fixes #79.
  - Enable interruptable interface by default, even in non-interactive mode.
  - Update libcurl on Windows to 7.51.0
+ - Unit tests now try serveral httpbin mirrors in case one goes down
 
 2.2
  - Fixed bug in multi that did not actually enable or disable multiplexing.
