@@ -21,6 +21,17 @@ test_that("Cookies", {
   expect_equal(jsonlite::fromJSON(rawToChar(curl_fetch_memory(httpbin("cookies"), handle = h)$content))$cookies$bar, NULL)
 })
 
+test_that("Keep-Alive", {
+  # Connection to httpbin already set in previous tests. Subsequent requests
+  # should reuse the connection.
+  # Capture the verbose curl output to look for the connection reuse message
+  h <- handle_setopt(h, verbose=TRUE,
+    debugfunction=function(type, msg) cat(readBin(msg, character())))
+  req <- capture.output(curl_fetch_memory(httpbin("get"), handle=h))
+  expect_true(any(grepl("Re-using existing connection!", req)))
+  handle_setopt(h, verbose=FALSE)
+})
+
 test_that("Compression and destorying connection", {
   con <- curl(httpbin("deflate"), handle = h)
   expect_equal(jsonlite::fromJSON(readLines(con))$deflate, TRUE)
