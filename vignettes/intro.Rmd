@@ -18,6 +18,7 @@ vignette: >
 
 ```{r, echo = FALSE, message = FALSE}
 knitr::opts_chunk$set(comment = "")
+options(width = 120, max.print = 100)
 library(curl)
 ```
 
@@ -243,29 +244,30 @@ req <- curl_fetch_memory("http://httpbin.org/cookies/delete?foo", handle = h)
 handle_cookies(h)
 ```
 
-The `handle_cookies` function returns a data frame with 7 columns as specified in the [netscape cookie file format](http://www.cookiecentral.com/faq/#3.5).
+The `handle_cookies` function returns a data frame with 7 columns as specified in the [netscape cookie file format](http://www.cookiecentral.com/faq/#3.5). 
 
+### On reusing handles
 
-### Re-using handles
+In most cases you should not re-use a single handle object for more than one request. The only benefit of reusing a handle for multiple requests is to keep track of cookies set by the server (seen above). This could be needed if your server uses session cookies, but this is rare these days. Most APIs set state explicitly via http headers or parameters, rather than implicitly via cookies.
 
-As we have already seen, curl allows for reusing a single handle for multiple requests. However it is not always a good idea to do so. The performance overhead of creating and configuring a new handle object is usually negligible. The safest way to issue mutiple requests, either to a single server or multiple servers is by using a separate handle for each request. 
-
-```{r}
-req1 <- curl_fetch_memory("https://httpbin.org/get", handle = new_handle())
-req2 <- curl_fetch_memory("http://www.r-project.org", handle = new_handle())
-```
-
-There are two reasons why you might want to reuse a handle for multiple requests. The first one is that it will automatically keep track of cookies set by the server. This might be useful if your host requires use of a session cookies.
-
-The other reason is to take advantage of http Keep-Alive. Curl automatically maintains a pool of open http connections within each handle. When using a single handle to issue many requests to the same server, curl uses existing connections when possible. This eliminites a little bit of connection overhead, although on a decent network this might not be very significant.
+In recent versions of the curl package there are no performance benefits of reusing handles. The overhead of creating and configuring a new handle object is negligible. The safest way to issue mutiple requests, either to a single server or multiple servers is by using a separate handle for each request (which is the default)
 
 ```{r}
-h <- new_handle()
-system.time(curl_fetch_memory("https://api.github.com/users/ropensci", handle = h))
-system.time(curl_fetch_memory("https://api.github.com/users/rstudio", handle = h))
+req1 <- curl_fetch_memory("https://httpbin.org/get")
+req2 <- curl_fetch_memory("http://www.r-project.org")
 ```
 
-The argument against reusing handles is that curl does not cleanup the handle after each request. All of the options and internal fields will linger around for all future request until explicitly reset or overwritten. This can sometimes leads to unexpected behavior. 
+In past versions of this package you needed to manually use a handle to take advantage of http Keep-Alive. However as of version 2.3 this is no longer the case: curl automatically maintains global a pool of open http connections shared by all handles. When performing many requests to the same server, curl automatically uses existing connections when possible, eliminating TCP/SSL handshaking overhead:
+
+```{r}
+req <- curl_fetch_memory("https://api.github.com/users/ropensci")
+req$times
+
+req2 <- curl_fetch_memory("https://api.github.com/users/rstudio")
+req2$times
+```
+
+If you really need to re-use a handle, do note that that curl does not cleanup the handle after each request. All of the options and internal fields will linger around for all future request until explicitly reset or overwritten. This can sometimes leads to unexpected behavior. 
 
 ```{r}
 handle_reset(h)
