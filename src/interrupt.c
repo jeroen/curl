@@ -18,15 +18,15 @@ int pending_interrupt() {
   return !(R_ToplevelExec(check_interrupt_fn, NULL));
 }
 
-/* Don't call Rf_error() until we remove the handle from the multi handle!
- */
+/* created in init.c */
+CURLM * multi_handle;
+
+/* Don't call Rf_error() until we remove the handle from the multi handle! */
 CURLcode curl_perform_with_interrupt(CURL *handle){
   /* start settings */
   CURLcode status = CURLE_FAILED_INIT;
   int still_running = 1;
 
-  /* setup multi handle */
-  CURLM *multi_handle = curl_multi_init();
   if(CURLM_OK != curl_multi_add_handle(multi_handle, handle)){
     curl_multi_cleanup(multi_handle);
     return CURLE_FAILED_INIT;
@@ -70,6 +70,5 @@ CURLcode curl_perform_with_interrupt(CURL *handle){
 
   /* cleanup first */
   curl_multi_remove_handle(multi_handle, handle);
-  curl_multi_cleanup(multi_handle);
   return status;
 }

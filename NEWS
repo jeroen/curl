@@ -1,3 +1,6 @@
+2.3
+ - All interruptable handles now use a global pool to share connections. Fixes #79.
+
 2.2
  - Fixed bug in multi that did not actually enable or disable multiplexing.
  - Switch unit tests to HTTP/2 server to get HTTP/2 testing coverage
