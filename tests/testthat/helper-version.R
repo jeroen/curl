@@ -32,5 +32,5 @@ testserver <- find_test_server()
 cat("Using test server:", testserver, "\n")
 
 httpbin <- function(path){
-  paste0(testserver, sub("^/", "", path))
+  paste0(testserver, "/", sub("^/", "", path))
 }
