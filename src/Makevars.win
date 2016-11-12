@@ -1,8 +1,8 @@
 PKG_CPPFLAGS= \
-	-I../windows/libcurl-7.50.3/include \
+	-I../windows/libcurl-7.51.0/include \
 	-DCURL_STATICLIB -DNGHTTP2_STATICLIB
 
-PKG_LIBS= -L../windows/libcurl-7.50.3/lib${R_ARCH} -L. \
+PKG_LIBS= -L../windows/libcurl-7.51.0/lib${R_ARCH} -L. \
 	-lwinhttp -lcurl -lnghttp2 -lssl -lcrypto -lssh2 -lrtmp -lidn \
 	-lintl -liconv -lgdi32 -lcrypt32 -lz -lws2_32 -lcrypt32 -lwldap32 -lwinmm
 
