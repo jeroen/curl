@@ -3,10 +3,10 @@
 \name{multi}
 \alias{multi}
 \alias{multi_add}
-\alias{multi_cancel}
-\alias{multi_list}
 \alias{multi_run}
 \alias{multi_set}
+\alias{multi_list}
+\alias{multi_cancel}
 \alias{new_pool}
 \title{Async Multi Download}
 \usage{

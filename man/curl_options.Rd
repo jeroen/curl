@@ -3,8 +3,8 @@
 \docType{data}
 \name{curl_options}
 \alias{curl_options}
-\alias{curl_symbols}
 \alias{curl_version}
+\alias{curl_symbols}
 \title{List curl version and options.}
 \format{A data frame with columns:
 \describe{

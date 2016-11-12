@@ -2,12 +2,12 @@
 % Please edit documentation in R/handle.R
 \name{handle}
 \alias{handle}
-\alias{handle_data}
-\alias{handle_reset}
-\alias{handle_setform}
-\alias{handle_setheaders}
-\alias{handle_setopt}
 \alias{new_handle}
+\alias{handle_setopt}
+\alias{handle_setheaders}
+\alias{handle_setform}
+\alias{handle_reset}
+\alias{handle_data}
 \title{Create and configure a curl handle}
 \usage{
 new_handle(...)
