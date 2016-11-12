@@ -28,7 +28,7 @@ test_that("Keep-Alive", {
   h <- handle_setopt(h, verbose=TRUE,
     debugfunction=function(type, msg) cat(readBin(msg, character())))
   req <- capture.output(curl_fetch_memory(httpbin("get"), handle=h))
-  expect_true(any(grepl("Re-using existing connection!", req)))
+  expect_true(any(grepl("existing connection", req)))
   handle_setopt(h, verbose=FALSE)
 })
 
