@@ -32,7 +32,7 @@ test_that("Keep-Alive", {
   handle_setopt(h, verbose=FALSE)
 })
 
-test_that("Compression and destorying connection", {
+test_that("Compression and destroying connection", {
   con <- curl(httpbin("deflate"), handle = h)
   expect_equal(jsonlite::fromJSON(readLines(con))$deflate, TRUE)
   expect_false(isOpen(con))
