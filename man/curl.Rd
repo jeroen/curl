@@ -24,7 +24,9 @@ As of version 2.3 curl connections support \code{open(con, blocking = FALSE)}.
 In this case \code{readBin} and \code{readLines} will return whatever data
 is available without waiting. For such non-blocking connections the property
 \code{summary(con)[["can read"]]} will be set to \code{FALSE} once the
-download has been completed, to signal the caller to stop polling.
+download has been completed, to signal the caller to stop polling. Non-blocking
+connections do raise an error for non-successful HTTP status; the caller needs
+to check this via \code{\link{handle_data}}.
 }
 \examples{
 \dontrun{
