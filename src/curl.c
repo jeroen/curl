@@ -127,6 +127,8 @@ static size_t rcurl_read(void *target, size_t sz, size_t ni, Rconnection con) {
   while((req_size > total_size) && req->has_more) {
     fetchdata(req);
     total_size += pop((char*)target + total_size, (req_size-total_size), req);
+    if(con->blocking == FALSE)
+      break;
   }
   return total_size;
 }
@@ -197,14 +199,15 @@ static Rboolean rcurl_open(Rconnection con) {
   req->has_data = 0;
   req->has_more = 1;
 
-  /* Wait for first data to arrive. Monitoring a change in status code does not
-     suffice in case of http redirects */
+ /* Wait for first data to arrive. Monitoring a change in status code does not
+   suffice in case of http redirects */
   while(req->has_more && !req->has_data) {
     fetchdata(req);
   }
 
   /* check http status code */
-  if(req->stop)
+  /* Non blocking connections should be checked via handle_data() */
+  if(con->blocking && req->stop)
     stop_for_status(handle);
 
   /* set mode in case open() changed it */
