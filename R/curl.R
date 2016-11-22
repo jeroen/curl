@@ -4,6 +4,12 @@
 #' gzip, deflate, etc. Default behavior is identical to \code{\link{url}}, but
 #' request can be fully configured by passing a custom \code{\link{handle}}.
 #'
+#' As of version 2.3 curl connections support \code{open(con, blocking = FALSE)}.
+#' In this case \code{readBin} and \code{readLines} will return whatever data
+#' is available without waiting. For such non-blocking connections the property
+#' \code{summary(con)[["can read"]]} will be set to \code{FALSE} once the
+#' download has been completed, to signal the caller to stop polling.
+#'
 #' @useDynLib curl R_curl_connection
 #' @export
 #' @param url character string. See examples.

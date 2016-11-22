@@ -130,6 +130,8 @@ static size_t rcurl_read(void *target, size_t sz, size_t ni, Rconnection con) {
     if(con->blocking == FALSE)
       break;
   }
+  if(!con->blocking && !req->has_more)
+    con->canread = FALSE;
   return total_size;
 }
 
