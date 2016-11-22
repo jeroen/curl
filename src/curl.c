@@ -130,8 +130,7 @@ static size_t rcurl_read(void *target, size_t sz, size_t ni, Rconnection con) {
     if(con->blocking == FALSE)
       break;
   }
-  if(!con->blocking && !req->has_more)
-    con->canread = FALSE;
+  con->incomplete = req->has_more;
   return total_size;
 }
 
@@ -244,6 +243,7 @@ SEXP R_curl_connection(SEXP url, SEXP mode, SEXP ptr, SEXP stop_on_error) {
   strcpy(req->url, translateCharUTF8(asChar(url)));
 
   /* set connection properties */
+  con->incomplete = TRUE;
   con->private = req;
   con->canseek = FALSE;
   con->canwrite = FALSE;

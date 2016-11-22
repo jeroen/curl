@@ -5,12 +5,11 @@
 #' request can be fully configured by passing a custom \code{\link{handle}}.
 #'
 #' As of version 2.3 curl connections support \code{open(con, blocking = FALSE)}.
-#' In this case \code{readBin} and \code{readLines} will return whatever data
-#' is available without waiting. For such non-blocking connections the property
-#' \code{summary(con)[["can read"]]} will be set to \code{FALSE} once the
-#' download has been completed, to signal the caller to stop polling. Non-blocking
-#' connections do raise an error for non-successful HTTP status; the caller needs
-#' to check this via \code{\link{handle_data}}.
+#' In this case \code{readBin} and \code{readLines} will return immediately with data
+#' that is available without waiting. For such non-blocking connections the caller
+#' needs to call \code{\link{isIncomplete}} to check if the download has completed
+#' yet. Non-blocking connections do raise an error for non-successful HTTP status;
+#' the caller can check this via \code{\link{handle_data}}.
 #'
 #' @useDynLib curl R_curl_connection
 #' @export

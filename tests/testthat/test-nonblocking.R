@@ -7,14 +7,12 @@ test_that("Non blocking connections ", {
   open(con, "rb", blocking = FALSE)
   expect_equal(handle_data(h)$status_code, 200L)
   n <- 0
-  while(identical(summary(con)[["can read"]], "yes")){
-    Sys.sleep(0.1)
+  while(isIncomplete(con)){
+    Sys.sleep(0.01)
     buf <- readBin(con, raw(), 1024)
     n <- n + length(buf)
   }
   expect_equal(n, 50L)
-  expect_equal(summary(con)[["can read"]], "no")
-  expect_error(readBin(con, raw(), 1024), "read")
   rm(h)
   close(con)
   gc()
@@ -25,14 +23,11 @@ test_that("Non blocking readline", {
   con <- curl(httpbin("stream/71"))
   open(con, "rb", blocking = FALSE)
   n <- 0
-  while(identical(summary(con)[["can read"]], "yes")){
-    Sys.sleep(0.1)
+  while(isIncomplete(con)){
     buf <- readLines(con)
     n <- n + length(buf)
   }
   expect_equal(n, 71L)
-  expect_equal(summary(con)[["can read"]], "no")
-  expect_error(readLines(con), "read")
   close(con)
   gc()
   expect_equal(total_handles(), 0L)

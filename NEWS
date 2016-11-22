@@ -3,7 +3,7 @@
  - Enable interruptable interface by default, even in non-interactive mode.
  - Update libcurl on Windows to 7.51.0
  - Unit tests now try serveral httpbin mirrors in case one goes down
- - Try to honor open(con, blocking = FALSE) for curl() connections
+ - Support open(con, blocking = FALSE) and isIncomplete() for curl() connections
 
 2.2
  - Fixed bug in multi that did not actually enable or disable multiplexing.
