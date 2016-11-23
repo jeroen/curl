@@ -9,7 +9,7 @@ test_that("Non blocking connections ", {
   n <- 0
   while(isIncomplete(con)){
     Sys.sleep(0.01)
-    buf <- readBin(con, raw(), 1024)
+    buf <- readBin(con, raw(), 5)
     n <- n + length(buf)
   }
   expect_equal(n, 50L)
@@ -21,14 +21,43 @@ test_that("Non blocking connections ", {
 
 test_that("Non blocking readline", {
   con <- curl(httpbin("stream/71"))
-  open(con, "rb", blocking = FALSE)
+  open(con, "r", blocking = FALSE)
   n <- 0
   while(isIncomplete(con)){
-    buf <- readLines(con)
+    buf <- readLines(con, 5)
     n <- n + length(buf)
   }
   expect_equal(n, 71L)
   close(con)
   gc()
   expect_equal(total_handles(), 0L)
+})
+
+test_that("isIncomplete for blocking connections", {
+  con <- curl(httpbin("stream/71"))
+  expect_false(isIncomplete(con))
+  expect_equal(length(readLines(con)), 71L)
+  expect_false(isIncomplete(con))
+  open(con)
+  expect_true(isIncomplete(con))
+  n <- 0
+  while(isIncomplete(con)){
+    buf <- readLines(con, 5)
+    n <- n + length(buf)
+  }
+  expect_equal(n, 71L)
+  close(con)
+  gc()
+  expect_equal(total_handles(), 0L)
+})
+
+test_that("Small buffers", {
+  con <- curl(httpbin("get"))
+  expect_false(isIncomplete(con = con))
+  open(con)
+  expect_true(isIncomplete(con = con))
+  readLines(con, 1)
+  expect_true(isIncomplete(con = con))
+  readLines(con)
+  expect_false(isIncomplete(con = con))
 })
