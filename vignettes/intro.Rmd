@@ -83,9 +83,27 @@ cat(out, sep = "\n")
 
 The example shows how to use `readLines` on an opened connection to read `n` lines at a time. Similarly `readBin` is used to read `n` bytes at a time for stream parsing binary data.
 
-### Non-blocking requests
+#### Non blocking connections
 
-As of `curl 2.0` the package provides a non-blocking interface which can perform multiple simultaneous requests. The `curl_fetch_multi` adds a request to a pool and returns immediately; it does not actually perform the request. 
+As of version 2.3 it is also possible to open connetions in non-blocking mode. In this case `readBin` and `readLines` will return immediately with data that is available without waiting. For non-blocking connections we use `isIncomplete` to check if the download has completed yet.
+
+```{r}
+con <- curl("https://httpbin.org/drip?duration=1&numbytes=50")
+open(con, "rb", blocking = FALSE)
+while(isIncomplete(con)){
+  buf <- readBin(con, raw(), 1024)
+  if(length(buf)) 
+    cat("received: ", rawToChar(buf), "\n")
+}
+close(con)
+```
+
+The `curl_fetch_stream` function provides a very simple wrapper around a non-blocking connection.
+
+
+### Async requests
+
+As of `curl 2.0` the package provides an async interface which can perform multiple simultaneous requests concurrently. The `curl_fetch_multi` adds a request to a pool and returns immediately; it does not actually perform the request. 
 
 ```{r}
 pool <- new_pool()

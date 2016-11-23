@@ -4,6 +4,7 @@
  - Update libcurl on Windows to 7.51.0
  - Unit tests now try serveral httpbin mirrors in case one goes down
  - Support open(con, blocking = FALSE) and isIncomplete() for curl() connections
+ - Switch curl_fetch_stream to non-blocking implementation
 
 2.2
  - Fixed bug in multi that did not actually enable or disable multiplexing.
