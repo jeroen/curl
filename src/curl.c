@@ -172,6 +172,7 @@ void reset(Rconnection con) {
   req->ref->locked = 0;
   con->isopen = FALSE;
   con->text = TRUE;
+  con->incomplete = FALSE;
   strcpy(con->mode, "r");
 }
 
@@ -214,6 +215,7 @@ static Rboolean rcurl_open(Rconnection con) {
   /* set mode in case open() changed it */
   con->text = strcmp(con->mode, "rb") ? TRUE : FALSE;
   con->isopen = TRUE;
+  con->incomplete = TRUE;
   return TRUE;
 }
 
@@ -243,7 +245,7 @@ SEXP R_curl_connection(SEXP url, SEXP mode, SEXP ptr, SEXP stop_on_error) {
   strcpy(req->url, translateCharUTF8(asChar(url)));
 
   /* set connection properties */
-  con->incomplete = TRUE;
+  con->incomplete = FALSE;
   con->private = req;
   con->canseek = FALSE;
   con->canwrite = FALSE;
