@@ -122,6 +122,13 @@ static size_t rcurl_read(void *target, size_t sz, size_t ni, Rconnection con) {
   request *req = (request*) con->private;
   size_t req_size = sz * ni;
 
+  /* wait for activity, timeout or "nothing" */
+#ifdef HAS_MULTI_WAIT
+  int numfds;
+  if(con->blocking)
+    massert(curl_multi_wait(req->manager, NULL, 0, 1000, &numfds));
+#endif
+
   /* append data to the target buffer */
   size_t total_size = pop(target, req_size, req);
   while((req_size > total_size) && req->has_more) {

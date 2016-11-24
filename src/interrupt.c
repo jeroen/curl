@@ -3,11 +3,7 @@
  */
 
 #include <Rinternals.h>
-#include <curl/curl.h>
-
-#if LIBCURL_VERSION_MAJOR > 7 || (LIBCURL_VERSION_MAJOR == 7 && LIBCURL_VERSION_MINOR >= 28)
-#define HAS_MULTI_WAIT 1
-#endif
+#include "curl-common.h"
 
 /* Check for interrupt without long jumping */
 void check_interrupt_fn(void *dummy) {

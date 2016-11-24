@@ -4,6 +4,10 @@
 #include <string.h>
 #include <stdlib.h>
 
+#if LIBCURL_VERSION_MAJOR > 7 || (LIBCURL_VERSION_MAJOR == 7 && LIBCURL_VERSION_MINOR >= 28)
+#define HAS_MULTI_WAIT 1
+#endif
+
 typedef struct {
   unsigned char *buf;
   size_t size;

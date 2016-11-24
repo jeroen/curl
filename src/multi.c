@@ -6,10 +6,6 @@
  *  - Use eval() to callback instead of R_tryEval() to propagate interrupt or error back to C
  */
 
-#if LIBCURL_VERSION_MAJOR > 7 || (LIBCURL_VERSION_MAJOR == 7 && LIBCURL_VERSION_MINOR >= 28)
-#define HAS_MULTI_WAIT 1
-#endif
-
 #if LIBCURL_VERSION_MAJOR > 7 || (LIBCURL_VERSION_MAJOR == 7 && LIBCURL_VERSION_MINOR >= 30)
 #define HAS_CURLMOPT_MAX_TOTAL_CONNECTIONS 1
 #endif
@@ -169,6 +165,14 @@ SEXP R_multi_run(SEXP pool_ptr, SEXP timeout){
     /* check if we are done */
     if(total_pending == 0 && !dirty)
       break;
+
+#ifdef HAS_MULTI_WAIT
+    /* wait for activity, timeout or "nothing" */
+    int numfds;
+    double waitforit = fmin(time_max - seconds_elapsed, 1); //at most 1 sec to support interrupts
+    if(time_max > 0)
+      massert(curl_multi_wait(multi, NULL, 0, (int) waitforit * 1000, &numfds));
+#endif
 
     /* poll libcurl for new data - updates total_pending */
     CURLMcode res = CURLM_CALL_MULTI_PERFORM;
