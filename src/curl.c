@@ -46,7 +46,7 @@ typedef struct {
   int has_data;
   int has_more;
   int used;
-  int stop;
+  int wait;
   size_t size;
   size_t limit;
   CURLM *manager;
@@ -128,7 +128,7 @@ static size_t rcurl_read(void *target, size_t sz, size_t ni, Rconnection con) {
     /* wait for activity, timeout or "nothing" */
 #ifdef HAS_MULTI_WAIT
     int numfds;
-    if(con->blocking)
+    if(con->blocking || req->wait)
       massert(curl_multi_wait(req->manager, NULL, 0, 1000, &numfds));
 #endif
     fetchdata(req);
@@ -215,7 +215,7 @@ static Rboolean rcurl_open(Rconnection con) {
 
   /* check http status code */
   /* Non blocking connections should be checked via handle_data() */
-  if(con->blocking && req->stop)
+  if(con->blocking)
     stop_for_status(handle);
 
   /* set mode in case open() changed it */
@@ -225,7 +225,7 @@ static Rboolean rcurl_open(Rconnection con) {
   return TRUE;
 }
 
-SEXP R_curl_connection(SEXP url, SEXP mode, SEXP ptr, SEXP stop_on_error) {
+SEXP R_curl_connection(SEXP url, SEXP mode, SEXP ptr, SEXP wait) {
   if(!isString(url))
     error("Argument 'url' must be string.");
 
@@ -243,8 +243,8 @@ SEXP R_curl_connection(SEXP url, SEXP mode, SEXP ptr, SEXP stop_on_error) {
   req->limit = CURL_MAX_WRITE_SIZE;
   req->buf = malloc(req->limit);
   req->manager = curl_multi_init();
+  req->wait = asLogical(wait);
   req->used = 0;
-  req->stop = asLogical(stop_on_error);
 
   /* allocate url string */
   req->url = malloc(strlen(translateCharUTF8(asChar(url))) + 1);

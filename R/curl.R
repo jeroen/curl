@@ -66,5 +66,10 @@
 #' }
 #'
 curl <- function(url = "http://httpbin.org/get", open = "", handle = new_handle()){
-  .Call(R_curl_connection, url, open, handle, TRUE)
+  curl_connection(url, open, handle)
+}
+
+# 'wait' currently only used for non-blocking connections
+curl_connection <- function(url, mode, handle, wait = FALSE){
+  .Call(R_curl_connection, url, mode, handle, wait)
 }
