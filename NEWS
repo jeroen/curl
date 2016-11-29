@@ -1,3 +1,6 @@
+2.4
+ - Fix busy waiting for curl_fetch_stream
+
 2.3
  - All interruptable handles now use a global pool to share connections. Fixes #79.
  - Enable interruptable interface by default, even in non-interactive mode.
