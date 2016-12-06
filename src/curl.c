@@ -209,7 +209,7 @@ static Rboolean rcurl_open(Rconnection con) {
 
  /* Wait for first data to arrive. Monitoring a change in status code does not
    suffice in case of http redirects */
-  while(req->has_more && !req->has_data) {
+  while(con->blocking && req->has_more && !req->has_data) {
 #ifdef HAS_MULTI_WAIT
     int numfds;
     massert(curl_multi_wait(req->manager, NULL, 0, 1000, &numfds));
