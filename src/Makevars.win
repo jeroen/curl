@@ -12,7 +12,7 @@ clean:
 	rm -f $(OBJECTS) curl.dll libwinhttp.dll.a winhttp.def
 
 winlibs: clean
-	"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" "../tools/winlibs.R" "$(M_ARCH)"
+	"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" --vanilla "../tools/winlibs.R" "$(M_ARCH)"
 	echo '#include <curl/curl.h>' | $(CPP) $(PKG_CPPFLAGS) -std=gnu99 -xc - | grep "^[ \t]*CURLOPT_.*," | sed s/,// > ../tools/option_table.txt
 
 winhttp.def:
