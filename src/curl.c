@@ -61,7 +61,7 @@ static size_t push(void *contents, size_t sz, size_t nmemb, void *ctx) {
   req->has_data = 1;
 
   /* move existing data to front of buffer (if any) */
-  memcpy(req->buf, req->cur, req->size);
+  memmove(req->buf, req->cur, req->size);
 
   /* allocate more space if required */
   size_t realsize = sz * nmemb;

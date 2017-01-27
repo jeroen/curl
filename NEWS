@@ -1,5 +1,6 @@
 2.4
  - Fix busy waiting for curl_fetch_stream
+ - Switch memcpy() to memmove() to please valgrind
 
 2.3
  - All interruptable handles now use a global pool to share connections. Fixes #79.
