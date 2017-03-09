@@ -14,7 +14,7 @@ form_file <- function(path, type = NULL){
   if(!is.null(type)){
     stopifnot(is.character(type))
   }
-  structure(list(path = path, type = type), class = "formdata")
+  structure(list(path = path, type = type), class = "form_file")
 }
 
 #' @export
@@ -26,18 +26,23 @@ form_data <- function(value, type = NULL){
     value <- charToRaw(paste(enc2utf8(value), collapse = "\n"))
   if(!is.raw(value))
     stop("Argument 'value' must be string or raw vector")
-  structure(list(value = value, type = type), class = "formdata")
+  structure(list(value = value, type = type), class = "form_data")
 }
 
 #' @export
-print.formdata <- function(x, ...){
-  txt <- if(is.character(x[[1]])){
-    paste("Form file:", basename(x$path))
-  } else {
-    paste("Form data: <<data>>")
-  }
+print.form_file <- function(x, ...){
+  txt <- paste("Form file:", basename(x$path))
   if(!is.null(x$type)){
-    txt <- paste0(txt, " (", x$type, ")")
+    txt <- sprintf("%s (type: %s)", txt, x$type)
+  }
+  cat(txt, "\n")
+}
+
+#' @export
+print.form_data <- function(x, ...){
+  txt <- paste(sprintf("Form data of length %d", length(x$value)))
+  if(!is.null(x$type)){
+    txt <- sprintf("%s (type: %s)", txt, x$type)
   }
   cat(txt, "\n")
 }

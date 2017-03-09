@@ -2,7 +2,8 @@
 
 S3method(print,curl_handle)
 S3method(print,curl_multi)
-S3method(print,formdata)
+S3method(print,form_data)
+S3method(print,form_file)
 export(curl)
 export(curl_download)
 export(curl_escape)
