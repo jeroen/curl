@@ -7,18 +7,30 @@ struct curl_httppost* make_form(SEXP form){
   for(int i = 0; i < length(form); i++){
     const char *name = translateCharUTF8(STRING_ELT(ln, i));
     SEXP val = VECTOR_ELT(form, i);
-    if(isString(val)){
-      curl_formadd(&post, &last, CURLFORM_COPYNAME, name, CURLFORM_COPYCONTENTS, translateCharUTF8(asChar(val)), CURLFORM_END);
-    } else if(TYPEOF(val) == RAWSXP){
-      curl_formadd(&post, &last, CURLFORM_COPYNAME, name, CURLFORM_COPYCONTENTS, RAW(val), CURLFORM_CONTENTSLENGTH, (long) length(val), CURLFORM_END);
-    } else if(isVector(val)){
-      //assume a form_upload value
-      const char* path = CHAR(asChar(VECTOR_ELT(val, 0)));
-      if(VECTOR_ELT(val, 1) == R_NilValue){
-        curl_formadd(&post, &last, CURLFORM_COPYNAME, name, CURLFORM_FILE, path, CURLFORM_END);
+    if(TYPEOF(val) == RAWSXP){
+      unsigned char * data = RAW(val);
+      long datalen = Rf_length(val);
+      curl_formadd(&post, &last, CURLFORM_COPYNAME, name, CURLFORM_COPYCONTENTS, data, CURLFORM_CONTENTSLENGTH, datalen, CURLFORM_END);
+    } else if(isVector(val) && Rf_length(val)){
+      if(isString(VECTOR_ELT(val, 0))){
+        //assume a form_file upload
+        const char * path = CHAR(asChar(VECTOR_ELT(val, 0)));
+        if(isString(VECTOR_ELT(val, 1))){
+          const char *content_type = CHAR(asChar(VECTOR_ELT(val, 1)));
+          curl_formadd(&post, &last, CURLFORM_COPYNAME, name, CURLFORM_FILE, path, CURLFORM_CONTENTTYPE, content_type, CURLFORM_END);
+        } else {
+          curl_formadd(&post, &last, CURLFORM_COPYNAME, name, CURLFORM_FILE, path, CURLFORM_END);
+        }
       } else {
-        const char *content_type = CHAR(asChar(VECTOR_ELT(val, 1)));
-        curl_formadd(&post, &last, CURLFORM_COPYNAME, name, CURLFORM_FILE, path, CURLFORM_CONTENTTYPE, content_type, CURLFORM_END);
+        //assume a form_value upload
+        unsigned char * data = RAW(VECTOR_ELT(val, 0));
+        long datalen = Rf_length(VECTOR_ELT(val, 0));
+        if(isString(VECTOR_ELT(val, 1))){
+          const char * content_type = CHAR(asChar(VECTOR_ELT(val, 1)));
+          curl_formadd(&post, &last, CURLFORM_COPYNAME, name, CURLFORM_COPYCONTENTS, data, CURLFORM_CONTENTSLENGTH, datalen, CURLFORM_CONTENTTYPE, content_type, CURLFORM_END);
+        } else {
+          curl_formadd(&post, &last, CURLFORM_COPYNAME, name, CURLFORM_COPYCONTENTS, data, CURLFORM_CONTENTSLENGTH, datalen, CURLFORM_END);
+        }
       }
     } else {
       error("form value %s not supported", name);
