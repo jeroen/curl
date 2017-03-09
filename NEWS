@@ -1,4 +1,5 @@
 2.4
+ - New form_data() function to POST form with string/raw values with custom conten-type
  - Fix busy waiting for curl_fetch_stream
  - Switch memcpy() to memmove() to please valgrind
 
