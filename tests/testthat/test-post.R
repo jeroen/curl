@@ -57,6 +57,7 @@ test_that("Multipart form post", {
   handle_setform(h,
     foo = "blabla",
     bar = charToRaw("boeboe"),
+    iris = form_data(serialize(iris, NULL), "data/rda"),
     description = form_file(system.file("DESCRIPTION")),
     logo = form_file(file.path(Sys.getenv("R_DOC_DIR"), "html/logo.jpg"), "image/jpeg")
   )
@@ -65,7 +66,7 @@ test_that("Multipart form post", {
 
   expect_match(res$headers$`Content-Type`, "multipart")
   expect_equal(sort(names(res$files)), c("description", "logo"))
-  expect_equal(sort(names(res$form)), c("bar", "foo"))
+  expect_equal(sort(names(res$form)), c("bar", "foo", "iris"))
 })
 
 rm(h)

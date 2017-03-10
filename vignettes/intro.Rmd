@@ -303,6 +303,7 @@ h <- new_handle()
 handle_setform(h,
   foo = "blabla",
   bar = charToRaw("boeboe"),
+  iris = form_data(serialize(iris, NULL), "application/rda"),
   description = form_file(system.file("DESCRIPTION")),
   logo = form_file(file.path(Sys.getenv("R_DOC_DIR"), "html/logo.jpg"), "image/jpeg")
 )
@@ -310,6 +311,8 @@ req <- curl_fetch_memory("http://httpbin.org/post", handle = h)
 ```
 
 The `form_file` function is used to upload files with the form post. It has two arguments: a file path, and optionally a content-type value. If no content-type is set, curl will guess the content type of the file based on the file extension.
+
+The `form_data` function is similar but simply posts a string or raw value with a custom content-type.
 
 ### Using pipes
 
