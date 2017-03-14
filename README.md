@@ -2,13 +2,13 @@
 
 ##### *A Modern and Flexible Web Client for R*
 
-[![Build Status](https://travis-ci.org/jeroenooms/curl.svg?branch=master)](https://travis-ci.org/jeroenooms/curl)
-[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/jeroenooms/curl?branch=master&svg=true)](https://ci.appveyor.com/project/jeroenooms/curl)
-[![Coverage Status](https://codecov.io/github/jeroenooms/curl/coverage.svg?branch=master)](https://codecov.io/github/jeroenooms/curl?branch=master)
+[![Build Status](https://travis-ci.org/jeroen/curl.svg?branch=master)](https://travis-ci.org/jeroen/curl)
+[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/jeroen/curl?branch=master&svg=true)](https://ci.appveyor.com/project/jeroen/curl)
+[![Coverage Status](https://codecov.io/github/jeroen/curl/coverage.svg?branch=master)](https://codecov.io/github/jeroen/curl?branch=master)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/curl)](http://cran.r-project.org/package=curl)
 [![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/curl)](http://cran.r-project.org/web/packages/curl/index.html)
 [![Research software impact](http://depsy.org/api/package/cran/curl/badge.svg)](http://depsy.org/package/r/curl)
-[![Github Stars](https://img.shields.io/github/stars/jeroenooms/curl.svg?style=social&label=Github)](https://github.com/jeroenooms/curl)
+[![Github Stars](https://img.shields.io/github/stars/jeroen/curl.svg?style=social&label=Github)](https://github.com/jeroen/curl)
 
 > The curl() and curl_download() functions provide highly
   configurable drop-in replacements for base url() and download.file() with
@@ -112,7 +112,7 @@ Note that on OS-X you **must** recompile the R package from source after force-l
 Because `devtools` and `httr` depend on `curl`, installing with `install_github` does not work well. The easiest way to install the development version of `curl` is a clean R session:
 
 ```r
-install.packages("https://github.com/jeroenooms/curl/archive/master.tar.gz", repos = NULL)
+install.packages("https://github.com/jeroen/curl/archive/master.tar.gz", repos = NULL)
 ```
 
 Of course windows users need [Rtools](https://cran.r-project.org/bin/windows/Rtools/) to compile from source.
@@ -129,7 +129,7 @@ brew link curl --force
 And then reinstall the `curl` package from source:
 
 ```r
-install.packages("https://github.com/jeroenooms/curl/archive/master.tar.gz", repos = NULL)
+install.packages("https://github.com/jeroen/curl/archive/master.tar.gz", repos = NULL)
 ```
 
 Check again `curl_version()` to see if HTTP/2 is enabled now.

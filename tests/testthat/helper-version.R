@@ -6,7 +6,7 @@ find_test_server <- function(){
 
   # Try to download latest test-server list
   servers <- tryCatch({
-    req <- curl_fetch_memory("http://jeroenooms.github.io/curl/servers", handle = h)
+    req <- curl_fetch_memory("http://jeroen.github.io/curl/servers", handle = h)
     strsplit(rawToChar(req$content), "\n", fixed = TRUE)[[1]]
   }, error = function(e){
     message("Failed to download server list:", e$message)

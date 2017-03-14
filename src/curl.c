@@ -1,6 +1,6 @@
 /* *
  * Streaming interface to libcurl for R. (c) 2015 Jeroen Ooms.
- * Source: https://github.com/jeroenooms/curl
+ * Source: https://github.com/jeroen/curl
  * Comments and contributions are welcome!
  * Helpful libcurl examples:
  *  - http://curl.haxx.se/libcurl/c/getinmemory.html

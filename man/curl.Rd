@@ -65,14 +65,14 @@ readLines(curl("ftps://test.rebex.net:990/readme.txt"))
 readLines(curl("gopher://quux.org/1"))
 
 # Streaming data
-con <- curl("http://jeroenooms.github.io/data/diamonds.json", "r")
+con <- curl("http://jeroen.github.io/data/diamonds.json", "r")
 while(length(x <- readLines(con, n = 5))){
   print(x)
 }
 
 # Stream large dataset over https with gzip
 library(jsonlite)
-con <- gzcon(curl("https://jeroenooms.github.io/data/nycflights13.json.gz"))
+con <- gzcon(curl("https://jeroen.github.io/data/nycflights13.json.gz"))
 nycflights <- stream_in(con)
 }
 

@@ -5,8 +5,8 @@ test <- function(){
   pool <- new_pool()
   h2 <- new_handle()
   cb <- function(...){}
-  curl_fetch_multi('http://jeroenooms.github.io/images/frink.png', pool = pool, done = cb, handle = h1)
-  curl_fetch_multi('http://jeroenooms.github.io/images/frink.png', pool = pool, done = cb, handle = h2)
+  curl_fetch_multi('http://jeroen.github.io/images/frink.png', pool = pool, done = cb, handle = h1)
+  curl_fetch_multi('http://jeroen.github.io/images/frink.png', pool = pool, done = cb, handle = h2)
   return(pool)
 }
 
@@ -30,8 +30,8 @@ test_that("Garbage collection works", {
 test2 <- function(){
   pool <- new_pool()
   cb <- function(...){}
-  curl_fetch_multi('http://jeroenooms.github.io/images/frink.png', pool = pool, done = cb)
-  curl_fetch_multi('http://jeroenooms.github.io/images/frink.png', pool = pool, done = cb)
+  curl_fetch_multi('http://jeroen.github.io/images/frink.png', pool = pool, done = cb)
+  curl_fetch_multi('http://jeroen.github.io/images/frink.png', pool = pool, done = cb)
 }
 
 test_that("Clean up pending requets", {
