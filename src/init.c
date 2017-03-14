@@ -6,6 +6,8 @@ CURLM *multi_handle = NULL;
 void R_init_curl(DllInfo *info) {
   curl_global_init(CURL_GLOBAL_DEFAULT);
   multi_handle = curl_multi_init();
+  R_registerRoutines(info, NULL, NULL, NULL, NULL);
+  R_useDynamicSymbols(info, TRUE);
 }
 
 void R_unload_curl(DllInfo *info) {
