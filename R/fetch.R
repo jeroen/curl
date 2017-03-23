@@ -84,7 +84,7 @@ curl_fetch_disk <- function(url, path, handle = new_handle()){
 #' @rdname curl_fetch
 #' @useDynLib curl R_curl_connection
 curl_fetch_stream <- function(url, fun, handle = new_handle()){
-  con <- curl_connection(url, mode = "", handle = handle, wait = TRUE)
+  con <- curl_connection(url, mode = "", handle = handle, stream = TRUE)
   open(con, "rb", blocking = FALSE)
   on.exit(close(con))
   while(isIncomplete(con)){
