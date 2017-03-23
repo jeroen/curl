@@ -43,6 +43,7 @@ typedef struct {
   char *url;
   char *buf;
   char *cur;
+  int block_open;
   int has_data;
   int has_more;
   int used;
@@ -133,6 +134,8 @@ static size_t rcurl_read(void *target, size_t sz, size_t ni, Rconnection con) {
 #endif
     fetchdata(req);
     total_size += pop((char*)target + total_size, (req_size-total_size), req);
+    if(!req->block_open)
+      stop_for_status(req->handle);
     if(con->blocking == FALSE)
       break;
   }
@@ -207,9 +210,12 @@ static Rboolean rcurl_open(Rconnection con) {
   req->has_data = 0;
   req->has_more = 1;
 
+  /* fully non-blocking has 's' in open mode */
+  req->block_open = !strchr(con->mode, 's');
+
  /* Wait for first data to arrive. Monitoring a change in status code does not
    suffice in case of http redirects */
-  while(req->has_more && !req->has_data) {
+  while(req->block_open && req->has_more && !req->has_data) {
 #ifdef HAS_MULTI_WAIT
     int numfds;
     massert(curl_multi_wait(req->manager, NULL, 0, 1000, &numfds));
@@ -219,11 +225,12 @@ static Rboolean rcurl_open(Rconnection con) {
 
   /* check http status code */
   /* Stream connections should be checked via handle_data() */
-  if(!req->stream)
+  /* Non-blocking open connections get checked during read */
+  if(req->block_open && !req->stream)
     stop_for_status(handle);
 
   /* set mode in case open() changed it */
-  con->text = strcmp(con->mode, "rb") ? TRUE : FALSE;
+  con->text = strchr(con->mode, 'b') ? FALSE : TRUE;
   con->isopen = TRUE;
   con->incomplete = TRUE;
   return TRUE;
