@@ -13,8 +13,8 @@ test_that("Add some cookies", {
   cookies <- handle_cookies(h);
   expect_is(cookies, "data.frame")
   expect_equal(nrow(cookies), 2)
-  expect_equal(cookies$name, c("foo","bar"))
-  expect_equal(cookies$value, c("123","ftw"))
+  expect_equal(sort(cookies$name), c("bar", "foo"))
+  expect_equal(sort(cookies$value), c("123","ftw"))
   expect_true(all(cookies$expiration == Inf))
 })
 

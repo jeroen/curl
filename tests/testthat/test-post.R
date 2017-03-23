@@ -17,8 +17,9 @@ test_that("Post text data", {
   expect_equal(res$headers$`User-Agent`, "A cow")
 
   # Using connection interface
-  txt <- readLines(curl(httpbin("post"), handle = h))
-  expect_equal(rawToChar(req$content), paste0(txt, "\n", collapse=""))
+  input <- jsonlite::fromJSON(rawToChar(req$content))
+  output <- jsonlite::fromJSON(curl(httpbin("post"), handle = h))
+  expect_equal(input, output)
 
   # Using download interface
   tmp <- tempfile()
