@@ -1,15 +1,15 @@
 PKG_CPPFLAGS= \
-	-I../windows/libcurl-7.51.0/include \
+	-I../windows/libcurl-7.53.1/include \
 	-DCURL_STATICLIB -DNGHTTP2_STATICLIB
 
-PKG_LIBS= -L../windows/libcurl-7.51.0/lib${R_ARCH} -L. \
+PKG_LIBS= -L../windows/libcurl-7.53.1/lib${R_ARCH} -L. \
 	-lwinhttp -lcurl -lnghttp2 -lssl -lcrypto -lssh2 -lrtmp -lidn \
 	-lintl -liconv -lgdi32 -lcrypt32 -lz -lws2_32 -lcrypt32 -lwldap32 -lwinmm
 
-all: winlibs libwinhttp.dll.a
+all: clean winlibs libwinhttp.dll.a
 
 clean:
-	rm -f $(OBJECTS) curl.dll libwinhttp.dll.a winhttp.def
+	rm -f $(SHLIB) $(OBJECTS) libwinhttp.dll.a winhttp.def
 
 winlibs: clean
 	"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" --vanilla "../tools/winlibs.R" "$(M_ARCH)"
