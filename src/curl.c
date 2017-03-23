@@ -133,8 +133,11 @@ static size_t rcurl_read(void *target, size_t sz, size_t ni, Rconnection con) {
 #endif
     fetchdata(req);
     total_size += pop((char*)target + total_size, (req_size-total_size), req);
-    if(con->blocking == FALSE)
+    if(con->blocking == FALSE) {
+      CURL *handle = req->handle;
+      stop_for_status(handle);
       break;
+    }
   }
   con->incomplete = req->has_more || req->size;
   return total_size;
@@ -209,7 +212,7 @@ static Rboolean rcurl_open(Rconnection con) {
 
  /* Wait for first data to arrive. Monitoring a change in status code does not
    suffice in case of http redirects */
-  while(req->has_more && !req->has_data) {
+  while(con->blocking && req->has_more && !req->has_data) {
 #ifdef HAS_MULTI_WAIT
     int numfds;
     massert(curl_multi_wait(req->manager, NULL, 0, 1000, &numfds));
