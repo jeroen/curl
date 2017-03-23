@@ -233,9 +233,9 @@ SEXP R_curl_connection(SEXP url, SEXP ptr, SEXP wait) {
   if(!isString(url))
     error("Argument 'url' must be string.");
 
-  /* create the R connection object */
+  /* create the R connection object, mimicking base::url() */
   Rconnection con;
-  SEXP rc = PROTECT(R_new_custom_connection(translateCharUTF8(asChar(url)), "", "curl", &con));
+  SEXP rc = PROTECT(R_new_custom_connection(translateCharUTF8(asChar(url)), "r", "curl", &con));
 
   /* setup curl. These are the parts that are recycable. */
   request *req = malloc(sizeof(request));
