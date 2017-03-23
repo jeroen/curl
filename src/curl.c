@@ -244,7 +244,7 @@ SEXP R_curl_connection(SEXP url, SEXP ptr, SEXP wait) {
   req->limit = CURL_MAX_WRITE_SIZE;
   req->buf = malloc(req->limit);
   req->manager = curl_multi_init();
-  req->wait = asLogical(wait);
+  req->wait = asLogical(wait); //prevents busy-loop for curl_fetch_stream
   req->used = 0;
 
   /* allocate url string */
