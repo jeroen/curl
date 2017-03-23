@@ -229,16 +229,13 @@ static Rboolean rcurl_open(Rconnection con) {
   return TRUE;
 }
 
-SEXP R_curl_connection(SEXP url, SEXP mode, SEXP ptr, SEXP wait) {
+SEXP R_curl_connection(SEXP url, SEXP ptr, SEXP wait) {
   if(!isString(url))
     error("Argument 'url' must be string.");
 
-  if(!isString(mode))
-    error("Argument 'mode' must be string.");
-
   /* create the R connection object */
   Rconnection con;
-  SEXP rc = PROTECT(R_new_custom_connection(translateCharUTF8(asChar(url)), "r", "curl", &con));
+  SEXP rc = PROTECT(R_new_custom_connection(translateCharUTF8(asChar(url)), "", "curl", &con));
 
   /* setup curl. These are the parts that are recycable. */
   request *req = malloc(sizeof(request));
@@ -269,15 +266,6 @@ SEXP R_curl_connection(SEXP url, SEXP mode, SEXP ptr, SEXP wait) {
   con->read = rcurl_read;
   con->fgetc = rcurl_fgetc;
   con->fgetc_internal = rcurl_fgetc;
-
-  /* open connection  */
-  const char *smode = CHAR(asChar(mode));
-  if(!strcmp(smode, "r") || !strcmp(smode, "rb")){
-    strcpy(con->mode, smode);
-    rcurl_open(con);
-  } else if(strcmp(smode, "")) {
-    error("Invalid mode: %s", smode);
-  }
 
   /* protect the handle */
   (req->ref->refCount)++;

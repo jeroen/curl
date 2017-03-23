@@ -71,5 +71,8 @@ curl <- function(url = "http://httpbin.org/get", open = "", handle = new_handle(
 
 # 'wait' currently only used for non-blocking connections
 curl_connection <- function(url, mode, handle, wait = FALSE){
-  .Call(R_curl_connection, url, mode, handle, wait)
+  con <- .Call(R_curl_connection, url, handle, wait)
+  if(!identical(mode, ""))
+    open(con, open = mode)
+  return(con)
 }
