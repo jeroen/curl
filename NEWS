@@ -1,7 +1,8 @@
 2.4
  - Windows: update libcurl to 7.53.1 with libssl 1.0.2k
  - New form_data() function to POST form with string/raw values with custom conten-type
- - Fix busy waiting for curl_fetch_stream
+ - Fix busy waiting for curl_fetch_stream()
+ - Tweaks for open(con, blocking = FALSE)
  - Switch memcpy() to memmove() to please valgrind
 
 2.3
