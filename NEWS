@@ -4,6 +4,7 @@
  - Fix busy waiting for curl_fetch_stream()
  - Tweaks for open(con, blocking = FALSE)
  - Switch memcpy() to memmove() to please valgrind
+ - Assert that curl() connection is only opened in read mode
 
 2.3
  - All interruptable handles now use a global pool to share connections. Fixes #79.

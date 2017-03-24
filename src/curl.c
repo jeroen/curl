@@ -189,7 +189,7 @@ static Rboolean rcurl_open(Rconnection con) {
   request *req = (request*) con->private;
 
   //same message as base::url()
-  if (con->mode[0] != 'r')
+  if (con->mode[0] != 'r' || strchr(con->mode, 'w'))
     Rf_error("can only open URLs for reading");
 
   if(req->ref->locked)
