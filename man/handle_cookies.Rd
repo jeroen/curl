@@ -32,4 +32,3 @@ handle_cookies(h)
 \seealso{
 Other handles: \code{\link{handle}}
 }
-

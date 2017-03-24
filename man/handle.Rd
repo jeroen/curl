@@ -72,4 +72,3 @@ cat(rawToChar(r$content))
 \seealso{
 Other handles: \code{\link{handle_cookies}}
 }
-

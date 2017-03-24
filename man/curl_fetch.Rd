@@ -89,4 +89,3 @@ curl_fetch_multi("https://urldoesnotexist.xyz", success, failure)
 multi_run()
 str(data)
 }
-

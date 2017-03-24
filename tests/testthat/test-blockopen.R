@@ -19,7 +19,7 @@ read_bin <- function(x){
 }
 
 expect_immediate <- function(...){
-  expect_true(system.time(...)['elapsed'] < 0.2)
+  expect_true(system.time(...)['elapsed'] < 0.5)
 }
 
 test_that("Non-blocking open does not block", {

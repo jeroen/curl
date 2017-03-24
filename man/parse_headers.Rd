@@ -22,4 +22,3 @@ req <- curl_fetch_memory("https://httpbin.org/redirect/3")
 parse_headers(req$headers)
 parse_headers(req$headers, multiple = TRUE)
 }
-

@@ -27,4 +27,3 @@ nslookup("www.r-project.org")
 # If your OS supports IPv6
 nslookup("ipv6.test-ipv6.com", error = FALSE)
 }
-

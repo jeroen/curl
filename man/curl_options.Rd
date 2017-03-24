@@ -43,4 +43,3 @@ head(curl_symbols)
 curl_version()
 }
 \keyword{datasets}
-

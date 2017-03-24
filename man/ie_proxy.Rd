@@ -25,4 +25,3 @@ determines if and which proxy should be used to connect to a particular
 URL. If your settings have an "automatic configuration script" this
 involves downloading and executing a PAC file, which can take a while.
 }
-
