@@ -187,7 +187,10 @@ void reset(Rconnection con) {
 
 static Rboolean rcurl_open(Rconnection con) {
   request *req = (request*) con->private;
-  //Rprintf("Opening URL:%s\n", req->url);
+
+  //same message as base::url()
+  if (con->mode[0] != 'r')
+    Rf_error("can only open URLs for reading");
 
   if(req->ref->locked)
     Rf_error("Handle is already in use elsewhere.");
