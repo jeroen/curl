@@ -35,9 +35,9 @@ curl_echo <- function(handle, port = 9359){
   httpuv::service()
 
   # Post data from curl
-  handle_setopt(handle, timeout = 10, xferinfofunction = function(...){
+  handle_setopt(handle, timeout = 60, xferinfofunction = function(...){
     # Need very low wait to prevent gridlocking!
-    httpuv::service(10)
+    httpuv::service(1)
   }, noprogress = FALSE)
   curl_fetch_memory(paste0("http://localhost:", port, "/"), handle = handle)
 }
