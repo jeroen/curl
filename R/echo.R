@@ -32,7 +32,7 @@ curl_echo <- function(handle, port = 9359, progress = interactive()){
 
   # Start httpuv
   server_id <- httpuv::startServer("0.0.0.0", port, list(call = echo_handler))
-  on.exit(httpuv::stopServer(server_id))
+  on.exit(httpuv::stopServer(server_id), add = TRUE)
   httpuv::service()
 
   # Post data from curl
@@ -53,7 +53,7 @@ curl_echo <- function(handle, port = 9359, progress = interactive()){
   }, noprogress = FALSE)
   if(progress) {
     cat("\n")
-    on.exit(cat("\n"))
+    on.exit(cat("\n"), add = TRUE)
   }
   curl_fetch_memory(paste0("http://localhost:", port, "/"), handle = handle)
 }
