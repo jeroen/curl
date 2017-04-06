@@ -1,5 +1,6 @@
 2.5
  - Add support for curlopt_xferinfofunction
+ - Add curl_echo() function for easy testing
 
 2.4
  - Windows: update libcurl to 7.53.1 with libssl 1.0.2k
