@@ -73,3 +73,9 @@ int R_curl_callback_debug(CURL *handle, curl_infotype type_, char *data,
   return 0;
 }
 
+
+int R_curl_callback_xferinfo(SEXP fun,
+                             curl_off_t  dltotal, curl_off_t  dlnow,
+                             curl_off_t  ultotal, curl_off_t  ulnow) {
+  return R_curl_callback_progress(fun, dltotal, dlnow, ultotal, ulnow);
+}

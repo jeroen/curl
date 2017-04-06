@@ -158,7 +158,7 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
         error("Value for option %s (%d) must be a function.", optname, key);
 
       assert(curl_easy_setopt(handle, CURLOPT_XFERINFOFUNCTION,
-                              (curl_progress_callback) R_curl_callback_progress));
+                              (curl_progress_callback) R_curl_callback_xferinfo));
       assert(curl_easy_setopt(handle, CURLOPT_XFERINFODATA, val));
     } else if (key == CURLOPT_PROGRESSFUNCTION) {
       if (TYPEOF(val) != CLOSXP)
