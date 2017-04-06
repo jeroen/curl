@@ -40,11 +40,11 @@ curl_echo <- function(handle, port = 9359, progress = TRUE){
       if(down[1] == 0){
         cat("\rConnecting...")
       } else if(up[1] > up[2]){
-        cat(sprintf("\rUpload: %f / %f", up[2], up[1]))
+        cat(sprintf("\rUpload: %d / %d", up[2], up[1]))
       } else if(down[1] > down[2]) {
-        cat(sprintf("\rUpload: %f (DONE). Download: %f / %f", up[1], down[2], down[1]))
+        cat(sprintf("\rUpload: %d (DONE). Download: %d / %d", up[1], down[2], down[1]))
       } else {
-        cat(sprintf("\rUpload: %f (DONE). Download: %f (DONE)", up[1], down[1]))
+        cat(sprintf("\rUpload: %d (DONE). Download: %d (DONE)", up[1], down[1]))
       }
     }
     # Need very low wait to prevent gridlocking!
