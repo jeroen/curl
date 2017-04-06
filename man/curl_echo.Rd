@@ -4,12 +4,14 @@
 \alias{curl_echo}
 \title{Echo Service}
 \usage{
-curl_echo(handle, port = 9359)
+curl_echo(handle, port = 9359, progress = interactive())
 }
 \arguments{
 \item{handle}{a curl handle object}
 
 \item{port}{the port number on which to run httpuv server}
+
+\item{progress}{show progress meter during http transfer}
 }
 \description{
 This function is only for testing purposes. It starts a local httpuv server to

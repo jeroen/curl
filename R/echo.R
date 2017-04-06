@@ -6,6 +6,7 @@
 #' @export
 #' @param handle a curl handle object
 #' @param port the port number on which to run httpuv server
+#' @param progress show progress meter during http transfer
 #' @examples h <- handle_setform(new_handle(), foo = "blabla", bar = charToRaw("test"),
 #' myfile = form_file(system.file("DESCRIPTION"), "text/description"))
 #' req <- curl_echo(h)
