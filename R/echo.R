@@ -12,7 +12,7 @@
 #'
 #' # Show the multipart body
 #' cat(rawToChar(req$content))
-curl_echo <- function(handle, port = 9359){
+curl_echo <- function(handle, port = 9359, progress = TRUE){
   echo_handler <- function(env){
     http_method <- env[["REQUEST_METHOD"]]
     content_type <- env[["CONTENT_TYPE"]]
@@ -35,7 +35,18 @@ curl_echo <- function(handle, port = 9359){
   httpuv::service()
 
   # Post data from curl
-  handle_setopt(handle, timeout = 60, xferinfofunction = function(...){
+  handle_setopt(handle, timeout = 60, xferinfofunction = function(down, up){
+    if(progress){
+      if(down[1] == 0){
+        cat("\rConnecting...")
+      } else if(up[1] > up[2]){
+        cat(sprintf("\rUpload: %f / %f", up[2], up[1]))
+      } else if(down[1] > down[2]) {
+        cat(sprintf("\rUpload: %f (DONE). Download: %f / %f", up[1], down[2], down[1]))
+      } else {
+        cat(sprintf("\rUpload: %f (DONE). Download: %f (DONE)", up[1], down[1]))
+      }
+    }
     # Need very low wait to prevent gridlocking!
     httpuv::service(1)
   }, noprogress = FALSE)
