@@ -12,7 +12,7 @@
 #'
 #' # Show the multipart body
 #' cat(rawToChar(req$content))
-curl_echo <- function(handle, port = 9359, progress = TRUE){
+curl_echo <- function(handle, port = 9359, progress = interactive()){
   echo_handler <- function(env){
     http_method <- env[["REQUEST_METHOD"]]
     content_type <- env[["CONTENT_TYPE"]]
