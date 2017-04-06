@@ -37,7 +37,7 @@ curl_echo <- function(handle, port = 9359, progress = TRUE){
   # Post data from curl
   handle_setopt(handle, timeout = 60, xferinfofunction = function(down, up){
     if(progress){
-      if(down[1] == 0){
+      if(up[1] == 0 && down[1] == 0){
         cat("\rConnecting...")
       } else if(up[1] > up[2]){
         cat(sprintf("\rUpload: %d / %d", up[2], up[1]))
