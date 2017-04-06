@@ -153,6 +153,13 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
     SEXP val = VECTOR_ELT(values, i);
     if(val == R_NilValue){
       assert(curl_easy_setopt(handle, key, NULL));
+    } else if (key == CURLOPT_XFERINFOFUNCTION) {
+      if (TYPEOF(val) != CLOSXP)
+        error("Value for option %s (%d) must be a function.", optname, key);
+
+      assert(curl_easy_setopt(handle, CURLOPT_XFERINFOFUNCTION,
+                              (curl_progress_callback) R_curl_callback_progress));
+      assert(curl_easy_setopt(handle, CURLOPT_XFERINFODATA, val));
     } else if (key == CURLOPT_PROGRESSFUNCTION) {
       if (TYPEOF(val) != CLOSXP)
         error("Value for option %s (%d) must be a function.", optname, key);

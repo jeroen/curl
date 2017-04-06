@@ -1,3 +1,6 @@
+2.5
+ - Add support for curlopt_xferinfofunction
+
 2.4
  - Windows: update libcurl to 7.53.1 with libssl 1.0.2k
  - New form_data() function to POST form with string/raw values with custom conten-type
