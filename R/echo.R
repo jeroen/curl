@@ -13,6 +13,7 @@
 #' # Show the multipart body
 #' cat(rawToChar(req$content))
 curl_echo <- function(handle, port = 9359, progress = interactive()){
+  progress <- isTRUE(progress)
   echo_handler <- function(env){
     http_method <- env[["REQUEST_METHOD"]]
     content_type <- env[["CONTENT_TYPE"]]
@@ -50,5 +51,9 @@ curl_echo <- function(handle, port = 9359, progress = interactive()){
     # Need very low wait to prevent gridlocking!
     httpuv::service(1)
   }, noprogress = FALSE)
+  if(progress) {
+    cat("\n")
+    on.exit(cat("\n"))
+  }
   curl_fetch_memory(paste0("http://localhost:", port, "/"), handle = handle)
 }
