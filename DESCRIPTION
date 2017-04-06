@@ -1,7 +1,7 @@
 Package: curl
 Type: Package
 Title: A Modern and Flexible Web Client for R
-Version: 2.4
+Version: 2.4.9000
 Authors@R: c(
     person("Jeroen", "Ooms", , "jeroen@berkeley.edu", role = c("cre", "aut")),
     person("Hadley", "Wickham", , "hadley@rstudio.com", role = "ctb"),
@@ -25,7 +25,8 @@ Suggests:
     knitr,
     jsonlite,
     rmarkdown,
-    magrittr
+    magrittr,
+    httpuv
 VignetteBuilder: knitr
 Depends:
     R (>= 3.0.0)
