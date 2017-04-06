@@ -15,19 +15,20 @@
 #' cat(rawToChar(req$content))
 curl_echo <- function(handle, port = 9359, progress = interactive()){
   progress <- isTRUE(progress)
+  formdata <- NULL
   echo_handler <- function(env){
+    formdata <<- as.list(env)
     http_method <- env[["REQUEST_METHOD"]]
     content_type <- env[["CONTENT_TYPE"]]
     type <- ifelse(length(content_type) && nchar(content_type), content_type, "empty")
-    body <- if(tolower(http_method) %in% c("post", "put")){
+    formdata$body <<- if(tolower(http_method) %in% c("post", "put")){
       env[["rook.input"]]$read()
-    } else {
-      env[["QUERY_STRING"]]
     }
+    formdata[["rook.input"]] <<- NULL
     list(
       status = 200,
-      body = body,
-      headers = c("Content-Type" = type)
+      body = "",
+      headers = c("Content-Type" = "text/plain")
     )
   }
 
@@ -52,9 +53,8 @@ curl_echo <- function(handle, port = 9359, progress = interactive()){
     # Need very low wait to prevent gridlocking!
     httpuv::service(1)
   }, noprogress = FALSE)
-  if(progress) {
-    cat("\n")
-    on.exit(cat("\n"), add = TRUE)
-  }
+  if(progress) cat("\n")
   curl_fetch_memory(paste0("http://localhost:", port, "/"), handle = handle)
+  if(progress) cat("\n")
+  return(formdata)
 }
