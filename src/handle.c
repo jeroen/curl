@@ -91,8 +91,13 @@ void set_handle_defaults(reference *ref){
   assert(curl_easy_setopt(handle, CURLOPT_COOKIEFILE, ""));
   assert(curl_easy_setopt(handle, CURLOPT_FILETIME, 1L));
 
-  /* a default user agent */
-  assert(curl_easy_setopt(handle, CURLOPT_USERAGENT, "r/curl/jeroen"));
+  /* set the default user agent */
+  SEXP agent = GetOption1(install("HTTPUserAgent"));
+  if(isString(agent) && Rf_length(agent)){
+    assert(curl_easy_setopt(handle, CURLOPT_USERAGENT, CHAR(STRING_ELT(agent, 0))));
+  } else {
+    assert(curl_easy_setopt(handle, CURLOPT_USERAGENT, "r/curl/jeroen"));
+  }
 
   /* allow all authentication methods */
   assert(curl_easy_setopt(handle, CURLOPT_HTTPAUTH, CURLAUTH_ANY));
