@@ -9,10 +9,10 @@
 #' @param progress show progress meter during http transfer
 #' @examples h <- handle_setform(new_handle(), foo = "blabla", bar = charToRaw("test"),
 #' myfile = form_file(system.file("DESCRIPTION"), "text/description"))
-#' req <- curl_echo(h)
+#' formdata <- curl_echo(h)
 #'
 #' # Show the multipart body
-#' cat(rawToChar(req$content))
+#' cat(rawToChar(formdata$body))
 curl_echo <- function(handle, port = 9359, progress = interactive()){
   progress <- isTRUE(progress)
   formdata <- NULL
