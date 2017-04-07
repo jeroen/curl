@@ -1,5 +1,6 @@
 2.5
  - Add support for curlopt_xferinfofunction
+ - Automatically set curlopt_noprogress=0 when setting one of the progress functions
  - Add curl_echo() function for easy testing
 
 2.4
