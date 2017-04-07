@@ -1,6 +1,7 @@
 2.5
  - Add support for curlopt_xferinfofunction
- - Automatically set curlopt_noprogress=0 when setting one of the progress functions
+ - Automatically set curlopt_noprogress = 0 when setting one of the progress functions
+ - Automatically use XFERINFOFUNCTION instead of PROGRESSFUNCTION on recent versions of libcurl
  - Add curl_echo() function for easy testing
 
 2.4

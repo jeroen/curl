@@ -55,7 +55,7 @@ new_handle <- function(...){
 handle_setopt <- function(handle, ..., .list = list()){
   stopifnot(inherits(handle, "curl_handle"))
   values <- c(list(...), .list)
-  opt_names <- tolower(names(values))
+  opt_names <- fix_options(tolower(names(values)))
   keys <- as.integer(curl_options()[opt_names])
   na_keys <- is.na(keys)
   if(any(na_keys)){
@@ -177,4 +177,18 @@ print.curl_handle <- function(x, ...){
 #' @useDynLib curl R_total_handles
 total_handles <- function(){
   .Call(R_total_handles)
+}
+
+
+## Some hacks for backward compatibilty
+fix_options <- function(opt_names){
+  # Recent libcurl should use xferinfo instead of progress
+  has_xferinfo <- length(curl_options("xferinfofunction"))
+  if(has_xferinfo){
+    opt_names[opt_names == "progressfunction"] <- "xferinfofunction"
+    return(opt_names)
+  } else {
+    opt_names[opt_names == "xferinfofunction"] <- "progressfunction"
+    return(opt_names)
+  }
 }
