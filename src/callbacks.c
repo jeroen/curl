@@ -18,7 +18,7 @@ int R_curl_callback_progress(SEXP fun,
 
   if (ok != 0) {
     UNPROTECT(4);
-    return 0;
+    return CURL_READFUNC_ABORT;
   }
 
   if (TYPEOF(res) != LGLSXP || length(res) != 1) {
