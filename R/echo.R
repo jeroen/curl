@@ -48,7 +48,7 @@ curl_echo <- function(handle, port = 9359, progress = interactive()){
       if(up[1] == 0 && down[1] == 0){
         cat("\rConnecting...")
       } else {
-        cat(sprintf("\rUpload: %d / %d", up[2], up[1]))
+        cat(sprintf("\rUpload: %d (%d%%)", up[2], as.integer(100 * up[2] / up[1])))
       }
     }
     # Need very low wait to prevent gridlocking!
