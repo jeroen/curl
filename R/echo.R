@@ -18,7 +18,7 @@ curl_echo <- function(handle, port = 9359, progress = interactive()){
   formdata <- NULL
   echo_handler <- function(env){
     if(progress){
-      cat("\nUpload Complete!\n")
+      cat("\nRequest Complete!\n")
       progress <<- FALSE
     }
 
@@ -47,12 +47,8 @@ curl_echo <- function(handle, port = 9359, progress = interactive()){
     if(progress){
       if(up[1] == 0 && down[1] == 0){
         cat("\rConnecting...")
-      } else if(up[1] > up[2]){
-        cat(sprintf("\rUpload: %d / %d", up[2], up[1]))
-      } else if(down[1] > down[2]) {
-        cat(sprintf("\rUpload: %d (DONE). Download: %d / %d", up[1], down[2], down[1]))
       } else {
-        cat(sprintf("\rUpload: %d (DONE). Download: %d (DONE)", up[1], down[1]))
+        cat(sprintf("\rUpload: %d / %d", up[2], up[1]))
       }
     }
     # Need very low wait to prevent gridlocking!
