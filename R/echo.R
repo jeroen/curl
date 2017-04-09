@@ -17,6 +17,11 @@ curl_echo <- function(handle, port = 9359, progress = interactive()){
   progress <- isTRUE(progress)
   formdata <- NULL
   echo_handler <- function(env){
+    if(progress){
+      cat("\nUpload Complete!\n")
+      progress <<- FALSE
+    }
+
     formdata <<- as.list(env)
     http_method <- env[["REQUEST_METHOD"]]
     content_type <- env[["CONTENT_TYPE"]]
@@ -38,7 +43,7 @@ curl_echo <- function(handle, port = 9359, progress = interactive()){
   httpuv::service()
 
   # Post data from curl
-  handle_setopt(handle, timeout = 60, xferinfofunction = function(down, up){
+  handle_setopt(handle, connecttimeout = 2, xferinfofunction = function(down, up){
     if(progress){
       if(up[1] == 0 && down[1] == 0){
         cat("\rConnecting...")
