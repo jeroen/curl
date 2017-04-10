@@ -26,4 +26,7 @@ formdata <- curl_echo(h)
 
 # Show the multipart body
 cat(rawToChar(formdata$body))
+
+# Parse multipart
+webutils::parse_http(formdata$body, formdata$HTTP_CONTENT_TYPE)
 }
