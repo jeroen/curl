@@ -52,7 +52,6 @@ curl_echo <- function(handle, port = 9359, progress = interactive(), file = NULL
   # Start httpuv
   server_id <- httpuv::startServer("0.0.0.0", port, list(call = echo_handler))
   on.exit(httpuv::stopServer(server_id), add = TRUE)
-  httpuv::service()
 
   # Post data from curl
   handle_setopt(handle, connecttimeout = 2, xferinfofunction = function(down, up){
