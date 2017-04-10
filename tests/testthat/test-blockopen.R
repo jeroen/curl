@@ -40,15 +40,19 @@ test_that("Error handling for non-blocking open", {
   close(con)
 
   # Test error during read text
-  con <- curl(httpbin("status/401"))
+  h <- new_handle()
+  con <- curl(httpbin("status/418"), handle = h)
   expect_immediate(open(con, "rs", blocking = FALSE))
-  expect_error(read_text(con), "401")
+  expect_is(read_text(con), "character")
+  expect_equal(handle_data(h)$status_code, 418)
   close(con)
 
   # Test error during read binary
-  con <- curl(httpbin("status/401"))
+  h <- new_handle()
+  con <- curl(httpbin("status/418"), handle = h)
   expect_immediate(open(con, "rbs", blocking = FALSE))
-  expect_error(read_bin(con), "401")
+  expect_is(read_bin(con), "raw")
+  expect_equal(handle_data(h)$status_code, 418)
   close(con)
 
   # DNS error

@@ -134,8 +134,6 @@ static size_t rcurl_read(void *target, size_t sz, size_t ni, Rconnection con) {
 #endif
     fetchdata(req);
     total_size += pop((char*)target + total_size, (req_size-total_size), req);
-    if(!req->block_open)
-      stop_for_status(req->handle);
     if(con->blocking == FALSE)
       break;
   }
