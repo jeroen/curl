@@ -16,7 +16,7 @@
 #' cat(rawToChar(formdata$body))
 #'
 #' # Parse multipart
-#' webutils::parse_http(formdata$body, formdata$HTTP_CONTENT_TYPE)
+#' webutils::parse_http(formdata$body, formdata$content_type)
 curl_echo <- function(handle, port = 9359, progress = interactive(), file = NULL){
   progress <- isTRUE(progress)
   formdata <- NULL
@@ -40,6 +40,8 @@ curl_echo <- function(handle, port = 9359, progress = interactive(), file = NULL
       }
     }
     formdata[["rook.input"]] <<- NULL
+    formdata[["rook.errors"]] <<- NULL
+    names(formdata) <<- tolower(names(formdata))
     list(
       status = 200,
       body = "",
