@@ -43,7 +43,6 @@ typedef struct {
   char *url;
   char *buf;
   char *cur;
-  int block_open;
   int has_data;
   int has_more;
   int used;
@@ -212,11 +211,11 @@ static Rboolean rcurl_open(Rconnection con) {
   req->has_more = 1;
 
   /* fully non-blocking has 's' in open mode */
-  req->block_open = !strchr(con->mode, 's');
+  int block_open = !strchr(con->mode, 's');
 
  /* Wait for first data to arrive. Monitoring a change in status code does not
    suffice in case of http redirects */
-  while(req->block_open && req->has_more && !req->has_data) {
+  while(block_open && req->has_more && !req->has_data) {
 #ifdef HAS_MULTI_WAIT
     int numfds;
     massert(curl_multi_wait(req->manager, NULL, 0, 1000, &numfds));
@@ -227,7 +226,7 @@ static Rboolean rcurl_open(Rconnection con) {
   /* check http status code */
   /* Stream connections should be checked via handle_data() */
   /* Non-blocking open connections get checked during read */
-  if(req->block_open && !req->stream)
+  if(block_open && !req->stream)
     stop_for_status(handle);
 
   /* set mode in case open() changed it */
