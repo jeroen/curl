@@ -4,7 +4,7 @@
 \alias{curl_echo}
 \title{Echo Service}
 \usage{
-curl_echo(handle, port = 9359, progress = interactive())
+curl_echo(handle, port = 9359, progress = interactive(), file = NULL)
 }
 \arguments{
 \item{handle}{a curl handle object}
@@ -12,6 +12,8 @@ curl_echo(handle, port = 9359, progress = interactive())
 \item{port}{the port number on which to run httpuv server}
 
 \item{progress}{show progress meter during http transfer}
+
+\item{file}{path or connection to write body. Default returns body as raw vector.}
 }
 \description{
 This function is only for testing purposes. It starts a local httpuv server to
