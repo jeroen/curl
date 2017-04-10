@@ -84,8 +84,11 @@ curl_fetch_disk <- function(url, path, handle = new_handle()){
 #' @rdname curl_fetch
 #' @useDynLib curl R_curl_connection
 curl_fetch_stream <- function(url, fun, handle = new_handle()){
+  # Blocking = TRUE and partial = TRUE to prevent busy-waiting
   con <- curl_connection(url, mode = "", handle = handle, partial = TRUE)
-  open(con, "rbf") # 'f' means: do not error for status code
+
+  # 'f' means: do not error for status code
+  open(con, "rbf")
   on.exit(close(con))
   while(isIncomplete(con)){
     buf <- readBin(con, raw(), 32768L)
