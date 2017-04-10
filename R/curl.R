@@ -70,8 +70,8 @@ curl <- function(url = "http://httpbin.org/get", open = "", handle = new_handle(
 
 # 'stream' currently only used for non-blocking connections to prevent
 # busy looping in curl_fetch_stream()
-curl_connection <- function(url, mode, handle, wait = FALSE){
-  con <- .Call(R_curl_connection, url, handle, wait)
+curl_connection <- function(url, mode, handle, partial = FALSE){
+  con <- .Call(R_curl_connection, url, handle, partial)
   if(!identical(mode, ""))
     open(con, open = mode)
   return(con)

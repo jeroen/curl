@@ -46,7 +46,7 @@ typedef struct {
   int has_data;
   int has_more;
   int used;
-  int wait;
+  int partial;
   size_t size;
   size_t limit;
   CURLM *manager;
@@ -128,12 +128,14 @@ static size_t rcurl_read(void *target, size_t sz, size_t ni, Rconnection con) {
     /* wait for activity, timeout or "nothing" */
 #ifdef HAS_MULTI_WAIT
     int numfds;
-    if(con->blocking || req->wait)
+    if(con->blocking)
       massert(curl_multi_wait(req->manager, NULL, 0, 1000, &numfds));
 #endif
     fetchdata(req);
     total_size += pop((char*)target + total_size, (req_size-total_size), req);
-    if(con->blocking == FALSE)
+
+    //return less than requested data for non-blocking connections, or curl_fetch_stream()
+    if(!con->blocking || req->partial)
       break;
   }
   con->incomplete = req->has_more || req->size;
@@ -237,7 +239,7 @@ static Rboolean rcurl_open(Rconnection con) {
   return TRUE;
 }
 
-SEXP R_curl_connection(SEXP url, SEXP ptr, SEXP waiter) {
+SEXP R_curl_connection(SEXP url, SEXP ptr, SEXP partial) {
   if(!isString(url))
     error("Argument 'url' must be string.");
 
@@ -252,7 +254,7 @@ SEXP R_curl_connection(SEXP url, SEXP ptr, SEXP waiter) {
   req->limit = CURL_MAX_WRITE_SIZE;
   req->buf = malloc(req->limit);
   req->manager = curl_multi_init();
-  req->wait = asLogical(waiter); //prevents busy-loop for curl_fetch_stream
+  req->partial = asLogical(partial); //only for curl_fetch_stream()
   req->used = 0;
 
   /* allocate url string */
