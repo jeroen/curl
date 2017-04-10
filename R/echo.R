@@ -14,6 +14,9 @@
 #'
 #' # Show the multipart body
 #' cat(rawToChar(formdata$body))
+#'
+#' # Parse multipart
+#' webutils::parse_http(formdata$body, formdata$HTTP_CONTENT_TYPE)
 curl_echo <- function(handle, port = 9359, progress = interactive(), file = NULL){
   progress <- isTRUE(progress)
   formdata <- NULL
