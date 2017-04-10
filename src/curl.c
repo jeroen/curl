@@ -211,7 +211,8 @@ static Rboolean rcurl_open(Rconnection con) {
   req->has_more = 1;
 
   /* fully non-blocking has 's' in open mode */
-  int block_open = !strchr(con->mode, 's');
+  int block_open = strchr(con->mode, 's') == NULL;
+  int force_open = strchr(con->mode, 'f') != NULL;
 
  /* Wait for first data to arrive. Monitoring a change in status code does not
    suffice in case of http redirects */
@@ -226,7 +227,7 @@ static Rboolean rcurl_open(Rconnection con) {
   /* check http status code */
   /* Stream connections should be checked via handle_data() */
   /* Non-blocking open connections get checked during read */
-  if(block_open && !req->stream)
+  if(!force_open && block_open && !req->stream)
     stop_for_status(handle);
 
   /* set mode in case open() changed it */

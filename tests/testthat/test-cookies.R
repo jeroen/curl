@@ -18,6 +18,11 @@ test_that("Add some cookies", {
   expect_true(all(cookies$expiration == Inf))
 })
 
+test_that("Coockie with connection", {
+  con <- curl(httpbin("cookies"), handle = h)
+  expect_equal(jsonlite::fromJSON(con)$cookies$foo, "123")
+})
+
 test_that("Delete a cookie", {
   req <- curl_fetch_memory(httpbin("cookies/delete?foo"), handle = h)
   cookies <- handle_cookies(h)
