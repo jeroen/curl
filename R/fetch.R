@@ -88,7 +88,7 @@ curl_fetch_stream <- function(url, fun, handle = new_handle()){
   open(con, "rbf") # 'f' means: do not error for status code
   on.exit(close(con))
   while(isIncomplete(con)){
-    buf <- readBin(con, raw(), 8192L)
+    buf <- readBin(con, raw(), 32768L)
     if(length(buf))
       fun(buf)
   }
