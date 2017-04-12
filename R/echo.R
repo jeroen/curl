@@ -53,6 +53,9 @@ curl_echo <- function(handle, port = 9359, progress = interactive(), file = NULL
   server_id <- httpuv::startServer("0.0.0.0", port, list(call = echo_handler))
   on.exit(httpuv::stopServer(server_id), add = TRUE)
 
+  # httpuv 1.3.4 supports non-blocking service()
+  waittime <- ifelse(packageVersion('httpuv') > "1.3.3", NA, 1)
+
   # Post data from curl
   handle_setopt(handle, connecttimeout = 2, xferinfofunction = function(down, up){
     if(progress){
@@ -63,7 +66,7 @@ curl_echo <- function(handle, port = 9359, progress = interactive(), file = NULL
       }
     }
     # Need very low wait to prevent gridlocking!
-    httpuv::service(1)
+    httpuv::service(waittime)
   }, noprogress = FALSE)
   if(progress) cat("\n")
   curl_fetch_memory(paste0("http://localhost:", port, "/"), handle = handle)
