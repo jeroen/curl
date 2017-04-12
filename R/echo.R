@@ -54,7 +54,7 @@ curl_echo <- function(handle, port = 9359, progress = interactive(), file = NULL
   on.exit(httpuv::stopServer(server_id), add = TRUE)
 
   # httpuv 1.3.4 supports non-blocking service()
-  waittime <- ifelse(packageVersion('httpuv') > "1.3.3", NA, 1)
+  waittime <- ifelse(utils::packageVersion('httpuv') > "1.3.3", NA, 1)
 
   # Post data from curl
   handle_setopt(handle, connecttimeout = 2, xferinfofunction = function(down, up){
