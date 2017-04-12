@@ -4,90 +4,22 @@
 
 |setting  |value                        |
 |:--------|:----------------------------|
-|version  |R version 3.3.2 (2016-10-31) |
+|version  |R version 3.3.3 (2017-03-06) |
 |system   |x86_64, darwin13.4.0         |
 |ui       |X11                          |
 |language |(EN)                         |
 |collate  |en_US.UTF-8                  |
 |tz       |Europe/Amsterdam             |
-|date     |2016-11-23                   |
+|date     |2017-04-12                   |
 
 ## Packages
 
-|package |*  |version |date       |source                     |
-|:-------|:--|:-------|:----------|:--------------------------|
-|curl    |   |2.3     |2016-11-23 |local (jeroenooms/curl@NA) |
+|package |*  |version |date       |source           |
+|:-------|:--|:-------|:----------|:----------------|
+|curl    |   |2.5     |2017-04-12 |local (NA/NA@NA) |
 
 # Check results
-
-64 packages
-
-|package            |version | errors| warnings| notes|
-|:------------------|:-------|------:|--------:|-----:|
-|abbyyR             |0.5.0   |      0|        0|     1|
-|addinslist         |0.2     |      0|        0|     0|
-|AzureML            |0.2.13  |      0|        0|     0|
-|BatchGetSymbols    |1.0     |      0|        0|     0|
-|brranching         |0.2.0   |      0|        0|     0|
-|captr              |0.2.0   |      0|        0|     0|
-|citr               |0.2.0   |      0|        0|     0|
-|clarifai           |0.4.0   |      0|        0|     0|
-|commonmark         |0.9     |      0|        0|     0|
-|crul               |0.1.0   |      0|        0|     0|
-|crunch             |1.14.2  |      0|        0|     0|
-|curlconverter      |0.7.0   |      0|        0|     0|
-|data.table         |1.9.6   |      1|        0|     1|
-|dataRetrieval      |2.5.13  |      0|        0|     0|
-|devtools           |1.12.0  |      0|        0|     1|
-|ecb                |0.2     |      0|        0|     0|
-|elastic            |0.7.8   |      0|        0|     1|
-|fauxpas            |0.1.0   |      0|        0|     0|
-|FedData            |2.3.2   |      0|        0|     0|
-|federalregister    |0.2.0   |      0|        0|     0|
-|finreportr         |1.0.1   |      0|        0|     0|
-|geoknife           |1.4.0   |      0|        0|     0|
-|GetHFData          |1.2.1   |      0|        0|     0|
-|GetTDData          |1.2.5   |      0|        0|     0|
-|gitgadget          |0.2.1   |      0|        0|     0|
-|githubinstall      |0.2.1   |      0|        0|     0|
-|googleway          |1.0.0   |      0|        0|     0|
-|gpg                |0.4     |      0|        0|     0|
-|GSODR              |0.1.9   |      0|        0|     0|
-|httr               |1.2.1   |      0|        0|     0|
-|jsonlite           |1.1     |      0|        0|     0|
-|magick             |0.3     |      0|        0|     1|
-|MTurkR             |0.7.0   |      0|        0|     0|
-|MTurkRGUI          |0.1.5   |      0|        0|     0|
-|nomadlist          |0.1.0   |      0|        0|     0|
-|OAIHarvester       |0.2-1   |      0|        0|     0|
-|oec                |2.2     |      0|        0|     0|
-|OpenML             |1.1     |      0|        0|     1|
-|osmplotr           |0.2.3   |      0|        0|     0|
-|pageviews          |0.3.0   |      0|        0|     0|
-|plotly             |4.5.6   |      0|        0|     0|
-|radiant.data       |0.6.0   |      0|        0|     0|
-|random             |0.2.5   |      0|        0|     0|
-|rdian              |0.1.1   |      0|        0|     0|
-|rdomains           |0.1.5   |      0|        0|     0|
-|readr              |1.0.0   |      0|        0|     0|
-|refimpact          |0.1.0   |      0|        0|     0|
-|remotes            |1.0.0   |      0|        0|     1|
-|request            |0.1.0   |      0|        0|     0|
-|rgho               |1.0.0   |      0|        0|     0|
-|rio                |0.4.16  |      0|        0|     0|
-|rpdo               |0.2.0   |      0|        0|     0|
-|RPublica           |0.1.3   |      0|        0|     0|
-|rtypeform          |0.1.1   |      0|        0|     0|
-|rversions          |1.0.3   |      0|        0|     0|
-|sbtools            |1.1.6   |      0|        0|     0|
-|smapr              |0.0.1   |      1|        0|     0|
-|telegram           |0.6.0   |      0|        0|     0|
-|trelliscope        |0.9.7   |      0|        0|     1|
-|udapi              |0.1.0   |      0|        0|     0|
-|V8                 |1.1     |      0|        0|     0|
-|W3CMarkupValidator |0.1-5   |      0|        0|     0|
-|wrswoR.benchmark   |0.1-1   |      0|        0|     0|
-|xml2               |1.0.0   |      0|        0|     0|
+68 packages
 
 ## abbyyR (0.5.0)
 Maintainer: Gaurav Sood <gsood07@gmail.com>  
@@ -109,14 +41,26 @@ Bug reports: https://github.com/daattali/addinslist/issues
 
 0 errors | 0 warnings | 0 notes
 
+## aws.ec2metadata (0.1.1)
+Maintainer: Thomas J. Leeper <thosjleeper@gmail.com>  
+Bug reports: https://github.com/cloudyr/aws.ec2metadata/issues
+
+0 errors | 0 warnings | 0 notes
+
 ## AzureML (0.2.13)
 Maintainer: Andrie de Vries <adevries@microsoft.com>  
 Bug reports: https://github.com/RevolutionAnalytics/AzureML/issues
 
 0 errors | 0 warnings | 0 notes
 
-## BatchGetSymbols (1.0)
+## BatchGetSymbols (1.1)
 Maintainer: Marcelo Perlin <marceloperlin@gmail.com>
+
+0 errors | 0 warnings | 0 notes
+
+## biomartr (0.4.0)
+Maintainer: Hajk-Georg Drost <hgd23@cam.ac.uk>  
+Bug reports: https://github.com/HajkD/biomartr/issues
 
 0 errors | 0 warnings | 0 notes
 
@@ -138,64 +82,25 @@ Bug reports: https://github.com/crsh/citr/issues
 
 0 errors | 0 warnings | 0 notes
 
-## clarifai (0.4.0)
-Maintainer: Gaurav Sood <gsood07@gmail.com>  
-Bug reports: http://github.com/soodoku/clarifai/issues
-
-0 errors | 0 warnings | 0 notes
-
-## commonmark (0.9)
-Maintainer: Jeroen Ooms <jeroen.ooms@stat.ucla.edu>  
+## commonmark (1.2)
+Maintainer: Jeroen Ooms <jeroen@berkeley.edu>  
 Bug reports: http://github.com/jeroenooms/commonmark/issues
 
 0 errors | 0 warnings | 0 notes
 
-## crul (0.1.0)
+## crul (0.3.4)
 Maintainer: Scott Chamberlain <myrmecocystus@gmail.com>  
-Bug reports: http://www.github.com/ropenscilabs/crul/issues
+Bug reports: https://github.com/ropensci/crul/issues
 
 0 errors | 0 warnings | 0 notes
 
-## crunch (1.14.2)
+## crunch (1.15.2)
 Maintainer: Neal Richardson <neal@crunch.io>  
 Bug reports: https://github.com/Crunch-io/rcrunch/issues
 
 0 errors | 0 warnings | 0 notes
 
-## curlconverter (0.7.0)
-Maintainer: Bob Rudis <bob@rudis.net>
-
-0 errors | 0 warnings | 0 notes
-
-## data.table (1.9.6)
-Maintainer: Matt Dowle <mattjdowle@gmail.com>  
-Bug reports: https://github.com/Rdatatable/data.table/issues
-
-1 error  | 0 warnings | 1 note 
-
-```
-checking tests ... ERROR
-Running the tests in ‘tests/tests.R’ failed.
-Last 13 lines of output:
-  > y = with(DT, eval(ll)) 
-  First 6 of 644 :[1] 742 692 625 943 694 365
-  forder decreasing argument test: seed = 1479917387  colorder = 2,4,1,3,5 
-  Tests 1372.3+ not run. If required call library(GenomicRanges) first.
-  Tests 1441-1444 not run. If required install the 'fr_FR.utf8' locale.
-  
-  Error in eval(expr, envir, enclos) : 
-    14 errors out of 4390 (lastID=1557.4, endian=little, sizeof(long double)==16) in inst/tests/tests.Rraw on Wed Nov 23 17:09:55 2016. Search tests.Rraw for test numbers: 167, 167.2, 1253.152, 1253.156, 1253.232, 1253.234, 1253.24, 1253.242, 1253.264, 1253.272, 1253.424, 1253.428, 1253.44, 1253.444.
-  Calls: test.data.table -> sys.source -> eval -> eval
-  In addition: Warning message:
-  In library(package, lib.loc = lib.loc, character.only = TRUE, logical.return = TRUE,  :
-    there is no package called 'GenomicRanges'
-  Execution halted
-
-checking package dependencies ... NOTE
-Package suggested but not available for checking: ‘GenomicRanges’
-```
-
-## dataRetrieval (2.5.13)
+## dataRetrieval (2.6.3)
 Maintainer: Laura DeCicco <ldecicco@usgs.gov>  
 Bug reports: https://github.com/USGS-R/dataRetrieval/issues
 
@@ -205,12 +110,7 @@ Bug reports: https://github.com/USGS-R/dataRetrieval/issues
 Maintainer: Hadley Wickham <hadley@rstudio.com>  
 Bug reports: https://github.com/hadley/devtools/issues
 
-0 errors | 0 warnings | 1 note 
-
-```
-checking package dependencies ... NOTE
-Package suggested but not available for checking: ‘BiocInstaller’
-```
+0 errors | 0 warnings | 0 notes
 
 ## ecb (0.2)
 Maintainer: Eric Persson <expersso5@gmail.com>
@@ -236,8 +136,9 @@ Bug reports: https://github.com/ropenscilabs/fauxpas/issues
 
 0 errors | 0 warnings | 0 notes
 
-## FedData (2.3.2)
-Maintainer: R. Kyle Bocinsky <bocinsky@gmail.com>
+## FedData (2.4.5)
+Maintainer: R. Kyle Bocinsky <bocinsky@gmail.com>  
+Bug reports: https://github.com/bocinsky/FedData/issues
 
 0 errors | 0 warnings | 0 notes
 
@@ -252,13 +153,13 @@ Maintainer: Seward Lee <sewardlee337@gmail.com>
 
 0 errors | 0 warnings | 0 notes
 
-## geoknife (1.4.0)
-Maintainer: Jordan Read <jread@usgs.gov>  
-Bug reports: https://github.com/USGS-R/geoknife/issues
+## foghorn (0.4.2)
+Maintainer: Francois Michonneau <francois.michonneau@gmail.com>  
+Bug reports: https://github.com/fmichonneau/foghorn/issues
 
 0 errors | 0 warnings | 0 notes
 
-## GetHFData (1.2.1)
+## GetHFData (1.2.4)
 Maintainer: Marcelo Perlin <marceloperlin@gmail.com>
 
 0 errors | 0 warnings | 0 notes
@@ -286,14 +187,15 @@ Bug reports: https://github.com/SymbolixAU/googleway/issues
 
 0 errors | 0 warnings | 0 notes
 
-## gpg (0.4)
-Maintainer: Jeroen Ooms <jeroen.ooms@stat.ucla.edu>
+## gpg (0.5)
+Maintainer: Jeroen Ooms <jeroen@berkeley.edu>  
+Bug reports: https://github.com/jeroen/gpg/issues
 
 0 errors | 0 warnings | 0 notes
 
-## GSODR (0.1.9)
+## GSODR (1.0.2.1)
 Maintainer: Adam Sparks <adamhsparks@gmail.com>  
-Bug reports: https://github.com/adamhsparks/GSODR/issues
+Bug reports: https://github.com/ropensci/GSODR/issues
 
 0 errors | 0 warnings | 0 notes
 
@@ -302,14 +204,20 @@ Maintainer: Hadley Wickham <hadley@rstudio.com>
 
 0 errors | 0 warnings | 0 notes
 
-## jsonlite (1.1)
-Maintainer: Jeroen Ooms <jeroen.ooms@stat.ucla.edu>  
-Bug reports: http://github.com/jeroenooms/jsonlite/issues
+## jsonld (1.2)
+Maintainer: Jeroen Ooms <jeroen@berkeley.edu>  
+Bug reports: https://github.com/ropensci/jsonld/issues
 
 0 errors | 0 warnings | 0 notes
 
-## magick (0.3)
-Maintainer: Jeroen Ooms <jeroen.ooms@stat.ucla.edu>  
+## jsonlite (1.4)
+Maintainer: Jeroen Ooms <jeroen@berkeley.edu>  
+Bug reports: http://github.com/jeroen/jsonlite/issues
+
+0 errors | 0 warnings | 0 notes
+
+## magick (0.4)
+Maintainer: Jeroen Ooms <jeroen@berkeley.edu>  
 Bug reports: https://github.com/ropensci/magick/issues
 
 0 errors | 0 warnings | 1 note 
@@ -321,9 +229,14 @@ checking installed package size ... NOTE
     doc   6.9Mb
 ```
 
-## MTurkR (0.7.0)
+## meteoland (0.5.9)
+Maintainer: Miquel De Caceres <miquelcaceres@gmail.com>
+
+0 errors | 0 warnings | 0 notes
+
+## MTurkR (0.8.0)
 Maintainer: Thomas J. Leeper <thosjleeper@gmail.com>  
-Bug reports: https://github.com/leeper/MTurkR/issues
+Bug reports: https://github.com/cloudyr/MTurkR/issues
 
 0 errors | 0 warnings | 0 notes
 
@@ -333,12 +246,7 @@ Bug reports: https://github.com/leeper/MTurkRGUI/issues
 
 0 errors | 0 warnings | 0 notes
 
-## nomadlist (0.1.0)
-Maintainer: Ger Inberg <info@inbergict.nl>
-
-0 errors | 0 warnings | 0 notes
-
-## OAIHarvester (0.2-1)
+## OAIHarvester (0.2-2)
 Maintainer: Kurt Hornik <Kurt.Hornik@R-project.org>
 
 0 errors | 0 warnings | 0 notes
@@ -348,7 +256,7 @@ Maintainer: Mauricio Vargas S. <mvargas@dcc.uchile.cl>
 
 0 errors | 0 warnings | 0 notes
 
-## OpenML (1.1)
+## OpenML (1.3)
 Maintainer: Giuseppe Casalicchio <giuseppe.casalicchio@stat.uni-muenchen.de>  
 Bug reports: https://github.com/openml/openml-r/issues
 
@@ -356,7 +264,7 @@ Bug reports: https://github.com/openml/openml-r/issues
 
 ```
 checking package dependencies ... NOTE
-Packages suggested but not available for checking: ‘RWeka’ ‘mboost’
+Package suggested but not available for checking: ‘RWeka’
 ```
 
 ## osmplotr (0.2.3)
@@ -377,13 +285,18 @@ Bug reports: https://github.com/ropensci/plotly/issues
 
 0 errors | 0 warnings | 0 notes
 
+## pmfdR (1.0)
+Maintainer: Marcelo Perlin <marceloperlin@gmail.com>
+
+0 errors | 0 warnings | 0 notes
+
 ## radiant.data (0.6.0)
 Maintainer: Vincent Nijs <radiant@rady.ucsd.edu>  
 Bug reports: https://github.com/radiant-rstats/radiant.data/issues
 
 0 errors | 0 warnings | 0 notes
 
-## random (0.2.5)
+## random (0.2.6)
 Maintainer: Dirk Eddelbuettel <edd@debian.org>
 
 0 errors | 0 warnings | 0 notes
@@ -399,9 +312,9 @@ Maintainer: Gaurav Sood <gsood07@gmail.com>
 
 0 errors | 0 warnings | 0 notes
 
-## readr (1.0.0)
-Maintainer: Hadley Wickham <hadley@rstudio.com>  
-Bug reports: https://github.com/hadley/readr/issues
+## readr (1.1.0)
+Maintainer: Jim Hester <james.hester@rstudio.com>  
+Bug reports: https://github.com/tidyverse/readr/issues
 
 0 errors | 0 warnings | 0 notes
 
@@ -433,19 +346,19 @@ Bug reports: https://github.com/sckott/request/issues
 
 0 errors | 0 warnings | 0 notes
 
-## rgho (1.0.0)
-Maintainer: Antoine Filipovic-Pierucci <pierucci@gmail.com>  
-Bug reports: https://github.com/pierucci/rgho/issues
-
-0 errors | 0 warnings | 0 notes
-
 ## rio (0.4.16)
 Maintainer: Thomas J. Leeper <thosjleeper@gmail.com>  
 Bug reports: https://github.com/leeper/rio/issues
 
 0 errors | 0 warnings | 0 notes
 
-## rpdo (0.2.0)
+## rosm (0.2.2)
+Maintainer: Dewey Dunnington <dewey@fishandwhistle.net>  
+Bug reports: https://github.com/paleolimbot/rosm/issues
+
+0 errors | 0 warnings | 0 notes
+
+## rpdo (0.2.1)
 Maintainer: Joe Thorley <joe@poissonconsulting.ca>
 
 0 errors | 0 warnings | 0 notes
@@ -456,7 +369,12 @@ Bug reports: https://github.com/rOpenGov/RPublica/issues
 
 0 errors | 0 warnings | 0 notes
 
-## rtypeform (0.1.1)
+## RPushbullet (0.3.1)
+Maintainer: Dirk Eddelbuettel <edd@debian.org>
+
+0 errors | 0 warnings | 0 notes
+
+## rtypeform (0.2.0)
 Maintainer: Colin Gillespie <csgillespie@gmail.com>  
 Bug reports: https://github.com/csgillespie/rtypeform/issues
 
@@ -474,24 +392,45 @@ Bug reports: https://github.com/USGS-R/sbtools/issues
 
 0 errors | 0 warnings | 0 notes
 
-## smapr (0.0.1)
-Maintainer: Maxwell Joseph <maxwell.b.joseph@colorado.edu>
-
-1 error  | 0 warnings | 0 notes
-
-```
-checking package dependencies ... ERROR
-Package required but not available: ‘rhdf5’
-
-See section ‘The DESCRIPTION file’ in the ‘Writing R Extensions’
-manual.
-```
-
 ## telegram (0.6.0)
 Maintainer: Luca Braglia <lbraglia@gmail.com>  
 Bug reports: http://github.com/lbraglia/telegram/issues
 
 0 errors | 0 warnings | 0 notes
+
+## tesseract (1.4)
+Maintainer: Jeroen Ooms <jeroen@berkeley.edu>  
+Bug reports: https://github.com/ropensci/tesseract/issues
+
+0 errors | 0 warnings | 0 notes
+
+## tidyquant (0.5.0)
+Maintainer: Matt Dancho <mdancho@business-science.io>  
+Bug reports: https://github.com/business-science/tidyquant/issues
+
+1 error  | 0 warnings | 0 notes
+
+```
+checking tests ... ERROR
+  Running ‘testthat.R’ [10s/38s]
+Running the tests in ‘tests/testthat.R’ failed.
+Last 13 lines of output:
+  
+  
+  testthat results ================================================================
+  OK: 183 SKIPPED: 2 FAILED: 8
+  1. Failure: Test returns tibble with correct rows and columns. (@test_tq_get_exchange_rates.R#20) 
+  2. Failure: Test returns tibble with correct rows and columns. (@test_tq_get_exchange_rates.R#21) 
+  3. Failure: Test returns tibble with correct rows and columns. (@test_tq_get_exchange_rates.R#25) 
+  4. Failure: Test returns tibble with correct rows and columns. (@test_tq_get_exchange_rates.R#27) 
+  5. Failure: Test returns tibble with correct rows and columns. (@test_tq_get_metal_prices.R#20) 
+  6. Failure: Test returns tibble with correct rows and columns. (@test_tq_get_metal_prices.R#21) 
+  7. Failure: Test returns tibble with correct rows and columns. (@test_tq_get_metal_prices.R#25) 
+  8. Failure: Test returns tibble with correct rows and columns. (@test_tq_get_metal_prices.R#27) 
+  
+  Error: testthat unit tests failed
+  Execution halted
+```
 
 ## trelliscope (0.9.7)
 Maintainer: Ryan Hafen <rhafen@gmail.com>  
@@ -512,14 +451,20 @@ Bug reports: https://github.com/Ironholds/udapi/issues
 
 0 errors | 0 warnings | 0 notes
 
-## V8 (1.1)
-Maintainer: Jeroen Ooms <jeroen.ooms@stat.ucla.edu>  
-Bug reports: https://github.com/jeroenooms/v8/issues
+## V8 (1.4)
+Maintainer: Jeroen Ooms <jeroen@berkeley.edu>  
+Bug reports: https://github.com/jeroen/v8/issues
 
 0 errors | 0 warnings | 0 notes
 
-## W3CMarkupValidator (0.1-5)
+## W3CMarkupValidator (0.1-6)
 Maintainer: Kurt Hornik <Kurt.Hornik@R-project.org>
+
+0 errors | 0 warnings | 0 notes
+
+## wikitaxa (0.1.0)
+Maintainer: Scott Chamberlain <myrmecocystus+r@gmail.com>  
+Bug reports: https://github.com/ropensci/wikitaxa/issues
 
 0 errors | 0 warnings | 0 notes
 
@@ -529,8 +474,8 @@ Bug reports: https://github.com/krlmlr/wrswoR.benchmark/issues
 
 0 errors | 0 warnings | 0 notes
 
-## xml2 (1.0.0)
-Maintainer: Hadley Wickham <hadley@rstudio.com>  
+## xml2 (1.1.1)
+Maintainer: James Hester <james.hester@rstudio.com>  
 Bug reports: https://github.com/hadley/xml2/issues/
 
 0 errors | 0 warnings | 0 notes
