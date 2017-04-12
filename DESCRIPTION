@@ -1,7 +1,7 @@
 Package: curl
 Type: Package
 Title: A Modern and Flexible Web Client for R
-Version: 2.4.9000
+Version: 2.5
 Authors@R: c(
     person("Jeroen", "Ooms", , "jeroen@berkeley.edu", role = c("cre", "aut")),
     person("Hadley", "Wickham", , "hadley@rstudio.com", role = "ctb"),
@@ -18,7 +18,8 @@ Description: The curl() and curl_download() functions provide highly
     specific tools and logic.
 License: MIT + file LICENSE
 SystemRequirements: libcurl: libcurl-devel (rpm) or libcurl4-openssl-dev (deb).
-URL: https://github.com/jeroen/curl#readme (devel) https://curl.haxx.se/libcurl/ (upstream)
+URL: https://github.com/jeroen/curl#readme (devel) 
+    https://curl.haxx.se/libcurl/ (upstream)
 BugReports: https://github.com/jeroen/curl/issues
 Suggests:
     testthat (>= 1.0.0),
