@@ -28,8 +28,11 @@ SEXP R_nslookup(SEXP hostname, SEXP ipv4_only) {
 
   // count number of hits
   int len = 0;
-  for(struct addrinfo * cur = addr; cur->ai_next != NULL; cur = cur->ai_next)
+  struct addrinfo * cur = addr;
+  while(cur != NULL){
     len++;
+    cur = cur->ai_next;
+  }
 
   //allocate output
   SEXP out = PROTECT(allocVector(STRSXP, len));
