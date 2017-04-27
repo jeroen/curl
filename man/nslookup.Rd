@@ -5,12 +5,14 @@
 \alias{has_internet}
 \title{Lookup a hostname}
 \usage{
-nslookup(host, error = TRUE)
+nslookup(host, ipv4_only = FALSE, error = TRUE)
 
 has_internet()
 }
 \arguments{
 \item{host}{a string with a hostname}
+
+\item{ipv4_only}{only allow for ipv4 addresses. Set to `FALSE` to allow for ipv6.}
 
 \item{error}{raise an error for failed DNS lookup. Otherwise returns \code{NULL}.}
 }
@@ -25,5 +27,5 @@ connection by resolving a random address.
 nslookup("www.r-project.org")
 
 # If your OS supports IPv6
-nslookup("ipv6.test-ipv6.com", error = FALSE)
+nslookup("ipv6.test-ipv6.com", ipv4_only = FALSE, error = FALSE)
 }

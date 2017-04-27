@@ -17,10 +17,13 @@ const char *inet_ntop(int af, const void *src, char *dst, socklen_t size);
 #include <arpa/inet.h>
 #endif
 
-SEXP R_nslookup(SEXP hostname) {
+SEXP R_nslookup(SEXP hostname, SEXP ipv4_only) {
   /* Because gethostbyname() is deprecated */
+  struct addrinfo hints = {0};
+  if(asLogical(ipv4_only))
+    hints.ai_family = AF_INET; //only allow ipv4
   struct addrinfo *addr;
-  if(getaddrinfo(CHAR(STRING_ELT(hostname, 0)), NULL, NULL, &addr))
+  if(getaddrinfo(CHAR(STRING_ELT(hostname, 0)), NULL, &hints, &addr))
     return R_NilValue;
 
   /* For debugging */
