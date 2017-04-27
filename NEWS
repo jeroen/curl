@@ -1,3 +1,6 @@
+2.7
+ - nslookup() gains a parameter 'multi' to return multiple matches
+
 2.6
  - nslookup() gains a parameter ipv4_only = TRUE (fixes unit test on Mavericks)
 

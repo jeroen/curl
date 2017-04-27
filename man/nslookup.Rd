@@ -5,14 +5,16 @@
 \alias{has_internet}
 \title{Lookup a hostname}
 \usage{
-nslookup(host, ipv4_only = FALSE, error = TRUE)
+nslookup(host, ipv4_only = FALSE, multiple = FALSE, error = TRUE)
 
 has_internet()
 }
 \arguments{
 \item{host}{a string with a hostname}
 
-\item{ipv4_only}{only allow for ipv4 addresses. Set to `FALSE` to allow for ipv6.}
+\item{ipv4_only}{always return ipv4 address. Set to `FALSE` to allow for ipv6 as well.}
+
+\item{multiple}{returns multiple ip addresses if possible}
 
 \item{error}{raise an error for failed DNS lookup. Otherwise returns \code{NULL}.}
 }

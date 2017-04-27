@@ -26,20 +26,33 @@ SEXP R_nslookup(SEXP hostname, SEXP ipv4_only) {
   if(getaddrinfo(CHAR(STRING_ELT(hostname, 0)), NULL, &hints, &addr))
     return R_NilValue;
 
-  /* For debugging */
-  struct sockaddr *sa = addr->ai_addr;
+  // count number of hits
+  int len = 0;
+  for(struct addrinfo * cur = addr; cur->ai_next != NULL; cur = cur->ai_next)
+    len++;
 
-  /* IPv4 vs v6 */
-  char ip[INET6_ADDRSTRLEN];
-  if (sa->sa_family == AF_INET) {
-    struct sockaddr_in *sa_in = (struct sockaddr_in*) sa;
-    inet_ntop(AF_INET, &(sa_in->sin_addr), ip, INET_ADDRSTRLEN);
-  } else {
-    struct sockaddr_in6 *sa_in = (struct sockaddr_in6*) sa;
-    inet_ntop(AF_INET6, &(sa_in->sin6_addr), ip, INET6_ADDRSTRLEN);
+  //allocate output
+  SEXP out = PROTECT(allocVector(STRSXP, len));
+
+  /* For debugging */
+  for(size_t i = 0; i < len; i++) {
+    struct sockaddr *sa = addr->ai_addr;
+
+    /* IPv4 vs v6 */
+    char ip[INET6_ADDRSTRLEN];
+    if (sa->sa_family == AF_INET) {
+      struct sockaddr_in *sa_in = (struct sockaddr_in*) sa;
+      inet_ntop(AF_INET, &(sa_in->sin_addr), ip, INET_ADDRSTRLEN);
+    } else {
+      struct sockaddr_in6 *sa_in = (struct sockaddr_in6*) sa;
+      inet_ntop(AF_INET6, &(sa_in->sin6_addr), ip, INET6_ADDRSTRLEN);
+    }
+    SET_STRING_ELT(out, i, mkChar(ip));
+    addr = addr->ai_next;
   }
+  UNPROTECT(1);
   freeaddrinfo(addr);
-  return mkString(ip);
+  return out;
 }
 
 /* Fallback implementation for inet_ntop in Win32 */
