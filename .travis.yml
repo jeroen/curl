@@ -28,12 +28,6 @@ matrix:
       latex: false
       r_build_args: '--no-build-vignettes'
       r_check_args: '--ignore-vignettes --no-examples'
-    - os: osx
-      osx_image: xcode6.4
-      latex: false
-      r: oldrel
-      r_build_args: '--no-build-vignettes'
-      r_check_args: '--ignore-vignettes --no-examples'
 
 addons:
   apt:
