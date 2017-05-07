@@ -143,4 +143,3 @@ install.packages("https://github.com/jeroen/curl/archive/master.tar.gz", repos =
 ```
 
 Check again `curl_version()` to see if HTTP/2 is enabled now.
-
