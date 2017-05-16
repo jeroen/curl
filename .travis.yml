@@ -16,7 +16,7 @@ matrix:
       sudo: required
       env: R_CODECOV=true
     - os: osx
-      osx_image: xcode8.2
+      osx_image: xcode8.3
       before_install:
         - brew install curl
         - brew link --force curl
