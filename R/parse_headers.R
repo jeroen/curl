@@ -1,8 +1,13 @@
 #' Parse response headers
 #'
-#' Parse response header data as returned by curl_fetch If the request has
-#' followed redirects, the data can contain multiple sets of headers. Therefore
-#' when multiple = TRUE, the function returns a list with the response headers
+#' Parse response header data as returned by curl_fetch, either as a set of strings
+#' or into a named list.
+#'
+#' The parse_headers_list function parses the headers into a normalized (lowercase
+#' field names, trimmed whitespace) named list.
+#'
+#' If a request has followed redirects, the data can contain multiple sets of headers.
+#' When multiple = TRUE, the function returns a list with the response headers
 #' for each request. By default it only returns the headers of the final request.
 #'
 #' @param txt raw or character vector with the header data
