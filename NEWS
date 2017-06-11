@@ -1,4 +1,5 @@
 2.7
+ - New function parse_headers_list() to parse response headers into named list
  - nslookup() gains a parameter 'multi' to return multiple matches
 
 2.6

@@ -8,9 +8,13 @@
 #' @param txt raw or character vector with the header data
 #' @param multiple parse multiple sets of headers separated by a blank line. See details.
 #' @export
+#' @rdname parse_headers
 #' @examples req <- curl_fetch_memory("https://httpbin.org/redirect/3")
 #' parse_headers(req$headers)
 #' parse_headers(req$headers, multiple = TRUE)
+#'
+#' # Parse into named list
+#' parse_headers_list(req$headers)
 parse_headers <- function(txt, multiple = FALSE){
   if(is.raw(txt)){
     txt <- rawToChar(txt)
@@ -28,4 +32,14 @@ parse_headers <- function(txt, multiple = FALSE){
   } else {
     headers[[length(headers)]]
   }
+}
+
+#' @export
+#' @rdname parse_headers
+parse_headers_list <- function(txt){
+  headers <- grep(":", parse_headers(txt), fixed = TRUE, value = TRUE)
+  out <- lapply(headers, split_string, ":")
+  names <- lapply(out, `[[`, 1)
+  values <- lapply(out, `[[`, 2)
+  structure(values, names = names)
 }

@@ -38,3 +38,9 @@ parse_date <- function(datestring){
   class(out) <- c("POSIXct", "POSIXt")
   out
 }
+
+
+#' @useDynLib curl R_split_string
+split_string <- function(x, split = ":"){
+  .Call(R_split_string, x, split)
+}

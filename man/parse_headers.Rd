@@ -2,9 +2,12 @@
 % Please edit documentation in R/parse_headers.R
 \name{parse_headers}
 \alias{parse_headers}
+\alias{parse_headers_list}
 \title{Parse response headers}
 \usage{
 parse_headers(txt, multiple = FALSE)
+
+parse_headers_list(txt)
 }
 \arguments{
 \item{txt}{raw or character vector with the header data}
@@ -21,4 +24,7 @@ for each request. By default it only returns the headers of the final request.
 req <- curl_fetch_memory("https://httpbin.org/redirect/3")
 parse_headers(req$headers)
 parse_headers(req$headers, multiple = TRUE)
+
+# Parse into named list
+parse_headers_list(req$headers)
 }
