@@ -39,7 +39,8 @@ parse_headers <- function(txt, multiple = FALSE){
 parse_headers_list <- function(txt){
   headers <- grep(":", parse_headers(txt), fixed = TRUE, value = TRUE)
   out <- lapply(headers, split_string, ":")
-  names <- lapply(out, `[[`, 1)
-  values <- lapply(out, `[[`, 2)
-  structure(values, names = names)
+  names <- tolower(vapply(out, `[[`, character(1), 1)) #names are case insensitive
+  values <- lapply(lapply(out, `[[`, 2), trimws)
+  names(values) <- names
+  values
 }
