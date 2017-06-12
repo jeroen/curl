@@ -1,13 +1,12 @@
 #include "curl-common.h"
 
 CURL* get_handle(SEXP ptr){
-  if(!R_ExternalPtrAddr(ptr))
-    error("handle is dead");
-  reference *ref = (reference*) R_ExternalPtrAddr(ptr);
-  return ref->handle;
+  return get_ref(ptr)->handle;
 }
 
 reference* get_ref(SEXP ptr){
+  if(TYPEOF(ptr) != EXTPTRSXP || !Rf_inherits(ptr, "curl_handle"))
+    Rf_error("handle is not a curl_handle()");
   if(!R_ExternalPtrAddr(ptr))
     error("handle is dead");
   reference *ref = (reference*) R_ExternalPtrAddr(ptr);
