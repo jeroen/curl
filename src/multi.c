@@ -11,6 +11,8 @@
 #endif
 
 multiref *get_multiref(SEXP ptr){
+  if(TYPEOF(ptr) != EXTPTRSXP || !Rf_inherits(ptr, "curl_multi"))
+    Rf_error("pool ptr is not a curl_multi handle");
   multiref *mref = (multiref*) R_ExternalPtrAddr(ptr);
   if(!mref)
     Rf_error("multiref pointer is dead");

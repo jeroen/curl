@@ -2,6 +2,7 @@
  - New function parse_headers_list() to parse response headers into named list
  - nslookup() gains a parameter 'multi' to return multiple matches
  - Automatically set 'CURLOPT_POSTFIELDSIZE_LARGE' when setting 'CURLOPT_POSTFIELDS' to a raw vector
+ - Do not crash when passing invalid objects as handles
 
 2.6
  - nslookup() gains a parameter ipv4_only = TRUE (fixes unit test on Mavericks)
