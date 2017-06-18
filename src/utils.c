@@ -17,7 +17,12 @@ void set_form(reference *ref, struct curl_httppost* newform){
   if(ref->form)
     curl_formfree(ref->form);
   ref->form = newform;
-  assert(curl_easy_setopt(ref->handle, CURLOPT_HTTPPOST, ref->form));
+  if(newform){
+    assert(curl_easy_setopt(ref->handle, CURLOPT_HTTPPOST, ref->form));
+  } else {
+    // CURLOPT_HTTPPOST has bug for empty forms. We probably want this:
+    assert(curl_easy_setopt(ref->handle, CURLOPT_CUSTOMREQUEST, "POST"));
+  }
 }
 
 void set_headers(reference *ref, struct curl_slist *newheaders){

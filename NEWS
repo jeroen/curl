@@ -3,6 +3,7 @@
  - nslookup() gains a parameter 'multi' to return multiple matches
  - Automatically set 'POSTFIELDSIZE_LARGE' when setting 'POSTFIELDS' or 'COPYPOSTFIELDS' to raw vector
  - Do not crash when passing invalid objects as handles
+ - Workaround for empty forms, i.e. calling handle_setform() with no arguments
 
 2.6
  - nslookup() gains a parameter ipv4_only = TRUE (fixes unit test on Mavericks)
