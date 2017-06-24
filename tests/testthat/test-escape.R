@@ -20,3 +20,16 @@ test_that("curl_escape and curl_unescape are inverses", {
   escaped_mu <- curl_escape(mu)
   expect_equal(escaped_mu, curl_escape(curl_unescape(escaped_mu)))
 })
+
+test_that("Test character encoding", {
+  strings <- c(
+    "Zürich",
+    "北京填鴨们",
+    "ผัดไทย",
+    "寿司",
+    rawToChar(as.raw(1:40)),
+    "?foo&bar=baz!bla\n"
+  )
+  strings <- enc2utf8(strings)
+  expect_equal(strings, curl_unescape(curl_escape(strings)))
+})
