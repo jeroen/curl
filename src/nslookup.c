@@ -37,9 +37,10 @@ SEXP R_nslookup(SEXP hostname, SEXP ipv4_only) {
   //allocate output
   SEXP out = PROTECT(allocVector(STRSXP, len));
 
-  /* For debugging */
+  //extract the values
+  cur = addr;
   for(size_t i = 0; i < len; i++) {
-    struct sockaddr *sa = addr->ai_addr;
+    struct sockaddr *sa = cur->ai_addr;
 
     /* IPv4 vs v6 */
     char ip[INET6_ADDRSTRLEN];
@@ -51,7 +52,7 @@ SEXP R_nslookup(SEXP hostname, SEXP ipv4_only) {
       inet_ntop(AF_INET6, &(sa_in->sin6_addr), ip, INET6_ADDRSTRLEN);
     }
     SET_STRING_ELT(out, i, mkChar(ip));
-    addr = addr->ai_next;
+    cur = cur->ai_next;
   }
   UNPROTECT(1);
   freeaddrinfo(addr);
