@@ -20,15 +20,13 @@
   web client see the 'httr' package which builds on this package with http
   specific tools and logic.
 
-## Install
-
-To install the development version of `curl` in R
-
-```r
-source("https://install-github.me/jeroen/curl")
-```
+## Devel version
 
 Note that you cannot use `devtools::install_github()` because it uses `curl` ;)
+
+```r
+install.packages("https://github.com/jeroen/curl/archive/master.tar.gz", repos = NULL)
+```
 
 ## Documentation
 
