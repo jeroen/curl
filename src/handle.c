@@ -108,6 +108,9 @@ void set_handle_defaults(reference *ref){
   if(curl_version_info(CURLVERSION_NOW)->features & CURL_VERSION_HTTP2)
     assert(curl_easy_setopt(handle, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2TLS));
 #endif
+
+  /* set an error buffer */
+  assert(curl_easy_setopt(handle, CURLOPT_ERRORBUFFER, ref->errbuf));
 }
 
 SEXP R_new_handle(){
@@ -129,6 +132,7 @@ SEXP R_handle_reset(SEXP ptr){
   reference *ref = get_ref(ptr);
   set_form(ref, NULL);
   set_headers(ref, NULL);
+  memset(ref->errbuf, 0, CURL_ERROR_SIZE);
   curl_easy_reset(ref->handle);
 
   //restore default settings

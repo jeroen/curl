@@ -34,7 +34,7 @@ SEXP R_curl_fetch_memory(SEXP url, SEXP ptr, SEXP nonblocking){
   /* check for errors */
   if (status != CURLE_OK) {
     free(body.buf);
-    error(curl_easy_strerror(status));
+    error("%s: %s", curl_easy_strerror(status), get_ref(ptr)->errbuf);
   }
 
   /* create output */
