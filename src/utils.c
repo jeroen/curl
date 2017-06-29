@@ -21,6 +21,7 @@ void set_form(reference *ref, struct curl_httppost* newform){
     assert(curl_easy_setopt(ref->handle, CURLOPT_HTTPPOST, ref->form));
   } else {
     // CURLOPT_HTTPPOST has bug for empty forms. We probably want this:
+    assert(curl_easy_setopt(ref->handle, CURLOPT_POST, 0L)); //prevent freeze after HTTP 100
     assert(curl_easy_setopt(ref->handle, CURLOPT_CUSTOMREQUEST, "POST"));
   }
 }

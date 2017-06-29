@@ -1,3 +1,6 @@
+2.8
+ - Fix for regresssion for empty forms (including a unit test in 'httr')
+
 2.7
  - New function parse_headers_list() to parse response headers into named list
  - nslookup() gains a parameter 'multi' to return multiple matches
