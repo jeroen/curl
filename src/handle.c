@@ -290,7 +290,7 @@ SEXP make_status(CURL *handle){
 SEXP make_url(CURL *handle){
   char *res_url;
   assert(curl_easy_getinfo(handle, CURLINFO_EFFECTIVE_URL, &res_url));
-  return mkString(res_url);
+  return ScalarString(mkCharCE(res_url, CE_UTF8));
 }
 
 SEXP make_filetime(CURL *handle){
