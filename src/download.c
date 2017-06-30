@@ -18,6 +18,7 @@ SEXP R_download_curl(SEXP url, SEXP destfile, SEXP quiet, SEXP mode, SEXP ptr, S
 
   /* get the handle */
   CURL *handle = get_handle(ptr);
+  reset_errbuf(get_ref(ptr));
 
   /* open file */
   FILE *dest = fopen(CHAR(asChar(destfile)), CHAR(asChar(mode)));
@@ -41,8 +42,8 @@ SEXP R_download_curl(SEXP url, SEXP destfile, SEXP quiet, SEXP mode, SEXP ptr, S
   curl_easy_setopt(handle, CURLOPT_WRITEDATA, NULL);
   fclose(dest);
 
-  if (status != CURLE_OK)
-    error(curl_easy_strerror(status));
+  /* raise for curl errors */
+  assert_status(status, get_ref(ptr));
 
   /* check for success */
   stop_for_status(handle);

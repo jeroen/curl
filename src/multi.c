@@ -139,7 +139,7 @@ SEXP R_multi_run(SEXP pool_ptr, SEXP timeout){
           total_fail++;
           if(Rf_isFunction(cb_error)){
             int arglen = Rf_length(FORMALS(cb_error));
-            SEXP buf = PROTECT(mkString(curl_easy_strerror(status)));
+            SEXP buf = PROTECT(mkString(strlen(ref->errbuf) ? ref->errbuf : curl_easy_strerror(status)));
             SEXP call = PROTECT(LCONS(cb_error, arglen ? LCONS(buf, R_NilValue) : R_NilValue));
             //R_tryEval(call, R_GlobalEnv, &cbfail);
             eval(call, R_GlobalEnv); //OK to error here

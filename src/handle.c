@@ -132,7 +132,7 @@ SEXP R_handle_reset(SEXP ptr){
   reference *ref = get_ref(ptr);
   set_form(ref, NULL);
   set_headers(ref, NULL);
-  memset(ref->errbuf, 0, CURL_ERROR_SIZE);
+  reset_errbuf(ref);
   curl_easy_reset(ref->handle);
 
   //restore default settings

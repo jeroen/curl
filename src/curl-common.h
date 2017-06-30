@@ -41,6 +41,7 @@ typedef struct {
 
 CURL* get_handle(SEXP ptr);
 reference* get_ref(SEXP ptr);
+void assert_status(CURLcode res, reference *ref);
 void assert(CURLcode res);
 void massert(CURLMcode res);
 void stop_for_status(CURL *http_handle);
@@ -50,6 +51,7 @@ struct curl_httppost* make_form(SEXP form);
 void set_form(reference *ref, struct curl_httppost* newform);
 void set_headers(reference *ref, struct curl_slist *newheaders);
 void reset_resheaders(reference *ref);
+void reset_errbuf(reference *ref);
 void clean_handle(reference *ref);
 size_t push_disk(void* contents, size_t sz, size_t nmemb, FILE *ctx);
 size_t append_buffer(void *contents, size_t sz, size_t nmemb, void *ctx);

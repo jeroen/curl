@@ -1,5 +1,6 @@
 2.8
- - Fix for regresssion for empty forms (including a unit test in 'httr')
+ - Tweak for empty forms (including a stalling unit test in 'httr')
+ - Raise nicer error messages when available (via CURLOPT_ERRORBUFFER)
 
 2.7
  - New function parse_headers_list() to parse response headers into named list

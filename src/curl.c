@@ -92,11 +92,11 @@ static size_t pop(void *target, size_t max, request *req){
   return copy_size;
 }
 
-void check_manager(CURLM *manager) {
+void check_manager(CURLM *manager, reference *ref) {
   for(int msg = 1; msg > 0;){
     CURLMsg *out = curl_multi_info_read(manager, &msg);
     if(out)
-      assert(out->data.result);
+      assert_status(out->data.result, ref);
   }
 }
 
@@ -114,7 +114,7 @@ void fetchdata(request *req) {
   }
   massert(res);
   /* End */
-  check_manager(req->manager);
+  check_manager(req->manager, req->ref);
 }
 
 /* Support for readBin() */
