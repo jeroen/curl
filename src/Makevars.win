@@ -1,10 +1,18 @@
-PKG_CPPFLAGS= \
-	-I../windows/libcurl-7.53.1/include \
-	-DCURL_STATICLIB -DNGHTTP2_STATICLIB
+#LIBCURL_BUILD=openssl
+LIBCURL_BUILD=winssl
 
-PKG_LIBS= -L../windows/libcurl-7.53.1/lib${R_ARCH} -L. \
-	-lwinhttp -lcurl -lnghttp2 -lssl -lcrypto -lssh2 -lrtmp -lidn \
-	-lintl -liconv -lgdi32 -lcrypt32 -lz -lws2_32 -lcrypt32 -lwldap32 -lwinmm
+# Switches between OpenSSL and SecureChannel builds of libcurl stack
+ifeq "${LIBCURL_BUILD}" "openssl"
+CURL_LIBS = -lcurl -lssh2 -lz -lssl -lcrypto -lgdi32 -lws2_32 -lcrypt32 -lwldap32
+else
+CURL_LIBS = -lcurl -lz -lws2_32 -lcrypt32 -lwldap32
+endif
+
+PKG_LIBS= -L../windows/libcurl-7.54.1/lib-${LIBCURL_BUILD}${R_ARCH} \
+	-L. -lwinhttp $(CURL_LIBS)
+
+PKG_CPPFLAGS= \
+	-I../windows/libcurl-7.54.1/include -DCURL_STATICLIB
 
 all: clean winlibs libwinhttp.dll.a
 
@@ -12,7 +20,8 @@ clean:
 	rm -f $(SHLIB) $(OBJECTS) libwinhttp.dll.a winhttp.def
 
 winlibs: clean
-	"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" --vanilla "../tools/winlibs.R" "$(M_ARCH)"
+	@echo "Building curl with '$(LIBCURL_BUILD)' crypto."
+	"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" --vanilla "../tools/winlibs.R"
 	echo '#include <curl/curl.h>' | $(CPP) $(PKG_CPPFLAGS) -std=gnu99 -xc - | grep "^[ \t]*CURLOPT_.*," | sed s/,// > ../tools/option_table.txt
 
 winhttp.def:
