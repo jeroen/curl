@@ -14,13 +14,15 @@ PKG_LIBS= -L../windows/libcurl-7.54.1/lib-${LIBCURL_BUILD}${R_ARCH} \
 PKG_CPPFLAGS= \
 	-I../windows/libcurl-7.54.1/include -DCURL_STATICLIB
 
-all: clean winlibs libwinhttp.dll.a
+all: info clean winlibs libwinhttp.dll.a
 
 clean:
 	rm -f $(SHLIB) $(OBJECTS) libwinhttp.dll.a winhttp.def
 
-winlibs: clean
+info:
 	@echo "Building curl with '$(LIBCURL_BUILD)' crypto."
+
+winlibs: clean
 	"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" --vanilla "../tools/winlibs.R"
 	echo '#include <curl/curl.h>' | $(CPP) $(PKG_CPPFLAGS) -std=gnu99 -xc - | grep "^[ \t]*CURLOPT_.*," | sed s/,// > ../tools/option_table.txt
 
