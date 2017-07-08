@@ -1,9 +1,12 @@
 #LIBCURL_BUILD ?= openssl
 #LIBCURL_BUILD ?= winssl
 
-# Current default builds with OpenSSL on R < 3.5 and WinSSL on R > 3.5
-LIBCURL_BUILD ?= $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" -e \
-	"cat(ifelse(getRversion() < '3.5.0', 'openssl', 'winssl'))")
+# Default builds against WinSSL on R 3.5.0 or higher
+ifeq "3.5.0" "$(word 1, $(sort 3.5.0 $(R_VERSION)))"
+LIBCURL_BUILD ?= winssl
+else
+LIBCURL_BUILD ?= openssl
+endif
 
 # Switches between OpenSSL and SecureChannel builds of libcurl stack
 ifeq "${LIBCURL_BUILD}" "openssl"
