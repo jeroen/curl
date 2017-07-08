@@ -63,8 +63,13 @@ test_that("Multipart form post", {
     logo = form_file(file.path(Sys.getenv("R_DOC_DIR"), "html/logo.jpg"), "image/jpeg")
   )
   req <- curl_fetch_memory(httpbin("post"), handle = h)
-  res <- jsonlite::fromJSON(rawToChar(req$content))
+  expect_equal(req$status_code, 200)
 
+  # For debugging
+  if(req$status_code > 200)
+    stop(rawToChar(req$content))
+
+  res <- jsonlite::fromJSON(rawToChar(req$content))
   expect_match(res$headers$`Content-Type`, "multipart")
   expect_equal(sort(names(res$files)), c("description", "logo"))
   expect_equal(sort(names(res$form)), c("bar", "foo", "iris"))
