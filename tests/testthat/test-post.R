@@ -41,10 +41,10 @@ test_that("Change headers", {
 })
 
 test_that("Post JSON data", {
-  handle_reset(h)
-  handle_setopt(h, COPYPOSTFIELDS = jsonlite::toJSON(mtcars));
-  handle_setheaders(h, "Content-Type" = "application/json")
-  req <- curl_fetch_memory(httpbin("post"), handle = h)
+  hx <- new_handle()
+  handle_setopt(hx, COPYPOSTFIELDS = jsonlite::toJSON(mtcars));
+  handle_setheaders(hx, "Content-Type" = "application/json")
+  req <- curl_fetch_memory(httpbin("post"), handle = hx)
   expect_equal(req$status_code, 200)
 
   # For debugging
@@ -59,15 +59,14 @@ test_that("Post JSON data", {
 
 test_that("Multipart form post", {
   # Don't reset options manually, curl should figure this out.
-  handle_setheaders(h);
-  handle_setform(h,
+  hx <- handle_setform(new_handle(),
     foo = "blabla",
     bar = charToRaw("boeboe"),
     iris = form_data(serialize(iris, NULL), "data/rda"),
     description = form_file(system.file("DESCRIPTION")),
     logo = form_file(file.path(Sys.getenv("R_DOC_DIR"), "html/logo.jpg"), "image/jpeg")
   )
-  req <- curl_fetch_memory(httpbin("post"), handle = h)
+  req <- curl_fetch_memory(httpbin("post"), handle = hx)
   expect_equal(req$status_code, 200)
 
   # For debugging
