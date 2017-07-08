@@ -1,6 +1,10 @@
 2.8
+ - Windows: EXPERIMENTAL: on R 3.5+ curl now uses SecureChannel instead of OpenSSL for https.
+ - Windows: updated libcurl to v7.54.1 with native windows IDN. Dropped nghttp2 and rtmp support.
+ - Add IDN unit tests on supported platforms
+ - Error messages from libcurl include more detail when available (via CURLOPT_ERRORBUFFER)
+ - Set a default CURLOPT_READFUNCTION because libcurls default can cause R to freeze
  - Tweak for empty forms (including a stalling unit test in 'httr')
- - Raise nicer error messages when available (via CURLOPT_ERRORBUFFER)
 
 2.7
  - New function parse_headers_list() to parse response headers into named list
