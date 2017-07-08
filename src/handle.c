@@ -54,6 +54,11 @@ void fin_handle(SEXP ptr){
   clean_handle(ref);
 }
 
+/* the default readfunc os fread which can cause R to freeze */
+size_t dummy_read(char *buffer, size_t size, size_t nitems, void *instream){
+  return 0;
+}
+
 /* These are defaulst that we always want to set */
 void set_handle_defaults(reference *ref){
 
@@ -111,6 +116,9 @@ void set_handle_defaults(reference *ref){
 
   /* set an error buffer */
   assert(curl_easy_setopt(handle, CURLOPT_ERRORBUFFER, ref->errbuf));
+
+  /* dummy readfunction because default can freeze R */
+  assert(curl_easy_setopt(handle, CURLOPT_READFUNCTION, dummy_read));
 }
 
 SEXP R_new_handle(){
