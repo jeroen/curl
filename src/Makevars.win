@@ -1,5 +1,9 @@
 #LIBCURL_BUILD ?= openssl
-LIBCURL_BUILD ?= winssl
+#LIBCURL_BUILD ?= winssl
+
+# Current default builds with OpenSSL on R < 3.5 and WinSSL on R > 3.5
+LIBCURL_BUILD ?= $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" -e \
+	"cat(ifelse(getRversion() < '3.5.0', 'openssl', 'winssl'))")
 
 # Switches between OpenSSL and SecureChannel builds of libcurl stack
 ifeq "${LIBCURL_BUILD}" "openssl"
@@ -20,7 +24,7 @@ clean:
 	rm -f $(SHLIB) $(OBJECTS) libwinhttp.dll.a winhttp.def
 
 info:
-	@echo "Building curl with '$(LIBCURL_BUILD)' crypto."
+	@echo "Building curl with '$(LIBCURL_BUILD)' crypto backend."
 
 winlibs: clean
 	"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" --vanilla "../tools/winlibs.R"
