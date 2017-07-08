@@ -198,6 +198,10 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
       assert(curl_easy_setopt(handle, CURLOPT_DEBUGFUNCTION,
         (curl_debug_callback) R_curl_callback_debug));
       assert(curl_easy_setopt(handle, CURLOPT_DEBUGDATA, val));
+    } else if (key == CURLOPT_URL) {
+      /* always use utf-8 for urls */
+      const char * url_utf8 = translateCharUTF8(STRING_ELT(val, 0));
+      assert(curl_easy_setopt(handle, CURLOPT_URL, url_utf8));
     } else if (opt_is_linked_list(key)) {
       error("Option %s (%d) not supported.", optname, key);
     } else if(key < 10000){

@@ -13,7 +13,7 @@ SEXP R_curl_fetch_memory(SEXP url, SEXP ptr, SEXP nonblocking){
   CURL *handle = get_handle(ptr);
 
   /* update the url */
-  curl_easy_setopt(handle, CURLOPT_URL, translateCharUTF8(asChar(url)));
+  curl_easy_setopt(handle, CURLOPT_URL, CHAR(STRING_ELT(url, 0)));
 
   /* reset the response header buffer */
   reset_resheaders(get_ref(ptr));
@@ -61,7 +61,7 @@ SEXP R_curl_fetch_disk(SEXP url, SEXP ptr, SEXP path, SEXP mode, SEXP nonblockin
   CURL *handle = get_handle(ptr);
 
   /* update the url */
-  curl_easy_setopt(handle, CURLOPT_URL, translateCharUTF8(asChar(url)));
+  curl_easy_setopt(handle, CURLOPT_URL, CHAR(STRING_ELT(url, 0)));
 
   /* reset the response header buffer */
   reset_resheaders(get_ref(ptr));

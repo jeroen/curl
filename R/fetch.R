@@ -59,7 +59,7 @@
 #' str(data)
 curl_fetch_memory <- function(url, handle = new_handle()){
   nonblocking <- isTRUE(getOption("curl_interrupt", TRUE))
-  output <- .Call(R_curl_fetch_memory, url, handle, nonblocking)
+  output <- .Call(R_curl_fetch_memory, enc2utf8(url), handle, nonblocking)
   res <- handle_data(handle)
   res$content <- output
   res
@@ -72,7 +72,7 @@ curl_fetch_memory <- function(url, handle = new_handle()){
 curl_fetch_disk <- function(url, path, handle = new_handle()){
   nonblocking <- isTRUE(getOption("curl_interrupt", TRUE))
   path <- normalizePath(path, mustWork = FALSE)
-  output <- .Call(R_curl_fetch_disk, url, handle, path, "wb", nonblocking)
+  output <- .Call(R_curl_fetch_disk, enc2utf8(url), handle, path, "wb", nonblocking)
   res <- handle_data(handle)
   res$content <- output
   res
@@ -103,7 +103,7 @@ curl_fetch_stream <- function(url, fun, handle = new_handle()){
 #' @inheritParams multi
 #' @useDynLib curl R_curl_connection
 curl_fetch_multi <- function(url, done = NULL, fail = NULL, pool = NULL, handle = new_handle()){
-  handle_setopt(handle, url = url)
+  handle_setopt(handle, url = enc2utf8(url))
   multi_add(handle = handle, done = done, fail = fail, pool = pool)
   invisible(handle)
 }
