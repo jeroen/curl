@@ -1,5 +1,5 @@
-#LIBCURL_BUILD=openssl
-LIBCURL_BUILD=winssl
+#LIBCURL_BUILD ?= openssl
+LIBCURL_BUILD ?= winssl
 
 # Switches between OpenSSL and SecureChannel builds of libcurl stack
 ifeq "${LIBCURL_BUILD}" "openssl"
