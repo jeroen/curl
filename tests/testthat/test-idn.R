@@ -1,6 +1,7 @@
 context("IDN")
 
 test_that("IDN domain names",{
+  skip_if_not(grepl("64", Sys.info()[['machine']]), "skipping IDN test on 32bit")
   malmo <- "http://www.malm\u00F6.se"
   expect_is(curl::curl_fetch_memory(enc2utf8(malmo))$status_code, "integer")
   expect_is(curl::curl_fetch_memory(enc2native(malmo))$status_code, "integer")
