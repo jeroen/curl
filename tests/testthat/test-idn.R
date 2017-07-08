@@ -1,6 +1,9 @@
 context("IDN")
 
 test_that("IDN domain names",{
+  # OSX does not support IDN by default :(
+  skip_if_not(curl_version()$idn, "libcurl does not have libidn")
+
   malmo <- "http://www.malm\u00F6.se"
   expect_is(curl::curl_fetch_memory(enc2utf8(malmo))$status_code, "integer")
   expect_is(curl::curl_fetch_memory(enc2native(malmo))$status_code, "integer")
