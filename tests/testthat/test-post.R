@@ -45,9 +45,14 @@ test_that("Post JSON data", {
   handle_setopt(h, COPYPOSTFIELDS = jsonlite::toJSON(mtcars));
   handle_setheaders(h, "Content-Type" = "application/json")
   req <- curl_fetch_memory(httpbin("post"), handle = h)
-  output <- jsonlite::fromJSON(rawToChar(req$content))
+  expect_equal(req$status_code, 200)
+
+  # For debugging
+  if(req$status_code > 200)
+    stop(rawToChar(req$content))
 
   # Note that httpbin reoders columns alphabetically
+  output <- jsonlite::fromJSON(rawToChar(req$content))
   expect_is(output$json, "data.frame")
   expect_equal(sort(names(output$json)), sort(names(mtcars)))
 })
