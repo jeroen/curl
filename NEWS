@@ -5,6 +5,7 @@
  - Error messages from libcurl include more detail when available (via CURLOPT_ERRORBUFFER)
  - Set a default CURLOPT_READFUNCTION because libcurls default can cause R to freeze
  - Fix a bug for empty forms and/or empty form-fields (+ added unit tests for this)
+ - The 'multi_run()' function gains a parameter 'max_results' to return early
 
 2.7
  - New function parse_headers_list() to parse response headers into named list
