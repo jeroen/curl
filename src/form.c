@@ -8,9 +8,14 @@ struct curl_httppost* make_form(SEXP form){
     const char *name = translateCharUTF8(STRING_ELT(ln, i));
     SEXP val = VECTOR_ELT(form, i);
     if(TYPEOF(val) == RAWSXP){
-      unsigned char * data = RAW(val);
-      long datalen = Rf_length(val);
-      curl_formadd(&post, &last, CURLFORM_COPYNAME, name, CURLFORM_COPYCONTENTS, data, CURLFORM_CONTENTSLENGTH, datalen, CURLFORM_END);
+      curl_off_t datalen = Rf_length(val);
+      if(datalen > 0){
+        unsigned char * data = RAW(val);
+        curl_formadd(&post, &last, CURLFORM_COPYNAME, name, CURLFORM_COPYCONTENTS, data, CURLFORM_CONTENTLEN, datalen, CURLFORM_END);
+      } else {
+        //Note if 'CURLFORM_CONTENTLEN == 0' then libcurl assumes strlen() !
+        curl_formadd(&post, &last, CURLFORM_COPYNAME, name, CURLFORM_COPYCONTENTS, "", CURLFORM_END);
+      }
     } else if(isVector(val) && Rf_length(val)){
       if(isString(VECTOR_ELT(val, 0))){
         //assume a form_file upload
