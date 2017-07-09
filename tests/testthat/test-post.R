@@ -79,6 +79,24 @@ test_that("Multipart form post", {
   expect_equal(sort(names(res$form)), c("bar", "foo", "iris"))
 })
 
+test_that("Empty values", {
+  hx <- handle_setform(new_handle())
+  req <- curl_fetch_memory(httpbin("post"), handle = hx)
+  expect_equal(req$status_code, 200)
+  res <- jsonlite::fromJSON(rawToChar(req$content))
+  expect_length(res$form, 0)
+  expect_equal(as.numeric(res$headers$`Content-Length`), 0)
+
+  hx <- handle_setform(new_handle(), x = "", y = raw(0))
+  req <- curl_fetch_memory(httpbin("post"), handle = hx)
+  expect_equal(req$status_code, 200)
+  res <- jsonlite::fromJSON(rawToChar(req$content))
+  expect_match(res$headers$`Content-Type`, "multipart")
+  expect_length(res$form, 2)
+  expect_equal(res$form$x, "")
+  expect_equal(res$form$y, "")
+})
+
 rm(h)
 test_that("GC works", {
   gc()
