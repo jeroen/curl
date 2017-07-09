@@ -89,13 +89,14 @@ SEXP R_multi_add(SEXP handle_ptr, SEXP cb_complete, SEXP cb_error, SEXP pool_ptr
   return handle_ptr;
 }
 
-SEXP R_multi_run(SEXP pool_ptr, SEXP timeout){
+SEXP R_multi_run(SEXP pool_ptr, SEXP timeout, SEXP max){
   multiref *mref = get_multiref(pool_ptr);
   CURLM *multi = mref->m;
 
   int total_pending = -1;
   int total_success = 0;
   int total_fail = 0;
+  int result_max = asInteger(max);
   double time_max = asReal(timeout);
   time_t time_start = time(NULL);
 
@@ -155,10 +156,12 @@ SEXP R_multi_run(SEXP pool_ptr, SEXP timeout){
     //if(pending_interrupt())  break;
     R_CheckUserInterrupt();
 
-    /* check for timeout */
-    if(time_max == 0 && total_pending != -1){
+    /* check for timeout or max result*/
+    if(result_max > 0 && total_success + total_fail >= result_max)
       break;
-    } else if(time_max > 0){
+    if(time_max == 0 && total_pending != -1)
+      break;
+    if(time_max > 0){
       seconds_elapsed = (double) (time(NULL) - time_start);
       if(seconds_elapsed > time_max)
         break;

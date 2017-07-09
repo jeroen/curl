@@ -12,7 +12,7 @@
 \usage{
 multi_add(handle, done = NULL, fail = NULL, pool = NULL)
 
-multi_run(timeout = Inf, pool = NULL)
+multi_run(timeout = Inf, max_results = Inf, pool = NULL)
 
 multi_set(total_con = 50, host_con = 6, multiplex = TRUE, pool = NULL)
 
@@ -35,6 +35,9 @@ error message.}
 
 \item{timeout}{max time in seconds to wait for results. Use \code{0} to poll for results without
 waiting at all.}
+
+\item{max_results}{integer. Return after at least \code{max_results} results have returned, either
+successfully or with an error. If you set this to 1, the function behaves like a poll.}
 
 \item{total_con}{max total concurrent connections.}
 
