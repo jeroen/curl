@@ -1,3 +1,6 @@
+2.9
+ - Windows: nslookup() now uses IdnToAscii() for non-ascii domains
+
 2.8
  - Windows: EXPERIMENTAL: on R 3.5+ curl now uses SecureChannel instead of OpenSSL for https.
  - Windows: updated libcurl to v7.54.1 with native windows IDN. Dropped nghttp2 and rtmp support.

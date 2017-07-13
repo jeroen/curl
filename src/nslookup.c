@@ -1,3 +1,8 @@
+//libcurl internal punycode converter
+#ifdef _WIN32
+int jeroen_win32_idn_to_ascii(const char *in, char **out);
+#endif
+
 //getaddrinfo is an extension (not C99)
 #if !defined(_WIN32) && !defined(__sun) && !defined(_POSIX_C_SOURCE)
 #define _POSIX_C_SOURCE 200112L
@@ -23,7 +28,15 @@ SEXP R_nslookup(SEXP hostname, SEXP ipv4_only) {
   if(asLogical(ipv4_only))
     hints.ai_family = AF_INET; //only allow ipv4
   struct addrinfo *addr;
-  if(getaddrinfo(CHAR(STRING_ELT(hostname, 0)), NULL, &hints, &addr))
+  const char * hoststr = CHAR(STRING_ELT(hostname, 0));
+#ifdef _WIN32
+  if(Rf_getCharCE(STRING_ELT(hostname, 0)) == CE_UTF8){
+    char * punycode;
+    if(jeroen_win32_idn_to_ascii(hoststr, &punycode))
+      hoststr = punycode;
+  }
+#endif
+  if(getaddrinfo(hoststr, NULL, &hints, &addr))
     return R_NilValue;
 
   // count number of hits
