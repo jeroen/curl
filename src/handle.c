@@ -19,6 +19,7 @@
 
 
 char CA_BUNDLE[MAX_PATH];
+static struct curl_slist * default_headers;
 
 SEXP R_set_bundle(SEXP path){
   strcpy(CA_BUNDLE, CHAR(asChar(path)));
@@ -125,11 +126,8 @@ void set_handle_defaults(reference *ref){
   /* dummy readfunction because default can freeze R */
   assert(curl_easy_setopt(handle, CURLOPT_READFUNCTION, dummy_read));
 
-  /* default of 1000 is too high */
-#ifdef HAS_CURLOPT_EXPECT_100_TIMEOUT_MS
-  assert(curl_easy_setopt(handle, CURLOPT_EXPECT_100_TIMEOUT_MS, 0L));
-#endif
-
+  /* set default headers (disables the Expect: http 100)*/
+  assert(curl_easy_setopt(handle, CURLOPT_HTTPHEADER, default_headers));
 }
 
 SEXP R_new_handle(){

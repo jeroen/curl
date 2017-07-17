@@ -77,6 +77,7 @@ handle_setheaders <- function(handle, ..., .list = list()){
   if(!all(vapply(opts, is.character, logical(1)))){
     stop("All headers must be strings.")
   }
+  opts$Expect = ""
   names <- names(opts)
   values <- as.character(unlist(opts))
   vec <- paste0(names, ": ", values)
