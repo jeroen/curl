@@ -13,6 +13,11 @@
 #define HAS_XFERINFOFUNCTION 1
 #endif
 
+#if LIBCURL_VERSION_MAJOR > 7 || (LIBCURL_VERSION_MAJOR == 7 && LIBCURL_VERSION_MINOR >= 36)
+#define HAS_CURLOPT_EXPECT_100_TIMEOUT_MS 1
+#endif
+
+
 char CA_BUNDLE[MAX_PATH];
 
 SEXP R_set_bundle(SEXP path){
@@ -119,6 +124,12 @@ void set_handle_defaults(reference *ref){
 
   /* dummy readfunction because default can freeze R */
   assert(curl_easy_setopt(handle, CURLOPT_READFUNCTION, dummy_read));
+
+  /* default of 1000 is too high */
+#ifdef HAS_CURLOPT_EXPECT_100_TIMEOUT_MS
+  assert(curl_easy_setopt(handle, CURLOPT_EXPECT_100_TIMEOUT_MS, 500L));
+#endif
+
 }
 
 SEXP R_new_handle(){

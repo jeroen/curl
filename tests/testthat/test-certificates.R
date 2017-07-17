@@ -1,7 +1,7 @@
 context("Certificate validation")
 
 test_that("CloudFlare / LetsEncrypt certs", {
-  if(.Platform$OS.type == "windows")
+  if(is.numeric(get_windows_build()))
     skip_if_not(get_windows_build() >= 7600, "TLS 1.2 requires at least Windows 7 / Windows Server 2008 R2")
   expect_equal(curl_fetch_memory('https://www.opencpu.org')$status_code, 200)
   expect_equal(curl_fetch_memory('https://rud.is')$status_code, 200)
