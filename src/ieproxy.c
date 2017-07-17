@@ -152,6 +152,14 @@ SEXP R_get_proxy_for_url(SEXP target_url, SEXP auto_detect, SEXP autoproxy_url){
   return vec;
 }
 
+SEXP R_windows_build(){
+  DWORD dwBuild = 0;
+  DWORD dwVersion = GetVersion();
+  if (dwVersion < 0x80000000)
+    dwBuild = (DWORD)(HIWORD(dwVersion));
+  return ScalarInteger(dwBuild);
+}
+
 #else //_WIN32
 
 SEXP R_proxy_info(){
@@ -159,6 +167,10 @@ SEXP R_proxy_info(){
 }
 
 SEXP R_get_proxy_for_url(SEXP target_url, SEXP autoproxy_url){
+  return R_NilValue;
+}
+
+SEXP R_windows_build(){
   return R_NilValue;
 }
 
