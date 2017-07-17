@@ -55,6 +55,7 @@ test_that("Small buffers", {
   con <- curl(httpbin("get"))
   expect_false(isIncomplete(con = con))
   open(con)
+  on.exit(close(con), add = TRUE)
   expect_true(isIncomplete(con = con))
   readLines(con, 1)
   expect_true(isIncomplete(con = con))

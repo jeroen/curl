@@ -18,16 +18,16 @@ test_that("Post text data", {
 
   # Using connection interface
   input <- jsonlite::fromJSON(rawToChar(req$content))
-  output <- jsonlite::fromJSON(curl(httpbin("post"), handle = h))
+  con <- curl(httpbin("post"), handle = h)
+  output <- jsonlite::fromJSON(con)
   expect_equal(input, output)
 
   # Using download interface
   tmp <- tempfile()
+  on.exit(unlink(tmp), add = TRUE)
   curl_download(httpbin("post"), tmp, handle = h)
   txt2 <- readLines(tmp)
-  unlink(tmp)
   expect_equal(rawToChar(req$content), paste0(txt2, "\n", collapse=""))
-  suppressWarnings(gc())
 })
 
 test_that("Change headers", {
