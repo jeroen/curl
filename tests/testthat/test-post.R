@@ -67,9 +67,9 @@ test_that("Multipart form post", {
     logo = form_file(file.path(Sys.getenv("R_DOC_DIR"), "html/logo.jpg"), "image/jpeg")
   )
   req <- curl_fetch_memory(httpbin("post"), handle = hx)
-  expect_equal(req$status_code, 200)
 
   # For debugging
+  expect_equal(req$status_code, 200)
   if(req$status_code > 200)
     stop(rawToChar(req$content))
 
@@ -89,7 +89,12 @@ test_that("Empty values", {
 
   hx <- handle_setform(new_handle(), x = "", y = raw(0))
   req <- curl_fetch_memory(httpbin("post"), handle = hx)
+
+  # For debugging
   expect_equal(req$status_code, 200)
+  if(req$status_code > 200)
+    stop(rawToChar(req$content))
+
   res <- jsonlite::fromJSON(rawToChar(req$content))
   expect_match(res$headers$`Content-Type`, "multipart")
   expect_length(res$form, 2)
