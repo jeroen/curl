@@ -127,7 +127,7 @@ void set_handle_defaults(reference *ref){
 
   /* default of 1000 is too high */
 #ifdef HAS_CURLOPT_EXPECT_100_TIMEOUT_MS
-  assert(curl_easy_setopt(handle, CURLOPT_EXPECT_100_TIMEOUT_MS, 500L));
+  assert(curl_easy_setopt(handle, CURLOPT_EXPECT_100_TIMEOUT_MS, 0L));
 #endif
 
 }
