@@ -41,3 +41,8 @@ ie_get_proxy_for_url <- function(target_url = "http://www.google.com"){
   }
   return(NULL);
 }
+
+#' @useDynLib curl R_windows_build
+get_windows_build <- function(){
+  .Call(R_windows_build)
+}
