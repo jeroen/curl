@@ -172,7 +172,7 @@ int opt_is_linked_list(int key) {
 
 SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
   CURL *handle = get_handle(ptr);
-  SEXP optnames = getAttrib(values, R_NamesSymbol);
+  SEXP optnames = PROTECT(getAttrib(values, R_NamesSymbol));
 
   if(!isInteger(keys))
     error("keys` must be an integer");
@@ -253,6 +253,7 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
       error("Option %s (%d) not supported.", optname, key);
     }
   }
+  UNPROTECT(1);
   return ScalarLogical(1);
 }
 

@@ -7,7 +7,8 @@
  - Set a default CURLOPT_READFUNCTION because libcurls default can cause R to freeze
  - Fix a bug for empty forms and/or empty form-fields (+ added unit tests for this)
  - The 'multi_run()' function gains a parameter 'poll' to return immediately when a request completes.
- - Set 'CURLOPT_EXPECT_100_TIMEOUT_MS' to 0 (should fix http 408 unit test failures)
+ - Disable 'Expect: 100-continue' for POST requests (deprecated in libcurl)
+ - Fix two rchk PROTECT warnings (thanks to Tomas Kalibera)
 
 2.7
  - New function parse_headers_list() to parse response headers into named list

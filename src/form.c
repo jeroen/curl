@@ -3,7 +3,7 @@
 struct curl_httppost* make_form(SEXP form){
   struct curl_httppost* post = NULL;
   struct curl_httppost* last = NULL;
-  SEXP ln = getAttrib(form, R_NamesSymbol);
+  SEXP ln = PROTECT(getAttrib(form, R_NamesSymbol));
   for(int i = 0; i < length(form); i++){
     const char *name = translateCharUTF8(STRING_ELT(ln, i));
     SEXP val = VECTOR_ELT(form, i);
@@ -41,5 +41,6 @@ struct curl_httppost* make_form(SEXP form){
       error("form value %s not supported", name);
     }
   }
+  UNPROTECT(1);
   return post;
 }
