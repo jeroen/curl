@@ -10,7 +10,7 @@ find_test_server <- function(){
     strsplit(rawToChar(req$content), "\n", fixed = TRUE)[[1]]
   }, error = function(e){
     message("Failed to download server list:", e$message)
-    c("https://httpbin.org", "https://eu.httpbin.org", "http://httpbin.org", "https://http2bin.org")
+    c("https://eu.httpbin.org", "https://httpbin.org", "http://httpbin.org")
   })
 
 
