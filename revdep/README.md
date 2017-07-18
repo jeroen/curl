@@ -6,21 +6,21 @@
 |:--------|:----------------------------|
 |version  |R version 3.4.1 (2017-06-30) |
 |system   |x86_64, darwin15.6.0         |
-|ui       |X11                          |
+|ui       |RStudio (1.0.143)            |
 |language |(EN)                         |
 |collate  |en_US.UTF-8                  |
 |tz       |Europe/Amsterdam             |
-|date     |2017-07-09                   |
+|date     |2017-07-18                   |
 
 ## Packages
 
 |package |*  |version |date       |source                 |
 |:-------|:--|:-------|:----------|:----------------------|
-|curl    |   |2.8     |2017-07-09 |local (jeroen/curl@NA) |
+|curl    |   |2.8     |2017-07-18 |local (jeroen/curl@NA) |
 
 # Check results
 
-91 packages
+92 packages
 
 |package             |version | errors| warnings| notes|
 |:-------------------|:-------|------:|--------:|-----:|
@@ -67,11 +67,11 @@
 |meteoland           |0.5.9   |      0|        0|     0|
 |MTurkR              |0.8.0   |      0|        0|     0|
 |MTurkRGUI           |0.1.5   |      0|        0|     0|
-|OAIHarvester        |0.2-2   |      0|        0|     0|
-|oec                 |2.2     |      0|        0|     0|
+|OAIHarvester        |0.3-0   |      0|        0|     0|
+|oec                 |2.4     |      0|        0|     0|
 |opencpu             |2.0.3   |      0|        0|     0|
 |OpenML              |1.4     |      0|        0|     1|
-|osmdata             |0.0.4   |      0|        0|     0|
+|osmdata             |0.0.4   |      1|        0|     0|
 |osmplotr            |0.3.0   |      0|        0|     1|
 |pafdR               |1.0     |      0|        0|     0|
 |pageviews           |0.3.0   |      0|        0|     0|
@@ -84,7 +84,7 @@
 |rdomains            |0.1.5   |      0|        0|     0|
 |readr               |1.1.1   |      0|        0|     1|
 |refimpact           |0.1.0   |      0|        0|     0|
-|remotes             |1.0.0   |      0|        0|     1|
+|remotes             |1.1.0   |      0|        0|     1|
 |request             |0.1.0   |      0|        0|     0|
 |rgho                |1.0.1   |      0|        0|     0|
 |rio                 |0.5.5   |      0|        0|     0|
@@ -97,7 +97,7 @@
 |sbtools             |1.1.6   |      0|        0|     0|
 |scidb               |2.0.0   |      0|        0|     0|
 |secret              |1.0.0   |      0|        0|     0|
-|stplanr             |0.1.8   |      1|        0|     0|
+|stplanr             |0.1.9   |      0|        0|     0|
 |sysfonts            |0.6     |      0|        0|     0|
 |taxizedb            |0.1.4   |      0|        0|     0|
 |telegram            |0.6.0   |      0|        0|     0|
@@ -105,6 +105,7 @@
 |textreadr           |0.5.1   |      0|        0|     1|
 |tidyquant           |0.5.1   |      1|        0|     0|
 |trelliscope         |0.9.7   |      0|        0|     1|
+|TTR                 |0.23-2  |      1|        0|     0|
 |udapi               |0.1.0   |      0|        0|     0|
 |V8                  |1.5     |      0|        0|     0|
 |VarfromPDB          |2.2.7   |      0|        0|     0|
@@ -405,13 +406,13 @@ Bug reports: https://github.com/leeper/MTurkRGUI/issues
 
 0 errors | 0 warnings | 0 notes
 
-## OAIHarvester (0.2-2)
+## OAIHarvester (0.3-0)
 Maintainer: Kurt Hornik <Kurt.Hornik@R-project.org>
 
 0 errors | 0 warnings | 0 notes
 
-## oec (2.2)
-Maintainer: Mauricio Vargas S. <mvargas@dcc.uchile.cl>
+## oec (2.4)
+Maintainer: Mauricio Vargas S. <oec@media.mit.edu>
 
 0 errors | 0 warnings | 0 notes
 
@@ -437,7 +438,26 @@ No Java runtime present, try --request to install.
 Maintainer: Mark Padgham <mark.padgham@email.com>  
 Bug reports: https://github.com/osmdatar/osmdata/issues
 
-0 errors | 0 warnings | 0 notes
+1 error  | 0 warnings | 0 notes
+
+```
+checking examples ... ERROR
+Running examples in ‘osmdata-Ex.R’ failed
+The error most likely occurred in:
+
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: opq_string
+> ### Title: Convert an overpass query into a text string
+> ### Aliases: opq_string opq_to_string
+> 
+> ### ** Examples
+> 
+> q <- opq ("hampi india")
+Error in curl::curl_fetch_memory(url, handle = handle) : 
+  Timeout was reached: Resolving timed out after 211654 milliseconds
+Calls: opq ... request_fetch -> request_fetch.write_memory -> <Anonymous> -> .Call
+Execution halted
+```
 
 ## osmplotr (0.3.0)
 Maintainer: Mark Padgham <mark.padgham@email.com>  
@@ -534,9 +554,9 @@ Bug reports: https://github.com/perrystephenson/refimpact/issues
 
 0 errors | 0 warnings | 0 notes
 
-## remotes (1.0.0)
-Maintainer: Gabor Csardi <gcsardi@mango-solutions.com>  
-Bug reports: https://github.com/mangothecat/remotes/issues
+## remotes (1.1.0)
+Maintainer: Gábor Csárdi <csardi.gabor@gmail.com>  
+Bug reports: https://github.com/r-lib/remotes/issues
 
 0 errors | 0 warnings | 1 note 
 
@@ -620,33 +640,11 @@ Bug reports: https://github.com/gaborcsardi/secret/issues
 
 0 errors | 0 warnings | 0 notes
 
-## stplanr (0.1.8)
+## stplanr (0.1.9)
 Maintainer: Robin Lovelace <rob00x@gmail.com>  
 Bug reports: https://github.com/ropensci/stplanr/issues
 
-1 error  | 0 warnings | 0 notes
-
-```
-checking examples ... ERROR
-Running examples in ‘stplanr-Ex.R’ failed
-The error most likely occurred in:
-
-> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
-> ### Name: onewayid
-> ### Title: Aggregate ods so they become non-directional
-> ### Aliases: onewayid onewayid onewayid.data.frame onewayid
-> ###   onewayid.SpatialLines
-> 
-> ### ** Examples
-> 
-> data(flow)
-> flow_oneway = onewayid(flow, attrib = 3)
-`.cols` has been renamed and is deprecated, please use `.vars`
-Error in summarise_impl(.data, dots) : 
-  Evaluation error: could not find function "nth".
-Calls: onewayid ... summarise -> summarise.tbl_df -> summarise_impl -> .Call
-Execution halted
-```
+0 errors | 0 warnings | 0 notes
 
 ## sysfonts (0.6)
 Maintainer: Yixuan Qiu <yixuan.qiu@cos.name>  
@@ -691,9 +689,14 @@ Bug reports: https://github.com/business-science/tidyquant/issues
 
 ```
 checking tests ... ERROR
-  Running ‘testthat.R’ [14s/45s]
+  Running ‘testthat.R’ [13s/41s]
 Running the tests in ‘tests/testthat.R’ failed.
 Last 13 lines of output:
+  2: Oanda only provides historical data for the past 180 days. Symbol: EUR/USD 
+  3: Oanda only provides historical data for the past 180 days. Symbol: gold 
+  4: Oanda only provides historical data for the past 180 days. Symbol: gold 
+  testthat results ================================================================
+  OK: 159 SKIPPED: 2 FAILED: 7
   1. Error: Test prints warning message on invalid x input. (@test_tq_get_dividends.R#23) 
   2. Error: Test returns NA on invalid x input. (@test_tq_get_dividends.R#27) 
   3. Failure: Test returns tibble with correct rows and columns. (@test_tq_get_exchange_rates.R#25) 
@@ -703,11 +706,6 @@ Last 13 lines of output:
   7. Failure: Test 2 returns tibble with correct rows and columns. (@test_tq_get_stock_prices.R#28) 
   
   Error: testthat unit tests failed
-  In addition: Warning messages:
-  1: Oanda only provides historical data for the past 180 days. Symbol: EUR/USD 
-  2: Oanda only provides historical data for the past 180 days. Symbol: EUR/USD 
-  3: Oanda only provides historical data for the past 180 days. Symbol: gold 
-  4: Oanda only provides historical data for the past 180 days. Symbol: gold 
   Execution halted
 ```
 
@@ -721,6 +719,18 @@ Bug reports: https://github.com/delta-rho/trelliscope/issues
 checking dependencies in R code ... NOTE
 Unable to find any JVMs matching version "(null)".
 No Java runtime present, try --request to install.
+```
+
+## TTR (0.23-2)
+Maintainer: Joshua Ulrich <josh.m.ulrich@gmail.com>  
+Bug reports: https://github.com/joshuaulrich/TTR/issues
+
+1 error  | 0 warnings | 0 notes
+
+```
+checking whether package ‘TTR’ can be installed ... ERROR
+Installation failed.
+See ‘/Users/jeroen/workspace/curl/revdep/checks/TTR.Rcheck/00install.out’ for details.
 ```
 
 ## udapi (0.1.0)
