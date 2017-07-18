@@ -127,6 +127,9 @@ void set_handle_defaults(reference *ref){
   assert(curl_easy_setopt(handle, CURLOPT_READFUNCTION, dummy_read));
 
   /* set default headers (disables the Expect: http 100)*/
+#ifdef HAS_CURLOPT_EXPECT_100_TIMEOUT_MS
+  assert(curl_easy_setopt(handle, CURLOPT_EXPECT_100_TIMEOUT_MS, 0L));
+#endif
   assert(curl_easy_setopt(handle, CURLOPT_HTTPHEADER, default_headers));
 }
 
