@@ -1,4 +1,8 @@
-2.8
+2.8.1
+ - Windows: switch back to OpenSSL instead of SecureChannel because Windows 2008 (CRAN) does not
+   support TLS 1.1 and TLS 1.2 which is required for many servers now.
+
+2.8 (unpublished)
  - Windows: EXPERIMENTAL: on R 3.5+ curl now uses SecureChannel instead of OpenSSL for https.
  - Windows: updated libcurl to v7.54.1 with native windows IDN. Dropped nghttp2 and rtmp support.
  - Windows: nslookup() now uses IdnToAscii() for non-ascii domains
