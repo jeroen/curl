@@ -19,6 +19,7 @@
 #' nslookup("ipv6.test-ipv6.com", ipv4_only = FALSE, error = FALSE)
 nslookup <- function(host, ipv4_only = FALSE, multiple = FALSE, error = TRUE){
   stopifnot(is.character(host))
+  host <- enc2utf8(host)
   if(grepl("://", host, fixed = TRUE))
     stop("This looks like a URL, not a hostname")
   out <- .Call(R_nslookup, host[1], as.logical(ipv4_only))
