@@ -67,13 +67,15 @@ static size_t push(void *contents, size_t sz, size_t nmemb, void *ctx) {
   size_t realsize = sz * nmemb;
   size_t newsize = req->size + realsize;
   if(newsize > req->limit) {
-    size_t newlimit = 2 * req->limit;
-    //Rprintf("Resizing buffer to %d.\n", newlimit);
-    void *newbuf = realloc(req->buf, newlimit);
+    // Author msquinn@google.com: Use newsize to set the new limit in realloc
+    // size_t newlimit = 2 * req->limit;
+    // Rprintf("Resizing buffer to %d.\n", newlimit);
+    void *newbuf = realloc(req->buf, newsize + 1);
     if(!newbuf)
       error("Failure in realloc. Out of memory?");
     req->buf = newbuf;
-    req->limit = newlimit;
+    // Author msquinn@google.com: Use newsize to set the new limit in realloc
+    req->limit += newsize + 1;
   }
 
   /* append new data */
