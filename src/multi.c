@@ -1,6 +1,5 @@
 #include "curl-common.h"
 #include <time.h>
-#include <sys/select.h>
 
 /* Notes:
  *  - First check for unhandled messages in curl_multi_info_read() before curl_multi_perform()
