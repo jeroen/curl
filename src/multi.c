@@ -264,7 +264,7 @@ SEXP R_multi_fdset(SEXP pool_ptr){
 
   massert(curl_multi_timeout(multi, &timeout));
 
-  for (i = 0; i < max_fd; i++){
+  for (i = 0; i <= max_fd; i++){
     if (FD_ISSET(i, &read_fd_set))  num_read++;
     if (FD_ISSET(i, &write_fd_set)) num_write++;
     if (FD_ISSET(i, &exc_fd_set))   num_exc++;
@@ -287,7 +287,7 @@ SEXP R_multi_fdset(SEXP pool_ptr){
   pwrite = INTEGER(VECTOR_ELT(result, 1));
   pexc   = INTEGER(VECTOR_ELT(result, 2));
 
-  for (i = 0; i < max_fd; i++){
+  for (i = 0; i <= max_fd; i++){
     if (FD_ISSET(i, &read_fd_set))  *(pread++)  = i;
     if (FD_ISSET(i, &write_fd_set)) *(pwrite++) = i;
     if (FD_ISSET(i, &exc_fd_set))   *(pexc++)   = i;
