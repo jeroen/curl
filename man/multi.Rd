@@ -8,6 +8,7 @@
 \alias{multi_list}
 \alias{multi_cancel}
 \alias{new_pool}
+\alias{multi_fdset}
 \title{Async Multi Download}
 \usage{
 multi_add(handle, done = NULL, fail = NULL, pool = NULL)
@@ -21,6 +22,8 @@ multi_list(pool = NULL)
 multi_cancel(handle)
 
 new_pool(total_con = 100, host_con = 6, multiplex = TRUE)
+
+multi_fdset(pool = NULL)
 }
 \arguments{
 \item{handle}{a curl \link{handle} with preconfigured \code{url} option.}
@@ -76,6 +79,14 @@ requests.
 
 The \link{multi_cancel} function can be used to cancel a pending request.
 It has no effect if the request was already completed or canceled.
+
+The \link{multi_fdset} function returns the file descriptors curl is
+polling currently, and also a timeout parameter, the number of
+milliseconds an application should wait (at most) before proceeding. It
+is equivalent to the \code{curl_multi_fdset} and
+\code{curl_multi_timeout} calls. It is handy for applications that is
+expecting input (or writing output) through both curl, and other file
+descriptors.
 }
 \examples{
 h1 <- new_handle(url = "https://eu.httpbin.org/delay/3")

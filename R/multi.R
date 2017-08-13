@@ -30,6 +30,14 @@
 #' The \link{multi_cancel} function can be used to cancel a pending request.
 #' It has no effect if the request was already completed or canceled.
 #'
+#' The \link{multi_fdset} function returns the file descriptors curl is
+#' polling currently, and also a timeout parameter, the number of
+#' milliseconds an application should wait (at most) before proceeding. It
+#' is equivalent to the \code{curl_multi_fdset} and
+#' \code{curl_multi_timeout} calls. It is handy for applications that is
+#' expecting input (or writing output) through both curl, and other file
+#' descriptors.
+#'
 #' @name multi
 #' @rdname multi
 #' @useDynLib curl R_multi_add
@@ -130,4 +138,15 @@ multi_default <- local({
 print.curl_multi <- function(x, ...){
   len <- length(multi_list(x))
   cat(sprintf("<curl multi-pool> (%d pending requests)\n", len))
+}
+
+#' @export
+#' @useDynLib curl R_multi_fdset
+#' @rdname multi
+
+multi_fdset <- function(pool = NULL){
+  if(is.null(pool))
+    pool <- multi_default()
+  stopifnot(inherits(pool, "curl_multi"))
+  .Call(R_multi_fdset, pool)
 }
