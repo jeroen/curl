@@ -96,7 +96,7 @@ handle_setform <- function(handle, ..., .list = list()){
     if(is.character(val)){
       form[[i]] <- charToRaw(enc2utf8(val))
     } else if(!is.raw(val) && !inherits(val, "form_file") && !inherits(val, "form_data")){
-      stop("Insupported value type for form field '", names(form[i]), "'.")
+      stop("Unsupported value type for form field '", names(form[i]), "'.")
     }
   }
   .Call(R_handle_setform, handle, form)
