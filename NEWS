@@ -1,3 +1,6 @@
+2.9
+ - multi_add() and curl_fetch_multi() gain an optional 'data' callback parameter
+
 2.8.1
  - Windows: switch back to OpenSSL instead of SecureChannel because Windows 2008 (CRAN) does not
    support TLS 1.1 and TLS 1.2 which is required for many servers now.

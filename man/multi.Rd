@@ -11,7 +11,7 @@
 \alias{multi_fdset}
 \title{Async Multi Download}
 \usage{
-multi_add(handle, done = NULL, fail = NULL, pool = NULL)
+multi_add(handle, done = NULL, fail = NULL, data = NULL, pool = NULL)
 
 multi_run(timeout = Inf, poll = FALSE, pool = NULL)
 
@@ -33,6 +33,9 @@ response data in same structure as \link{curl_fetch_memory}.}
 
 \item{fail}{callback function called on failed request. Argument contains
 error message.}
+
+\item{data}{callback function for receiving data. If \code{NULL} the entire
+response content gets buffered and is returned in the \code{done} callback.}
 
 \item{pool}{a multi handle created by \link{new_pool}. Default uses a global pool.}
 

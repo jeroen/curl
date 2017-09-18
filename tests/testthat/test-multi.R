@@ -97,6 +97,40 @@ test_that("Errors in Callbacks", {
   expect_equal(multi_run(pool = pool), list(success = 0, error = 0, pending = 0))
 })
 
+test_that("Data callback", {
+  con <- rawConnection(raw(0), "r+")
+  on.exit(close(con))
+  hx <- new_handle()
+  handle_setopt(hx, COPYPOSTFIELDS = jsonlite::toJSON(mtcars));
+  handle_setheaders(hx, "Content-Type" = "application/json")
+  status <- NULL
+  curl_fetch_multi(httpbin("post"), done = function(res){
+    status <<- res$status_code
+  }, fail = stop, data = function(x){
+    writeBin(x, con)
+  }, handle = hx)
+  hy <- new_handle()
+  curl_fetch_multi(httpbin("get"), done = function(res){
+    expect_equal(res$status_code, 200)
+  }, fail = stop, data = function(x){
+    expect_is(x, "raw")
+  }, handle = hy)
+
+  # perform requests
+  out <- multi_run()
+  expect_equal(out$success, 2)
+  expect_equal(status, 200)
+
+  # get data from buffer
+  content <- rawConnectionValue(con)
+  output <- jsonlite::fromJSON(rawToChar(content))
+  expect_is(output$json, "data.frame")
+  expect_equal(sort(names(output$json)), sort(names(mtcars)))
+
+  #FIXME: this should not be needed
+  rm(hx, hy)
+})
+
 test_that("GC works", {
   gc()
   expect_equal(total_handles(), 0L)

@@ -130,3 +130,17 @@ size_t append_buffer(void *contents, size_t sz, size_t nmemb, void *ctx) {
   mem->size += realsize;
   return realsize;
 }
+
+size_t data_callback(void * data, size_t sz, size_t nmemb, SEXP fun) {
+  size_t size = sz * nmemb;
+  SEXP buf = PROTECT(allocVector(RAWSXP, size));
+  memcpy(RAW(buf), data, size);
+
+  /* call the R function */
+  int err;
+  SEXP call = PROTECT(LCONS(fun, LCONS(buf, R_NilValue)));
+  R_tryEval(call, R_GlobalEnv, &err);
+  UNPROTECT(2);
+  return err ? 0 : size;
+}
+

@@ -43,6 +43,7 @@ void multi_release(reference *ref){
   ref->async.content.size = 0;
   ref->async.complete = NULL;
   ref->async.error = NULL;
+  ref->async.data = NULL;
   ref->async.node = NULL;
 
   /* Unlock handle (and cleanup if needed) */
@@ -58,7 +59,7 @@ SEXP R_multi_cancel(SEXP handle_ptr){
   return handle_ptr;
 }
 
-SEXP R_multi_add(SEXP handle_ptr, SEXP cb_complete, SEXP cb_error, SEXP pool_ptr){
+SEXP R_multi_add(SEXP handle_ptr, SEXP cb_complete, SEXP cb_error, SEXP cb_data, SEXP pool_ptr){
   multiref *mref = get_multiref(pool_ptr);
   CURLM *multi = mref->m;
 
@@ -67,8 +68,13 @@ SEXP R_multi_add(SEXP handle_ptr, SEXP cb_complete, SEXP cb_error, SEXP pool_ptr
     Rf_error("Handle is locked. Probably in use in a connection or async request.");
 
   /* placeholder body */
-  curl_easy_setopt(ref->handle, CURLOPT_WRITEFUNCTION, append_buffer);
-  curl_easy_setopt(ref->handle, CURLOPT_WRITEDATA, &(ref->async.content));
+  if(Rf_isFunction(cb_data)){
+    curl_easy_setopt(ref->handle, CURLOPT_WRITEFUNCTION, data_callback);
+    curl_easy_setopt(ref->handle, CURLOPT_WRITEDATA, cb_data);
+  } else {
+    curl_easy_setopt(ref->handle, CURLOPT_WRITEFUNCTION, append_buffer);
+    curl_easy_setopt(ref->handle, CURLOPT_WRITEDATA, &(ref->async.content));
+  }
 
   /* add to scheduler */
   massert(curl_multi_add_handle(multi, ref->handle));
@@ -81,7 +87,8 @@ SEXP R_multi_add(SEXP handle_ptr, SEXP cb_complete, SEXP cb_error, SEXP pool_ptr
   /* set multi callbacks */
   ref->async.complete = cb_complete;
   ref->async.error = cb_error;
-  R_SetExternalPtrProtected(handle_ptr, Rf_list2(cb_error, cb_complete));
+  ref->async.data = cb_data;
+  R_SetExternalPtrProtected(handle_ptr, Rf_list3(cb_error, cb_complete, cb_data));
 
   /* lock and protect handle */
   ref->refCount++;

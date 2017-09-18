@@ -102,8 +102,9 @@ curl_fetch_stream <- function(url, fun, handle = new_handle()){
 #' @rdname curl_fetch
 #' @inheritParams multi
 #' @useDynLib curl R_curl_connection
-curl_fetch_multi <- function(url, done = NULL, fail = NULL, pool = NULL, handle = new_handle()){
+curl_fetch_multi <- function(url, done = NULL, fail = NULL, pool = NULL,
+                             data = NULL, handle = new_handle()){
   handle_setopt(handle, url = enc2utf8(url))
-  multi_add(handle = handle, done = done, fail = fail, pool = pool)
+  multi_add(handle = handle, done = done, fail = fail, data = data, pool = pool)
   invisible(handle)
 }

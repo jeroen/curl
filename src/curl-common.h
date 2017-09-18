@@ -25,6 +25,7 @@ typedef struct {
   memory content;
   SEXP complete;
   SEXP error;
+  SEXP data;
 } async;
 
 typedef struct {
@@ -55,6 +56,7 @@ void reset_errbuf(reference *ref);
 void clean_handle(reference *ref);
 size_t push_disk(void* contents, size_t sz, size_t nmemb, FILE *ctx);
 size_t append_buffer(void *contents, size_t sz, size_t nmemb, void *ctx);
+size_t data_callback(void * data, size_t sz, size_t nmemb, SEXP fun);
 CURLcode curl_perform_with_interrupt(CURL *handle);
 int pending_interrupt();
 SEXP make_handle_response(reference *ref);

@@ -46,6 +46,8 @@
 #' response data in same structure as \link{curl_fetch_memory}.
 #' @param fail callback function called on failed request. Argument contains
 #' error message.
+#' @param data callback function for receiving data. If \code{NULL} the entire
+#' response content gets buffered and is returned in the \code{done} callback.
 #' @param pool a multi handle created by \link{new_pool}. Default uses a global pool.
 #' @export
 #' @examples h1 <- new_handle(url = "https://eu.httpbin.org/delay/3")
@@ -56,14 +58,15 @@
 #' multi_add(h3, done = print, fail = print)
 #' multi_run(timeout = 2)
 #' multi_run()
-multi_add <- function(handle, done = NULL, fail = NULL, pool = NULL){
+multi_add <- function(handle, done = NULL, fail = NULL, data = NULL, pool = NULL){
   if(is.null(pool))
     pool <- multi_default()
   stopifnot(inherits(handle, "curl_handle"))
   stopifnot(inherits(pool, "curl_multi"))
   stopifnot(is.null(done) || is.function(done))
   stopifnot(is.null(fail) || is.function(fail))
-  .Call(R_multi_add, handle, done, fail, pool)
+  stopifnot(is.null(data) || is.function(data))
+  .Call(R_multi_add, handle, done, fail, data, pool)
 }
 
 #' @param timeout max time in seconds to wait for results. Use \code{0} to poll for results without

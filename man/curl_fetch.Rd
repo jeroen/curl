@@ -14,7 +14,7 @@ curl_fetch_disk(url, path, handle = new_handle())
 curl_fetch_stream(url, fun, handle = new_handle())
 
 curl_fetch_multi(url, done = NULL, fail = NULL, pool = NULL,
-  handle = new_handle())
+  data = NULL, handle = new_handle())
 }
 \arguments{
 \item{url}{A character string naming the URL of a resource to be downloaded.}
@@ -33,6 +33,9 @@ response data in same structure as \link{curl_fetch_memory}.}
 error message.}
 
 \item{pool}{a multi handle created by \link{new_pool}. Default uses a global pool.}
+
+\item{data}{callback function for receiving data. If \code{NULL} the entire
+response content gets buffered and is returned in the \code{done} callback.}
 }
 \description{
 Low-level bindings to write data from a URL into memory, disk or a callback
