@@ -126,6 +126,11 @@ void set_handle_defaults(reference *ref){
   /* dummy readfunction because default can freeze R */
   assert(curl_easy_setopt(handle, CURLOPT_READFUNCTION, dummy_read));
 
+  /* seems to be needed for native WinSSL */
+#ifdef _WIN32
+  curl_easy_setopt(curl, CURLOPT_SSL_OPTIONS, CURLSSLOPT_NO_REVOKE);
+#endif
+
   /* set default headers (disables the Expect: http 100)*/
 #ifdef HAS_CURLOPT_EXPECT_100_TIMEOUT_MS
   assert(curl_easy_setopt(handle, CURLOPT_EXPECT_100_TIMEOUT_MS, 0L));
