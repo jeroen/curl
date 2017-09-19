@@ -134,6 +134,25 @@ test_that("Data callback", {
   expect_equal(sort(names(output$json)), sort(names(mtcars)))
 })
 
+test_that("callback protection", {
+  done <- function(res){
+    expect_is(res$status_code, "integer")
+  }
+  fail <- function(...){
+    print("error")
+  }
+  data <- function(x){
+    expect_is(x, "raw")
+  }
+  pool <- new_pool()
+  handle <- new_handle(url = httpbin("get"))
+  multi_add(handle, done = done, fail = fail, data = data, pool = pool)
+  rm(handle, done, fail, data)
+  gc(); gc();
+  out <- multi_run(pool = pool)
+  expect_equal(out$success, 1)
+})
+
 test_that("GC works", {
   gc()
   expect_equal(total_handles(), 0L)
