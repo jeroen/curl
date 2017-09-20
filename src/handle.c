@@ -128,7 +128,7 @@ void set_handle_defaults(reference *ref){
 
   /* seems to be needed for native WinSSL */
 #ifdef _WIN32
-  curl_easy_setopt(curl, CURLOPT_SSL_OPTIONS, CURLSSLOPT_NO_REVOKE);
+  curl_easy_setopt(handle, CURLOPT_SSL_OPTIONS, CURLSSLOPT_NO_REVOKE);
 #endif
 
   /* set default headers (disables the Expect: http 100)*/

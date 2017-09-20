@@ -69,7 +69,7 @@ SEXP R_multi_add(SEXP handle_ptr, SEXP cb_complete, SEXP cb_error, SEXP cb_data,
 
   /* placeholder body */
   if(Rf_isFunction(cb_data)){
-    curl_easy_setopt(ref->handle, CURLOPT_WRITEFUNCTION, data_callback);
+    curl_easy_setopt(ref->handle, CURLOPT_WRITEFUNCTION, (curl_write_callback) data_callback);
     curl_easy_setopt(ref->handle, CURLOPT_WRITEDATA, cb_data);
   } else {
     curl_easy_setopt(ref->handle, CURLOPT_WRITEFUNCTION, append_buffer);
