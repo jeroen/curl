@@ -1,5 +1,6 @@
 2.9
  - multi_add() and curl_fetch_multi() gain an optional 'data' callback parameter
+ - New function multi_fdset() returns the file descriptors of a multi pool
 
 2.8.1
  - Windows: switch back to OpenSSL instead of SecureChannel because Windows 2008 (CRAN) does not
