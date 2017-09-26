@@ -93,12 +93,25 @@ expecting input (or writing output) through both curl, and other file
 descriptors.
 }
 \examples{
+# This handle will take longest (3sec)
 h1 <- new_handle(url = "https://eu.httpbin.org/delay/3")
-h2 <- new_handle(url = "https://eu.httpbin.org/post", postfields = "bla bla")
-h3 <- new_handle(url = "https://urldoesnotexist.xyz")
 multi_add(h1, done = print, fail = print)
-multi_add(h2, done = print, fail = print)
+
+# This handle writes data to a file
+con <- file("output.txt", open = "wb")
+h2 <- new_handle(url = "https://eu.httpbin.org/post", postfields = "bla bla")
+multi_add(h2, done = print, fail = print, data = con)
+
+# This handle raises an error
+h3 <- new_handle(url = "https://urldoesnotexist.xyz")
 multi_add(h3, done = print, fail = print)
+
+# Actually perform the requests
 multi_run(timeout = 2)
 multi_run()
+
+# Check the file
+close(con)
+readLines("output.txt")
+unlink("output.txt")
 }
