@@ -34,8 +34,9 @@ error message.}
 
 \item{pool}{a multi handle created by \link{new_pool}. Default uses a global pool.}
 
-\item{data}{callback function for receiving data. If \code{NULL} the entire
-response content gets buffered and is returned in the \code{done} callback.}
+\item{data}{file path, connection object or callback function for receiving
+data. If \code{NULL} the entire response content gets buffered and is returned
+in the \code{done} callback.}
 }
 \description{
 Low-level bindings to write data from a URL into memory, disk or a callback
