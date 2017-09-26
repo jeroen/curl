@@ -34,8 +34,8 @@ error message.}
 
 \item{pool}{a multi handle created by \link{new_pool}. Default uses a global pool.}
 
-\item{data}{file path, connection object or callback function for receiving
-data. If \code{NULL} the entire response content gets buffered and is returned
+\item{data}{callback function or open connection object for receiving data.
+If \code{NULL} the entire response content gets buffered and is returned
 in the \code{done} callback.}
 }
 \description{

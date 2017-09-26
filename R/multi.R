@@ -46,8 +46,8 @@
 #' response data in same structure as \link{curl_fetch_memory}.
 #' @param fail callback function called on failed request. Argument contains
 #' error message.
-#' @param data file path, connection object or callback function for receiving
-#' data. If \code{NULL} the entire response content gets buffered and is returned
+#' @param data callback function or open connection object for receiving data.
+#' If \code{NULL} the entire response content gets buffered and is returned
 #' in the \code{done} callback.
 #' @param pool a multi handle created by \link{new_pool}. Default uses a global pool.
 #' @export
@@ -62,22 +62,19 @@
 multi_add <- function(handle, done = NULL, fail = NULL, data = NULL, pool = NULL){
   if(is.null(pool))
     pool <- multi_default()
-  if(is.character(data) && length(data))
-    data <- file(normalizePath(data, mustWork = FALSE))
   if(inherits(data, "connection")){
-    if(!isOpen(data)){
-      open(data, "wb")
-      on.exit(close(data), add = TRUE)
-    }
-    if(identical(summary(data)$text, "text")){
+    con <- data
+    if(!isOpen(con))
+      stop("Connection for 'data' argument is not open")
+    data <- if(identical(summary(data)$text, "text")){
       function(x){
-        cat(rawToChar(x), file = data)
-        flush(data)
+        cat(rawToChar(x), file = con)
+        flush(con)
       }
     } else {
       function(x){
-        writeBin(x, con = data)
-        flush(data)
+        writeBin(x, con = con)
+        flush(con)
       }
     }
   }
