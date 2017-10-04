@@ -7,8 +7,6 @@ PKG_CPPFLAGS= \
 
 all: clean winlibs libwinhttp.dll.a
 
-$(OBJECTS): winlibs
-
 clean:
 	rm -f $(SHLIB) $(OBJECTS) libwinhttp.dll.a winhttp.def
 
