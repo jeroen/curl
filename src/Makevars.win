@@ -5,9 +5,8 @@ PKG_LIBS= -L../windows/libcurl-$(VERSION)/lib${R_ARCH} \
 PKG_CPPFLAGS= \
 	-I../windows/libcurl-$(VERSION)/include -DCURL_STATICLIB
 
-all: clean
+all: clean winlibs libwinhttp.dll.a
 
-$(SHLIB): libwinhttp.dll.a
 $(OBJECTS): winlibs
 
 clean:
