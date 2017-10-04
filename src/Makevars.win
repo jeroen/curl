@@ -1,30 +1,20 @@
-# Set a default
-LIBCURL_BUILD ?= openssl
-#LIBCURL_BUILD ?= winssl
-
-# Switches between OpenSSL and SecureChannel builds of libcurl stack
-ifeq "${LIBCURL_BUILD}" "openssl"
-CURL_LIBS = -lcurl -lssh2 -lz -lssl -lcrypto -lgdi32 -lws2_32 -lcrypt32 -lwldap32
-else
-CURL_LIBS = -lcurl -lz -lws2_32 -lcrypt32 -lwldap32
-endif
-
-PKG_LIBS= -L../windows/libcurl-7.54.1/lib-${LIBCURL_BUILD}${R_ARCH} \
-	-L. -lwinhttp $(CURL_LIBS)
+VERSION=7.56.0
+PKG_LIBS= -L../windows/libcurl-$(VERSION)/lib${R_ARCH} \
+	-L. -lwinhttp -lcurl-dualssl -lz -lssl -lcrypto -lgdi32 -lws2_32 -lcrypt32 -lwldap32
 
 PKG_CPPFLAGS= \
-	-I../windows/libcurl-7.54.1/include -DCURL_STATICLIB
+	-I../windows/libcurl-$(VERSION)/include -DCURL_STATICLIB
 
-all: info clean winlibs libwinhttp.dll.a
+all: clean
+
+$(SHLIB): libwinhttp.dll.a
+$(OBJECTS): winlibs
 
 clean:
 	rm -f $(SHLIB) $(OBJECTS) libwinhttp.dll.a winhttp.def
 
-info:
-	@echo "Building curl with '$(LIBCURL_BUILD)' crypto backend."
-
 winlibs: clean
-	"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" --vanilla "../tools/winlibs.R"
+	"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" --vanilla "../tools/winlibs.R" $(VERSION)
 	echo '#include <curl/curl.h>' | $(CPP) $(PKG_CPPFLAGS) -std=gnu99 -xc - | grep "^[ \t]*CURLOPT_.*," | sed s/,// > ../tools/option_table.txt
 
 winhttp.def:
