@@ -1,7 +1,10 @@
-2.9
- - WINDOWS: On Windows 7 and 2008-R2 and up, use native windows SSL (secure channel).
-   On older windows (including 2008 on CRAN) fall back on OpenSSL for TLS 1.1/1.2 support.
- - WINDOWS: updated libcurl to v7.56.0 with dual SSL and native IDN/SSPI
+3.0
+ - MAJOR CHANGE ON WINDOWS: On Windows 7 / 2008-R2 and up we switch from OpenSSL to native Windows SSL
+   (secure channel). Therefore curl now uses certificates from the windows certificate manager.
+   This enables users on corporate/government networks to connect through enterprise proxies and such.
+   On Windows Vista/2008 and older (including CRAN) we still use OpenSSL to guarantee TLS 1.1/1.2 support.
+ Other changes:
+ - Windows: updated libcurl to v7.56.0 with dual SSL and native IDN/SSPI
  - multi_add() and curl_fetch_multi() gain an optional 'data' callback parameter
  - New function multi_fdset() returns the file descriptors of a multi pool
  - Add CURLOPT_PROXYAUTH = CURLAUTH_ANY to default handle settings
