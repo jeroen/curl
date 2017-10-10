@@ -1,3 +1,6 @@
+3.1
+ - Fix potential memory bug in curl() when doubling the buffer is insufficient
+
 3.0
  - MAJOR CHANGE ON WINDOWS: On Windows 7 / 2008-R2 and up we switch from OpenSSL to native Windows SSL
    (secure channel). Therefore curl now uses certificates from the windows certificate manager.

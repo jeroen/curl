@@ -66,7 +66,7 @@ static size_t push(void *contents, size_t sz, size_t nmemb, void *ctx) {
   /* allocate more space if required */
   size_t realsize = sz * nmemb;
   size_t newsize = req->size + realsize;
-  if(newsize > req->limit) {
+  while(newsize > req->limit) {
     size_t newlimit = 2 * req->limit;
     //Rprintf("Resizing buffer to %d.\n", newlimit);
     void *newbuf = realloc(req->buf, newlimit);
