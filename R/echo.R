@@ -18,7 +18,6 @@
 #' # Parse multipart
 #' webutils::parse_http(formdata$body, formdata$content_type)
 curl_echo <- function(handle, port = 9359, progress = interactive(), file = NULL){
-  on.exit(rm(handle))
   progress <- isTRUE(progress)
   formdata <- NULL
   if(!(is.null(file) || inherits(file, "connection") || is.character(file)))
@@ -58,7 +57,7 @@ curl_echo <- function(handle, port = 9359, progress = interactive(), file = NULL
   waittime <- ifelse(utils::packageVersion('httpuv') > "1.3.3", NA, 1)
 
   # Post data from curl
-  handle_setopt(handle, connecttimeout = 2, xferinfofunction = function(down, up){
+  xfer <- function(down, up){
     if(progress){
       if(up[1] == 0 && down[1] == 0){
         cat("\rConnecting...")
@@ -68,7 +67,8 @@ curl_echo <- function(handle, port = 9359, progress = interactive(), file = NULL
     }
     # Need very low wait to prevent gridlocking!
     httpuv::service(waittime)
-  }, noprogress = FALSE)
+  }
+  handle_setopt(handle, connecttimeout = 2, xferinfofunction = xfer, noprogress = FALSE)
   if(progress) cat("\n")
   curl_fetch_memory(paste0("http://localhost:", port, "/"), handle = handle)
   if(progress) cat("\n")
