@@ -53,6 +53,9 @@ curl_echo <- function(handle, port = 9359, progress = interactive(), file = NULL
   server_id <- httpuv::startServer("0.0.0.0", port, list(call = echo_handler))
   on.exit(httpuv::stopServer(server_id), add = TRUE)
 
+  # Workaround bug in httpuv on windows that keeps protecting handler until next startServer()
+  on.exit(rm(handle), add = TRUE)
+
   # httpuv 1.3.4 supports non-blocking service()
   waittime <- ifelse(utils::packageVersion('httpuv') > "1.3.3", NA, 1)
 
