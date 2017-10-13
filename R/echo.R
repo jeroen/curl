@@ -18,6 +18,7 @@
 #' # Parse multipart
 #' webutils::parse_http(formdata$body, formdata$content_type)
 curl_echo <- function(handle, port = 9359, progress = interactive(), file = NULL){
+  on.exit(rm(handle))
   progress <- isTRUE(progress)
   formdata <- NULL
   if(!(is.null(file) || inherits(file, "connection") || is.character(file)))
