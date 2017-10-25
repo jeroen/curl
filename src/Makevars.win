@@ -1,6 +1,6 @@
-VERSION=7.56.0
+VERSION=7.56.1
 PKG_LIBS= -L../windows/libcurl-$(VERSION)/lib${R_ARCH} \
-	-L. -lwinhttp -lcurl-dualssl -lz -lssl -lcrypto -lgdi32 -lws2_32 -lcrypt32 -lwldap32
+	-L. -lwinhttp -lcurl-dualssl -lssh2 -lz -lssl -lcrypto -lgdi32 -lws2_32 -lcrypt32 -lwldap32
 
 PKG_CPPFLAGS= \
 	-I../windows/libcurl-$(VERSION)/include -DCURL_STATICLIB
