@@ -17,6 +17,7 @@ test_that("Max connections works", {
 })
 
 test_that("Max connections reset", {
+  skip_on_os("solaris")
   multi_set(host_con = 6, multiplex = TRUE)
   for(i in 1:3){
     multi_add(new_handle(url = httpbin("delay/2")))
