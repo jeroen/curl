@@ -17,7 +17,7 @@ matrix:
       sudo: required
       env: R_CODECOV=true
     - os: osx
-      osx_image: xcode9
+      osx_image: xcode9.2
       before_install:
         - brew reinstall curl --with-nghttp2 --HEAD
         - brew link --force curl

@@ -2,6 +2,7 @@
  - Fix potential memory bug in curl() when doubling the buffer is insufficient.
  - Windows: update to libcurl 7.56.1, restore support for libssh2.
  - Added unit test for curl_echo() to post large multipart data.
+ - Fix IDN unit test error "string has forbidden bi-directional properties"
 
 3.0
  - MAJOR CHANGE ON WINDOWS: On Windows 7 / 2008-R2 and up we switch from OpenSSL to native Windows SSL
