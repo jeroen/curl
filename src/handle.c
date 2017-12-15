@@ -239,7 +239,7 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
       switch (TYPEOF(val)) {
       case RAWSXP:
         if(key == CURLOPT_POSTFIELDS || key == CURLOPT_COPYPOSTFIELDS)
-          assert(curl_easy_setopt(handle, CURLOPT_POSTFIELDSIZE_LARGE, (curl_off_t) Rf_length(val)));
+          assert(curl_easy_setopt(handle, CURLOPT_POSTFIELDSIZE_LARGE, (curl_off_t) Rf_xlength(val)));
         assert(curl_easy_setopt(handle, key, RAW(val)));
         break;
       case STRSXP:
