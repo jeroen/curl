@@ -16,7 +16,7 @@
 #' is enabled when R runs in interactive mode or when
 #' \code{getOption("curl_interrupt") == TRUE}.
 #'
-#' The \code{curl_fetch_multi} function is the asyncronous equivalent of
+#' The \code{curl_fetch_multi} function is the asynchronous equivalent of
 #' \code{curl_fetch_memory}. It wraps \code{multi_add} to schedule requests which
 #' are executed concurrently when calling \code{multi_run}. For each successful
 #' request the \code{done} callback is triggered with response data. For failed

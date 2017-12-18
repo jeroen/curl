@@ -85,7 +85,7 @@ The example shows how to use `readLines` on an opened connection to read `n` lin
 
 #### Non blocking connections
 
-As of version 2.3 it is also possible to open connetions in non-blocking mode. In this case `readBin` and `readLines` will return immediately with data that is available without waiting. For non-blocking connections we use `isIncomplete` to check if the download has completed yet.
+As of version 2.3 it is also possible to open connections in non-blocking mode. In this case `readBin` and `readLines` will return immediately with data that is available without waiting. For non-blocking connections we use `isIncomplete` to check if the download has completed yet.
 
 ```{r}
 con <- curl("https://httpbin.org/drip?duration=1&numbytes=50")
