@@ -2,7 +2,7 @@ context("Multi handle")
 
 test_that("Max connections works", {
   skip_on_os("solaris")
-  skip_if_not(curl_version()$version >= as.numeric_version("7.30"),
+  skip_if_not(strsplit(curl_version()$version, "-")[[1]][1] >= as.numeric_version("7.30"),
     "libcurl does not support host_connections")
   multi_set(host_con = 2, multiplex = FALSE)
   for(i in 1:3){
