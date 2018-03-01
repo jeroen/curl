@@ -173,6 +173,7 @@ int opt_is_linked_list(int key) {
     key == 10023 || // CURLOPT_HTTPHEADER
     key == 10024 || // CURLOPT_HTTPPOST
     key == 10070 || // CURLOPT_TELNETOPTIONS
+    key == 10104 || // CURLOPT_HTTP200ALIASES
     key == 10228;   // CURLOPT_PROXYHEADER
 }
 
