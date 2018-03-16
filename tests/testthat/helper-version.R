@@ -6,8 +6,10 @@ find_test_server <- function(){
 
   # Try to download latest test-server list
   servers <- tryCatch({
-    req <- curl_fetch_memory("http://jeroen.github.io/curl/servers", handle = h)
-    strsplit(rawToChar(req$content), "\n", fixed = TRUE)[[1]]
+    con <- curl::curl("https://jeroen.github.io/curl/servers.R", handle = h)
+    on.exit(close(con))
+    out <- source(con, local = TRUE)
+    out$value
   }, error = function(e){
     message("Failed to download server list:", e$message)
     c("https://eu.httpbin.org", "https://httpbin.org", "http://httpbin.org")
