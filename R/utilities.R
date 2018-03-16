@@ -44,3 +44,7 @@ parse_date <- function(datestring){
 split_string <- function(x, split = ":"){
   .Call(R_split_string, x, split)
 }
+
+trimws <- function(x) {
+  sub("\\s+$", "", sub("^\\s+", "", x))
+}
