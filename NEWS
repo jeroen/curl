@@ -1,3 +1,6 @@
+3.2
+ - Windows: Update libcurl to 7.59.0
+
 3.1
  - Fix potential memory bug in curl() when doubling the buffer is insufficient.
  - Windows: update to libcurl 7.56.1, restore support for libssh2.
