@@ -65,7 +65,7 @@ requests have completed, or case of a \code{timeout} or \code{SIGINT} (e.g.
 if the user presses \code{ESC} or \code{CTRL+C} in the console). In case of
 the latter, simply call \link{multi_run} again to resume pending requests.
 
-When the request succeeded, the \code{done} callback gets triggerd with
+When the request succeeded, the \code{done} callback gets triggered with
 the response data. The structure if this data is identical to \link{curl_fetch_memory}.
 When the request fails, the \code{fail} callback is triggered with an error
 message. Note that failure here means something went wrong in performing the

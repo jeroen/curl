@@ -1,6 +1,8 @@
 3.2
  - Windows: Update libcurl to 7.59.0
+ - Update curl_symbols dataset to 7.59.0
  - Fix an IDN unit test (malmö.se has messed up their SSL cert)
+ - Add backport of trimws for R 3.1
 
 3.1
  - Fix potential memory bug in curl() when doubling the buffer is insufficient.

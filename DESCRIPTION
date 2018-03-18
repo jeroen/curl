@@ -1,9 +1,10 @@
 Package: curl
 Type: Package
 Title: A Modern and Flexible Web Client for R
-Version: 3.1
+Version: 3.2
 Authors@R: c(
-    person("Jeroen", "Ooms", , "jeroen@berkeley.edu", role = c("cre", "aut")),
+    person("Jeroen", "Ooms", role = c("aut", "cre"), email = "jeroen@berkeley.edu",
+      comment = c(ORCID = "0000-0002-4035-0289")),
     person("Hadley", "Wickham", , "hadley@rstudio.com", role = "ctb"),
     person("RStudio", role = "cph")
     )
