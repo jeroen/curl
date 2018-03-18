@@ -3,16 +3,17 @@ context("IDN")
 test_that("IDN domain names",{
   # OSX does not support IDN by default :(
   skip_if_not(curl_version()$idn, "libcurl does not have libidn")
+  skip_on_cran()
 
-  malmo <- "http://www.malm\u00F6.se"
-  expect_is(curl::curl_fetch_memory(enc2utf8(malmo))$status_code, "integer")
-  expect_is(curl::curl_fetch_memory(enc2native(malmo))$status_code, "integer")
+  koln <- "http://www.köln.de"
+  expect_is(curl::curl_fetch_memory(enc2utf8(koln))$status_code, "integer")
+  expect_is(curl::curl_fetch_memory(enc2native(koln))$status_code, "integer")
 
-  con <- curl::curl(enc2utf8(malmo))
+  con <- curl::curl(enc2utf8(koln))
   expect_is(readLines(con, warn = FALSE), "character")
   close(con)
 
-  con <- curl::curl(enc2native(malmo))
+  con <- curl::curl(enc2native(koln))
   expect_is(readLines(con, warn = FALSE), "character")
   close(con)
 
