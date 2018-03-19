@@ -156,7 +156,7 @@ test_that("callback protection", {
 
 test_that("host_con works via and multi_fdset", {
   pool <- new_pool(host_con = 3)
-  for (i in 1:5) {
+  for (i in 4:0) {
     h1 <- new_handle(url = httpbin(paste0("delay/", i)))
     multi_add(h1, done = force, fail = cat, pool = pool)
   }
