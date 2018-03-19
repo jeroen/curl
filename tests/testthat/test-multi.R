@@ -154,6 +154,18 @@ test_that("callback protection", {
   expect_equal(out$success, 1)
 })
 
+test_that("host_con works via and multi_fdset", {
+  pool <- new_pool(host_con = 3)
+  for (i in 1:5) {
+    h1 <- new_handle(url = httpbin(paste0("delay/", i)))
+    multi_add(h1, done = force, fail = cat, pool = pool)
+  }
+  for(i in 4:0){
+    res <- multi_run(pool = pool, poll = 1)
+    expect_length(multi_fdset(pool = pool)$reads, min(3, i))
+  }
+})
+
 test_that("GC works", {
   gc()
   expect_equal(total_handles(), 0L)
