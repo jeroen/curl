@@ -2,6 +2,7 @@
  - Windows: Update libcurl to 7.59.0
  - Update curl_symbols dataset to 7.59.0
  - Fix an IDN unit test (malmö.se has messed up their SSL cert)
+ - Add unit test for multi_fdset
  - Add backport of trimws for R 3.1
 
 3.1

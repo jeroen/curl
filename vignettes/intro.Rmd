@@ -138,7 +138,7 @@ The `curl` and `curl_download` functions are safest to use because they automati
 
 ```{r}
 # This is OK
-curl_download('https://cran.r-project.org/CRAN_mirrors.csv', 'mirrors.csv')
+curl_download('https://cloud.r-project.org/CRAN_mirrors.csv', 'mirrors.csv')
 mirros <- read.csv('mirrors.csv')
 unlink('mirrors.csv')
 ```
@@ -147,8 +147,8 @@ If the HTTP request was unsuccessful, R will not continue:
 
 ```{r, error=TRUE, purl = FALSE}
 # Oops! A typo in the URL!
-curl_download('https://cran.r-project.org/CRAN_mirrorZ.csv', 'mirrors.csv')
-con <- curl('https://cran.r-project.org/CRAN_mirrorZ.csv')
+curl_download('https://cloud.r-project.org/CRAN_mirrorZ.csv', 'mirrors.csv')
+con <- curl('https://cloud.r-project.org/CRAN_mirrorZ.csv')
 open(con)
 ```
 
@@ -163,7 +163,7 @@ rm(con)
 When using any of the `curl_fetch_*` functions it is important to realize that these do **not** raise an error if the request was completed but returned a non-200 status code. When using `curl_fetch_memory` or `curl_fetch_disk` you need to implement such application logic yourself and check if the response was successful.
 
 ```{r}
-req <- curl_fetch_memory('https://cran.r-project.org/CRAN_mirrors.csv')
+req <- curl_fetch_memory('https://cloud.r-project.org/CRAN_mirrors.csv')
 print(req$status_code)
 ```
 
@@ -171,7 +171,7 @@ Same for downloading to disk. If you do not check your status, you might have do
 
 ```{r}
 # Oops a typo!
-req <- curl_fetch_disk('https://cran.r-project.org/CRAN_mirrorZ.csv', 'mirrors.csv')
+req <- curl_fetch_disk('https://cloud.r-project.org/CRAN_mirrorZ.csv', 'mirrors.csv')
 print(req$status_code)
 
 # This is not the CSV file we were expecting!
@@ -183,7 +183,7 @@ If you *do* want the `curl_fetch_*` functions to automatically raise an error, y
 
 ```{r, error=TRUE, purl = FALSE}
 h <- new_handle(failonerror = TRUE)
-curl_fetch_memory('https://cran.r-project.org/CRAN_mirrorZ.csv', handle = h)
+curl_fetch_memory('https://cloud.r-project.org/CRAN_mirrorZ.csv', handle = h)
 ```
 
 ## Customizing requests
