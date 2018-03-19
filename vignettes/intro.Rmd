@@ -87,8 +87,9 @@ The example shows how to use `readLines` on an opened connection to read `n` lin
 
 As of version 2.3 it is also possible to open connections in non-blocking mode. In this case `readBin` and `readLines` will return immediately with data that is available without waiting. For non-blocking connections we use `isIncomplete` to check if the download has completed yet.
 
-```{r}
-con <- curl("https://httpbin.org/drip?duration=1&numbytes=50")
+```{r, eval=FALSE}
+# This httpbin mirror doesn't cache
+con <- curl("https://nghttp2.org/httpbin/drip?duration=1&numbytes=50")
 open(con, "rb", blocking = FALSE)
 while(isIncomplete(con)){
   buf <- readBin(con, raw(), 1024)
