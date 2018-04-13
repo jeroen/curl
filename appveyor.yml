@@ -15,6 +15,7 @@ install:
 environment:
   matrix:
     - R_VERSION: stable
+    - R_VERSION: patched
 
 build_script:
   - travis-tool.sh install_deps
