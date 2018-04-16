@@ -46,9 +46,10 @@
 #' response data in same structure as \link{curl_fetch_memory}.
 #' @param fail callback function called on failed request. Argument contains
 #' error message.
-#' @param data callback function or open connection object for receiving data.
-#' If \code{NULL} the entire response content gets buffered and is returned
-#' in the \code{done} callback.
+#' @param data callback function, file path, or open connection object for receiving
+#' data. The signature for the callback function is \code{write(data, final = FALSE)}.
+#' If set to \code{NULL} the entire response content gets buffered and returned by
+#' the \code{done} callback.
 #' @param pool a multi handle created by \link{new_pool}. Default uses a global pool.
 #' @export
 #' @examples

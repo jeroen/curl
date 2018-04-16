@@ -13,8 +13,9 @@ file_writer(path)
 a write function with signature \code{writer(data = raw(), close = FALSE)}
 }
 \description{
-Wrapper for fwrite that automatically opens the file on the first write and
-closes when it goes out of scope, or explicitly by setting \code{close = TRUE}.
+Generates a closure that writes binary (raw) data to a file. Automatically opens the
+file on the first write and closes when it goes out of scope, or explicitly by setting
+\code{close = TRUE}.
 }
 \examples{
 # Doesn't open yet

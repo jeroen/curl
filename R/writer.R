@@ -1,7 +1,8 @@
 #' File Writer
 #'
-#' Wrapper for fwrite that automatically opens the file on the first write and
-#' closes when it goes out of scope, or explicitly by setting \code{close = TRUE}.
+#' Generates a closure that writes binary (raw) data to a file. Automatically opens the
+#' file on the first write and closes when it goes out of scope, or explicitly by setting
+#' \code{close = TRUE}.
 #'
 #' @export
 #' @param path file name or path on disk
