@@ -109,14 +109,14 @@ test_that("Data callback", {
   status <- NULL
   curl_fetch_multi(httpbin("post"), done = function(res){
     status <<- res$status_code
-  }, fail = stop, data = function(x){
+  }, fail = stop, data = function(x, final){
     writeBin(x, con)
   }, handle = hx)
 
   curl_fetch_multi(httpbin("get"), done = function(res){
     #this somehow breaks the gc
     #expect_equal(res$status_code, 200)
-  }, fail = stop, data = function(x){
+  }, fail = stop, data = function(x, final){
     expect_is(x, "raw")
   })
 
@@ -142,7 +142,7 @@ test_that("callback protection", {
   fail <- function(...){
     print("error")
   }
-  data <- function(x){
+  data <- function(x, final){
     expect_is(x, "raw")
   }
   pool <- new_pool()

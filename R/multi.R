@@ -98,6 +98,8 @@ multi_add <- function(handle, done = NULL, fail = NULL, data = NULL, pool = NULL
         flush(con)
       }
     }
+  } else if(is_string(data)){
+    data <- file_writer(path = data)
   }
   stopifnot(inherits(handle, "curl_handle"))
   stopifnot(inherits(pool, "curl_multi"))
