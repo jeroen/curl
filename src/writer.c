@@ -16,8 +16,11 @@ SEXP R_write_file_writer(SEXP ptr, SEXP buf, SEXP close){
     R_SetExternalPtrAddr(ptr, fp);
   }
   size_t len = fwrite(RAW(buf), 1, Rf_length(buf), fp);
-  if(Rf_asInteger(close))
+  if(Rf_asInteger(close)){
     fin_file_writer(ptr);
+  } else {
+    fflush(fp);
+  }
   return ScalarInteger(len);
 }
 

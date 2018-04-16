@@ -10,12 +10,15 @@ file_writer(path)
 \item{path}{file name or path on disk}
 }
 \value{
-a write function with signature \code{writer(data = raw(), close = FALSE)}
+Function with signature \code{writer(data = raw(), close = FALSE)}
 }
 \description{
-Generates a closure that writes binary (raw) data to a file. Automatically opens the
-file on the first write and closes when it goes out of scope, or explicitly by setting
-\code{close = TRUE}.
+Generates a closure that writes binary (raw) data to a file.
+}
+\details{
+The writer function automatically opens the file on the first write and closes when
+it goes out of scope, or explicitly by setting \code{close = TRUE}. This can be used
+for the \code{data} callback in \code{multi_add()} or \code{curl_fetch_multi()}.
 }
 \examples{
 # Doesn't open yet

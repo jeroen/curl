@@ -1,12 +1,14 @@
 #' File Writer
 #'
-#' Generates a closure that writes binary (raw) data to a file. Automatically opens the
-#' file on the first write and closes when it goes out of scope, or explicitly by setting
-#' \code{close = TRUE}.
+#' Generates a closure that writes binary (raw) data to a file.
+#'
+#' The writer function automatically opens the file on the first write and closes when
+#' it goes out of scope, or explicitly by setting \code{close = TRUE}. This can be used
+#' for the \code{data} callback in \code{multi_add()} or \code{curl_fetch_multi()}.
 #'
 #' @export
 #' @param path file name or path on disk
-#' @return a write function with signature \code{writer(data = raw(), close = FALSE)}
+#' @return Function with signature \code{writer(data = raw(), close = FALSE)}
 #' @examples
 #' # Doesn't open yet
 #' tmp <- tempfile()

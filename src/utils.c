@@ -143,4 +143,3 @@ size_t data_callback(void * data, size_t sz, size_t nmemb, SEXP fun) {
   UNPROTECT(2);
   return err ? 0 : size;
 }
-
