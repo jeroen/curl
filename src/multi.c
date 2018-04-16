@@ -124,12 +124,21 @@ SEXP R_multi_run(SEXP pool_ptr, SEXP timeout, SEXP max){
         // prepare for callback
         SEXP cb_complete = PROTECT(ref->async.complete);
         SEXP cb_error = PROTECT(ref->async.error);
+        SEXP cb_data = PROTECT(ref->async.data);
         SEXP buf = PROTECT(allocVector(RAWSXP, ref->async.content.size));
         if(ref->async.content.buf && ref->async.content.size)
           memcpy(RAW(buf), ref->async.content.buf, ref->async.content.size);
 
         //release handle for use by callbacks
         multi_release(ref);
+
+        // Trigger a final 'data' with second argument to TRUE
+        if(Rf_isFunction(cb_data)){
+          SEXP buf = PROTECT(Rf_allocVector(RAWSXP, 0));
+          SEXP call = PROTECT(LCONS(cb_data, LCONS(buf, LCONS(ScalarInteger(1), R_NilValue))));
+          eval(call, R_GlobalEnv);
+          UNPROTECT(2);
+        }
 
         // callbacks must be trycatch! we should continue the loop
         if(status == CURLE_OK){
@@ -154,7 +163,7 @@ SEXP R_multi_run(SEXP pool_ptr, SEXP timeout, SEXP max){
             UNPROTECT(2);
           }
         }
-        UNPROTECT(3);
+        UNPROTECT(4);
       }
       R_CheckUserInterrupt();
     }

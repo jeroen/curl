@@ -46,9 +46,10 @@
 #' response data in same structure as \link{curl_fetch_memory}.
 #' @param fail callback function called on failed request. Argument contains
 #' error message.
-#' @param data callback function or open connection object for receiving data.
-#' If \code{NULL} the entire response content gets buffered and is returned
-#' in the \code{done} callback.
+#' @param data callback function, file path, or connection object for receiving
+#' data. The signature for the callback function is \code{write(data, final = FALSE)}.
+#' If set to \code{NULL} the entire response content gets buffered internally
+#' and returned by the \code{done} callback.
 #' @param pool a multi handle created by \link{new_pool}. Default uses a global pool.
 #' @export
 #' @examples
@@ -64,7 +65,7 @@
 #' multi_add(h1, done = success, fail = failure)
 #'
 #' # This handle writes data to a file
-#' con <- file("output.txt", open = "wb")
+#' con <- file("output.txt")
 #' h2 <- new_handle(url = "https://eu.httpbin.org/post", postfields = "bla bla")
 #' multi_add(h2, done = success, fail = failure, data = con)
 #'
@@ -77,7 +78,6 @@
 #' multi_run()
 #'
 #' # Check the file
-#' close(con)
 #' readLines("output.txt")
 #' unlink("output.txt")
 multi_add <- function(handle, done = NULL, fail = NULL, data = NULL, pool = NULL){
@@ -85,19 +85,26 @@ multi_add <- function(handle, done = NULL, fail = NULL, data = NULL, pool = NULL
     pool <- multi_default()
   if(inherits(data, "connection")){
     con <- data
-    if(!isOpen(con))
-      stop("Connection for 'data' argument is not open")
-    data <- if(identical(summary(data)$text, "text")){
-      function(x){
+    if(isOpen(con) && identical(summary(con)$text, "text")){
+      data <- function(x, finalize = FALSE){
         cat(rawToChar(x), file = con)
         flush(con)
       }
     } else {
-      function(x){
+      was_open <- isOpen(con)
+      data <- function(x, finalize = FALSE){
+        if(!isOpen(con))
+          open(con, 'wb')
         writeBin(x, con = con)
-        flush(con)
+        if(isTRUE(finalize && !was_open)){
+          close(con)
+        } else {
+          flush(con)
+        }
       }
     }
+  } else if(is_string(data)){
+    data <- file_writer(path = data)
   }
   stopifnot(inherits(handle, "curl_handle"))
   stopifnot(inherits(pool, "curl_multi"))

@@ -109,24 +109,31 @@ test_that("Data callback", {
   status <- NULL
   curl_fetch_multi(httpbin("post"), done = function(res){
     status <<- res$status_code
-  }, fail = stop, data = function(x){
-    writeBin(x, con)
-  }, handle = hx)
+  }, fail = stop, data = con, handle = hx)
 
+  rawheaders <- NULL
+  buffer <- raw()
   curl_fetch_multi(httpbin("get"), done = function(res){
+    rawheaders <<- res$headers
     #this somehow breaks the gc
     #expect_equal(res$status_code, 200)
-  }, fail = stop, data = function(x){
-    expect_is(x, "raw")
+  }, fail = stop, data = function(x, finalize = FALSE){
+    buffer <<- c(buffer, x)
+    # also breaks gc. Looks like circular protect caused by testthat?
+    # expect_is(x, "raw")
   })
 
-  # test protect
+  # test that callback functions are protected
   gc()
 
   # perform requests
   out <- multi_run()
   expect_equal(out$success, 2)
   expect_equal(status, 200)
+
+  # output from callback functions
+  content_len <- curl::parse_headers_list(rawheaders)[['content-length']]
+  expect_length(buffer, as.numeric(content_len))
 
   # get data from buffer
   content <- rawConnectionValue(con)
@@ -142,7 +149,7 @@ test_that("callback protection", {
   fail <- function(...){
     print("error")
   }
-  data <- function(x){
+  data <- function(x, final){
     expect_is(x, "raw")
   }
   pool <- new_pool()

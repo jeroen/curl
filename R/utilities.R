@@ -48,3 +48,7 @@ split_string <- function(x, split = ":"){
 trimws <- function(x) {
   sub("\\s+$", "", sub("^\\s+", "", x))
 }
+
+is_string <- function(x){
+  is.character(x) && length(x)
+}
