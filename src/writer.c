@@ -22,9 +22,9 @@ SEXP R_write_file_writer(SEXP ptr, SEXP buf, SEXP close){
     total_open_writers++;
   }
   size_t len = fwrite(RAW(buf), 1, Rf_length(buf), fp);
-  if(Rf_asInteger(close)){
+  if(Rf_asLogical(close)){
     fin_file_writer(ptr);
-  } else {
+  } else if(Rf_length(buf)) {
     fflush(fp);
   }
   return ScalarInteger(len);

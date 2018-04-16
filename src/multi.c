@@ -133,6 +133,7 @@ SEXP R_multi_run(SEXP pool_ptr, SEXP timeout, SEXP max){
         multi_release(ref);
 
         // Trigger a final 'data' with second argument to TRUE
+        // This also ensures that a file is consistently created, even for empty responses
         if(Rf_isFunction(cb_data)){
           SEXP buf = PROTECT(Rf_allocVector(RAWSXP, 0));
           SEXP call = PROTECT(LCONS(cb_data, LCONS(buf, LCONS(ScalarInteger(1), R_NilValue))));
