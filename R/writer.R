@@ -41,3 +41,8 @@ new_file_writer <- function(path){
 write_file_writer <- function(fp, data, close){
   .Call(R_write_file_writer, fp, data, close)
 }
+
+#' @useDynLib curl R_total_writers
+total_writers <- function(){
+  .Call(R_total_writers)
+}
