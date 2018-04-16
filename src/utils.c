@@ -138,7 +138,7 @@ size_t data_callback(void * data, size_t sz, size_t nmemb, SEXP fun) {
 
   /* call the R function */
   int err;
-  SEXP call = PROTECT(LCONS(fun, LCONS(buf, LCONS(ScalarInteger(0), R_NilValue))));
+  SEXP call = PROTECT(Rf_lang3(fun, buf, ScalarInteger(0)));
   R_tryEval(call, R_GlobalEnv, &err);
   UNPROTECT(2);
   return err ? 0 : size;

@@ -12,7 +12,7 @@ int R_curl_callback_progress(SEXP fun,
   REAL(up)[0] = ultotal;
   REAL(up)[1] = ulnow;
 
-  SEXP call = PROTECT(LCONS(fun, LCONS(down, LCONS(up, R_NilValue))));
+  SEXP call = PROTECT(Rf_lang3(fun, down, up));
   int ok;
   SEXP res = PROTECT(R_tryEval(call, R_GlobalEnv, &ok));
 
@@ -33,7 +33,7 @@ int R_curl_callback_progress(SEXP fun,
 
 size_t R_curl_callback_read(char *buffer, size_t size, size_t nitems, SEXP fun) {
   SEXP nbytes = PROTECT(ScalarInteger(size * nitems));
-  SEXP call = PROTECT(LCONS(fun, LCONS(nbytes, R_NilValue)));
+  SEXP call = PROTECT(Rf_lang2(fun, nbytes));
 
   int ok;
   SEXP res = PROTECT(R_tryEval(call, R_GlobalEnv, &ok));
@@ -65,7 +65,7 @@ int R_curl_callback_debug(CURL *handle, curl_infotype type_, char *data,
   memcpy(RAW(msg), data, size);
 
   /* call the R function */
-  SEXP call = PROTECT(LCONS(fun, LCONS(type, LCONS(msg, R_NilValue))));
+  SEXP call = PROTECT(Rf_lang3(fun, type, msg));
   R_tryEval(call, R_GlobalEnv, NULL);
 
   UNPROTECT(3);

@@ -136,7 +136,7 @@ SEXP R_multi_run(SEXP pool_ptr, SEXP timeout, SEXP max){
         // This also ensures that a file is consistently created, even for empty responses
         if(Rf_isFunction(cb_data)){
           SEXP buf = PROTECT(Rf_allocVector(RAWSXP, 0));
-          SEXP call = PROTECT(LCONS(cb_data, LCONS(buf, LCONS(ScalarInteger(1), R_NilValue))));
+          SEXP call = PROTECT(Rf_lang3(cb_data, buf, ScalarInteger(1)));
           eval(call, R_GlobalEnv);
           UNPROTECT(2);
         }
