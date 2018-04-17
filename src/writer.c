@@ -16,6 +16,8 @@ SEXP R_write_file_writer(SEXP ptr, SEXP buf, SEXP close){
   if(fp == NULL){
     SEXP path = R_ExternalPtrTag(ptr);
     fp = fopen(CHAR(STRING_ELT(path, 0)), "wb");
+    if(!fp)
+      Rf_error("Failed to open file: %s", CHAR(STRING_ELT(path, 0)));
     R_SetExternalPtrAddr(ptr, fp);
     total_open_writers++;
   }
