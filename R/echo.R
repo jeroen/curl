@@ -70,6 +70,7 @@ curl_echo <- function(handle, port = 9359, progress = interactive(), file = NULL
     }
     # Need very low wait to prevent gridlocking!
     httpuv::service(waittime)
+    TRUE
   }
   handle_setopt(handle, connecttimeout = 2, xferinfofunction = xfer, noprogress = FALSE)
   if(progress) cat("\n")
