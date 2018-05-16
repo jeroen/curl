@@ -30,7 +30,8 @@ Suggests:
     rmarkdown,
     magrittr,
     httpuv,
-    webutils
+    webutils,
+    webmockr
 VignetteBuilder: knitr
 Depends:
     R (>= 3.0.0)

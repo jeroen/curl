@@ -1,3 +1,5 @@
+curl_opts = NULL
+
 .onLoad <- function(libname, pkgname){
   if (!grepl("mingw", R.Version()$platform))
     return()
@@ -8,6 +10,9 @@
   if (bundle != "" && file.exists(bundle)) {
     set_bundle(bundle)
   }
+
+  curl_opts <<- new.env()
+  curl_opts$mock <<- FALSE
 }
 
 .onAttach <- function(libname, pkgname){

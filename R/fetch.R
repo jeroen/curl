@@ -58,6 +58,7 @@
 #' multi_run()
 #' str(data)
 curl_fetch_memory <- function(url, handle = new_handle()){
+  mock_req(url, handle)
   nonblocking <- isTRUE(getOption("curl_interrupt", TRUE))
   output <- .Call(R_curl_fetch_memory, enc2utf8(url), handle, nonblocking)
   res <- handle_data(handle)
