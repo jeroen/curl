@@ -26,15 +26,17 @@ mock <- function(on = TRUE) {
 #' handle_setheaders(h, "Content-Type" = "application/json")
 #' handle_setopt(h, userpwd = "foo:bar")
 #' handle_setopt(h, httpauth = 1)
-mock_req <- function(url, h) {
-  if (curl_mock_env$mock) {
+mock_req <- function(url, h, called) {
+  # cat(paste0("mocking? ", curl_mock_env$mock), "\n")
+  # if (curl_mock_env$mock) {
     if (!requireNamespace("webmockr", quietly = TRUE))
       stop("Please install 'webmockr'")
 
+    # cat("calling curl_echo from inside mock_req", "\n")
     # run curl_echo to get components
     res <- curl_echo(h)
     # cat(rawToChar(res$body))
-    req <- list(url = url)
+    req <- list(url = url, handle = h, called = called)
     req$method <- res$request_method
     if (!is.null(res$http_authorization)) {
       req$auth <- 
@@ -48,10 +50,13 @@ mock_req <- function(url, h) {
     req$headers$http_authorization <- NULL
     req$headers$server_name <- NULL
     req$headers$httpuv <- NULL
-    req$body <- rawToChar(res$body)
+    if (!is.null(res$body)) req$body <- rawToChar(res$body)
 
     # handle request
+    # cat("calling adap$handle_request from inside mock_req", "\n")
     adap <- webmockr::CurlAdapter$new()
-    return(adap$handle_request(req))
-  }
+    adap$handle_request(req)
+  # }
 }
+
+within_echo <- function() grepl("curl_echo", deparse(match.call()))

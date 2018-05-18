@@ -58,7 +58,17 @@
 #' multi_run()
 #' str(data)
 curl_fetch_memory <- function(url, handle = new_handle()){
-  mock_req(url, handle)
+  # cat(deparse(sys.calls()[[sys.nframe()-1]]), "\n")
+  # cat(deparse(match.call())[[2]], "\n")
+  xx <- deparse(sys.call(-1))
+  called <- gsub("\\(|\\)", "", deparse(sys.call()))
+  # cat(xx, "\n")
+  if (!grepl("curl_echo", xx)) {
+    if (curl_mock_env$mock) {
+      res <- mock_req(url, handle, called)
+      return(res)
+    }
+  }
   nonblocking <- isTRUE(getOption("curl_interrupt", TRUE))
   output <- .Call(R_curl_fetch_memory, enc2utf8(url), handle, nonblocking)
   res <- handle_data(handle)
