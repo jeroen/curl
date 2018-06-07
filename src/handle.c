@@ -145,10 +145,11 @@ SEXP R_new_handle(){
   ref->handle = curl_easy_init();
   total_handles++;
   set_handle_defaults(ref);
-  SEXP ptr = PROTECT(R_MakeExternalPtr(ref, R_NilValue, R_NilValue));
+  SEXP prot = PROTECT(allocVector(VECSXP, 5)); //for protecting callback functions
+  SEXP ptr = PROTECT(R_MakeExternalPtr(ref, R_NilValue, prot));
   R_RegisterCFinalizerEx(ptr, fin_handle, TRUE);
   setAttrib(ptr, R_ClassSymbol, mkString("curl_handle"));
-  UNPROTECT(1);
+  UNPROTECT(2);
   ref->handleptr = ptr;
   return ptr;
 }
@@ -179,6 +180,7 @@ int opt_is_linked_list(int key) {
 
 SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
   CURL *handle = get_handle(ptr);
+  SEXP prot = R_ExternalPtrProtected(ptr);
   SEXP optnames = PROTECT(getAttrib(values, R_NamesSymbol));
 
   if(!isInteger(keys))
@@ -202,6 +204,7 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
                               (curl_progress_callback) R_curl_callback_xferinfo));
       assert(curl_easy_setopt(handle, CURLOPT_XFERINFODATA, val));
       assert(curl_easy_setopt(handle, CURLOPT_NOPROGRESS, 0));
+      SET_VECTOR_ELT(prot, 1, val); //protect gc
 #endif
     } else if (key == CURLOPT_PROGRESSFUNCTION) {
       if (TYPEOF(val) != CLOSXP)
@@ -211,6 +214,7 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
         (curl_progress_callback) R_curl_callback_progress));
       assert(curl_easy_setopt(handle, CURLOPT_PROGRESSDATA, val));
       assert(curl_easy_setopt(handle, CURLOPT_NOPROGRESS, 0));
+      SET_VECTOR_ELT(prot, 2, val); //protect gc
     } else if (key == CURLOPT_READFUNCTION) {
       if (TYPEOF(val) != CLOSXP)
         error("Value for option %s (%d) must be a function.", optname, key);
@@ -218,6 +222,7 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
       assert(curl_easy_setopt(handle, CURLOPT_READFUNCTION,
         (curl_read_callback) R_curl_callback_read));
       assert(curl_easy_setopt(handle, CURLOPT_READDATA, val));
+      SET_VECTOR_ELT(prot, 3, val); //protect gc
     } else if (key == CURLOPT_DEBUGFUNCTION) {
       if (TYPEOF(val) != CLOSXP)
         error("Value for option %s (%d) must be a function.", optname, key);
@@ -225,6 +230,7 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
       assert(curl_easy_setopt(handle, CURLOPT_DEBUGFUNCTION,
         (curl_debug_callback) R_curl_callback_debug));
       assert(curl_easy_setopt(handle, CURLOPT_DEBUGDATA, val));
+      SET_VECTOR_ELT(prot, 4, val); //protect gc
     } else if (key == CURLOPT_URL) {
       /* always use utf-8 for urls */
       const char * url_utf8 = translateCharUTF8(STRING_ELT(val, 0));

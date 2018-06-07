@@ -1,5 +1,6 @@
 3.3
  - The 'data' callback from multi_add() gains a 'final' parameter
+ - Progress / Xfer callback functions are now explicitly protected (#157)
 
 3.2
  - Windows: Update libcurl to 7.59.0

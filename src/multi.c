@@ -30,7 +30,7 @@ void multi_release(reference *ref){
   /* Remove the curl handle from the handles list */
   ref->async.mref->handles = reflist_remove(ref->async.mref->handles, ref->handleptr);
   R_SetExternalPtrProtected(ref->async.mref->multiptr, ref->async.mref->handles);
-  R_SetExternalPtrProtected(ref->handleptr, R_NilValue);
+  SET_VECTOR_ELT(R_ExternalPtrProtected(ref->handleptr), 0, R_NilValue);
 
   /* Reset multi state struct */
   if(ref->async.content.buf){
@@ -88,7 +88,8 @@ SEXP R_multi_add(SEXP handle_ptr, SEXP cb_complete, SEXP cb_error, SEXP cb_data,
   ref->async.complete = cb_complete;
   ref->async.error = cb_error;
   ref->async.data = cb_data;
-  R_SetExternalPtrProtected(handle_ptr, Rf_list3(cb_error, cb_complete, cb_data));
+  SET_VECTOR_ELT(R_ExternalPtrProtected(handle_ptr), 0,
+                 Rf_list3(cb_error, cb_complete, cb_data));
 
   /* lock and protect handle */
   ref->refCount++;
