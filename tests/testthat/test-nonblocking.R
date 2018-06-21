@@ -52,13 +52,13 @@ test_that("isIncomplete for blocking connections", {
 })
 
 test_that("Small buffers", {
-  con <- curl(httpbin("get"))
+  con <- curl(httpbin(""))
   expect_false(isIncomplete(con = con))
   open(con)
   on.exit(close(con), add = TRUE)
   expect_true(isIncomplete(con = con))
   readLines(con, 1)
   expect_true(isIncomplete(con = con))
-  readLines(con)
+  readLines(con, warn = FALSE)
   expect_false(isIncomplete(con = con))
 })
