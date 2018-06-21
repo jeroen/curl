@@ -162,13 +162,15 @@ test_that("callback protection", {
 })
 
 test_that("host_con works via and multi_fdset", {
-  total_con <- 3
+  total_con <- 6
   pool <- new_pool(total_con = total_con)
   for (i in 4:0) {
-    h1 <- new_handle(url = httpbin(paste0("delay/", i)))
-    multi_add(h1, done = force, fail = cat, pool = pool)
+    for(j in 1:2){
+      h1 <- new_handle(url = httpbin(paste0("delay/", i)))
+      multi_add(h1, done = force, fail = cat, pool = pool)
+    }
   }
-  for(i in 4:0){
+  while(length(multi_list(pool = pool))){
     res <- multi_run(pool = pool, poll = 1)
     expect_length(multi_fdset(pool = pool)$reads, min(total_con, res$pending))
   }
