@@ -29,7 +29,7 @@ Suggests:
     jsonlite,
     rmarkdown,
     magrittr,
-    httpuv,
+    httpuv (>= 1.4.4),
     webutils
 VignetteBuilder: knitr
 Depends:

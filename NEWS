@@ -4,6 +4,7 @@
  - New internal efficient file_writer type used when 'data' callback is a file path
  - Progress / Xfer callback functions are now explicitly protected (#157)
  - Tweak some unit tests to give less false positives
+ - curl_echo() has been changed to return better structured output
 
 3.2
  - Windows: Update libcurl to 7.59.0
