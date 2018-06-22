@@ -108,3 +108,10 @@ curl_fetch_multi <- function(url, done = NULL, fail = NULL, pool = NULL,
   multi_add(handle = handle, done = done, fail = fail, data = data, pool = pool)
   invisible(handle)
 }
+
+#' @export
+#' @rdname curl_fetch
+curl_fetch_echo <- function(url, handle = new_handle()){
+  handle_setopt(handle, url = enc2utf8(url))
+  curl_echo(handle)
+}

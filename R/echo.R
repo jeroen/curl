@@ -36,7 +36,6 @@ curl_echo <- function(handle, port = 9359, progress = interactive(), file = NULL
     }
 
     output <<- list(
-      server_name = req[["SERVER_NAME"]],
       method = req[["REQUEST_METHOD"]],
       path = req[["PATH_INFO"]],
       query = req[["QUERY_STRING"]],
@@ -78,9 +77,19 @@ curl_echo <- function(handle, port = 9359, progress = interactive(), file = NULL
   }
   handle_setopt(handle, connecttimeout = 2, xferinfofunction = xfer, noprogress = FALSE)
   if(progress) cat("\n")
-  curl_fetch_memory(paste0("http://localhost:", port, "/"), handle = handle)
+  target_url <- paste0("http://localhost:", port)
+  original_url <- handle_data(handle)$url
+  if(length(original_url) && nchar(original_url)){
+    target_url <- replace_host(original_url, target_url)
+  }
+  curl_fetch_memory(target_url, handle = handle)
+  output$url <- original_url
   if(progress) cat("\n")
   return(output)
+}
+
+replace_host <- function(url, new_host = 'http://localhost'){
+  sub("[a-zA-Z]+://[^/]+", new_host, url)
 }
 
 write_to_file <- function(readfun, filename){

@@ -5,6 +5,7 @@
  - Progress / Xfer callback functions are now explicitly protected (#157)
  - Tweak some unit tests to give less false positives
  - curl_echo() has been changed to return better structured output
+ - Added curl_fetch_echo() as a wrapper for curl_echo()
 
 3.2
  - Windows: Update libcurl to 7.59.0
