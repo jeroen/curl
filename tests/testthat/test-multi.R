@@ -162,6 +162,7 @@ test_that("callback protection", {
 })
 
 test_that("host_con works via and multi_fdset", {
+  skip_on_os("solaris")
   total_con <- 6
   pool <- new_pool(total_con = total_con)
   for (i in 4:0) {
