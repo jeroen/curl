@@ -3,6 +3,7 @@
 \name{multipart}
 \alias{multipart}
 \alias{form_file}
+\alias{multipart}
 \alias{form_data}
 \title{POST files or data}
 \usage{

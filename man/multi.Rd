@@ -34,10 +34,12 @@ response data in same structure as \link{curl_fetch_memory}.}
 \item{fail}{callback function called on failed request. Argument contains
 error message.}
 
-\item{data}{callback function, file path, or connection object for receiving
-data. The signature for the callback function is \code{write(data, final = FALSE)}.
-If set to \code{NULL} the entire response content gets buffered internally
-and returned by the \code{done} callback.}
+\item{data}{(advanced) callback function, file path, or connection object for writing
+incoming data. This callback should only be used for \emph{streaming} applications,
+where small pieces of incoming data get written before the request has completed. The
+signature for the callback function is \code{write(data, final = FALSE)}. If set
+to \code{NULL} the entire response gets buffered internally and returned by in
+the \code{done} callback (which is usually what you want).}
 
 \item{pool}{a multi handle created by \link{new_pool}. Default uses a global pool.}
 
