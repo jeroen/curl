@@ -6,6 +6,7 @@
  - Tweak some unit tests to give less false positives
  - curl_echo() has been changed to return better structured output
  - Added curl_fetch_echo() as a wrapper for curl_echo()
+ - Response for curl_fetch_memory() gains a 'content_type' property
 
 3.2
  - Windows: Update libcurl to 7.59.0
