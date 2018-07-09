@@ -20,9 +20,10 @@ vignette: >
 knitr::opts_chunk$set(comment = "")
 options(width = 120, max.print = 100)
 library(curl)
+library(jsonlite)
 ```
 
-The curl package provides bindings to the [libcurl](http://curl.haxx.se/libcurl/) C library for R. The package supports retrieving data in-memory, downloading to disk, or streaming using the [R "connection" interface](https://stat.ethz.ch/R-manual/R-devel/library/base/html/connections.html). Some knowledge of curl is recommended to use this package. For a more user-friendly HTTP client, have a look at the  [httr](https://cran.r-project.org/package=httr/vignettes/quickstart.html) package which builds on curl with HTTP specific tools and logic.
+The curl package provides bindings to the [libcurl](https://curl.haxx.se/libcurl/) C library for R. The package supports retrieving data in-memory, downloading to disk, or streaming using the [R "connection" interface](https://stat.ethz.ch/R-manual/R-devel/library/base/html/connections.html). Some knowledge of curl is recommended to use this package. For a more user-friendly HTTP client, have a look at the  [httr](https://cran.r-project.org/package=httr/vignettes/quickstart.html) package which builds on curl with HTTP specific tools and logic.
 
 ## Request interfaces
 
@@ -41,10 +42,10 @@ The `curl_fetch_memory` function is a blocking interface which waits for the req
 
 
 ```{r}
-req <- curl_fetch_memory("https://httpbin.org/get")
+req <- curl_fetch_memory("https://eu.httpbin.org/get?foo=123")
 str(req)
 parse_headers(req$headers)
-cat(rawToChar(req$content))
+jsonlite::prettify(rawToChar(req$content))
 ```
 
 The `curl_fetch_memory` interface is the easiest interface and most powerful for building API clients. However it is not suitable for downloading really large files because it is fully in-memory. If you are expecting 100G of data, you probably need one of the other interfaces.
@@ -55,8 +56,8 @@ The second method is `curl_download`, which has been designed as a drop-in repla
 
 ```{r}
 tmp <- tempfile()
-curl_download("https://httpbin.org/get", tmp)
-cat(readLines(tmp), sep = "\n")
+curl_download("https://eu.httpbin.org/get?bar=456", tmp)
+jsonlite::prettify(readLines(tmp))
 ```
 
 ### Streaming data
@@ -64,7 +65,7 @@ cat(readLines(tmp), sep = "\n")
 The most flexible interface is the `curl` function, which has been designed as a drop-in replacement for base `url`. It will create a so-called connection object, which allows for incremental (asynchronous) reading of the response.
 
 ```{r}
-con <- curl("https://httpbin.org/get")
+con <- curl("https://eu.httpbin.org/get")
 open(con)
 
 # Get 3 lines
@@ -205,20 +206,20 @@ handle_setheaders(h,
 )
 ```
 
-Use the `curl_options()` function to get a list of the options supported by your version of libcurl. The [libcurl documentation](http://curl.haxx.se/libcurl/c/curl_easy_setopt.html) explains what each option does. Option names are not case sensitive.
+Use the `curl_options()` function to get a list of the options supported by your version of libcurl. The [libcurl documentation](https://curl.haxx.se/libcurl/c/curl_easy_setopt.html) explains what each option does. Option names are not case sensitive.
 
 After the handle has been configured, it can be used with any of the download interfaces to perform the request. For example `curl_fetch_memory` will load store the output of the request in memory:
 
 ```{r}
-req <- curl_fetch_memory("http://httpbin.org/post", handle = h)
-cat(rawToChar(req$content))
+req <- curl_fetch_memory("https://eu.httpbin.org/post", handle = h)
+jsonlite::prettify(rawToChar(req$content))
 ```
 
 Alternatively we can use `curl()` to read the data of via a connection interface:
 
 ```{r}
-con <- curl("http://httpbin.org/post", handle = h)
-cat(readLines(con), sep = "\n")
+con <- curl("https://eu.httpbin.org/post", handle = h)
+jsonlite::prettify(readLines(con))
 ```
 
 ```{r, echo = FALSE, message = FALSE, warning=FALSE}
@@ -229,14 +230,14 @@ Or we can use `curl_download` to write the response to disk:
 
 ```{r}
 tmp <- tempfile()
-curl_download("http://httpbin.org/post", destfile = tmp, handle = h)
-cat(readLines(tmp), sep = "\n")
+curl_download("https://eu.httpbin.org/post", destfile = tmp, handle = h)
+jsonlite::prettify(readLines(tmp))
 ```
 
 Or perform the same request with a multi pool:
 
 ```{r}
-curl_fetch_multi("http://httpbin.org/post", handle = h, done = function(res){
+curl_fetch_multi("https://eu.httpbin.org/post", handle = h, done = function(res){
   cat("Request complete! Response content:\n")
   cat(rawToChar(res$content))
 })
@@ -254,12 +255,12 @@ Curl handles automatically keep track of cookies set by the server. At any given
 h <- new_handle()
 
 # Ask server to set some cookies
-req <- curl_fetch_memory("http://httpbin.org/cookies/set?foo=123&bar=ftw", handle = h)
-req <- curl_fetch_memory("http://httpbin.org/cookies/set?baz=moooo", handle = h)
+req <- curl_fetch_memory("https://eu.httpbin.org/cookies/set?foo=123&bar=ftw", handle = h)
+req <- curl_fetch_memory("https://eu.httpbin.org/cookies/set?baz=moooo", handle = h)
 handle_cookies(h)
 
 # Unset a cookie
-req <- curl_fetch_memory("http://httpbin.org/cookies/delete?foo", handle = h)
+req <- curl_fetch_memory("https://eu.httpbin.org/cookies/delete?foo", handle = h)
 handle_cookies(h)
 ```
 
@@ -272,8 +273,8 @@ In most cases you should not re-use a single handle object for more than one req
 In recent versions of the curl package there are no performance benefits of reusing handles. The overhead of creating and configuring a new handle object is negligible. The safest way to issue multiple requests, either to a single server or multiple servers is by using a separate handle for each request (which is the default)
 
 ```{r}
-req1 <- curl_fetch_memory("https://httpbin.org/get")
-req2 <- curl_fetch_memory("http://www.r-project.org")
+req1 <- curl_fetch_memory("https://eu.httpbin.org/get")
+req2 <- curl_fetch_memory("https://www.r-project.org")
 ```
 
 In past versions of this package you needed to manually use a handle to take advantage of http Keep-Alive. However as of version 2.3 this is no longer the case: curl automatically maintains global a pool of open http connections shared by all handles. When performing many requests to the same server, curl automatically uses existing connections when possible, eliminating TCP/SSL handshaking overhead:
@@ -306,9 +307,9 @@ handle_setform(h,
   bar = charToRaw("boeboe"),
   iris = form_data(serialize(iris, NULL), "application/rda"),
   description = form_file(system.file("DESCRIPTION")),
-  logo = form_file(file.path(Sys.getenv("R_DOC_DIR"), "html/logo.jpg"), "image/jpeg")
+  logo = form_file(file.path(R.home('doc'), "html/logo.jpg"), "image/jpeg")
 )
-req <- curl_fetch_memory("http://httpbin.org/post", handle = h)
+req <- curl_fetch_memory("https://eu.httpbin.org/post", handle = h)
 ```
 
 The `form_file` function is used to upload files with the form post. It has two arguments: a file path, and optionally a content-type value. If no content-type is set, curl will guess the content type of the file based on the file extension.
@@ -324,6 +325,7 @@ library(magrittr)
 
 new_handle() %>%
   handle_setopt(copypostfields = "moo=moomooo") %>%
-  handle_setheaders("Content-Type" = "text/moo", "Cache-Control" = "no-cache", "User-Agent" = "A cow") %>%
-  curl_fetch_memory(url = "http://httpbin.org/post") %$% content %>% rawToChar %>% cat
+  handle_setheaders("Content-Type"="text/moo", "Cache-Control"="no-cache", "User-Agent"="A cow") %>%
+  curl_fetch_memory(url = "https://eu.httpbin.org/post") %$% content %>% 
+  rawToChar %>% jsonlite::prettify()
 ```
