@@ -164,7 +164,7 @@ test_that("callback protection", {
 test_that("host_con works via and multi_fdset", {
   skip_on_os("solaris")
   total_con <- 6
-  pool <- new_pool(total_con = total_con)
+  pool <- new_pool(total_con = total_con, multiplex = FALSE)
   for (i in 4:0) {
     for(j in 1:2){
       h1 <- new_handle(url = httpbin(paste0("delay/", i)))
