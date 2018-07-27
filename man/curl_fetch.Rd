@@ -5,6 +5,7 @@
 \alias{curl_fetch_disk}
 \alias{curl_fetch_stream}
 \alias{curl_fetch_multi}
+\alias{curl_fetch_echo}
 \title{Fetch the contents of a URL}
 \usage{
 curl_fetch_memory(url, handle = new_handle())
@@ -15,6 +16,8 @@ curl_fetch_stream(url, fun, handle = new_handle())
 
 curl_fetch_multi(url, done = NULL, fail = NULL, pool = NULL,
   data = NULL, handle = new_handle())
+
+curl_fetch_echo(url, handle = new_handle())
 }
 \arguments{
 \item{url}{A character string naming the URL of a resource to be downloaded.}
@@ -34,10 +37,12 @@ error message.}
 
 \item{pool}{a multi handle created by \link{new_pool}. Default uses a global pool.}
 
-\item{data}{callback function, file path, or connection object for receiving
-data. The signature for the callback function is \code{write(data, final = FALSE)}.
-If set to \code{NULL} the entire response content gets buffered internally
-and returned by the \code{done} callback.}
+\item{data}{(advanced) callback function, file path, or connection object for writing
+incoming data. This callback should only be used for \emph{streaming} applications,
+where small pieces of incoming data get written before the request has completed. The
+signature for the callback function is \code{write(data, final = FALSE)}. If set
+to \code{NULL} the entire response gets buffered internally and returned by in
+the \code{done} callback (which is usually what you want).}
 }
 \description{
 Low-level bindings to write data from a URL into memory, disk or a callback

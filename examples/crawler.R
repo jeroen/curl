@@ -7,9 +7,7 @@ stopifnot(packageVersion('curl') >= 2.0)
 # Extracts hyperlinks from HTML page
 get_links <- function(res){
   tryCatch({
-    headers <- curl::parse_headers(res$headers)
-    ctype <- headers[grepl("^content-type", headers, ignore.case = T)]
-    stopifnot(isTRUE(grepl("text/html", ctype)))
+    stopifnot(isTRUE(grepl("text/html", res$content_type)))
     doc <- xml2::read_html(res$content)
     nodes <- xml2::xml_find_all(doc, "//a[@href]")
     links <- xml2::xml_attr(nodes, "href")

@@ -19,29 +19,32 @@
 #' webutils::parse_http(formdata$body, formdata$content_type)
 curl_echo <- function(handle, port = 9359, progress = interactive(), file = NULL){
   progress <- isTRUE(progress)
-  formdata <- NULL
   if(!(is.null(file) || inherits(file, "connection") || is.character(file)))
     stop("Argument 'file' must be a file path or connection object")
-  echo_handler <- function(env){
+  output <- NULL
+  echo_handler <- function(req){
     if(progress){
       if (!curl_mock_env$mock) cat("\nRequest Complete!\n")
       progress <<- FALSE
     }
-
-    formdata <<- as.list(env)
-    http_method <- env[["REQUEST_METHOD"]]
-    content_type <- env[["CONTENT_TYPE"]]
-    type <- ifelse(length(content_type) && nchar(content_type), content_type, "empty")
-    formdata$body <<- if(tolower(http_method) %in% c("post", "put")){
+    body <- if(tolower(req[["REQUEST_METHOD"]]) %in% c("post", "put")){
       if(!length(file)){
-        env[["rook.input"]]$read()
+        req[["rook.input"]]$read()
       } else {
-        write_to_file(env[["rook.input"]]$read, file)
+        write_to_file(req[["rook.input"]]$read, file)
       }
     }
-    formdata[["rook.input"]] <<- NULL
-    formdata[["rook.errors"]] <<- NULL
-    names(formdata) <<- tolower(names(formdata))
+
+    output <<- list(
+      method = req[["REQUEST_METHOD"]],
+      path = req[["PATH_INFO"]],
+      query = req[["QUERY_STRING"]],
+      content_type = req[["CONTENT_TYPE"]],
+      body = body,
+      headers = req[["HEADERS"]]
+    )
+
+    # Dummy response
     list(
       status = 200,
       body = "",
@@ -74,9 +77,19 @@ curl_echo <- function(handle, port = 9359, progress = interactive(), file = NULL
   }
   handle_setopt(handle, connecttimeout = 2, xferinfofunction = xfer, noprogress = FALSE)
   if(progress) cat("\n")
-  curl_fetch_memory(paste0("http://localhost:", port, "/"), handle = handle)
+  target_url <- paste0("http://localhost:", port)
+  original_url <- handle_data(handle)$url
+  if(length(original_url) && nchar(original_url)){
+    target_url <- replace_host(original_url, target_url)
+  }
+  curl_fetch_memory(target_url, handle = handle)
+  output$url <- original_url
   if(progress) cat("\n")
-  return(formdata)
+  return(output)
+}
+
+replace_host <- function(url, new_host = 'http://localhost'){
+  sub("[a-zA-Z]+://[^/]+", new_host, url)
 }
 
 write_to_file <- function(readfun, filename){

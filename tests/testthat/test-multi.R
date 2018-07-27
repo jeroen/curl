@@ -1,31 +1,5 @@
 context("Multi handle")
 
-test_that("Max connections works", {
-  skip_on_os("solaris")
-  skip_if_not(strsplit(curl_version()$version, "-")[[1]][1] >= as.numeric_version("7.30"),
-    "libcurl does not support host_connections")
-  multi_set(host_con = 2, multiplex = FALSE)
-  for(i in 1:3){
-    multi_add(new_handle(url = httpbin("delay/2")))
-  }
-  out <- multi_run(timeout = 3.5)
-  expect_equal(out, list(success = 2, error = 0, pending = 1))
-  out <- multi_run(timeout = 2)
-  expect_equal(out, list(success = 1, error = 0, pending = 0))
-  out <- multi_run()
-  expect_equal(out, list(success = 0, error = 0, pending = 0))
-})
-
-test_that("Max connections reset", {
-  skip_on_os("solaris")
-  multi_set(host_con = 6, multiplex = TRUE)
-  for(i in 1:3){
-    multi_add(new_handle(url = httpbin("delay/2")))
-  }
-  out <- multi_run(timeout = 4)
-  expect_equal(out, list(success = 3, error = 0, pending = 0))
-})
-
 test_that("Timeout works", {
   skip_on_os("solaris")
   h1 <- new_handle(url = httpbin("delay/3"))
@@ -58,7 +32,8 @@ test_that("Callbacks work", {
   })
   gc() # test that callback functions are protected
   out <- multi_run()
-  expect_equal(out, list(success=2, error=0, pending=0))
+  expect_equal(out$pending, 0)
+  expect_equal(out$success + out$error, 2)
   expect_equal(total, 2)
 })
 
@@ -161,15 +136,35 @@ test_that("callback protection", {
   expect_equal(out$success, 1)
 })
 
-test_that("host_con works via and multi_fdset", {
-  pool <- new_pool(host_con = 3)
-  for (i in 4:0) {
+test_that("total_con and multi_fdset", {
+  skip_on_os("solaris")
+  skip_if_not(strsplit(curl_version()$version, "-")[[1]][1] >= as.numeric_version("7.30"),
+              "libcurl does not support host_connections")
+  total_con <- 4
+  pool <- new_pool(total_con = total_con, multiplex = FALSE)
+  for (i in c(4, 3, 2, 1, 0, 1, 2, 3, 4)) {
     h1 <- new_handle(url = httpbin(paste0("delay/", i)))
     multi_add(h1, done = force, fail = cat, pool = pool)
   }
-  for(i in 4:0){
+  while(length(multi_list(pool = pool))){
     res <- multi_run(pool = pool, poll = 1)
-    expect_length(multi_fdset(pool = pool)$reads, min(3, i))
+    expect_length(multi_fdset(pool = pool)$reads, min(total_con, res$pending))
+  }
+})
+
+test_that("host_con and multi_fdset", {
+  skip_on_os("solaris")
+  skip_if_not(strsplit(curl_version()$version, "-")[[1]][1] >= as.numeric_version("7.30"),
+              "libcurl does not support host_connections")
+  host_con <- 4
+  pool <- new_pool(host_con = host_con, multiplex = FALSE)
+  for (i in c(4, 3, 2, 1, 0, 1, 2, 3, 4)) {
+    h1 <- new_handle(url = httpbin(paste0("delay/", i)))
+    multi_add(h1, done = force, fail = cat, pool = pool)
+  }
+  while(length(multi_list(pool = pool))){
+    res <- multi_run(pool = pool, poll = 1)
+    expect_length(multi_fdset(pool = pool)$reads, min(host_con, res$pending))
   }
 })
 
@@ -177,5 +172,3 @@ test_that("GC works", {
   gc()
   expect_equal(total_handles(), 0L)
 })
-
-
