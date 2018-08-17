@@ -52,4 +52,4 @@ crawl <- function(startpage, timeout = 60, slots = 100){
   as.list(pages)
 }
 
-system.time(pages <- crawl(startpage = 'https://news.ycombinator.com/', 300))
+system.time(pages <- crawl(startpage = 'https://cloud.r-project.org/', 300))
