@@ -73,9 +73,8 @@ curl <- function(url = "http://httpbin.org/get", open = "", handle = new_handle(
 curl_connection <- function(url, mode, handle, partial = FALSE){
   con <- .Call(R_curl_connection, url, handle, partial)
   if(!identical(mode, "")){
-    tryCatch(open(con, open = mode), error = function(err){
+    withCallingHandlers(open(con, open = mode), error = function(err) {
       close(con)
-      stop(err)
     })
   }
   return(con)
