@@ -68,7 +68,12 @@ size_t dummy_read(char *buffer, size_t size, size_t nitems, void *instream){
 }
 
 #ifdef HAS_XFERINFOFUNCTION
-static int xferinfo_callback(void *clientp, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow){
+#define xftype curl_off_t
+#else
+#define xftype double
+#endif
+
+static int xferinfo_callback(void *clientp, xftype dltotal, xftype dlnow, xftype ultotal, xftype ulnow){
   static int has_up = 0;
   if(dlnow == 0 && ulnow == 0)
     return 0;
@@ -90,7 +95,6 @@ static int xferinfo_callback(void *clientp, curl_off_t dltotal, curl_off_t dlnow
   }
   return 0;
 }
-#endif
 
 /* These are defaulst that we always want to set */
 void set_handle_defaults(reference *ref){
@@ -168,6 +172,8 @@ void set_handle_defaults(reference *ref){
   /* set default progress printer (disabled by default) */
 #ifdef HAS_XFERINFOFUNCTION
   assert(curl_easy_setopt(handle, CURLOPT_XFERINFOFUNCTION, xferinfo_callback));
+#else
+  assert(curl_easy_setopt(handle, CURLOPT_PROGRESSFUNCTION, xferinfo_callback));
 #endif
 }
 
