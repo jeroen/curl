@@ -75,9 +75,10 @@ size_t dummy_read(char *buffer, size_t size, size_t nitems, void *instream){
 
 static int xferinfo_callback(void *clientp, xftype dltotal, xftype dlnow, xftype ultotal, xftype ulnow){
   static int has_up = 0;
-  if(dlnow == 0 && ulnow == 0)
-    return 0;
-  if(dlnow){
+  static xftype dlprev = 0;
+  static xftype ulprev = 0;
+  if(dlnow && dlnow != dlprev){
+    dlprev = dlnow;
     if(has_up){
       REprintf("\n");
       has_up = 0;
@@ -88,7 +89,8 @@ static int xferinfo_callback(void *clientp, xftype dltotal, xftype dlnow, xftype
     } else {
       REprintf("\r [??%%] Downloaded %.0lf bytes...", (double) dlnow);
     }
-  } else {
+  } else if(ulnow && ulnow != ulprev){
+    ulprev = ulnow;
     int pct_up = (100 * ulnow)/ultotal;
     REprintf("\r [%d%%] Uploaded %.0lf bytes...", (double) ulnow, pct_up);
     has_up = 1;
