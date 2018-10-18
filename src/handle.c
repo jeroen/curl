@@ -74,26 +74,24 @@ size_t dummy_read(char *buffer, size_t size, size_t nitems, void *instream){
 #endif
 
 static int xferinfo_callback(void *clientp, xftype dltotal, xftype dlnow, xftype ultotal, xftype ulnow){
-  static int has_up = 0;
   static xftype dlprev = 0;
   static xftype ulprev = 0;
   if(dlnow && dlnow != dlprev){
     dlprev = dlnow;
-    if(has_up){
-      REprintf("\n");
-      has_up = 0;
-    }
     if(dltotal){
       int pct_dn = (100 * dlnow)/dltotal;
       REprintf("\r [%d%%] Downloaded %.0lf bytes...", (double) dlnow, pct_dn);
+      if(dlnow == dltotal)
+        REprintf("\n");
     } else {
-      REprintf("\r [??%%] Downloaded %.0lf bytes...", (double) dlnow);
+      REprintf("\r Downloaded %.0lf bytes...", (double) dlnow);
     }
   } else if(ulnow && ulnow != ulprev){
     ulprev = ulnow;
     int pct_up = (100 * ulnow)/ultotal;
     REprintf("\r [%d%%] Uploaded %.0lf bytes...", (double) ulnow, pct_up);
-    has_up = 1;
+    if(ulnow == ultotal)
+      REprintf("\n");
   }
   return 0;
 }
