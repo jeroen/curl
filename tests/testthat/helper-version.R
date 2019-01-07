@@ -2,11 +2,11 @@ cat("This is libcurl version", curl_version()$version, "with", curl_version()$ss
 
 # Try to load test server
 find_test_server <- function(){
-  h <- curl::new_handle(timeout = 10, failonerror = TRUE)
+  h <- new_handle(timeout = 10, failonerror = TRUE)
 
   # Try to download latest test-server list
   servers <- tryCatch({
-    con <- curl::curl("https://jeroen.github.io/curl/servers.R", handle = h)
+    con <- curl("https://jeroen.github.io/curl/servers.R", handle = h)
     on.exit(close(con))
     out <- source(con, local = TRUE)
     out$value

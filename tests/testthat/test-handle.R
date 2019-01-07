@@ -18,7 +18,7 @@ test_that("Cookies", {
   expect_equal(curl_fetch_memory(httpbin("cookies/set?foo=123&bar=456"), handle = h)$status, 200)
   expect_equal(jsonlite::fromJSON(rawToChar(curl_fetch_memory(httpbin("cookies"), handle = h)$content))$cookies$bar, "456")
   expect_equal(curl_fetch_memory(httpbin("cookies/delete?bar"), handle = h)$status, 200)
-  expect_equal(jsonlite::fromJSON(rawToChar(curl_fetch_memory(httpbin("cookies"), handle = h)$content))$cookies$bar, NULL)
+  expect_null(jsonlite::fromJSON(rawToChar(curl_fetch_memory(httpbin("cookies"), handle = h)$content))$cookies$bar)
 })
 
 test_that("Keep-Alive", {
