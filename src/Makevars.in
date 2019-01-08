@@ -1,4 +1,5 @@
-PKG_CPPFLAGS=@cflags@
+PKG_CFLAGS=$(C_VISIBILITY)
+PKG_CPPFLAGS=@cflags@ -DSTRICT_R_HEADERS
 PKG_LIBS=@libs@
 
 all: clean

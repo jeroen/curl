@@ -12,6 +12,7 @@
  - Skip unit tests if no internet is available
  - Fix rchk and valgrind warnings from CRAN
  - Updated symbol table up with curl 7.64.0
+ - Use native routine registration and visibility
 
 3.2
  - Windows: Update libcurl to 7.59.0
