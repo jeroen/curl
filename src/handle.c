@@ -408,7 +408,7 @@ SEXP make_namesvec(){
   SEXP names = PROTECT(allocVector(STRSXP, 7));
   SET_STRING_ELT(names, 0, mkChar("url"));
   SET_STRING_ELT(names, 1, mkChar("status_code"));
-  SET_STRING_ELT(names, 2, mkChar("content_type"));
+  SET_STRING_ELT(names, 2, mkChar("type"));
   SET_STRING_ELT(names, 3, mkChar("headers"));
   SET_STRING_ELT(names, 4, mkChar("modified"));
   SET_STRING_ELT(names, 5, mkChar("times"));

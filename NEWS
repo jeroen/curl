@@ -6,7 +6,7 @@
  - Tweak some unit tests to give less false positives
  - curl_echo() has been changed to return better structured output
  - Added curl_fetch_echo() as a wrapper for curl_echo()
- - Response for curl_fetch_memory() gains a 'content_type' property
+ - Response for curl_fetch_memory() gains a 'type' field with the content-type
  - Fix a unit test for OpenSSL 1.1.1
  - Better default progress function if no progresfun or xferinfofun is set
  - Skip unit tests if no internet is available
