@@ -37,7 +37,7 @@ curl_options()
 # List proxy options
 curl_options("proxy")
 
-# Sybol table
+# Symbol table
 head(curl_symbols)
 # Curl/ssl version info
 curl_version()

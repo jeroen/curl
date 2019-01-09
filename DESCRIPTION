@@ -1,7 +1,7 @@
 Package: curl
 Type: Package
 Title: A Modern and Flexible Web Client for R
-Version: 3.2.9000
+Version: 3.3
 Authors@R: c(
     person("Jeroen", "Ooms", role = c("aut", "cre"), email = "jeroen@berkeley.edu",
       comment = c(ORCID = "0000-0002-4035-0289")),
@@ -35,6 +35,6 @@ VignetteBuilder: knitr
 Depends:
     R (>= 3.0.0)
 LazyData: true
-RoxygenNote: 6.0.1.9000
+RoxygenNote: 6.1.1
 Encoding: UTF-8
 Language: en-US
