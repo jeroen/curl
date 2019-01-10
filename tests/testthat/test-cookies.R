@@ -28,10 +28,14 @@ test_that("Delete a cookie", {
   cookies <- handle_cookies(h)
   foo <- subset(cookies, name == "foo")
   bar <- subset(cookies, name == "bar")
-  expect_true(foo$expiration < Sys.time())
   expect_true(bar$expiration > Sys.time())
-  expect_true(is.na(foo$value))
   expect_equal(bar$value, "ftw")
+
+  # Recent versions of curl immediately drop the cookie
+  if(nrow(foo)){
+  expect_true(foo$expiration < Sys.time())
+  expect_true(is.na(foo$value))
+  }
 })
 
 test_that("Overwrite a cookie", {

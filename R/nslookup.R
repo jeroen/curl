@@ -33,5 +33,5 @@ nslookup <- function(host, ipv4_only = FALSE, multiple = FALSE, error = TRUE){
 #' @export
 #' @rdname nslookup
 has_internet <- function(){
-  !is.null(nslookup("r-project.org", error = FALSE))
+  !is.null(nslookup("google.com", error = FALSE))
 }

@@ -27,8 +27,9 @@ int R_curl_callback_progress(SEXP fun,
     return 0;
   }
 
+  int out = asLogical(res);
   UNPROTECT(4);
-  return !asLogical(res);
+  return !out;
 }
 
 size_t R_curl_callback_read(char *buffer, size_t size, size_t nitems, SEXP fun) {

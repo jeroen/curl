@@ -58,7 +58,7 @@ test_that("Error handling for non-blocking open", {
   # DNS error
   con <- curl("http://this.is.invalid.co.za")
   expect_immediate(open(con, "rs", blocking = FALSE))
-  expect_error(read_text(con), "resolve")
+  expect_error(read_text(con), "resolv", ignore.case = TRUE) # matches "resolve" or "resolving"
   close(con)
 
   # Non existing host

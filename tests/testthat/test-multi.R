@@ -148,7 +148,8 @@ test_that("total_con and multi_fdset", {
   }
   while(length(multi_list(pool = pool))){
     res <- multi_run(pool = pool, poll = 1)
-    expect_length(multi_fdset(pool = pool)$reads, min(total_con, res$pending))
+    fdset <- multi_fdset(pool = pool)
+    expect_length(c(fdset$reads, fdset$writes), min(total_con, res$pending))
   }
 })
 
@@ -164,7 +165,8 @@ test_that("host_con and multi_fdset", {
   }
   while(length(multi_list(pool = pool))){
     res <- multi_run(pool = pool, poll = 1)
-    expect_length(multi_fdset(pool = pool)$reads, min(host_con, res$pending))
+    fdset <- multi_fdset(pool = pool)
+    expect_length(c(fdset$reads, fdset$writes), min(host_con, res$pending))
   }
 })
 

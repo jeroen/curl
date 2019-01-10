@@ -24,7 +24,6 @@ CURLcode curl_perform_with_interrupt(CURL *handle){
   int still_running = 1;
 
   if(CURLM_OK != curl_multi_add_handle(multi_handle, handle)){
-    curl_multi_cleanup(multi_handle);
     return CURLE_FAILED_INIT;
   }
 

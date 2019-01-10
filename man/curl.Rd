@@ -4,7 +4,8 @@
 \alias{curl}
 \title{Curl connection interface}
 \usage{
-curl(url = "http://httpbin.org/get", open = "", handle = new_handle())
+curl(url = "http://httpbin.org/get", open = "",
+  handle = new_handle())
 }
 \arguments{
 \item{url}{character string. See examples.}

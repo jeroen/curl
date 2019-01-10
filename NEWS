@@ -1,3 +1,6 @@
+3.4
+ - Re-enable cookie unit test which should be fixed in curl 7.64.0
+
 3.3
  - The 'data' callback from multi_add() gains a 'final' parameter
  - The 'data' callback from multi_add() can be given a file path to stream to files
@@ -6,7 +9,13 @@
  - Tweak some unit tests to give less false positives
  - curl_echo() has been changed to return better structured output
  - Added curl_fetch_echo() as a wrapper for curl_echo()
- - Response for curl_fetch_memory() gains a 'content_type' property
+ - Response for curl_fetch_memory() gains a 'type' field with the content-type
+ - Fix a unit test for OpenSSL 1.1.1
+ - Better default progress function if no progresfun or xferinfofun is set
+ - Skip unit tests if no internet is available
+ - Fix rchk and valgrind warnings from CRAN
+ - Updated symbol table up with curl 7.64.0
+ - Use native routine registration and visibility
 
 3.2
  - Windows: Update libcurl to 7.59.0

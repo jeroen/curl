@@ -67,6 +67,35 @@ size_t dummy_read(char *buffer, size_t size, size_t nitems, void *instream){
   return 0;
 }
 
+#ifdef HAS_XFERINFOFUNCTION
+#define xftype curl_off_t
+#else
+#define xftype double
+#endif
+
+static int xferinfo_callback(void *clientp, xftype dltotal, xftype dlnow, xftype ultotal, xftype ulnow){
+  static xftype dlprev = 0;
+  static xftype ulprev = 0;
+  if(dlnow && dlnow != dlprev){
+    dlprev = dlnow;
+    if(dltotal){
+      int pct_dn = (100 * dlnow)/dltotal;
+      REprintf("\r [%d%%] Downloaded %.0lf bytes...", (double) dlnow, pct_dn);
+      if(dlnow == dltotal)
+        REprintf("\n");
+    } else {
+      REprintf("\r Downloaded %.0lf bytes...", (double) dlnow);
+    }
+  } else if(ulnow && ulnow != ulprev){
+    ulprev = ulnow;
+    int pct_up = (100 * ulnow)/ultotal;
+    REprintf("\r [%d%%] Uploaded %.0lf bytes...", (double) ulnow, pct_up);
+    if(ulnow == ultotal)
+      REprintf("\n");
+  }
+  return 0;
+}
+
 /* These are defaulst that we always want to set */
 void set_handle_defaults(reference *ref){
 
@@ -139,6 +168,13 @@ void set_handle_defaults(reference *ref){
   assert(curl_easy_setopt(handle, CURLOPT_EXPECT_100_TIMEOUT_MS, 0L));
 #endif
   assert(curl_easy_setopt(handle, CURLOPT_HTTPHEADER, default_headers));
+
+  /* set default progress printer (disabled by default) */
+#ifdef HAS_XFERINFOFUNCTION
+  assert(curl_easy_setopt(handle, CURLOPT_XFERINFOFUNCTION, xferinfo_callback));
+#else
+  assert(curl_easy_setopt(handle, CURLOPT_PROGRESSFUNCTION, xferinfo_callback));
+#endif
 }
 
 SEXP R_new_handle(){
@@ -372,7 +408,7 @@ SEXP make_namesvec(){
   SEXP names = PROTECT(allocVector(STRSXP, 7));
   SET_STRING_ELT(names, 0, mkChar("url"));
   SET_STRING_ELT(names, 1, mkChar("status_code"));
-  SET_STRING_ELT(names, 2, mkChar("content_type"));
+  SET_STRING_ELT(names, 2, mkChar("type"));
   SET_STRING_ELT(names, 3, mkChar("headers"));
   SET_STRING_ELT(names, 4, mkChar("modified"));
   SET_STRING_ELT(names, 5, mkChar("times"));

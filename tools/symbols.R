@@ -47,4 +47,4 @@ symbols$type[!option] <- NA
 # Save as lazy data
 curl_symbols <- symbols[order(symbols$name), ]
 row.names(curl_symbols) = NULL
-devtools::use_data(curl_symbols, overwrite = TRUE)
+usethis::use_data(curl_symbols, overwrite = TRUE)

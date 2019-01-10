@@ -72,7 +72,10 @@ curl <- function(url = "http://httpbin.org/get", open = "", handle = new_handle(
 # busy looping in curl_fetch_stream()
 curl_connection <- function(url, mode, handle, partial = FALSE){
   con <- .Call(R_curl_connection, url, handle, partial)
-  if(!identical(mode, ""))
-    open(con, open = mode)
+  if(!identical(mode, "")){
+    withCallingHandlers(open(con, open = mode), error = function(err) {
+      close(con)
+    })
+  }
   return(con)
 }

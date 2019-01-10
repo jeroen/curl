@@ -14,7 +14,7 @@
 #' # List proxy options
 #' curl_options("proxy")
 #'
-#' # Sybol table
+#' # Symbol table
 #' head(curl_symbols)
 curl_options <- function(filter = ""){
   m <- grep(filter, fixed = TRUE, names(option_table))
