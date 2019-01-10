@@ -16,16 +16,22 @@ mock <- function(on = TRUE) {
 #' handle_setheaders(h, a = 'b')
 #' handle_setheaders(h, foo = 'bar')
 #' url = "https://httpbin.org/put"
+#' curl_echo(h)
 #' 
 #' h <- new_handle()
 #' handle_setopt(h, COPYPOSTFIELDS = jsonlite::toJSON(mtcars))
 #' handle_setheaders(h, "Content-Type" = "application/json")
+#' curl_echo(h)
 #' 
 #' h <- new_handle()
 #' handle_setopt(h, COPYPOSTFIELDS = jsonlite::toJSON(mtcars))
 #' handle_setheaders(h, "Content-Type" = "application/json")
 #' handle_setopt(h, userpwd = "foo:bar")
 #' handle_setopt(h, httpauth = 1)
+#' curl_echo(h)
+#' 
+#' mock()
+#' res = curl_fetch_memory(url = "https://httpbin.org/get?foo=bar")
 mock_req <- function(url, h, called) {
   # cat(paste0("mocking? ", curl_mock_env$mock), "\n")
   # if (curl_mock_env$mock) {
@@ -35,9 +41,9 @@ mock_req <- function(url, h, called) {
     # cat("calling curl_echo from inside mock_req", "\n")
     # run curl_echo to get components
     res <- curl_echo(h)
-    # cat(rawToChar(res$body))
+    # return(res)
     req <- list(url = url, handle = h, called = called)
-    req$method <- res$request_method
+    req$method <- res$method
     if (!is.null(res$http_authorization)) {
       req$auth <- 
         as.list(stats::setNames(
@@ -45,15 +51,16 @@ mock_req <- function(url, h, called) {
           c('type', 'user_pwd')
         ))
     }
-    req$headers <- res[grepl("^http_", names(res))]
-    req$headers$http_host <- NULL 
-    req$headers$http_authorization <- NULL
-    req$headers$server_name <- NULL
-    req$headers$httpuv <- NULL
+    req$headers <- as.list(res$headers)
+    # req$headers$http_host <- NULL 
+    # req$headers$http_authorization <- NULL
+    # req$headers$server_name <- NULL
+    # req$headers$httpuv <- NULL
     if (!is.null(res$body)) req$body <- rawToChar(res$body)
 
     # handle request
     # cat("calling adap$handle_request from inside mock_req", "\n")
+    # return(req)
     adap <- webmockr::CurlAdapter$new()
     adap$handle_request(req)
   # }

@@ -71,7 +71,7 @@ function is triggered with the error message.
 }
 \examples{
 # Load in memory
-res <- curl_fetch_memory("http://httpbin.org/cookies/set?foo=123&bar=ftw")
+res <- curl_fetch_memory(url="http://httpbin.org/cookies/set?foo=123&bar=ftw")
 res$content
 
 # Save to disk
@@ -98,4 +98,6 @@ curl_fetch_multi("http://httpbin.org/status/418", success, failure)
 curl_fetch_multi("https://urldoesnotexist.xyz", success, failure)
 multi_run()
 str(data)
+
+
 }
