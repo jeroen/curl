@@ -1,3 +1,6 @@
+3.4
+ - Re-enable cookie unit test which should be fixed in curl 7.64.0
+
 3.3
  - The 'data' callback from multi_add() gains a 'final' parameter
  - The 'data' callback from multi_add() can be given a file path to stream to files

@@ -31,10 +31,11 @@ test_that("Delete a cookie", {
   expect_true(bar$expiration > Sys.time())
   expect_equal(bar$value, "ftw")
 
-  # TODO: remove this when fixed upstream
-  skip_if(curl_version()$version >= "7.63.0")
+  # Recent versions of curl immediately drop the cookie
+  if(nrow(foo)){
   expect_true(foo$expiration < Sys.time())
   expect_true(is.na(foo$value))
+  }
 })
 
 test_that("Overwrite a cookie", {
