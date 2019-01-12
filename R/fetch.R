@@ -60,8 +60,6 @@
 #' 
 #' 
 curl_fetch_memory <- function(url, handle = new_handle()){
-  # cat(deparse(sys.calls()[[sys.nframe()-1]]), "\n")
-  # cat(deparse(match.call())[[2]], "\n")
   xx <- deparse(sys.call(-1))
   called <- gsub("\\(|\\)", "", deparse(sys.call()))
   # cat(xx, "\n")
