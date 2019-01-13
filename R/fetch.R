@@ -67,7 +67,7 @@ curl_fetch_memory <- function(url, handle = new_handle()){
     if (requireNamespace('webmockr', quietly = TRUE)) {
       # if (curl_mock_env$mock) {
       if (webmockr::enabled('curl')) {
-        res <- webmockr::mock_req(url, handle, called)
+        res <- webmockr::curl_mock_req(url, handle, called)
         return(res)
       }
     }
