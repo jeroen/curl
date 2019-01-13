@@ -24,7 +24,7 @@ curl_echo <- function(handle, port = 9359, progress = interactive(), file = NULL
   output <- NULL
   echo_handler <- function(req){
     if(progress){
-      if (!curl_mock_env$mock) cat("\nRequest Complete!\n")
+      cat("\nRequest Complete!\n")
       progress <<- FALSE
     }
     body <- if(tolower(req[["REQUEST_METHOD"]]) %in% c("post", "put")){
@@ -66,9 +66,9 @@ curl_echo <- function(handle, port = 9359, progress = interactive(), file = NULL
   xfer <- function(down, up){
     if(progress){
       if(up[1] == 0 && down[1] == 0){
-        if (!curl_mock_env$mock) cat("\rConnecting...")
+        cat("\rConnecting...")
       } else {
-        if (!curl_mock_env$mock) cat(sprintf("\rUpload: %s (%d%%)   ", format_size(up[2]), as.integer(100 * up[2] / up[1])))
+        cat(sprintf("\rUpload: %s (%d%%)   ", format_size(up[2]), as.integer(100 * up[2] / up[1])))
       }
     }
     # Need very low wait to prevent gridlocking!

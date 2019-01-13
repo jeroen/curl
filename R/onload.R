@@ -1,9 +1,4 @@
-curl_mock_env = NULL
-
 .onLoad <- function(libname, pkgname){
-  curl_mock_env <<- new.env()
-  curl_mock_env$mock <<- FALSE
-
   if (!grepl("mingw", R.Version()$platform))
     return()
 

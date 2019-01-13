@@ -64,9 +64,12 @@ curl_fetch_memory <- function(url, handle = new_handle()){
   called <- gsub("\\(|\\)", "", deparse(sys.call()))
   # cat(xx, "\n")
   if (!grepl("curl_echo", xx)) {
-    if (curl_mock_env$mock) {
-      res <- mock_req(url, handle, called)
-      return(res)
+    if (requireNamespace('webmockr', quietly = TRUE)) {
+      # if (curl_mock_env$mock) {
+      if (webmockr::enabled('curl')) {
+        res <- webmockr::mock_req(url, handle, called)
+        return(res)
+      }
     }
   }
   nonblocking <- isTRUE(getOption("curl_interrupt", TRUE))
