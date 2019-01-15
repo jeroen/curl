@@ -31,7 +31,7 @@ Suggests:
     magrittr,
     httpuv (>= 1.4.4),
     webutils,
-    webmockr
+    webmockr (>= 0.3.1.9100)
 VignetteBuilder: knitr
 Depends:
     R (>= 3.0.0)
@@ -39,3 +39,4 @@ LazyData: true
 RoxygenNote: 6.1.1
 Encoding: UTF-8
 Language: en-US
+Remotes: ropensci/webmockr@adapter-curl
