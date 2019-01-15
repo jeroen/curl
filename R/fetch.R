@@ -30,7 +30,7 @@
 #' @useDynLib curl R_curl_fetch_memory
 #' @examples
 #' # Load in memory
-#' res <- curl_fetch_memory(url="http://httpbin.org/cookies/set?foo=123&bar=ftw")
+#' res <- curl_fetch_memory("http://httpbin.org/cookies/set?foo=123&bar=ftw")
 #' res$content
 #'
 #' # Save to disk
@@ -57,8 +57,6 @@
 #' curl_fetch_multi("https://urldoesnotexist.xyz", success, failure)
 #' multi_run()
 #' str(data)
-#' 
-#' 
 curl_fetch_memory <- function(url, handle = new_handle()){
   xx <- deparse(sys.call(-1))
   called <- gsub("\\(|\\)", "", deparse(sys.call()))
