@@ -21,7 +21,7 @@ SEXP R_write_file_writer(SEXP ptr, SEXP buf, SEXP close){
     R_SetExternalPtrAddr(ptr, fp);
     total_open_writers++;
   }
-  size_t len = fwrite(RAW(buf), 1, Rf_length(buf), fp);
+  size_t len = fwrite(RAW(buf), 1, Rf_xlength(buf), fp);
   if(Rf_asLogical(close)){
     fin_file_writer(ptr);
   } else if(Rf_length(buf)) {
