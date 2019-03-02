@@ -38,6 +38,8 @@ void clean_handle(reference *ref){
   if(ref->refCount == 0){
     if(ref->headers)
       curl_slist_free_all(ref->headers);
+    if(ref->custom)
+      curl_slist_free_all(ref->custom);
     if(ref->form)
       curl_formfree(ref->form);
     if(ref->handle)
@@ -200,23 +202,35 @@ SEXP R_handle_reset(SEXP ptr){
   reset_errbuf(ref);
   curl_easy_reset(ref->handle);
 
+  //clear custom vector field
+  if(ref->custom){
+    curl_slist_free_all(ref->custom);
+    ref->custom = NULL;
+  }
+
   //restore default settings
   set_handle_defaults(ref);
   return ScalarLogical(1);
 }
 
+// These options need linked lists
 int opt_is_linked_list(int key) {
-  // These four options need linked lists of various forms - determined
-  // from inspection of curl.h
   return
-    key == 10023 || // CURLOPT_HTTPHEADER
-    key == 10024 || // CURLOPT_HTTPPOST
-    key == 10070 || // CURLOPT_TELNETOPTIONS
-    key == 10104 || // CURLOPT_HTTP200ALIASES
-    key == 10228;   // CURLOPT_PROXYHEADER
+    key == CURLOPT_TELNETOPTIONS ||
+    key == CURLOPT_HTTP200ALIASES ||
+    key == CURLOPT_PROXYHEADER ||
+    key == CURLOPT_MAIL_RCPT;
+}
+
+SEXP R_handle_setheaders(SEXP ptr, SEXP vec){
+  if(!isString(vec))
+    error("header vector must be a string.");
+  set_headers(get_ref(ptr), vec_to_slist(vec));
+  return ScalarLogical(1);
 }
 
 SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
+  reference *ref = get_ref(ptr);
   CURL *handle = get_handle(ptr);
   SEXP prot = R_ExternalPtrProtected(ptr);
   SEXP optnames = PROTECT(getAttrib(values, R_NamesSymbol));
@@ -273,8 +287,15 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
       /* always use utf-8 for urls */
       const char * url_utf8 = translateCharUTF8(STRING_ELT(val, 0));
       assert(curl_easy_setopt(handle, CURLOPT_URL, url_utf8));
+    } else if(key == CURLOPT_HTTPHEADER){
+      R_handle_setheaders(ptr, val);
     } else if (opt_is_linked_list(key)) {
-      error("Option %s (%d) not supported.", optname, key);
+      if(!isString(val))
+        error("Value for option %s (%d) must be a string vector", optname, key);
+      if(ref->custom != NULL)
+        error("ref->custom field already occupied");
+      ref->custom = vec_to_slist(val);
+      assert(curl_easy_setopt(handle, key, ref->custom));
     } else if(key < 10000){
       if(!isNumeric(val) || length(val) != 1) {
         error("Value for option %s (%d) must be a number.", optname, key);
@@ -305,13 +326,6 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
     }
   }
   UNPROTECT(1);
-  return ScalarLogical(1);
-}
-
-SEXP R_handle_setheaders(SEXP ptr, SEXP vec){
-  if(!isString(vec))
-    error("header vector must be a string.");
-  set_headers(get_ref(ptr), vec_to_slist(vec));
   return ScalarLogical(1);
 }
 

@@ -33,6 +33,7 @@ typedef struct {
   CURL *handle;
   struct curl_httppost *form;
   struct curl_slist *headers;
+  struct curl_slist *custom;
   char errbuf[CURL_ERROR_SIZE];
   memory resheaders;
   async async;
