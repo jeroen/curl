@@ -3,7 +3,8 @@
 #' The \code{nslookup} function is similar to \code{nsl} but works on all platforms
 #' and can resolve ipv6 addresses if supported by the OS. Default behavior raises an
 #' error if lookup fails. The \code{has_internet} function tests the internet
-#' connection by resolving a random address.
+#' connection by resolving a random address if \code{handle} parameter is null, or
+#' querying a random address with the provided \code{handle}.
 #'
 #' @export
 #' @param host a string with a hostname
@@ -31,7 +32,12 @@ nslookup <- function(host, ipv4_only = FALSE, multiple = FALSE, error = TRUE){
 }
 
 #' @export
+#' @param handle a curl handle object (for \code{has_internet})
 #' @rdname nslookup
-has_internet <- function(){
-  !is.null(nslookup("google.com", error = FALSE))
+has_internet <- function(handle = NULL){
+  if(is.null(handle){
+    !is.null(nslookup("google.com", error = FALSE))
+  } else {
+    !inherits(try(curl_fetch_memory('https://www.google.com', handle = handle)), "try-error")
+  }
 }
