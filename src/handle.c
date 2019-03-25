@@ -120,7 +120,7 @@ void set_handle_defaults(reference *ref){
   #endif
 
   /* needed to support compressed responses */
-  assert(curl_easy_setopt(handle, CURLOPT_ENCODING, "gzip, deflate"));
+  assert(curl_easy_setopt(handle, CURLOPT_ENCODING, ""));
 
   /* follow redirect */
   assert(curl_easy_setopt(handle, CURLOPT_FOLLOWLOCATION, 1L));
