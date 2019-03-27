@@ -1,6 +1,6 @@
-VERSION=7.59.0
+VERSION=7.64.1
 PKG_LIBS= -L../windows/libcurl-$(VERSION)/lib${R_ARCH} \
-	-L. -lwinhttp -lcurl-dualssl -lssh2 -lz -lssl -lcrypto -lgdi32 -lws2_32 -lcrypt32 -lwldap32
+	-L. -lwinhttp -lcurl -lssh2 -lz -lssl -lcrypto -lgdi32 -lws2_32 -lcrypt32 -lwldap32
 
 PKG_CPPFLAGS= \
 	-I../windows/libcurl-$(VERSION)/include -DCURL_STATICLIB -DSTRICT_R_HEADERS
@@ -18,4 +18,3 @@ winhttp.def:
 	cp winhttp$(WIN).def.in winhttp.def
 
 .PHONY: all winlibs clean
-

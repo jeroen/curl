@@ -19,8 +19,8 @@
 #define HAS_CURLOPT_EXPECT_100_TIMEOUT_MS 1
 #endif
 
-
 char CA_BUNDLE[MAX_PATH];
+extern int windows_openssl;
 static struct curl_slist * default_headers;
 
 SEXP R_set_bundle(SEXP path){
@@ -109,13 +109,15 @@ void set_handle_defaults(reference *ref){
   curl_easy_setopt(handle, CURLOPT_HEADERDATA, &(ref->resheaders));
 
   #ifdef _WIN32
-  if(CA_BUNDLE != NULL && strlen(CA_BUNDLE)){
-    /* on windows a cert bundle is included with R version 3.2.0 */
-    curl_easy_setopt(handle, CURLOPT_CAINFO, CA_BUNDLE);
-  } else {
-    /* disable cert validation for older versions of R */
-    curl_easy_setopt(handle, CURLOPT_SSL_VERIFYHOST, 0L);
-    curl_easy_setopt(handle, CURLOPT_SSL_VERIFYPEER, 0L);
+  if(windows_openssl == 1){
+    if( CA_BUNDLE != NULL && strlen(CA_BUNDLE)){
+      /* on windows a cert bundle is included with R version 3.2.0 */
+      curl_easy_setopt(handle, CURLOPT_CAINFO, CA_BUNDLE);
+    } else {
+      /* disable cert validation for older versions of R */
+      curl_easy_setopt(handle, CURLOPT_SSL_VERIFYHOST, 0L);
+      curl_easy_setopt(handle, CURLOPT_SSL_VERIFYPEER, 0L);
+    }
   }
   #endif
 

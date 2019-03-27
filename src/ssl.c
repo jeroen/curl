@@ -5,6 +5,8 @@
 #define HAS_MULTI_SSL 1
 #endif
 
+int windows_openssl = 0;
+
 /* Fall back on OpenSSL on Legacy Windows (Vista/2008) which do not support TLS 1.2 natively */
 void select_ssl_backend(){
 #if defined(_WIN32) && defined(HAS_MULTI_SSL)
@@ -19,6 +21,8 @@ void select_ssl_backend(){
   /* Try to set the backend */
   switch(curl_global_sslset(backend, NULL, NULL)){
   case CURLSSLSET_OK :
+    if(backend == CURLSSLBACKEND_OPENSSL)
+      windows_openssl = 1;
     break;
   case CURLSSLSET_TOO_LATE:
     Rf_warning("Failed to set libcurl SSL: already initiated");
