@@ -59,7 +59,7 @@
 #' str(data)
 curl_fetch_memory <- function(url, handle = new_handle()){
   xx <- deparse(sys.call(-1))
-  called <- gsub("\\(|\\)", "", deparse(sys.call()))
+  called <- deparse(match.call()[[1L]])
   if (!any(grepl("curl_echo", xx))) {
     if (requireNamespace('webmockr', quietly = TRUE)) {
       if (webmockr::enabled('curl')) {
