@@ -30,6 +30,7 @@
 #elif (defined(_AIX))
 #define BSWAP_32(x) __builtin_bswap32(x)
 #endif
+#endif
 
 /* the RConnection API is experimental and subject to change */
 #include <R_ext/Connections.h>
