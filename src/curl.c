@@ -27,7 +27,8 @@
 #elif (defined(__GLIBC__))
 #include <byteswap.h>
 #define BSWAP_32(x) bswap_32(x)
-#endif
+#elif (defined(_AIX))
+#define BSWAP_32(x) __builtin_bswap32(x)
 #endif
 
 /* the RConnection API is experimental and subject to change */
