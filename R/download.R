@@ -29,7 +29,7 @@
 #' curl_download(url, tmp)
 #' }
 curl_download <- function(url, destfile, quiet = TRUE, mode = "wb", handle = new_handle()){
-  destfile <- normalizePath(destfile, mustWork = FALSE)
+  destfile <- enc2native(normalizePath(destfile, mustWork = FALSE))
   nonblocking <- isTRUE(getOption("curl_interrupt", TRUE))
   .Call(R_download_curl, url, destfile, quiet, mode, handle, nonblocking)
   invisible(destfile)
