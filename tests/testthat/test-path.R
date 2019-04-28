@@ -10,7 +10,7 @@ test_that("curl_download() and curl_fetch_disk() can write to a non-ASCII path",
 
   tmpdir <- tempfile()
   dir.create(tmpdir)
-  on.exit(unlink(tmpdir))
+  on.exit(unlink(tmpdir, recursive = TRUE))
 
   res <- curl_fetch_disk(httpbin("stream/10"), file.path(tmpdir, tricky_filename))
   expect_true(file.exists(res$content))
