@@ -24,7 +24,7 @@
 #' # Check it worked
 #' readLines(tmp)
 file_writer <- function(path){
-  path <- normalizePath(path, mustWork = FALSE)
+  path <- enc2native(normalizePath(path, mustWork = FALSE))
   fp <- new_file_writer(path)
   structure(function(data = raw(), close = FALSE){
     stopifnot(is.raw(data))
