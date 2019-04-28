@@ -3,9 +3,6 @@ cache: packages
 latex: false
 fortran: false
 
-# Note: http test servers are flaky and we want to minimze false positives
-# so we skip examples and vignettes (but not unit tests) on OS X.
-
 matrix:
   include:
     - dist: precise
@@ -13,9 +10,15 @@ matrix:
     - dist: xenial
       env: R_CODECOV=true
     - os: osx
+      osx_image: xcode10.2
+    - os: osx
+      osx_image: xcode9.4
     - os: osx
       brew_packages: curl
       env: PKG_CONFIG_PATH="/usr/local/opt/curl/lib/pkgconfig"
+    - os: osx
+      brew_packages: curl-openssl
+      env: PKG_CONFIG_PATH="/usr/local/opt/curl-openssl/lib/pkgconfig"
     - os: osx
       before_install:
         - brew install curl --HEAD
