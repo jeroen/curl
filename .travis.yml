@@ -6,7 +6,7 @@ fortran: false
 matrix:
   include:
     - dist: precise
-      env: _R_CHECK_FORCE_SUGGESTS_=0
+      env: _R_CHECK_FORCE_SUGGESTS_=false
     - dist: trusty
     - dist: xenial
       env: R_CODECOV=true
