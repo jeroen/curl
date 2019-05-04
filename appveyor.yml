@@ -16,7 +16,7 @@ environment:
   matrix:
     - R_VERSION: stable
       R_ARCH: x64
-    - R_VERSION: patched
+    - R_VERSION: devel
       R_ARCH: x64
 
 build_script:
