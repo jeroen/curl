@@ -166,7 +166,7 @@ SEXP R_proxy_info(){
   return R_NilValue;
 }
 
-SEXP R_get_proxy_for_url(SEXP target_url, SEXP autoproxy_url){
+SEXP R_get_proxy_for_url(SEXP target_url, SEXP auto_detect, SEXP autoproxy_url){
   return R_NilValue;
 }
 

@@ -1,6 +1,7 @@
 3.4
  - Re-enable cookie unit test which should be fixed in curl 7.64.0
  - Fix encoding of paths for downloading and uploading files (@jennybc, #183)
+ - Fix LTO declaration warning for R_get_proxy_for_url
 
 3.3
  - The 'data' callback from multi_add() gains a 'final' parameter
