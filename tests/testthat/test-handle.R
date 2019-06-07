@@ -88,6 +88,40 @@ test_that("handle_setopt validates options", {
     "curl_handle") ## i.e. that's a valid option, so it succeeds
 })
 
+test_that("setting request headers", {
+  h <- new_handle()
+  expect_length(curl:::handle_getheaders(h), 0)
+  handle_setheaders(h, foo = 'bar', baz = 'bak')
+  expect_equal(curl:::handle_getheaders(h), c("foo: bar", "baz: bak", "Expect: "))
+  handle_setheaders(h, foo = '123')
+  expect_equal(curl:::handle_getheaders(h), c("foo: 123",  "Expect: "))
+  handle_setopt(h, httpheader = c("test: blabla", "foobar: 123"))
+  expect_equal(curl:::handle_getheaders(h), c("test: blabla", "foobar: 123"))
+  handle_setheaders(h)
+  expect_equal(curl:::handle_getheaders(h), c("Expect: "))
+  handle_reset(h)
+  expect_length(curl:::handle_getheaders(h), 0)
+})
+
+test_that("Custom vector options", {
+  h <- new_handle()
+  x <- c("foo@gmail.com", "bar@jkhk.nl")
+  handle_setopt(h, mail_rcpt = x)
+  expect_equal(curl:::handle_getcustom(h), x)
+
+  # This leaks a bit
+  x <- c(x, "jeroen@test.nl")
+  handle_setopt(h, proxyheader = c("bla"))
+  handle_setopt(h, mail_rcpt = x)
+  expect_equal(curl:::handle_getcustom(h), x)
+
+  # Test free'ing
+  handle_setopt(h, proxyheader = NULL)
+  handle_setopt(h, mail_rcpt = NULL)
+  handle_reset(h)
+  handle_setopt(h, proxyheader = c("bla"))
+})
+
 rm(h)
 test_that("GC works", {
   gc()

@@ -98,8 +98,16 @@ static int xferinfo_callback(void *clientp, xftype dltotal, xftype dlnow, xftype
   return 0;
 }
 
+static void set_headers(reference *ref, struct curl_slist *newheaders){
+  if(ref->headers)
+    curl_slist_free_all(ref->headers);
+  ref->headers = newheaders;
+  assert(curl_easy_setopt(ref->handle, CURLOPT_HTTPHEADER,
+                          newheaders ? newheaders : default_headers));
+}
+
 /* These are defaulst that we always want to set */
-void set_handle_defaults(reference *ref){
+static void set_handle_defaults(reference *ref){
 
   /* the actual curl handle */
   CURL *handle = ref->handle;
@@ -229,6 +237,16 @@ SEXP R_handle_setheaders(SEXP ptr, SEXP vec){
   return ScalarLogical(1);
 }
 
+SEXP R_handle_getheaders(SEXP ptr){
+  reference *ref = get_ref(ptr);
+  return slist_to_vec(ref->headers);
+}
+
+SEXP R_handle_getcustom(SEXP ptr){
+  reference *ref = get_ref(ptr);
+  return slist_to_vec(ref->custom);
+}
+
 SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
   reference *ref = get_ref(ptr);
   CURL *handle = get_handle(ptr);
@@ -292,8 +310,6 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
     } else if (opt_is_linked_list(key)) {
       if(!isString(val))
         error("Value for option %s (%d) must be a string vector", optname, key);
-      if(ref->custom != NULL)
-        error("ref->custom field already occupied");
       ref->custom = vec_to_slist(val);
       assert(curl_easy_setopt(handle, key, ref->custom));
     } else if(key < 10000){

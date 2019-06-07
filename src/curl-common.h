@@ -51,7 +51,6 @@ SEXP slist_to_vec(struct curl_slist *slist);
 struct curl_slist* vec_to_slist(SEXP vec);
 struct curl_httppost* make_form(SEXP form);
 void set_form(reference *ref, struct curl_httppost* newform);
-void set_headers(reference *ref, struct curl_slist *newheaders);
 void reset_resheaders(reference *ref);
 void reset_errbuf(reference *ref);
 void clean_handle(reference *ref);
