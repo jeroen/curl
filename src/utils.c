@@ -25,13 +25,6 @@ void set_form(reference *ref, struct curl_httppost* newform){
   }
 }
 
-void set_headers(reference *ref, struct curl_slist *newheaders){
-  if(ref->headers)
-    curl_slist_free_all(ref->headers);
-  ref->headers = newheaders;
-  assert(curl_easy_setopt(ref->handle, CURLOPT_HTTPHEADER, ref->headers));
-}
-
 void reset_resheaders(reference *ref){
   if(ref->resheaders.buf)
     free(ref->resheaders.buf);

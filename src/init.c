@@ -17,6 +17,8 @@ extern SEXP R_get_bundle();
 extern SEXP R_get_handle_cookies(SEXP);
 extern SEXP R_get_handle_response(SEXP);
 extern SEXP R_get_proxy_for_url(SEXP, SEXP, SEXP);
+extern SEXP R_handle_getcustom(SEXP);
+extern SEXP R_handle_getheaders(SEXP);
 extern SEXP R_handle_reset(SEXP);
 extern SEXP R_handle_setform(SEXP, SEXP);
 extern SEXP R_handle_setheaders(SEXP, SEXP);
@@ -51,6 +53,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"R_get_handle_cookies",  (DL_FUNC) &R_get_handle_cookies,  1},
     {"R_get_handle_response", (DL_FUNC) &R_get_handle_response, 1},
     {"R_get_proxy_for_url",   (DL_FUNC) &R_get_proxy_for_url,   3},
+    {"R_handle_getcustom",    (DL_FUNC) &R_handle_getcustom,    1},
+    {"R_handle_getheaders",   (DL_FUNC) &R_handle_getheaders,   1},
     {"R_handle_reset",        (DL_FUNC) &R_handle_reset,        1},
     {"R_handle_setform",      (DL_FUNC) &R_handle_setform,      2},
     {"R_handle_setheaders",   (DL_FUNC) &R_handle_setheaders,   2},

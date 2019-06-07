@@ -85,6 +85,20 @@ handle_setheaders <- function(handle, ..., .list = list()){
   invisible(handle)
 }
 
+#' @useDynLib curl R_handle_getheaders
+#' @rdname handle
+handle_getheaders <- function(handle){
+  stopifnot(inherits(handle, "curl_handle"))
+  .Call(R_handle_getheaders, handle)
+}
+
+#' @useDynLib curl R_handle_getcustom
+#' @rdname handle
+handle_getcustom <- function(handle){
+  stopifnot(inherits(handle, "curl_handle"))
+  .Call(R_handle_getcustom, handle)
+}
+
 #' @export
 #' @useDynLib curl R_handle_setform
 #' @rdname handle
