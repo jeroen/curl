@@ -45,10 +45,17 @@ send_mail <- function(mail_from, mail_rcpt, message, smtp_server = 'localhost',
     stop("Body must be a string, raw vector, or connection object")
   }
   on.exit(close(con))
+  total_bytes <- 0
   h <- new_handle(upload = TRUE, readfunction = function(nbytes, ...) {
     buf <- readBin(con, raw(), nbytes)
-    if(isTRUE(verbose))
-      cat("Sending:", length(buf), "bytes\n", file = stderr())
+    total_bytes <<- total_bytes + length(buf)
+    if(verbose){
+      if(length(buf)){
+        cat(sprintf("\rUploaded %d bytes...", total_bytes), file = stderr())
+      } else {
+        cat(sprintf("\rUploaded %d bytes... all done!\n", total_bytes), file = stderr())
+      }
+    }
     return(buf)
   }, mail_from = mail_from, mail_rcpt = mail_rcpt, verbose = verbose, ...)
   url <- paste0('smtp://', smtp_server)

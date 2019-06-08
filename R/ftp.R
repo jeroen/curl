@@ -33,7 +33,7 @@ curl_upload <- function(file, url, verbose = TRUE, reuse = TRUE, ...) {
       }
     }
     return(buf)
-  }, forbid_reuse = !isTRUE(reuse), verbose = verbose)
+  }, forbid_reuse = !isTRUE(reuse), verbose = verbose, ...)
   if(grepl('/$', url) && is.character(file)){
     url <- paste0(url, basename(file))
   }
