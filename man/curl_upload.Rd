@@ -19,7 +19,8 @@ curl_upload(file, url, verbose = TRUE, reuse = TRUE, ...)
 example a \code{username} and \code{password}.}
 }
 \description{
-Upload a file to e.g. an FTP or SCP server.
+Upload a file to e.g. an \code{ftp://} or \code{sftp://} (ssh) server. Note
+that sftp is only available for libcurl clients built with libssh2.
 }
 \examples{
 \donttest{# Upload package to winbuilder:
