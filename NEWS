@@ -4,6 +4,7 @@
  - Fix LTO declaration warning for R_get_proxy_for_url
  - Better support for setting slist (string vector) options such as mail_rcpt
  - New send_mail() function to send emails with the libcurl smtp client
+ - Add function curl_upload() to upload file to FTP or SCP server
 
 3.3
  - The 'data' callback from multi_add() gains a 'final' parameter
