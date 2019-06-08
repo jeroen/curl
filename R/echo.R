@@ -8,8 +8,11 @@
 #' @param port the port number on which to run httpuv server
 #' @param progress show progress meter during http transfer
 #' @param file path or connection to write body. Default returns body as raw vector.
-#' @examples h <- handle_setform(new_handle(), foo = "blabla", bar = charToRaw("test"),
-#' myfile = form_file(system.file("DESCRIPTION"), "text/description"))
+#' @examples h <- new_handle(url = 'https://httpbin.org/post')
+#' handle_setform(h, foo = "blabla", bar = charToRaw("test"),
+#'   myfile = form_file(system.file("DESCRIPTION"), "text/description"))
+#'
+#' # Echo the POST request data
 #' formdata <- curl_echo(h)
 #'
 #' # Show the multipart body
@@ -24,7 +27,7 @@ curl_echo <- function(handle, port = 9359, progress = interactive(), file = NULL
   output <- NULL
   echo_handler <- function(req){
     if(progress){
-      cat("\nRequest Complete!\n")
+      cat("\nRequest Complete!\n", file = stderr())
       progress <<- FALSE
     }
     body <- if(tolower(req[["REQUEST_METHOD"]]) %in% c("post", "put")){
@@ -66,9 +69,10 @@ curl_echo <- function(handle, port = 9359, progress = interactive(), file = NULL
   xfer <- function(down, up){
     if(progress){
       if(up[1] == 0 && down[1] == 0){
-        cat("\rConnecting...")
+        cat("\rConnecting...", file = stderr())
       } else {
-        cat(sprintf("\rUpload: %s (%d%%)   ", format_size(up[2]), as.integer(100 * up[2] / up[1])))
+        cat(sprintf("\rUpload: %s (%d%%)   ", format_size(up[2]),
+                    as.integer(100 * up[2] / up[1])), file = stderr())
       }
     }
     # Need very low wait to prevent gridlocking!
@@ -76,15 +80,20 @@ curl_echo <- function(handle, port = 9359, progress = interactive(), file = NULL
     TRUE
   }
   handle_setopt(handle, connecttimeout = 2, xferinfofunction = xfer, noprogress = FALSE)
-  if(progress) cat("\n")
-  target_url <- paste0("http://localhost:", port)
-  original_url <- handle_data(handle)$url
-  if(length(original_url) && nchar(original_url)){
-    target_url <- replace_host(original_url, target_url)
+  if(progress) cat("\n", file = stderr())
+  input_url <- handle_data(handle)$url
+  if(length(input_url) && nchar(input_url)){
+    target_url <- sub("^https://", "http://", input_url)
+    host <- sub("http://([^/]+).*", "\\1", target_url)
+    hostname <- gsub(":.*", "", host)
+    handle_setopt(handle, port = port, resolve = paste0(hostname, ":", port, ':127.0.0.1'))
+    handle_setopt(handle, httpheader = c(paste0("Host:", host), handle_getheaders(handle)))
+  } else {
+    target_url <- paste0("http://localhost:", port)
   }
   curl_fetch_memory(target_url, handle = handle)
-  output$url <- original_url
-  if(progress) cat("\n")
+  output$url <- input_url
+  if(progress) cat("\n", file = stderr())
   return(output)
 }
 

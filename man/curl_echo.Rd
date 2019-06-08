@@ -20,8 +20,11 @@ This function is only for testing purposes. It starts a local httpuv server to
 echo the request body and content type in the response.
 }
 \examples{
-h <- handle_setform(new_handle(), foo = "blabla", bar = charToRaw("test"),
-myfile = form_file(system.file("DESCRIPTION"), "text/description"))
+h <- new_handle(url = 'https://httpbin.org/post')
+handle_setform(h, foo = "blabla", bar = charToRaw("test"),
+  myfile = form_file(system.file("DESCRIPTION"), "text/description"))
+
+# Echo the POST request data
 formdata <- curl_echo(h)
 
 # Show the multipart body

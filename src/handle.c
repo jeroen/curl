@@ -229,7 +229,8 @@ int opt_is_linked_list(int key) {
     key == CURLOPT_TELNETOPTIONS ||
     key == CURLOPT_HTTP200ALIASES ||
     key == CURLOPT_PROXYHEADER ||
-    key == CURLOPT_MAIL_RCPT;
+    key == CURLOPT_MAIL_RCPT ||
+    key == CURLOPT_RESOLVE;
 }
 
 SEXP R_handle_setheaders(SEXP ptr, SEXP vec){
