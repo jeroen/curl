@@ -13,8 +13,11 @@
 #' curl_upload('mypkg_1.3.tar.gz', 'ftp://win-builder.r-project.org/R-devel/')
 #' }
 curl_upload <- function(file, url, verbose = TRUE, reuse = TRUE, ...) {
+  infilesize <- NA
   con <- if(is.character(file)){
-    base::file(normalizePath(file, mustWork = TRUE), open = 'rb')
+    file <- normalizePath(file, mustWork = TRUE)
+    infilesize <- file.info(file)$size
+    base::file(file, open = 'rb')
   } else if(inherits(file, 'connection')){
     file
   } else {
@@ -26,14 +29,17 @@ curl_upload <- function(file, url, verbose = TRUE, reuse = TRUE, ...) {
     buf <- readBin(con, raw(), n = n)
     total_bytes <<- total_bytes + length(buf)
     if(verbose){
-      if(length(buf)){
-        cat(sprintf("\rUploaded %d bytes...", total_bytes), file = stderr())
-      } else {
+      if(length(buf) == 0 || identical(total_bytes, infilesize)){
         cat(sprintf("\rUploaded %d bytes... all done!\n", total_bytes), file = stderr())
+      } else {
+        cat(sprintf("\rUploaded %d bytes...", total_bytes), file = stderr())
       }
     }
     return(buf)
   }, forbid_reuse = !isTRUE(reuse), verbose = verbose, ...)
+  if(!is.na(infilesize)){
+    handle_setopt(h, infilesize_large = infilesize)
+  }
   if(grepl('/$', url) && is.character(file)){
     url <- paste0(url, basename(file))
   }
