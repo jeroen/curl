@@ -5,7 +5,6 @@
  - Better support for setting slist (string vector) options such as mail_rcpt
  - New send_mail() function to send emails with the libcurl smtp client
  - Add function curl_upload() to upload file to FTP or SCP server
- - Switch curl_echo() to use curlopt_resolve to route the request to localhost
 
 3.3
  - The 'data' callback from multi_add() gains a 'final' parameter
