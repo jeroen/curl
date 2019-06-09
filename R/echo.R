@@ -83,10 +83,10 @@ curl_echo <- function(handle, port = 9359, progress = interactive(), file = NULL
   if(progress) cat("\n", file = stderr())
   input_url <- handle_data(handle)$url
   if(length(input_url) && nchar(input_url)){
-    target_url <- sub("^https://", "http://", input_url)
-    host <- sub("http://([^/]+).*", "\\1", target_url)
-    hostname <- gsub(":[0-9]+$", "", host)
-    handle_setopt(handle, port = port, resolve = paste0(hostname, ":", port, ':127.0.0.1'))
+    target_url <- replace_host(input_url, paste0("http://127.0.0.1:", port))
+    host <- sub("https?://([^/]+).*", "\\1", input_url)
+    #hostname <- gsub(":[0-9]+$", "", host)
+    #handle_setopt(handle, port = port, resolve = paste0(hostname, ":", port, ':127.0.0.1'))
     handle_setopt(handle, httpheader = c(paste0("Host:", host), handle_getheaders(handle)))
   } else {
     target_url <- paste0("http://localhost:", port)
