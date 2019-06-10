@@ -20,7 +20,9 @@ matrix:
       env: PKG_CONFIG_PATH="/usr/local/opt/curl/lib/pkgconfig"
     - os: osx
       brew_packages: curl-openssl
-      env: PKG_CONFIG_PATH="/usr/local/opt/curl-openssl/lib/pkgconfig"
+      env:
+        - PKG_CONFIG_PATH="/usr/local/opt/curl-openssl/lib/pkgconfig"
+        - HTTPBIN_TEST_SERVER="https://nghttp2.org/httpbin"
     - os: osx
       before_install:
         - brew install curl --HEAD
@@ -30,7 +32,9 @@ matrix:
       before_install:
         - brew install curl-openssl --HEAD
         - brew link --force curl-openssl
-      env: PKG_CONFIG_PATH="/usr/local/opt/curl-openssl/lib/pkgconfig"
+      env:
+        - PKG_CONFIG_PATH="/usr/local/opt/curl-openssl/lib/pkgconfig"
+        - HTTPBIN_TEST_SERVER="https://nghttp2.org/httpbin"
     - os: osx
       osx_image: xcode7.3
       disable_homebrew: true

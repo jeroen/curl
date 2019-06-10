@@ -30,7 +30,7 @@ find_test_server <- function(){
   stop("All testing servers seem unavailable. No internet connection?")
 }
 
-testserver <- find_test_server()
+testserver <- Sys.getenv("HTTPBIN_TEST_SERVER", find_test_server())
 cat("Using test server:", testserver, "\n")
 
 httpbin <- function(path){
