@@ -140,9 +140,9 @@ test_that("total_con and multi_fdset", {
   skip_on_os("solaris")
   skip_if_not(strsplit(curl_version()$version, "-")[[1]][1] >= as.numeric_version("7.30"),
               "libcurl does not support host_connections")
-  total_con <- 4
+  total_con <- 5
   pool <- new_pool(total_con = total_con, multiplex = FALSE)
-  for (i in c(4, 3, 2, 1, 2, 1, 2, 3, 4)) {
+  for (i in c(4, 3, 2, 1, 0, 1, 2, 3, 4)) {
     h1 <- new_handle(url = httpbin(paste0("delay/", i)))
     multi_add(h1, done = force, fail = cat, pool = pool)
   }
@@ -157,7 +157,7 @@ test_that("host_con and multi_fdset", {
   skip_on_os("solaris")
   skip_if_not(strsplit(curl_version()$version, "-")[[1]][1] >= as.numeric_version("7.30"),
               "libcurl does not support host_connections")
-  host_con <- 4
+  host_con <- 5
   pool <- new_pool(host_con = host_con, multiplex = FALSE)
   for (i in c(4, 3, 2, 1, 0, 1, 2, 3, 4)) {
     h1 <- new_handle(url = httpbin(paste0("delay/", i)))
