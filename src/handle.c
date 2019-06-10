@@ -21,7 +21,6 @@
 
 char CA_BUNDLE[MAX_PATH];
 extern int windows_openssl;
-static struct curl_slist * default_headers;
 
 SEXP R_set_bundle(SEXP path){
   strcpy(CA_BUNDLE, CHAR(asChar(path)));
@@ -99,6 +98,11 @@ static int xferinfo_callback(void *clientp, xftype dltotal, xftype dlnow, xftype
 }
 
 static void set_headers(reference *ref, struct curl_slist *newheaders){
+  static struct curl_slist * default_headers = NULL;
+  if(default_headers == NULL){
+    /* Set default headers here, these are only allocated once */
+    default_headers = curl_slist_append(default_headers, "Expect:");
+  }
   if(ref->headers)
     curl_slist_free_all(ref->headers);
   ref->headers = newheaders;
@@ -179,7 +183,7 @@ static void set_handle_defaults(reference *ref){
 #ifdef HAS_CURLOPT_EXPECT_100_TIMEOUT_MS
   assert(curl_easy_setopt(handle, CURLOPT_EXPECT_100_TIMEOUT_MS, 0L));
 #endif
-  assert(curl_easy_setopt(handle, CURLOPT_HTTPHEADER, default_headers));
+
 
   /* set default progress printer (disabled by default) */
 #ifdef HAS_XFERINFOFUNCTION
@@ -187,6 +191,9 @@ static void set_handle_defaults(reference *ref){
 #else
   assert(curl_easy_setopt(handle, CURLOPT_PROGRESSFUNCTION, xferinfo_callback));
 #endif
+
+  /* Set or reset default headers */
+  set_headers(ref, NULL);
 }
 
 SEXP R_new_handle(){
@@ -208,7 +215,6 @@ SEXP R_handle_reset(SEXP ptr){
   //reset all fields
   reference *ref = get_ref(ptr);
   set_form(ref, NULL);
-  set_headers(ref, NULL);
   reset_errbuf(ref);
   curl_easy_reset(ref->handle);
 
