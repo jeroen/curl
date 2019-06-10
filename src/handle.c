@@ -183,12 +183,6 @@ static void set_handle_defaults(reference *ref){
   curl_easy_setopt(handle, CURLOPT_SSL_OPTIONS, CURLSSLOPT_NO_REVOKE);
 #endif
 
-  /* set default headers (disables the Expect: http 100)*/
-#ifdef HAS_CURLOPT_EXPECT_100_TIMEOUT_MS
-  assert(curl_easy_setopt(handle, CURLOPT_EXPECT_100_TIMEOUT_MS, 0L));
-#endif
-
-
   /* set default progress printer (disabled by default) */
 #ifdef HAS_XFERINFOFUNCTION
   assert(curl_easy_setopt(handle, CURLOPT_XFERINFOFUNCTION, xferinfo_callback));
@@ -196,8 +190,11 @@ static void set_handle_defaults(reference *ref){
   assert(curl_easy_setopt(handle, CURLOPT_PROGRESSFUNCTION, xferinfo_callback));
 #endif
 
-  /* Set or reset default headers */
+  /* Disable the 'Expect: 100' header (deprecated in recent libcurl) */
   set_headers(ref, NULL);
+#ifdef HAS_CURLOPT_EXPECT_100_TIMEOUT_MS
+  assert(curl_easy_setopt(handle, CURLOPT_EXPECT_100_TIMEOUT_MS, 0L));
+#endif
 }
 
 SEXP R_new_handle(){
