@@ -1,7 +1,8 @@
 #' Upload a File
 #'
-#' Upload a file to e.g. an \code{ftp://} or \code{sftp://} (ssh) server. Note
-#' that sftp is only available for libcurl clients built with libssh2.
+#' Upload a file to an \code{http://}, \code{ftp://}, or \code{sftp://} (ssh)
+#' server. Uploading to HTTP means performing an \code{HTTP PUT} on that URL.
+#' Be aware that sftp is only available for libcurl clients built with libssh2.
 #'
 #' @export
 #' @param file connection object or path to an existing file on disk
