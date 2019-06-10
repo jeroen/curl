@@ -18,20 +18,16 @@ matrix:
     - os: osx
       brew_packages: curl
       env: PKG_CONFIG_PATH="/usr/local/opt/curl/lib/pkgconfig"
+#    - os: osx
+#      brew_packages: curl-openssl
+#      env:
+#        - PKG_CONFIG_PATH="/usr/local/opt/curl-openssl/lib/pkgconfig"
+#        - HTTPBIN_TEST_SERVER="https://nghttp2.org/httpbin"
     - os: osx
-      brew_packages: curl-openssl
-      env:
-        - PKG_CONFIG_PATH="/usr/local/opt/curl-openssl/lib/pkgconfig"
-        - HTTPBIN_TEST_SERVER="https://nghttp2.org/httpbin"
-    - os: osx
-      before_install:
-        - brew install curl --HEAD
-        - brew link --force curl
+      before_install: brew install curl --HEAD
       env: PKG_CONFIG_PATH="/usr/local/opt/curl/lib/pkgconfig"
     - os: osx
-      before_install:
-        - brew install curl-openssl --HEAD
-        - brew link --force curl-openssl
+      before_install: brew install curl-openssl --HEAD
       env:
         - PKG_CONFIG_PATH="/usr/local/opt/curl-openssl/lib/pkgconfig"
         - HTTPBIN_TEST_SERVER="https://nghttp2.org/httpbin"
