@@ -97,17 +97,21 @@ static int xferinfo_callback(void *clientp, xftype dltotal, xftype dlnow, xftype
   return 0;
 }
 
-static void set_headers(reference *ref, struct curl_slist *newheaders){
-  static struct curl_slist * default_headers = NULL;
-  if(default_headers == NULL){
-    /* Set default headers here, these are only allocated once */
-    default_headers = curl_slist_append(default_headers, "Expect:");
+/* Set default headers here, these are only allocated once */
+static struct curl_slist * default_headers(){
+  static struct curl_slist * headers = NULL;
+  if(headers == NULL){
+    headers = curl_slist_append(headers, "Expect:");
   }
+  return headers;
+}
+
+static void set_headers(reference *ref, struct curl_slist *newheaders){
   if(ref->headers)
     curl_slist_free_all(ref->headers);
   ref->headers = newheaders;
   assert(curl_easy_setopt(ref->handle, CURLOPT_HTTPHEADER,
-                          newheaders ? newheaders : default_headers));
+                          newheaders ? newheaders : default_headers()));
 }
 
 /* These are defaulst that we always want to set */
