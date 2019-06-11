@@ -5,6 +5,8 @@
  - Better support for setting slist (string vector) options such as mail_rcpt
  - New send_mail() function to send emails with the libcurl smtp client
  - Add function curl_upload() to upload file to FTP or SCP server
+ - Windows: upgrade to libcurl 7.64.1
+ - Update symbol table to curl 7.64.1
 
 3.3
  - The 'data' callback from multi_add() gains a 'final' parameter
