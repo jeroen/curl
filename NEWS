@@ -1,4 +1,5 @@
 3.4
+ - curl_symbols is now a function instead of a static table to allow easy filtering
  - Re-enable cookie unit test which should be fixed in curl 7.64.0
  - Fix encoding of paths for downloading and uploading files (@jennybc, #183)
  - Fix LTO declaration warning for R_get_proxy_for_url
@@ -6,7 +7,7 @@
  - New send_mail() function to send emails with the libcurl smtp client
  - Add function curl_upload() to upload file to FTP or SCP server
  - Windows: upgrade to libcurl 7.64.1
- - Update symbol table to curl 7.64.1
+ - Update symbol data to curl 7.64.1
 
 3.3
  - The 'data' callback from multi_add() gains a 'final' parameter

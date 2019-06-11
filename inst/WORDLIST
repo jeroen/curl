@@ -18,6 +18,7 @@ ip
 ipv
 libcurl
 Libcurl
+libssh
 libssl
 netscape
 openssl
@@ -26,6 +27,8 @@ preconfigured
 rb
 RHEL
 Rtools
+sftp
+SMTP
 ssl
 SSL
 zlib

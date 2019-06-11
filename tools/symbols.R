@@ -45,6 +45,7 @@ option <- grepl("CURLOPT", symbols$name)
 symbols$type[!option] <- NA
 
 # Save as lazy data
-curl_symbols <- symbols[order(symbols$name), ]
-row.names(curl_symbols) = NULL
-usethis::use_data(curl_symbols, overwrite = TRUE)
+curl_symbol_data <- symbols[order(symbols$name), ]
+row.names(curl_symbol_data) = NULL
+save(curl_symbol_data = curl_symbol_data, file = 'R/sysdata.rda', version = 2)
+#usethis::use_data(curl_symbol_data, overwrite = TRUE)

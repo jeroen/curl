@@ -1,3 +1,10 @@
+#' @rdname curl_options
+#' @export
+curl_symbols <- function(filter = ""){
+  m <- grep(filter, curl_symbol_data$name, ignore.case = TRUE)
+  curl_symbol_data[m,]
+}
+
 #' @useDynLib curl R_curl_version
 #' @export
 #' @rdname curl_options
@@ -7,16 +14,6 @@
 curl_version <- function(){
   .Call(R_curl_version);
 }
-
-#' @rdname curl_options
-#' @format A data frame with columns:
-#' \describe{
-#' \item{name}{Symbol name}
-#' \item{introduced,deprecated,removed}{Versions of libcurl}
-#' \item{value}{Integer value of symbol}
-#' \item{type}{If an option, the type of value it needs}
-#' }
-"curl_symbols"
 
 #' Parse date/time
 #'
