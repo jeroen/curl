@@ -237,6 +237,7 @@ int opt_is_linked_list(int key) {
     key == CURLOPT_HTTP200ALIASES ||
     key == CURLOPT_PROXYHEADER ||
     key == CURLOPT_MAIL_RCPT ||
+    key == CURLOPT_QUOTE ||
     key == CURLOPT_RESOLVE;
 }
 
