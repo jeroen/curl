@@ -1,6 +1,11 @@
 #include "curl-common.h"
 #include "callbacks.h"
 
+/* Hack to always include the typechecking macros */
+#ifndef __CURL_TYPECHECK_GCC_H
+#include <curl/typecheck-gcc.h>
+#endif
+
 #define make_string(x) x ? Rf_mkString(x) : ScalarString(NA_STRING)
 
 #ifndef MAX_PATH
@@ -230,17 +235,6 @@ SEXP R_handle_reset(SEXP ptr){
   return ScalarLogical(1);
 }
 
-// These options need linked lists
-int opt_is_linked_list(int key) {
-  return
-    key == CURLOPT_TELNETOPTIONS ||
-    key == CURLOPT_HTTP200ALIASES ||
-    key == CURLOPT_PROXYHEADER ||
-    key == CURLOPT_MAIL_RCPT ||
-    key == CURLOPT_QUOTE ||
-    key == CURLOPT_RESOLVE;
-}
-
 SEXP R_handle_setheaders(SEXP ptr, SEXP vec){
   if(!isString(vec))
     error("header vector must be a string.");
@@ -318,7 +312,7 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
       assert(curl_easy_setopt(handle, CURLOPT_URL, url_utf8));
     } else if(key == CURLOPT_HTTPHEADER){
       R_handle_setheaders(ptr, val);
-    } else if (opt_is_linked_list(key)) {
+    } else if (_curl_is_slist_option(key)) {
       if(!isString(val))
         error("Value for option %s (%d) must be a string vector", optname, key);
       ref->custom = vec_to_slist(val);
