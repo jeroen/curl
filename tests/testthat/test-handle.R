@@ -111,15 +111,15 @@ test_that("Custom vector options", {
 
   # This leaks a bit
   x <- c(x, "jeroen@test.nl")
-  handle_setopt(h, proxyheader = c("bla"))
+  handle_setopt(h, quote = c("bla"))
   handle_setopt(h, mail_rcpt = x)
   expect_equal(curl:::handle_getcustom(h), x)
 
   # Test free'ing
-  handle_setopt(h, proxyheader = NULL)
+  handle_setopt(h, quote = NULL)
   handle_setopt(h, mail_rcpt = NULL)
   handle_reset(h)
-  handle_setopt(h, proxyheader = c("bla"))
+  handle_setopt(h, quote = c("bla"))
 })
 
 rm(h)
