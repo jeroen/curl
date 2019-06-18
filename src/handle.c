@@ -317,12 +317,17 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
         error("Value for option %s (%d) must be a string vector", optname, key);
       ref->custom = vec_to_slist(val);
       assert(curl_easy_setopt(handle, key, ref->custom));
-    } else if(key < 10000){
+    } else if(_curl_is_long_option(key)){
       if(!isNumeric(val) || length(val) != 1) {
         error("Value for option %s (%d) must be a number.", optname, key);
       }
       assert(curl_easy_setopt(handle, key, (long) asInteger(val)));
-    } else if(key < 20000){
+    } else if(_curl_is_off_t_option(key)){
+      if(!isNumeric(val) || length(val) != 1) {
+        error("Value for option %s (%d) must be a number.", optname, key);
+      }
+      assert(curl_easy_setopt(handle, key, (curl_off_t) asReal(val)));
+    } else if(_curl_is_string_option(key) || _curl_is_postfields_option(key)){
       switch (TYPEOF(val)) {
       case RAWSXP:
         if(key == CURLOPT_POSTFIELDS || key == CURLOPT_COPYPOSTFIELDS)
@@ -337,11 +342,6 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
       default:
         error("Value for option %s (%d) must be a string or raw vector.", optname, key);
       }
-    } else if(key >= 30000 && key < 40000){
-      if(!isNumeric(val) || length(val) != 1) {
-        error("Value for option %s (%d) must be a number.", optname, key);
-      }
-      assert(curl_easy_setopt(handle, key, (curl_off_t) asReal(val)));
     } else {
       error("Option %s (%d) not supported.", optname, key);
     }

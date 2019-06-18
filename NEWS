@@ -1,4 +1,5 @@
 3.4
+ - Stricter type checking for handle options based on <curl/typecheck-gcc.h> macros
  - curl_symbols is now a function instead of a static table to allow easy filtering
  - Re-enable cookie unit test which should be fixed in curl 7.64.0
  - Fix encoding of paths for downloading and uploading files (@jennybc, #183)
