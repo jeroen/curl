@@ -1,6 +1,7 @@
 #include "curl-common.h"
 #include "callbacks.h"
 
+/* These are defined in typechecking.c */
 extern int r_curl_is_slist_option(CURLoption x);
 extern int r_curl_is_long_option(CURLoption x);
 extern int r_curl_is_off_t_option(CURLoption x);

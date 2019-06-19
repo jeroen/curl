@@ -1,14 +1,16 @@
 /* Hack to get the GCC macros on all systems */
 #include <curl/curl.h>
 #ifndef __CURL_TYPECHECK_GCC_H
-#ifdef __warning__
-#undef __warning__
-#endif
+
+/* Remove the GNU extensions from typecheck-gcc.h */
+#ifndef __warning__
 #define __warning__(x)
-#ifdef __unused__
-#undef __unused__
 #endif
+#ifndef __unused__
 #define __unused__
+#endif
+
+/* Add the file */
 #include <curl/typecheck-gcc.h>
 #endif
 
