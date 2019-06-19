@@ -1,6 +1,14 @@
-/* Hack to always include the typechecking macros */
+/* Hack to get the GCC macros on all systems */
 #include <curl/curl.h>
 #ifndef __CURL_TYPECHECK_GCC_H
+#ifdef __warning__
+#undef __warning__
+#endif
+#define __warning__(x)
+#ifdef __unused__
+#undef __unused__
+#endif
+#define __unused__
 #include <curl/typecheck-gcc.h>
 #endif
 
