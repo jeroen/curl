@@ -1,10 +1,11 @@
 #include "curl-common.h"
 #include "callbacks.h"
 
-/* Hack to always include the typechecking macros */
-#ifndef __CURL_TYPECHECK_GCC_H
-#include <curl/typecheck-gcc.h>
-#endif
+extern int r_curl_is_slist_option(CURLoption x);
+extern int r_curl_is_long_option(CURLoption x);
+extern int r_curl_is_off_t_option(CURLoption x);
+extern int r_curl_is_string_option(CURLoption x);
+extern int r_curl_is_postfields_option(CURLoption x);
 
 #define make_string(x) x ? Rf_mkString(x) : ScalarString(NA_STRING)
 
@@ -312,22 +313,22 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
       assert(curl_easy_setopt(handle, CURLOPT_URL, url_utf8));
     } else if(key == CURLOPT_HTTPHEADER){
       R_handle_setheaders(ptr, val);
-    } else if (_curl_is_slist_option(key)) {
+    } else if (r_curl_is_slist_option(key)) {
       if(!isString(val))
         error("Value for option %s (%d) must be a string vector", optname, key);
       ref->custom = vec_to_slist(val);
       assert(curl_easy_setopt(handle, key, ref->custom));
-    } else if(_curl_is_long_option(key)){
+    } else if(r_curl_is_long_option(key)){
       if(!isNumeric(val) || length(val) != 1) {
         error("Value for option %s (%d) must be a number.", optname, key);
       }
       assert(curl_easy_setopt(handle, key, (long) asInteger(val)));
-    } else if(_curl_is_off_t_option(key)){
+    } else if(r_curl_is_off_t_option(key)){
       if(!isNumeric(val) || length(val) != 1) {
         error("Value for option %s (%d) must be a number.", optname, key);
       }
       assert(curl_easy_setopt(handle, key, (curl_off_t) asReal(val)));
-    } else if(_curl_is_string_option(key) || _curl_is_postfields_option(key)){
+    } else if(r_curl_is_string_option(key) || r_curl_is_postfields_option(key)){
       switch (TYPEOF(val)) {
       case RAWSXP:
         if(key == CURLOPT_POSTFIELDS || key == CURLOPT_COPYPOSTFIELDS)
