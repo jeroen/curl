@@ -88,7 +88,8 @@ test_that("Data callback", {
 
   rawheaders <- NULL
   buffer <- raw()
-  curl_fetch_multi(httpbin("get"), done = function(res){
+  hx <- new_handle(accept_encoding = 'identity')
+  curl_fetch_multi(httpbin("get"), handle = hx, done = function(res){
     rawheaders <<- res$headers
     #this somehow breaks the gc
     #expect_equal(res$status_code, 200)
