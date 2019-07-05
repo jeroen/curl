@@ -1,6 +1,10 @@
 /* Hack to get the GCC macros on all systems */
 #include <curl/curl.h>
 #ifndef __CURL_TYPECHECK_GCC_H
+#undef curl_easy_setopt
+#undef curl_easy_getinfo
+#undef curl_share_setopt
+#undef curl_multi_setopt
 
 /* Remove the GNU extensions from typecheck-gcc.h */
 #ifndef __warning__
