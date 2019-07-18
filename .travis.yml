@@ -11,6 +11,7 @@ matrix:
     - dist: xenial
       env: R_CODECOV=true
       r_packages: covr
+    - dist: bionic
     - os: osx
       osx_image: xcode10.2
     - os: osx
