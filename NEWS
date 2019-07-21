@@ -1,6 +1,7 @@
 3.4
  - Stricter type checking for handle options based on <curl/typecheck-gcc.h> macros
  - curl_symbols is now a function instead of a static table to allow easy filtering
+ - curl_fetch_memory now over-allocates also on unix to avoid many realloc calls
  - Re-enable cookie unit test which should be fixed in curl 7.64.0
  - Fix encoding of paths for downloading and uploading files (@jennybc, #183)
  - Fix LTO declaration warning for R_get_proxy_for_url
