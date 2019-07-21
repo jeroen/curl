@@ -100,6 +100,18 @@ size_t push_disk(void* contents, size_t sz, size_t nmemb, FILE *ctx) {
   return fwrite(contents, sz, nmemb, ctx);
 }
 
+static size_t round_up(size_t v){
+  v--;
+  v |= v >> 1;
+  v |= v >> 2;
+  v |= v >> 4;
+  v |= v >> 8;
+  v |= v >> 16;
+  if (sizeof(size_t) == 8)
+    v |= v >> 32;
+  return ++v;
+}
+
 size_t append_buffer(void *contents, size_t sz, size_t nmemb, void *ctx) {
 //if (pending_interrupt())
   //  return 0;
@@ -109,7 +121,7 @@ size_t append_buffer(void *contents, size_t sz, size_t nmemb, void *ctx) {
   memory *mem = (memory*) ctx;
 
   /* realloc can be slow, therefore increase buffer to nearest 2^n */
-  mem->buf = realloc(mem->buf, exp2(ceil(log2(mem->size + realsize))));
+  mem->buf = realloc(mem->buf, round_up(mem->size + realsize));
   if (!mem->buf)
     return 0;
 
