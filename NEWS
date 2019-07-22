@@ -1,4 +1,4 @@
-3.4
+4.0
  - Stricter type checking for handle options based on <curl/typecheck-gcc.h> macros
  - curl_symbols is now a function instead of a static table to allow easy filtering
  - curl_fetch_memory now over-allocates also on unix to avoid many realloc calls
