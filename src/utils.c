@@ -101,6 +101,8 @@ size_t push_disk(void* contents, size_t sz, size_t nmemb, FILE *ctx) {
 }
 
 static size_t round_up(size_t v){
+  if(v == 0)
+    return 0;
   v--;
   v |= v >> 1;
   v |= v >> 2;
