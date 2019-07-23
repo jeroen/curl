@@ -43,13 +43,21 @@ void assert(CURLcode res){
 
 void assert_status(CURLcode res, reference *ref){
   if(res == CURLE_OPERATION_TIMEDOUT) {
-    const char *url = NULL;
+    // ref->errbuf contains "Resolving timed out after 1 milliseconds" in this case. Embellish this.
+    char *url = NULL, *host = NULL;
     curl_easy_getinfo(ref->handle, CURLINFO_EFFECTIVE_URL, &url);
-    if (url==NULL) url = "CURLINFO_EFFECTIVE_URL==NULL";
-    Rf_error("%s: %s: %s", curl_easy_strerror(res), ref->errbuf, url);
+    if (url) {
+      CURLU* h = curl_url();
+      curl_url_set(h, CURLUPART_URL, url, 0);
+      curl_url_get(h, CURLUPART_HOST, &host, 0);
+    }
+    Rf_error("%s: %s: %s", curl_easy_strerror(res), ref->errbuf, url ? host : "CURLINFO_EFFECTIVE_URL==NULL");
+    if (host) curl_free(host);
   }
-  if(res != CURLE_OK)
-    Rf_error("%s", strlen(ref->errbuf) ? ref->errbuf : curl_easy_strerror(res));
+  if(res != CURLE_OK) {
+    Rf_error("res=%d, strlen(errbuf)=%d: %s", res, strlen(ref->errbuf), strlen(ref->errbuf) ? ref->errbuf : curl_easy_strerror(res));
+    // e.g. res==7 (CURLE_COULDNT_CONNECT), ref->errbuf contains "Failed to connect to www.google.com port 81: Connection timed out"
+  }
 }
 
 void massert(CURLMcode res){
