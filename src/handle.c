@@ -345,7 +345,7 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
         error("Value for option %s (%d) must be a string or raw vector.", optname, key);
       }
     } else {
-      error("Option %s (%d) not supported.", optname, key);
+      error("Option %s (%d) has unknown or unsupported type.", optname, key);
     }
   }
   UNPROTECT(1);
