@@ -42,8 +42,11 @@ void assert(CURLcode res){
 }
 
 void assert_status(CURLcode res, reference *ref){
-  if(res == CURLE_OPERATION_TIMEDOUT)
-    Rf_error("%s: %s", curl_easy_strerror(res), ref->errbuf);
+  if(res == CURLE_OPERATION_TIMEDOUT) {
+    const char *url = NULL;
+    curl_easy_getinfo(ref->handle, CURLINFO_EFFECTIVE_URL, &url);
+    Rf_error("%s: %s: %s", curl_easy_strerror(res), ref->errbuf, url);
+  }
   if(res != CURLE_OK)
     Rf_error("%s", strlen(ref->errbuf) ? ref->errbuf : curl_easy_strerror(res));
 }
