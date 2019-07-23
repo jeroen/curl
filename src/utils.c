@@ -45,6 +45,7 @@ void assert_status(CURLcode res, reference *ref){
   if(res == CURLE_OPERATION_TIMEDOUT) {
     const char *url = NULL;
     curl_easy_getinfo(ref->handle, CURLINFO_EFFECTIVE_URL, &url);
+    if (url==NULL) url = "CURLINFO_EFFECTIVE_URL==NULL";
     Rf_error("%s: %s: %s", curl_easy_strerror(res), ref->errbuf, url);
   }
   if(res != CURLE_OK)
