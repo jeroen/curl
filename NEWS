@@ -1,3 +1,7 @@
+4.1
+ - curl_download now writes to a temporary file, which is renamed to the destfile
+   upon success. This prevents corrupt files when a download fails or is interrupted.
+
 4.0
  - Stricter type checking for handle options based on <curl/typecheck-gcc.h> macros
  - curl_symbols is now a function instead of a static table to allow easy filtering

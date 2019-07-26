@@ -31,6 +31,9 @@
 curl_download <- function(url, destfile, quiet = TRUE, mode = "wb", handle = new_handle()){
   destfile <- enc2native(normalizePath(destfile, mustWork = FALSE))
   nonblocking <- isTRUE(getOption("curl_interrupt", TRUE))
-  .Call(R_download_curl, url, destfile, quiet, mode, handle, nonblocking)
+  tmp <- enc2native(paste0(destfile, ".curltmp"))
+  on.exit(unlink(tmp))
+  .Call(R_download_curl, url, tmp, quiet, mode, handle, nonblocking)
+  file.rename(tmp, destfile)
   invisible(destfile)
 }
