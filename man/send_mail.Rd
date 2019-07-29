@@ -5,7 +5,7 @@
 \title{Send email}
 \usage{
 send_mail(mail_from, mail_rcpt, message, smtp_server = "localhost",
-  verbose = TRUE, ...)
+  use_ssl = FALSE, verbose = TRUE, ...)
 }
 \arguments{
 \item{mail_from}{email address of the sender.}
@@ -17,6 +17,8 @@ these go into the \code{message} headers.}
 message, including sender/recipient/subject headers. See example.}
 
 \item{smtp_server}{address of the SMTP server without the \code{smtp://} part}
+
+\item{use_ssl}{connect with the smtp server over TLS. Gmail requires this.}
 
 \item{verbose}{print output}
 

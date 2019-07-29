@@ -11,6 +11,7 @@
 #' @param message either a string or connection with (properly formatted) email
 #' message, including sender/recipient/subject headers. See example.
 #' @param smtp_server address of the SMTP server without the \code{smtp://} part
+#' @param use_ssl connect with the smtp server over TLS. Gmail requires this.
 #' @param verbose print output
 #' @param ... other options passed to \code{\link{handle_setopt}}. In most cases
 #' you will need to set a \code{username} and \code{password} to authenticate
@@ -32,7 +33,7 @@
 #' send_mail(sender, recipients, smtp_server = 'smtp.mailgun.org',
 #'   message = message, username = username, password = password)}
 send_mail <- function(mail_from, mail_rcpt, message, smtp_server = 'localhost',
-                      verbose = TRUE, ...){
+                      use_ssl = FALSE, verbose = TRUE, ...){
   if(is.character(message))
     message <- charToRaw(paste(message, collapse = '\r\n'))
   con <- if(is.raw(message)){
@@ -57,7 +58,8 @@ send_mail <- function(mail_from, mail_rcpt, message, smtp_server = 'localhost',
       }
     }
     return(buf)
-  }, mail_from = mail_from, mail_rcpt = mail_rcpt, verbose = verbose, ...)
+  }, mail_from = mail_from, mail_rcpt = mail_rcpt, use_ssl = use_ssl,
+      verbose = verbose, ...)
   url <- paste0('smtp://', smtp_server)
   curl_fetch_memory(url, handle = h)
 }
