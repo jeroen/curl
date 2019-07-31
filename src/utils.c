@@ -109,8 +109,10 @@ static size_t round_up(size_t v){
   v |= v >> 4;
   v |= v >> 8;
   v |= v >> 16;
-  if (sizeof(size_t) == 8)
+/* 64 bit only */
+#if SIZE_MAX > 4294967296
     v |= v >> 32;
+#endif
   return ++v;
 }
 
