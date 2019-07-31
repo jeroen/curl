@@ -84,8 +84,9 @@ void assert_status(CURLcode res, reference *ref){
         }
       }
     }
-    // fallback to a very plain simple error which does not use *url at all.
-    Rf_error("%s: %s: (hostname could not be safely extracted from URL)", curl_easy_strerror(res), ref->errbuf); // # nocov
+    // fallback to a very plain simple error which does not use *url at all (so no danger of including some of it)
+    Rf_error("%s: %s: (hostname could not be safely extracted from URL)",  // # nocov
+             curl_easy_strerror(res), ref->errbuf);                        // # nocov
   }
   if(res != CURLE_OK) {
     // in cases other than CURLE_OPERATION_TIMEDOUT, curl's own message includes the hostname already
