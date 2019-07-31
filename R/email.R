@@ -34,6 +34,8 @@
 #'   message = message, username = username, password = password)}
 send_mail <- function(mail_from, mail_rcpt, message, smtp_server = 'localhost',
                       use_ssl = FALSE, verbose = TRUE, ...){
+  if(grepl('://', smtp_server))
+    stop("Please specify smtp_server as host (without the smtp:// prefix)")
   if(is.character(message))
     message <- charToRaw(paste(message, collapse = '\r\n'))
   con <- if(is.raw(message)){
