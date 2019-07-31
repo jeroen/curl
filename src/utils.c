@@ -50,11 +50,11 @@ void assert_status(CURLcode res, reference *ref){
     curl_easy_getinfo(ref->handle, CURLINFO_EFFECTIVE_URL, &url);
     if (url && (
         strncmp(url, "http://", 7)==0 ||
-        strncmp(url, "HTTP://", 7)==0 ||
-        strncmp(url, "https://", 8)==0 ||
-        strncmp(url, "HTTPS://", 8)==0 ||
-        strncmp(url, "ftp://", 6)==0 ||
-        strncmp(url, "FTP://", 6)==0)) {
+        strncmp(url, "HTTP://", 7)==0 ||  // # nocov
+        strncmp(url, "https://", 8)==0 || // # nocov
+        strncmp(url, "HTTPS://", 8)==0 || // # nocov
+        strncmp(url, "ftp://", 6)==0 ||   // # nocov
+        strncmp(url, "FTP://", 6)==0)) {  // # nocov
       // only attempt to extract hostname from this strict subset of known schemes for
       // safety to avoid leaking non-hostname data to error message and log
       url = strchr(url, ':') + 3;  // we're sure by now that that :// exists
@@ -85,7 +85,7 @@ void assert_status(CURLcode res, reference *ref){
       }
     }
     // fallback to a very plain simple error which does not use *url at all.
-    Rf_error("%s: %s: (hostname could not be safely extracted from URL)", curl_easy_strerror(res), ref->errbuf);
+    Rf_error("%s: %s: (hostname could not be safely extracted from URL)", curl_easy_strerror(res), ref->errbuf); // # nocov
   }
   if(res != CURLE_OK) {
     // in cases other than CURLE_OPERATION_TIMEDOUT, curl's own message includes the hostname already
