@@ -1,4 +1,5 @@
 #include "curl-common.h"
+#include <stdint.h> /* SIZE_MAX */
 
 CURL* get_handle(SEXP ptr){
   return get_ref(ptr)->handle;
