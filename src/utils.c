@@ -1,4 +1,5 @@
 #include "curl-common.h"
+#include <ctype.h>
 
 CURL* get_handle(SEXP ptr){
   return get_ref(ptr)->handle;
@@ -43,26 +44,53 @@ void assert(CURLcode res){
 
 void assert_status(CURLcode res, reference *ref){
   if(res == CURLE_OPERATION_TIMEDOUT) {
-    // ref->errbuf contains "Resolving timed out after 1 milliseconds" in this case. Embellish this.
-    const char *url = NULL;
-    int len = 0;  // only output the hostname (strip long path and any authority)
+    // ref->errbuf contains "Resolving timed out after 1 milliseconds" in this case.
+    // This branch adds the host to the error message to aid folk looking at logs, #190
+    const char *url=NULL;
     curl_easy_getinfo(ref->handle, CURLINFO_EFFECTIVE_URL, &url);
-    if (url) {
-      url = strchr(url, ':');
-      if (url) {
-        url++;
-        if (url[0]=='/' && url[1]=='/') url+=2;
-        char *w = strchr(url, '@');
-        if (w) url = w+1;
-        w = strchr(url, '/');
-        len = w ? w-url : strlen(url);
+    if (url && (
+        strncmp(url, "http://", 7)==0 ||
+        strncmp(url, "HTTP://", 7)==0 ||
+        strncmp(url, "https://", 8)==0 ||
+        strncmp(url, "HTTPS://", 8)==0 ||
+        strncmp(url, "ftp://", 6)==0 ||
+        strncmp(url, "FTP://", 6)==0)) {
+      // only attempt to extract hostname from this strict subset of known schemes for
+      // safety to avoid leaking non-hostname data to error message and log
+      url = strchr(url, ':') + 3;  // we're sure by now that that :// exists
+      // *url now points to the first character after "scheme://"
+      // now, as first step, chop off the URL from the first of any '/', '?', or '#'
+      // probably the first '/' already removes any ? or # afterwards, but do them too anyway
+      const char *w = strchr(url, '/');
+      int len = w ? w-url : strlen(url);  // exclude from the first '/', if any
+      w = memchr(url, '?', len);
+      if (w) len = w-url;                 // exclude from the first '?' (if any) reducing len
+      w = memchr(url, '#', len);
+      if (w) len = w-url;                 // exclude from the first '#' (if any) reducing len
+      // Now find the first '@' if any and jump over it, to exclude username:password, just in case curl_easy_getinfo did not already exclude that
+      w = memchr(url, '@', len);
+      if (w) { len-=(w-url+1); url=w+1; }
+      // *url now points to the hostname of length len, possibly including a :port
+      // now check the hostname is valid containing only expected characters, and only print it if so
+      if (len>0 && (isalnum(url[0]))) { // hostnames must start with a-zA-Z0-9 (not . or -)
+        int i=0;
+        while (i<len && (isalnum(url[i]) || url[i]=='.' || url[i]=='-')) i++;  // hostname valid characters
+        if (i<len-1 && url[i]==':') {  // len-1 because there must at least one digit after the : (if any) otherwise invalid
+          i++;  // skip over :
+          while (i<len && isdigit(url[i])) i++;  // port number must consist of 0-9 only
+        }
+        if (i==len) { // "hostname" or "hostname:port" is valid; all len characters have been checked
+          Rf_error("%s: %s: %.*s", curl_easy_strerror(res), ref->errbuf, len, url);
+        }
       }
     }
-    Rf_error("%s: %s: %.*s", curl_easy_strerror(res), ref->errbuf, len, url ? url : "");
+    // fallback to a very plain simple error which does not use *url at all.
+    Rf_error("%s: %s: (hostname could not be safely extracted from URL)", curl_easy_strerror(res), ref->errbuf);
   }
   if(res != CURLE_OK) {
-    Rf_error("%s", strlen(ref->errbuf) ? ref->errbuf : curl_easy_strerror(res));
+    // in cases other than CURLE_OPERATION_TIMEDOUT, curl's own message includes the hostname already
     // e.g. res==7 (CURLE_COULDNT_CONNECT), ref->errbuf contains "Failed to connect to www.google.com port 81: Connection timed out"
+    Rf_error("%s", strlen(ref->errbuf) ? ref->errbuf : curl_easy_strerror(res));
   }
 }
 
