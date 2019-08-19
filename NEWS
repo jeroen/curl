@@ -1,5 +1,6 @@
 4.1
  - Windows: respect the CURL_SSL_BACKEND variable for people that want to use OpenSSL.
+ - Windows: respect CURL_CA_BUNDLE if (and only if) CURL_SSL_BACKEND == openssl
  - curl_download now writes to a temporary file, which is renamed to the destfile
    upon success. This prevents corrupt files when a download fails or is interrupted.
 

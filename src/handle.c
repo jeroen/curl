@@ -27,7 +27,7 @@ extern int r_curl_is_postfields_option(CURLoption x);
 #endif
 
 char CA_BUNDLE[MAX_PATH];
-extern int windows_openssl;
+extern int windows_vista_openssl;
 
 SEXP R_set_bundle(SEXP path){
   strcpy(CA_BUNDLE, CHAR(asChar(path)));
@@ -134,11 +134,20 @@ static void set_handle_defaults(reference *ref){
   curl_easy_setopt(handle, CURLOPT_HEADERDATA, &(ref->resheaders));
 
   #ifdef _WIN32
-  if(windows_openssl == 1){
-    if( CA_BUNDLE != NULL && strlen(CA_BUNDLE)){
+  /* Only set a default CA bundle for openssl. Currenlty libcurl does not
+   * support switching SSL backends so we only need to do it once, hense static.
+   */
+  static struct curl_tlssessioninfo *tlsinfo = NULL;
+  if(tlsinfo == NULL)
+    assert(curl_easy_getinfo(handle, CURLINFO_TLS_SESSION, &tlsinfo));
+  if(tlsinfo->backend == CURLSSLBACKEND_OPENSSL) {
+    const char *bundle = getenv("CURL_CA_BUNDLE");
+    if(!windows_vista_openssl && bundle != NULL) {
+      curl_easy_setopt(handle, CURLOPT_CAINFO, bundle);
+    } else if( CA_BUNDLE != NULL && strlen(CA_BUNDLE)){
       /* on windows a cert bundle is included with R version 3.2.0 */
       curl_easy_setopt(handle, CURLOPT_CAINFO, CA_BUNDLE);
-    } else {
+    } else if(windows_vista_openssl) {
       /* disable cert validation for older versions of R */
       curl_easy_setopt(handle, CURLOPT_SSL_VERIFYHOST, 0L);
       curl_easy_setopt(handle, CURLOPT_SSL_VERIFYPEER, 0L);
