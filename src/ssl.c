@@ -12,6 +12,14 @@ int windows_vista_openssl = 0;
  */
 void select_ssl_backend(){
 #if defined(_WIN32) && defined(HAS_MULTI_SSL)
+  /* If a CURL_SSL_BACKEND is set, do not override */
+  char *envvar = getenv("CURL_SSL_BACKEND");
+  if(envvar != NULL){
+    REprintf("Initiating curl with CURL_SSL_BACKEND: %s\n", envvar);
+    return;
+  }
+
+  /* Lookup Windows version */
   DWORD dwBuild = 0;
   DWORD dwVersion = GetVersion();
   if (dwVersion < 0x80000000)
