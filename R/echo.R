@@ -79,7 +79,7 @@ curl_echo <- function(handle, port = 9359, progress = interactive(), file = NULL
     httpuv::service(waittime)
     TRUE
   }
-  handle_setopt(handle, connecttimeout = 2, xferinfofunction = xfer, noprogress = FALSE)
+  handle_setopt(handle, connecttimeout = 2, xferinfofunction = xfer, noprogress = FALSE, forbid_reuse = TRUE)
   if(progress) cat("\n", file = stderr())
   input_url <- handle_data(handle)$url
   if(length(input_url) && nchar(input_url)){
@@ -89,7 +89,7 @@ curl_echo <- function(handle, port = 9359, progress = interactive(), file = NULL
     #handle_setopt(handle, port = port, resolve = paste0(hostname, ":", port, ':127.0.0.1'))
     handle_setopt(handle, httpheader = c(paste0("Host:", host), handle_getheaders(handle)))
   } else {
-    target_url <- paste0("http://localhost:", port)
+    target_url <- paste0("http://127.0.0.1:", port)
   }
   curl_fetch_memory(target_url, handle = handle)
   output$url <- input_url
@@ -97,7 +97,7 @@ curl_echo <- function(handle, port = 9359, progress = interactive(), file = NULL
   return(output)
 }
 
-replace_host <- function(url, new_host = 'http://localhost'){
+replace_host <- function(url, new_host = 'http://127.0.0.1'){
   sub("[a-zA-Z]+://[^/]+", new_host, url)
 }
 
