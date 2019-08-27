@@ -35,7 +35,7 @@ int r_curl_is_off_t_option(CURLoption x){
  */
 int r_curl_is_string_option(CURLoption x){
   return _curl_is_string_option(x)  ||
-    (x > 10000 && x < 20000 && !r_curl_is_slist_option(x));
+    (x > 10000 && x < 20000 && !_curl_is_slist_option(x) && !_curl_is_cb_data_option(x));
 }
 
 int r_curl_is_postfields_option(CURLoption x){
