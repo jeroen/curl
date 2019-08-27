@@ -30,8 +30,12 @@ int r_curl_is_off_t_option(CURLoption x){
   return _curl_is_off_t_option(x);
 }
 
+/* workaround old curl bug: if an option is neither classified as string
+ * stringlist, we assume string: https://github.com/jeroen/curl/issues/192
+ */
 int r_curl_is_string_option(CURLoption x){
-  return _curl_is_string_option(x);
+  return _curl_is_string_option(x)  ||
+    (x > 10000 && x < 20000 && !r_curl_is_slist_option(x));
 }
 
 int r_curl_is_postfields_option(CURLoption x){

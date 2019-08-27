@@ -338,7 +338,7 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
         error("Value for option %s (%d) must be a number.", optname, key);
       }
       assert(curl_easy_setopt(handle, key, (curl_off_t) asReal(val)));
-    } else if(r_curl_is_string_option(key) || r_curl_is_postfields_option(key)){
+    } else if(r_curl_is_postfields_option(key) || r_curl_is_string_option(key)){
       switch (TYPEOF(val)) {
       case RAWSXP:
         if(key == CURLOPT_POSTFIELDS || key == CURLOPT_COPYPOSTFIELDS)
