@@ -1,16 +1,24 @@
 #include <curl/curl.h>
 #include <Rinternals.h>
 
+extern curl_sslbackend default_ssl_backend;
+
 #if LIBCURL_VERSION_MAJOR > 7 || (LIBCURL_VERSION_MAJOR == 7 && LIBCURL_VERSION_MINOR >= 56)
 #define HAS_MULTI_SSL 1
 #endif
 
-int windows_vista_openssl = 0;
+void lookup_default_backend(){
+  CURL *handle = curl_easy_init();
+  struct curl_tlssessioninfo *tlsinfo = NULL;
+  if(curl_easy_getinfo(handle, CURLINFO_TLS_SESSION, &tlsinfo) && tlsinfo)
+    default_ssl_backend = tlsinfo->backend;
+  curl_easy_cleanup(handle);
+}
 
 /* Force OpenSSL on Legacy Windows (Vista/2008) which do not support TLS 1.2 natively.
  * On other systems we let libcurl choose so you can set the 'CURL_SSL_BACKEND' variable.
  */
-void select_ssl_backend(){
+void switch_to_openssl_on_vista(){
 #if defined(_WIN32) && defined(HAS_MULTI_SSL)
   /* If a CURL_SSL_BACKEND is set, do not override */
   char *envvar = getenv("CURL_SSL_BACKEND");
@@ -29,7 +37,6 @@ void select_ssl_backend(){
   if(dwBuild < 7600){
     switch(curl_global_sslset(CURLSSLBACKEND_OPENSSL, NULL, NULL)){
     case CURLSSLSET_OK :
-      windows_vista_openssl = 1;
       break;
     case CURLSSLSET_TOO_LATE:
       Rf_warning("Failed to set libcurl SSL: already initiated");
