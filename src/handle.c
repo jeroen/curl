@@ -137,7 +137,7 @@ static void set_handle_defaults(reference *ref){
   #ifdef _WIN32
   if(default_ssl_backend == CURLSSLBACKEND_OPENSSL) {
     const char *ca_bundle = getenv("CURL_CA_BUNDLE");
-    if(bundle != NULL) {
+    if(ca_bundle != NULL) {
       curl_easy_setopt(handle, CURLOPT_CAINFO, ca_bundle);
     } else if( R_WINDOWS_CA_BUNDLE != NULL && strlen(R_WINDOWS_CA_BUNDLE)){
       /* on windows a cert bundle is included with R version 3.2.0 */

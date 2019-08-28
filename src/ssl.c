@@ -10,7 +10,7 @@ extern curl_sslbackend default_ssl_backend;
 void lookup_default_backend(){
   CURL *handle = curl_easy_init();
   struct curl_tlssessioninfo *tlsinfo = NULL;
-  if(curl_easy_getinfo(handle, CURLINFO_TLS_SESSION, &tlsinfo) && tlsinfo)
+  if(curl_easy_getinfo(handle, CURLINFO_TLS_SESSION, &tlsinfo) == CURLE_OK)
     default_ssl_backend = tlsinfo->backend;
   curl_easy_cleanup(handle);
 }
