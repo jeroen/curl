@@ -15,9 +15,9 @@ install:
 environment:
   matrix:
     - R_VERSION: stable
-      R_ARCH: x64
+    - R_VERSION: stable
+      CURL_SSL_BACKEND: openssl
     - R_VERSION: devel
-      R_ARCH: x64
 
 build_script:
   - travis-tool.sh install_deps
