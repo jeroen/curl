@@ -79,12 +79,15 @@ static const R_CallMethodDef CallEntries[] = {
     {NULL, NULL, 0}
 };
 
-void select_ssl_backend();
+void switch_to_openssl_on_vista();
+void lookup_default_backend();
+
 CURLM *multi_handle = NULL;
 
 attribute_visible void R_init_curl(DllInfo *info) {
-  select_ssl_backend();
+  switch_to_openssl_on_vista();
   curl_global_init(CURL_GLOBAL_DEFAULT);
+  lookup_default_backend();
   multi_handle = curl_multi_init();
   R_registerRoutines(info, NULL, CallEntries, NULL, NULL);
   R_useDynamicSymbols(info, FALSE);
