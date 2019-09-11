@@ -44,7 +44,7 @@ has_internet <- local({
       return(TRUE)
 
     # Method 1: try DNS lookup
-    if(length(nslookup("googsdfsdffle.com", error = FALSE)))
+    if(length(nslookup("google.com", error = FALSE)))
       return(TRUE)
 
     # Method 2: look for a proxy server
