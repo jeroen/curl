@@ -32,6 +32,34 @@ nslookup <- function(host, ipv4_only = FALSE, multiple = FALSE, error = TRUE){
 
 #' @export
 #' @rdname nslookup
-has_internet <- function(){
-  !is.null(nslookup("google.com", error = FALSE))
-}
+has_internet <- local({
+  has_internet_via_proxy <- NULL
+  function(){
+    res <- nslookup("gosdfsdfdsogle.com", error = FALSE)
+    if(length(res))
+      return(TRUE)
+
+    if(length(has_internet_via_proxy))
+      return(has_internet_via_proxy)
+
+    # Try via a proxy on Windows
+    test_url <- 'https://1.1.1.1'
+    ie_proxy <- ie_get_proxy_for_url(test_url)
+    proxy_vars <- Sys.getenv(c('ALL_PROXY', 'https_proxy', 'HTTPS_PROXY', 'HTTPS_proxy'), NA)
+    handle <- if(any(!is.na(proxy_vars))){
+      cat("Testing for internet connectivity via https_proxy... ", file = stderr())
+      new_handle(CONNECTTIMEOUT = 5)
+    } else if(length(ie_proxy)){
+      cat("Testing for internet connectivity via IE proxy... ", file = stderr())
+      new_handle(CONNECTTIMEOUT = 5, proxy = ie_proxy)
+    } else {
+      # Failed to find a proxy server.
+      return(FALSE)
+    }
+    req <- try(curl_fetch_memory(url = test_url, handle = handle), silent = TRUE)
+    has_internet_via_proxy <<- is.list(req) && identical(req$status_code, 200L)
+    cat(ifelse(has_internet_via_proxy, "success!\n", "failed.\n"), file = stderr())
+    return(has_internet_via_proxy)
+  }
+})
+
