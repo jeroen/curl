@@ -36,19 +36,31 @@ nslookup <- function(host, ipv4_only = FALSE, multiple = FALSE, error = TRUE){
 #' @export
 #' @rdname nslookup
 has_internet <- local({
+  proxy_vars_previous <- NULL
   has_internet_via_proxy <- NULL
   function(){
-    res <- nslookup("google.com", error = FALSE)
-    if(length(res))
+    # do not wait for nslookup() if we know proxy works
+    if(isTRUE(has_internet_via_proxy))
       return(TRUE)
 
-    if(length(has_internet_via_proxy))
-      return(has_internet_via_proxy)
+    # Method 1: try DNS lookup
+    if(length(nslookup("googsdfsdffle.com", error = FALSE)))
+      return(TRUE)
 
-    # Try via a proxy on Windows
+    # Method 2: look for a proxy server
+    proxy_vars <- Sys.getenv(c('ALL_PROXY', 'https_proxy', 'HTTPS_PROXY', 'HTTPS_proxy'), NA)
+
+    # If variables are unchanged, use the cached result
+    if(length(has_internet_via_proxy) && identical(proxy_vars, proxy_vars_previous)) {
+      return(has_internet_via_proxy)
+    } else {
+      proxy_vars_previous <<- proxy_vars
+    }
+
+    # Try via a proxy (mostly for Windows)
     test_url <- 'https://1.1.1.1'
     ie_proxy <- ie_get_proxy_for_url(test_url)
-    proxy_vars <- Sys.getenv(c('ALL_PROXY', 'https_proxy', 'HTTPS_PROXY', 'HTTPS_proxy'), NA)
+
     handle <- if(any(!is.na(proxy_vars))){
       cat("Testing for internet connectivity via https_proxy... ", file = stderr())
       new_handle(CONNECTTIMEOUT = 5)
@@ -56,7 +68,7 @@ has_internet <- local({
       cat("Testing for internet connectivity via IE proxy... ", file = stderr())
       new_handle(CONNECTTIMEOUT = 5, proxy = ie_proxy)
     } else {
-      # Failed to find a proxy server.
+      # No proxy server found. Do not cache in case user sets one later.
       return(FALSE)
     }
     req <- try(curl_fetch_memory(url = test_url, handle = handle), silent = TRUE)
