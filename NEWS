@@ -6,6 +6,7 @@
  - curl_download now writes to a temporary file, which is renamed to the destfile
    upon success. This prevents corrupt files when a download fails or is interrupted.
  - Automatically set forbid_reuse = TRUE in curl_echo() handles
+ - Update symbol table to 7.66.0
 
 4.0
  - Stricter type checking for handle options based on <curl/typecheck-gcc.h> macros
