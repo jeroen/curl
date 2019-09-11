@@ -2,8 +2,11 @@
 #'
 #' The \code{nslookup} function is similar to \code{nsl} but works on all platforms
 #' and can resolve ipv6 addresses if supported by the OS. Default behavior raises an
-#' error if lookup fails. The \code{has_internet} function tests the internet
-#' connection by resolving a random address.
+#' error if lookup fails.
+#'
+#' The \code{has_internet} function tests for internet connectivity by performing a
+#' dns lookup. If a proxy server is detected, it will also check for connectivity by
+#' connecting via the proxy.
 #'
 #' @export
 #' @param host a string with a hostname
@@ -35,7 +38,7 @@ nslookup <- function(host, ipv4_only = FALSE, multiple = FALSE, error = TRUE){
 has_internet <- local({
   has_internet_via_proxy <- NULL
   function(){
-    res <- nslookup("gosdfsdfdsogle.com", error = FALSE)
+    res <- nslookup("google.com", error = FALSE)
     if(length(res))
       return(TRUE)
 
@@ -62,4 +65,3 @@ has_internet <- local({
     return(has_internet_via_proxy)
   }
 })
-
