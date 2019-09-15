@@ -130,8 +130,9 @@ Of course windows users need [Rtools](https://cran.r-project.org/bin/windows/Rto
 To use HTTP/2 the `libcurl` library has to be built `--with-nghttp2` which is usually not the default. Use `curl_version()` in R to check if it is enabled. To enable it on OSX use:
 
 ```
-brew install curl --with-nghttp2
-brew link curl --force
+brew install curl-openssl
+export PKG_CONFIG_PATH="/usr/local/opt/curl-openssl/lib/pkgconfig"
+R
 ```
 
 And then reinstall the `curl` package from source:
