@@ -23,7 +23,9 @@
 #' @param handle a curl handle object
 #' @return Path of downloaded file (invisibly).
 #' @export
-#' @examples \dontrun{download large file
+#' @examples
+#' # Download large file
+#' \dontrun{
 #' url <- "http://www2.census.gov/acs2011_5yr/pums/csv_pus.zip"
 #' tmp <- tempfile()
 #' curl_download(url, tmp)
