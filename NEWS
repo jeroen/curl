@@ -1,6 +1,6 @@
 4.1
- - Workaround for old versions of libcurl for missing symbols in option typechecking  (#192)
  - Fixed typechecking code for new internal macro names in libcurl 7.66
+ - Rewrite typechecking to work better with clang and old libcurl (#192)
  - has_internet() now checks for connectivity via a proxy server if one is detected
  - Windows: respect the CURL_SSL_BACKEND variable for people that want to use OpenSSL.
  - Windows: respect CURL_CA_BUNDLE if (and only if) CURL_SSL_BACKEND == openssl
