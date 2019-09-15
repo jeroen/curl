@@ -53,12 +53,13 @@
    (option) == /*CURLOPT_CONNECT_TO*/ 10243 ||                                          \
    0)
 
+#define curlcheck_string_option(x) \
+(x > 10000 && x < 20000 && !curlcheck_slist_option(x) && !curlcheck_cb_data_option(x));
+
 #endif
 
-/* workaround old curl bug: if option is neither classified as string or
-stringlist, assume string: https://github.com/jeroen/curl/issues/192 */
 int r_curl_is_string_option(CURLoption x){
-  return (x > 10000 && x < 20000 && !curlcheck_slist_option(x) && !curlcheck_cb_data_option(x));
+  return curlcheck_string_option(x);
 }
 
 int r_curl_is_slist_option(CURLoption x){
