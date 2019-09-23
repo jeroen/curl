@@ -122,10 +122,16 @@ test_that("Custom vector options", {
   handle_setopt(h, quote = c("bla"))
 })
 
-test_that("Workaround for old libcurl works",{
-  # This should simply not error
-  skip_on_os('windows')
-  if(!is.na(curl_options()['unix_socket_path'])){
+test_that("Platform specific features", {
+  if(.Platform$OS.type == 'windows'){
+    ssl_version <- curl_version()$ssl_version
+    if(get_windows_build() < 7600 || grepl("openssl", Sys.getenv('CURL_SSL_BACKEND'), TRUE)){
+      expect_equal(ssl_version, "OpenSSL/1.1.1a (Schannel)")
+    } else {
+      expect_equal(ssl_version, "(OpenSSL/1.1.1a) Schannel")
+    }
+  } else if(!is.na(curl_options()['unix_socket_path'])){
+    # This should simply not error
     expect_is(new_handle(UNIX_SOCKET_PATH = ""), "curl_handle")
   }
 })
