@@ -1,3 +1,6 @@
+4.1.1
+ - Fix for very old versions of libcurl. Build was broken in 4.1 on RHEL / CentOS.
+
 4.1
  - Fixed typechecking code for new internal macro names in libcurl 7.66
  - Rewrite typechecking to work better with clang and old libcurl (#192)

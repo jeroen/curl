@@ -27,7 +27,6 @@ extern int r_curl_is_postfields_option(CURLoption x);
 #endif
 
 char R_WINDOWS_CA_BUNDLE[MAX_PATH];
-curl_sslbackend default_ssl_backend;
 
 SEXP R_set_bundle(SEXP path){
   strcpy(R_WINDOWS_CA_BUNDLE, CHAR(asChar(path)));
@@ -135,17 +134,20 @@ static void set_handle_defaults(reference *ref){
 
   /* Only set a default CA bundle for openssl */
   #ifdef _WIN32
-  if(default_ssl_backend == CURLSSLBACKEND_OPENSSL) {
-    const char *ca_bundle = getenv("CURL_CA_BUNDLE");
-    if(ca_bundle != NULL) {
-      curl_easy_setopt(handle, CURLOPT_CAINFO, ca_bundle);
-    } else if( R_WINDOWS_CA_BUNDLE != NULL && strlen(R_WINDOWS_CA_BUNDLE)){
-      /* on windows a cert bundle is included with R version 3.2.0 */
-      curl_easy_setopt(handle, CURLOPT_CAINFO, R_WINDOWS_CA_BUNDLE);
-    } else {
-      /* disable cert validation for older versions of R */
-      curl_easy_setopt(handle, CURLOPT_SSL_VERIFYHOST, 0L);
-      curl_easy_setopt(handle, CURLOPT_SSL_VERIFYPEER, 0L);
+  struct curl_tlssessioninfo *tlsinfo = NULL;
+  if(curl_easy_getinfo(handle, CURLINFO_TLS_SSL_PTR, &tlsinfo) == CURLE_OK){
+    if(tlsinfo->backend == CURLSSLBACKEND_OPENSSL) {
+      const char *ca_bundle = getenv("CURL_CA_BUNDLE");
+      if(ca_bundle != NULL) {
+        curl_easy_setopt(handle, CURLOPT_CAINFO, ca_bundle);
+      } else if( R_WINDOWS_CA_BUNDLE != NULL && strlen(R_WINDOWS_CA_BUNDLE)){
+        /* on windows a cert bundle is included with R version 3.2.0 */
+        curl_easy_setopt(handle, CURLOPT_CAINFO, R_WINDOWS_CA_BUNDLE);
+      } else {
+        /* disable cert validation for older versions of R */
+        curl_easy_setopt(handle, CURLOPT_SSL_VERIFYHOST, 0L);
+        curl_easy_setopt(handle, CURLOPT_SSL_VERIFYPEER, 0L);
+      }
     }
   }
   #endif

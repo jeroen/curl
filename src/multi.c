@@ -244,8 +244,11 @@ SEXP R_multi_new(){
 }
 
 SEXP R_multi_setopt(SEXP pool_ptr, SEXP total_con, SEXP host_con, SEXP multiplex){
-  multiref *mref = get_multiref(pool_ptr);
-  CURLM *multi = mref->m;
+  #ifdef HAS_CURLMOPT_MAX_TOTAL_CONNECTIONS
+    CURLM *multi = get_multiref(pool_ptr)->m;
+    massert(curl_multi_setopt(multi, CURLMOPT_MAX_TOTAL_CONNECTIONS, (long) asInteger(total_con)));
+    massert(curl_multi_setopt(multi, CURLMOPT_MAX_HOST_CONNECTIONS, (long) asInteger(host_con)));
+  #endif
 
   // NOTE: CURLPIPE_HTTP1 is unsafe for non idempotent requests
   #ifdef CURLPIPE_MULTIPLEX
@@ -253,10 +256,6 @@ SEXP R_multi_setopt(SEXP pool_ptr, SEXP total_con, SEXP host_con, SEXP multiplex
                               asLogical(multiplex) ? CURLPIPE_MULTIPLEX : CURLPIPE_NOTHING));
   #endif
 
-  #ifdef HAS_CURLMOPT_MAX_TOTAL_CONNECTIONS
-    massert(curl_multi_setopt(multi, CURLMOPT_MAX_TOTAL_CONNECTIONS, (long) asInteger(total_con)));
-    massert(curl_multi_setopt(multi, CURLMOPT_MAX_HOST_CONNECTIONS, (long) asInteger(host_con)));
-  #endif
   return pool_ptr;
 }
 
