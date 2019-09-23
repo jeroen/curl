@@ -122,6 +122,11 @@ test_that("Custom vector options", {
   handle_setopt(h, quote = c("bla"))
 })
 
+test_that("Custom URL parser", {
+  h <- new_handle(timeout = 1L)
+  expect_error(curl_fetch_memory('https://httpbin.org/delay/10', handle = h), 'Timeout was reached: [httpbin.org] ', fixed = TRUE)
+})
+
 test_that("Platform specific features", {
   if(.Platform$OS.type == 'windows'){
     ssl_version <- curl_version()$ssl_version
