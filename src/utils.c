@@ -42,9 +42,35 @@ void assert(CURLcode res){
     error(curl_easy_strerror(res));
 }
 
+static char * parse_host(const char * input){
+  static char buf[8000] = {0};
+  char *url = buf;
+  char *ptr = NULL;
+  strncpy(url, input, 7999);
+  if(!(url = strstr(url, "://"))){
+    strcpy(url, "unknown host");
+    return url;
+  }
+  url = url + 3;
+  if((ptr = strchr(url, '/')))
+    *ptr = 0;
+  if((ptr = strchr(url, '#')))
+    *ptr = 0;
+  if((ptr = strchr(url, '?')))
+    *ptr = 0;
+  if((ptr = strchr(url, '@')))
+    url = ptr + 1;
+  return url;
+}
+
 void assert_status(CURLcode res, reference *ref){
-  if(res == CURLE_OPERATION_TIMEDOUT)
-    Rf_error("%s: %s", curl_easy_strerror(res), ref->errbuf);
+  // Customize better error message for timeoutsS
+  if(res == CURLE_OPERATION_TIMEDOUT){
+    const char *url = NULL;
+    if(curl_easy_getinfo(ref->handle, CURLINFO_EFFECTIVE_URL, &url) == CURLE_OK){
+      Rf_error("%s: [%s] %s", curl_easy_strerror(res), parse_host(url), ref->errbuf);
+    }
+  }
   if(res != CURLE_OK)
     Rf_error("%s", strlen(ref->errbuf) ? ref->errbuf : curl_easy_strerror(res));
 }
