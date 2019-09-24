@@ -1,5 +1,5 @@
-4.1.1
- - Fix for very old versions of libcurl. Build was broken in 4.1 on RHEL / CentOS.
+4.2
+ - Fix for old versions of libcurl (build was broken in 4.1 on RHEL / CentOS).
  - Add hostname to timeout errors (#190)
 
 4.1
