@@ -48,8 +48,8 @@ static char * parse_host(const char * input){
   char *ptr = NULL;
   strncpy(url, input, 7999);
   if(!(url = strstr(url, "://"))){
-    strcpy(url, "unknown host");
-    return url;
+    strcpy(buf, "unknown host");
+    return buf;
   }
   url = url + 3;
   if((ptr = strchr(url, '/')))
