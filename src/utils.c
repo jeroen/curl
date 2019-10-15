@@ -45,13 +45,11 @@ void assert(CURLcode res){
 static char * parse_host(const char * input){
   static char buf[8000] = {0};
   char *url = buf;
-  char *ptr = NULL;
   strncpy(url, input, 7999);
-  if(!(url = strstr(url, "://"))){
-    strcpy(buf, "unknown host");
-    return buf;
-  }
-  url = url + 3;
+
+  char *ptr = NULL;
+  if((ptr = strstr(url, "://")))
+    url = ptr + 3;
   if((ptr = strchr(url, '/')))
     *ptr = 0;
   if((ptr = strchr(url, '#')))
