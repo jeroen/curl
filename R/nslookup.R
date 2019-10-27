@@ -44,7 +44,7 @@ has_internet <- local({
       return(TRUE)
 
     # Method 1: try DNS lookup
-    if(length(nslookup("google.com", error = FALSE)))
+    if(identical(nslookup('one.one.one.one', error = FALSE, ipv4_only = TRUE), '1.1.1.1'))
       return(TRUE)
 
     # Method 2: look for a proxy server

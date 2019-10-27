@@ -1,3 +1,7 @@
+4.3
+ - curl::has_internet() now checks that result of nslookup is actually correct.
+   This should detect offline networks with fake internal DNS.
+
 4.2
  - Fix for old versions of libcurl (build was broken in 4.1 on RHEL / CentOS).
  - Add hostname to timeout errors (#190)
