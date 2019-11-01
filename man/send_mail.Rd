@@ -5,7 +5,7 @@
 \title{Send email}
 \usage{
 send_mail(mail_from, mail_rcpt, message, smtp_server = "localhost",
-  use_ssl = FALSE, verbose = TRUE, ...)
+  use_ssl = NULL, verbose = TRUE, ...)
 }
 \arguments{
 \item{mail_from}{email address of the sender.}
@@ -16,9 +16,12 @@ these go into the \code{message} headers.}
 \item{message}{either a string or connection with (properly formatted) email
 message, including sender/recipient/subject headers. See example.}
 
-\item{smtp_server}{address of the SMTP server without the \code{smtp://} part}
+\item{smtp_server}{hostname or address of the SMTP server, or, an
+\code{smtp://} or \code{smtps://} URL. See "Specifying the server, port,
+and protocol" below.}
 
-\item{use_ssl}{connect with the smtp server over TLS. Gmail requires this.}
+\item{use_ssl}{Attempt to encrypt the connection via STARTTLS, if the server
+supports it. This is generally required for port 587.}
 
 \item{verbose}{print output}
 
@@ -28,9 +31,45 @@ with the SMTP server.}
 }
 \description{
 Use the curl SMTP client to send an email. The \code{message} argument must be
-properly formatted RFC2822 email message with From/To/Subject headers and CRLF
+properly formatted \href{https://tools.ietf.org/html/rfc2822}{RFC2822} email message with From/To/Subject headers and CRLF
 line breaks.
 }
+\details{
+
+}
+\section{Specifying the server, port, and protocol}{
+
+
+The \code{smtp_server} argument takes a hostname, or an SMTP URL:
+
+\itemize{
+  \item \code{mail.example.com} - hostname only
+  \item \code{mail.example.com:587} - hostname and port
+  \item \code{smtp://mail.example.com} - protocol and hostname
+  \item \code{smtp://mail.example.com:587} - full SMTP URL
+  \item \code{smtps://mail.example.com:465} - full SMTPS URL
+}
+
+By default, the port will be 25, unless \code{smtps://} is specified--then the
+default will be 465 instead. Note that port 25 is blocked on many networks
+and that port 587 and \code{use_ssl=TRUE} is more typical for modern email
+servers.
+}
+
+\section{Encrypting connections via SMTPS or STARTTLS}{
+
+
+SMTP connections can be encrypted in one of two ways.
+
+If your email server listens on port 465, then use an
+\code{smtps://hostname:465} URL. The SMTPS protocol \emph{guarantees} that
+TLS will be used to protect your communications.
+
+If your email server listens on port 25 or 587, use an \code{smtp://} URL and
+set \code{use_ssl = TRUE}. This uses STARTTLS to \emph{opportunistically} use
+encryption (i.e. encryption will only be used if the server supports it).
+}
+
 \examples{
 \donttest{# Message in RFC2822 format
 message <- 'From: "Testbot" <jeroen@ocpu.io>
