@@ -4,8 +4,9 @@
 \alias{send_mail}
 \title{Send email}
 \usage{
-send_mail(mail_from, mail_rcpt, message, smtp_server = "localhost",
-  use_ssl = TRUE, verbose = TRUE, ...)
+send_mail(mail_from, mail_rcpt, message,
+  smtp_server = "smtp://localhost", use_ssl = c("try", "no", "force"),
+  verbose = TRUE, ...)
 }
 \arguments{
 \item{mail_from}{email address of the sender.}
@@ -20,9 +21,9 @@ message, including sender/recipient/subject headers. See example.}
 \code{smtp://} or \code{smtps://} URL. See "Specifying the server, port,
 and protocol" below.}
 
-\item{use_ssl}{Attempt to encrypt the connection via STARTTLS, if the server
-supports it. Defaults to \code{TRUE} and should only be set to \code{FALSE}
-if you have a specific reason to disable STARTTLS.}
+\item{use_ssl}{Request to upgrade the connection to SSL using the STARTTLS command,
+see \href{https://curl.haxx.se/libcurl/c/CURLOPT_USE_SSL.html}{CURLOPT_USE_SSL}
+for details. Default will try to SSL, proceed as normal otherwise.}
 
 \item{verbose}{print output}
 
@@ -58,16 +59,21 @@ the default will be 465 instead.
 \section{Encrypting connections via SMTPS or STARTTLS}{
 
 
-SMTP connections can be encrypted in one of two ways.
+There are two different ways in which SMTP can be encrypted: SMTPS servers
+run on a port which only accepts encrypted connections, similar to HTTPS.
+Alternatively, a regular insecure smtp connection can be "upgraded" to a
+secure TLS connection using the STARTTLS command. It is important to know
+which method your server expects.
 
-If your email server listens on port 465, then use an
-\code{smtps://hostname:465} URL. The SMTPS protocol \emph{guarantees} that
-TLS will be used to protect your communications.
+If your smtp server listens on port 465, then use a  \code{smtps://hostname:465}
+URL. The SMTPS protocol \emph{guarantees} that TLS will be used to protect
+all communications from the start.
 
-If your email server listens on port 25 or 587, use an \code{smtp://} URL and
-\code{use_ssl = TRUE} (the default). This uses STARTTLS to
-\emph{opportunistically} use encryption (i.e. encryption will only be used if
-the server supports it).
+If your email server listens on port 25 or 587, use an \code{smtp://} URL in
+combination with the  \code{use_ssl} parameter to control if the connection
+should be upgraded with STARTTLS. The default value \code{"try"} will
+\emph{opportunistically} try to upgrade to a secure connection if the server
+supports it, and proceed as normal otherwise.
 }
 
 \examples{

@@ -23,16 +23,21 @@
 #'
 #' @section Encrypting connections via SMTPS or STARTTLS:
 #'
-#' SMTP connections can be encrypted in one of two ways.
+#' There are two different ways in which SMTP can be encrypted: SMTPS servers
+#' run on a port which only accepts encrypted connections, similar to HTTPS.
+#' Alternatively, a regular insecure smtp connection can be "upgraded" to a
+#' secure TLS connection using the STARTTLS command. It is important to know
+#' which method your server expects.
 #'
-#' If your email server listens on port 465, then use an
-#' \code{smtps://hostname:465} URL. The SMTPS protocol \emph{guarantees} that
-#' TLS will be used to protect your communications.
+#' If your smtp server listens on port 465, then use a  \code{smtps://hostname:465}
+#' URL. The SMTPS protocol \emph{guarantees} that TLS will be used to protect
+#' all communications from the start.
 #'
-#' If your email server listens on port 25 or 587, use an \code{smtp://} URL and
-#' \code{use_ssl = TRUE} (the default). This uses STARTTLS to
-#' \emph{opportunistically} use encryption (i.e. encryption will only be used if
-#' the server supports it).
+#' If your email server listens on port 25 or 587, use an \code{smtp://} URL in
+#' combination with the  \code{use_ssl} parameter to control if the connection
+#' should be upgraded with STARTTLS. The default value \code{"try"} will
+#' \emph{opportunistically} try to upgrade to a secure connection if the server
+#' supports it, and proceed as normal otherwise.
 #'
 #' @export
 #' @param mail_rcpt one or more recipient email addresses. Do not include names,
@@ -43,9 +48,9 @@
 #' @param smtp_server hostname or address of the SMTP server, or, an
 #' \code{smtp://} or \code{smtps://} URL. See "Specifying the server, port,
 #' and protocol" below.
-#' @param use_ssl Attempt to encrypt the connection via STARTTLS, if the server
-#' supports it. Defaults to \code{TRUE} and should only be set to \code{FALSE}
-#' if you have a specific reason to disable STARTTLS.
+#' @param use_ssl Request to upgrade the connection to SSL using the STARTTLS command,
+#' see \href{https://curl.haxx.se/libcurl/c/CURLOPT_USE_SSL.html}{CURLOPT_USE_SSL}
+#' for details. Default will try to SSL, proceed as normal otherwise.
 #' @param verbose print output
 #' @param ... other options passed to \code{\link{handle_setopt}}. In most cases
 #' you will need to set a \code{username} and \code{password} to authenticate
@@ -66,20 +71,23 @@
 #' password <- askpass::askpass(paste("SMTP server password for", username))
 #' send_mail(sender, recipients, smtp_server = 'smtp.mailgun.org',
 #'   message = message, username = username, password = password)}
-send_mail <- function(mail_from, mail_rcpt, message, smtp_server = 'localhost',
-                      use_ssl = TRUE, verbose = TRUE, ...){
-  if(grepl('://', smtp_server)) {
-    # protocol was provided
-    if (!grepl('^smtps?://', smtp_server)) {
-      stop('smtp_server used an invalid protocol; only smtp:// and smtps:// are supported')
-    }
-    url <- smtp_server
-  } else {
-    if (grepl(":465$", smtp_server)) {
-      url <- paste0('smtps://', smtp_server)
+send_mail <- function(mail_from, mail_rcpt, message, smtp_server = 'smtp://localhost',
+                      use_ssl = c("try", "no", "force"), verbose = TRUE, ...){
+  if(!grepl('://', smtp_server)) {
+    # no protocol was provided
+    smtp_server <- if (grepl(":465$", smtp_server)) {
+      paste0('smtps://', smtp_server)
     } else {
-      url <- paste0('smtp://', smtp_server)
+      paste0('smtp://', smtp_server)
     }
+  }
+  if (!grepl('^smtps?://', smtp_server)) {
+    stop('smtp_server invalid; only smtp:// and smtps:// URLs are supported')
+  }
+
+  # Values from: curl_symbols('CURLUSESSL')
+  if(is.character(use_ssl)){
+    use_ssl <- switch(match.arg(use_ssl), no = 0, try = 1, force = 2)
   }
 
   if(is.character(message))
@@ -108,5 +116,5 @@ send_mail <- function(mail_from, mail_rcpt, message, smtp_server = 'localhost',
     return(buf)
   }, mail_from = mail_from, mail_rcpt = mail_rcpt, use_ssl = use_ssl,
       verbose = verbose, ...)
-  curl_fetch_memory(url, handle = h)
+  curl_fetch_memory(smtp_server, handle = h)
 }
