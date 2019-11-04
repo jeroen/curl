@@ -55,22 +55,22 @@
 #' @param ... other options passed to \code{\link{handle_setopt}}. In most cases
 #' you will need to set a \code{username} and \code{password} to authenticate
 #' with the SMTP server.
-#' @examples \donttest{# Message in RFC2822 format
-#' message <- 'From: "Testbot" <jeroen@ocpu.io>
-#' To: "Jeroen Ooms" <jeroenooms@gmail.com>
-#' Subject: Hello there!
+#' @examples \donttest{# Set sender and recipients (email addresses only)
+#' recipients <- readline("Enter your email address to receive test: ")
+#' sender <- 'test@noreply.com'
 #'
-#' Hi Jeroen,
+#' # Full email message in RFC2822 format
+#' message <- 'From: "R (curl package)" <test@noreply.com>
+#' To: "Roger Recipient" <roger@noreply.com>
+#' Subject: Hello R user!
+#'
+#' Dear R user,
+#'
 #' I am sending this email using curl.'
 #'
-#'
-#' # Actually send the email
-#' recipients <- c('test@opencpu.org', 'jeroenooms@gmail.com')
-#' sender <- 'test@ocpu.io'
-#' username <- 'mail@ocpu.io'
-#' password <- askpass::askpass(paste("SMTP server password for", username))
-#' send_mail(sender, recipients, smtp_server = 'smtp.mailgun.org',
-#'   message = message, username = username, password = password)}
+#' # Send the email
+#' send_mail(sender, recipients, message, smtp_server = 'smtps://smtp.gmail.com',
+#'   username = 'curlpackage', password  = 'qyyjddvphjsrbnlm')}
 send_mail <- function(mail_from, mail_rcpt, message, smtp_server = 'smtp://localhost',
                       use_ssl = c("try", "no", "force"), verbose = TRUE, ...){
   if(!grepl('://', smtp_server)) {
