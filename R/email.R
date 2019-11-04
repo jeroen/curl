@@ -18,10 +18,8 @@
 #'   \item \code{smtps://mail.example.com:465} - full SMTPS URL
 #' }
 #'
-#' By default, the port will be 25, unless \code{smtps://} is specified--then the
-#' default will be 465 instead. Note that port 25 is blocked on many networks
-#' and that port 587 and \code{use_ssl=TRUE} is more typical for modern email
-#' servers.
+#' By default, the port will be 25, unless \code{smtps://} is specified--then
+#' the default will be 465 instead.
 #'
 #' @section Encrypting connections via SMTPS or STARTTLS:
 #'
@@ -32,8 +30,9 @@
 #' TLS will be used to protect your communications.
 #'
 #' If your email server listens on port 25 or 587, use an \code{smtp://} URL and
-#' set \code{use_ssl = TRUE}. This uses STARTTLS to \emph{opportunistically} use
-#' encryption (i.e. encryption will only be used if the server supports it).
+#' \code{use_ssl = TRUE} (the default). This uses STARTTLS to
+#' \emph{opportunistically} use encryption (i.e. encryption will only be used if
+#' the server supports it).
 #'
 #' @export
 #' @param mail_rcpt one or more recipient email addresses. Do not include names,
@@ -45,7 +44,8 @@
 #' \code{smtp://} or \code{smtps://} URL. See "Specifying the server, port,
 #' and protocol" below.
 #' @param use_ssl Attempt to encrypt the connection via STARTTLS, if the server
-#' supports it. This is generally required for port 587.
+#' supports it. Defaults to \code{TRUE} and should only be set to \code{FALSE}
+#' if you have a specific reason to disable STARTTLS.
 #' @param verbose print output
 #' @param ... other options passed to \code{\link{handle_setopt}}. In most cases
 #' you will need to set a \code{username} and \code{password} to authenticate
@@ -67,7 +67,7 @@
 #' send_mail(sender, recipients, smtp_server = 'smtp.mailgun.org',
 #'   message = message, username = username, password = password)}
 send_mail <- function(mail_from, mail_rcpt, message, smtp_server = 'localhost',
-                      use_ssl = NULL, verbose = TRUE, ...){
+                      use_ssl = TRUE, verbose = TRUE, ...){
   if(grepl('://', smtp_server)) {
     # protocol was provided
     if (!grepl('^smtps?://', smtp_server)) {
@@ -80,10 +80,6 @@ send_mail <- function(mail_from, mail_rcpt, message, smtp_server = 'localhost',
     } else {
       url <- paste0('smtp://', smtp_server)
     }
-  }
-
-  if (is.null(use_ssl)) {
-    use_ssl <- grepl('^smtps://', url)
   }
 
   if(is.character(message))

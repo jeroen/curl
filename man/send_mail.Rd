@@ -5,7 +5,7 @@
 \title{Send email}
 \usage{
 send_mail(mail_from, mail_rcpt, message, smtp_server = "localhost",
-  use_ssl = NULL, verbose = TRUE, ...)
+  use_ssl = TRUE, verbose = TRUE, ...)
 }
 \arguments{
 \item{mail_from}{email address of the sender.}
@@ -21,7 +21,8 @@ message, including sender/recipient/subject headers. See example.}
 and protocol" below.}
 
 \item{use_ssl}{Attempt to encrypt the connection via STARTTLS, if the server
-supports it. This is generally required for port 587.}
+supports it. Defaults to \code{TRUE} and should only be set to \code{FALSE}
+if you have a specific reason to disable STARTTLS.}
 
 \item{verbose}{print output}
 
@@ -50,10 +51,8 @@ The \code{smtp_server} argument takes a hostname, or an SMTP URL:
   \item \code{smtps://mail.example.com:465} - full SMTPS URL
 }
 
-By default, the port will be 25, unless \code{smtps://} is specified--then the
-default will be 465 instead. Note that port 25 is blocked on many networks
-and that port 587 and \code{use_ssl=TRUE} is more typical for modern email
-servers.
+By default, the port will be 25, unless \code{smtps://} is specified--then
+the default will be 465 instead.
 }
 
 \section{Encrypting connections via SMTPS or STARTTLS}{
@@ -66,8 +65,9 @@ If your email server listens on port 465, then use an
 TLS will be used to protect your communications.
 
 If your email server listens on port 25 or 587, use an \code{smtp://} URL and
-set \code{use_ssl = TRUE}. This uses STARTTLS to \emph{opportunistically} use
-encryption (i.e. encryption will only be used if the server supports it).
+\code{use_ssl = TRUE} (the default). This uses STARTTLS to
+\emph{opportunistically} use encryption (i.e. encryption will only be used if
+the server supports it).
 }
 
 \examples{
