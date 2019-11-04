@@ -1,6 +1,10 @@
 4.3
  - curl::has_internet() now checks that result of nslookup is actually correct.
    This should detect offline networks with fake internal DNS.
+ - curl::send_mail() now supports TLS connections, by specifying the smtps://
+   protocol in the smtp_server argument. The use_ssl argument actually controls
+   whether STARTTLS is enabled; the function documentation has been updated to
+   clarify that, and the default for use_ssl has been changed to TRUE.
 
 4.2
  - Fix for old versions of libcurl (build was broken in 4.1 on RHEL / CentOS).
