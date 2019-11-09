@@ -19,6 +19,9 @@ vignette: >
 ```{r, echo = FALSE, message = FALSE}
 knitr::opts_chunk$set(comment = "")
 options(width = 120, max.print = 100)
+wrap.simpleError <- function(x, options) {
+  paste0("```\n## Error: ", x$message, "\n```")
+}
 library(curl)
 library(jsonlite)
 ```
@@ -215,21 +218,23 @@ It is important you check the [libcurl documentation](https://curl.haxx.se/libcu
  - slist (vector of strings)
  - enum (long) option
  
-The R bindings will automatically do some type checking and coercion to convert R values to appropriate libcurl option values. For example these give errors:
- 
-```{r, error = TRUE}
-# Error beause CURLOPT_MASFILESIZE must be a number
-handle <- new_handle(maxfilesize = "foo")
-```
-
-Logical (boolean) values in R automatically get converted to `0` or `1` for example [CURLOPT_VERBOSE](https://curl.haxx.se/libcurl/c/CURLOPT_VERBOSE.html):
+The R bindings will automatically do some type checking and coercion to convert R values to appropriate libcurl option values. Logical (boolean) values in R automatically get converted to `0` or `1` for example [CURLOPT_VERBOSE](https://curl.haxx.se/libcurl/c/CURLOPT_VERBOSE.html):
 
 
 ```{r}
 handle <- new_handle(verbose = TRUE)
 ```
 
-However R does not know if an option is actually boolean. So passing `TRUE`/ `FALSE` to any numeric option will simply set it to `0` or `1` without a warning or error.
+However R does not know if an option is actually boolean. So passing `TRUE`/ `FALSE` to any numeric option will simply set it to `0` or `1` without a warning or error. If an option value cannot be coerced, you get an error:
+ 
+```{r, error = TRUE}
+# URLOPT_MASFILESIZE must be a number
+handle_setopt(handle, maxfilesize = "foo")
+
+# CURLOPT_USERAGENT must be a string
+handle_setopt(handle, useragent = 12345)
+```
+
 
 ### ENUM options (and HTTP/2)
 
