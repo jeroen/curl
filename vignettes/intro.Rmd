@@ -192,7 +192,7 @@ curl_fetch_memory('https://cloud.r-project.org/CRAN_mirrorZ.csv', handle = h)
 
 By default libcurl uses HTTP GET to issue a request to an HTTP url. To send a customized request, we first need to create and configure a curl handle object that is passed to the specific download interface.  
 
-### Configuring a handle
+### Setting handle options
 
 Creating a new handle is done using `new_handle`. After creating a handle object, we can set the libcurl options and http request headers.
 
@@ -207,6 +207,66 @@ handle_setheaders(h,
 ```
 
 Use the `curl_options()` function to get a list of the options supported by your version of libcurl. The [libcurl documentation](https://curl.haxx.se/libcurl/c/curl_easy_setopt.html) explains what each option does. Option names are not case sensitive.
+
+It is important you check the [libcurl documentation](https://curl.haxx.se/libcurl/c/curl_easy_setopt.html) to set options of the correct type. Options in libcurl take several types:
+
+ - number
+ - string
+ - slist (vector of strings)
+ - enum (long) option
+ 
+The R bindings will automatically do some type checking and coercion to convert R values to appropriate libcurl option values. For example these give errors:
+ 
+```{r, error = TRUE}
+# Error beause CURLOPT_MASFILESIZE must be a number
+handle <- new_handle(maxfilesize = "foo")
+```
+
+Logical (boolean) values in R automatically get converted to `0` or `1` for example [CURLOPT_VERBOSE](https://curl.haxx.se/libcurl/c/CURLOPT_VERBOSE.html):
+
+
+```{r}
+handle <- new_handle(verbose = TRUE)
+```
+
+However R does not know if an option is actually boolean. So passing `TRUE`/ `FALSE` to any numeric option will simply set it to `0` or `1` without a warning or error.
+
+### ENUM options (and HTTP/2)
+
+Some curl options take an long in C that actually corresponds to an ENUM value. 
+
+For example the [CURLOPT_USE_SSL](https://curl.haxx.se/libcurl/c/CURLOPT_USE_SSL.html) docs explains that there are 4 possible values for this option: `CURLUSESSL_NONE`, `CURLUSESSL_TRY`, `CURLUSESSL_CONTROL`, and `CURLUSESSL_ALL`. To use this option you have to lookup the integer values for these enums in the symbol table. These symbol values never change, so you only need to lookup the value you need once and then hardcode the integer value in your R code.
+
+```{r}
+curl::curl_symbols("CURLUSESSL")
+```
+
+So suppose we want to set `CURLOPT_USE_SSL` to `CURLUSESSL_ALL` we would use this R code:
+
+```{r}
+handle_setopt(handle, use_ssl = 3)
+```
+
+Another example is the [CURLOPT_HTTP_VERSION](https://curl.haxx.se/libcurl/c/CURLOPT_HTTP_VERSION.html) option. This option is needed to disable or enable HTTP/2. However some users are not aware this is actually an ENUM! The [docs](https://curl.haxx.se/libcurl/c/CURLOPT_HTTP_VERSION.html) explain HTTP_VERSION can be set to one of several strategies for negotiating the HTTP version between client and server. Valid values are:
+
+```{r}
+curl_symbols('CURL_HTTP_VERSION_')
+```
+
+As seen, the value `2` corresponds to `CURL_HTTP_VERSION_1_1` and `3` corresponds to `CURL_HTTP_VERSION_2_0`. 
+
+The default for http_version is `CURL_HTTP_VERSION_2TLS` which attempts HTTP/2 only for encrypted (HTTPS) connections. If you want to __disable http/2__ for whatever reason, you should set `CURL_HTTP_VERSION_1_1` which is `2`:
+
+```{r}
+# Force using HTTP 1.1
+handle_setopt(handle, http_version = 2)
+```
+
+Note that the value `1` corresponds to HTTP 1.0 which is a legacy version of HTTP that you should not use!
+Code that sets `http_version` to `1` (or even `1.1` which R simply rounds to 1) is almost always a bug.
+
+
+### Performing the request
 
 After the handle has been configured, it can be used with any of the download interfaces to perform the request. For example `curl_fetch_memory` will load store the output of the request in memory:
 
