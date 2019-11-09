@@ -236,7 +236,7 @@ handle_setopt(handle, useragent = 12345)
 ```
 
 
-### ENUM options (and HTTP/2)
+### ENUM (long) options
 
 Some curl options take an long in C that actually corresponds to an ENUM value. 
 
@@ -252,7 +252,11 @@ So suppose we want to set `CURLOPT_USE_SSL` to `CURLUSESSL_ALL` we would use thi
 handle_setopt(handle, use_ssl = 3)
 ```
 
-Another example is the [CURLOPT_HTTP_VERSION](https://curl.haxx.se/libcurl/c/CURLOPT_HTTP_VERSION.html) option. This option is needed to disable or enable HTTP/2. However some users are not aware this is actually an ENUM! The [docs](https://curl.haxx.se/libcurl/c/CURLOPT_HTTP_VERSION.html) explain HTTP_VERSION can be set to one of several strategies for negotiating the HTTP version between client and server. Valid values are:
+### Enable or disable HTTP/2
+
+Another example is the [CURLOPT_HTTP_VERSION](https://curl.haxx.se/libcurl/c/CURLOPT_HTTP_VERSION.html) option. This option is needed to disable or enable HTTP/2. However some users are not aware this is actually an ENUM and not a regular numeric value!
+
+The [docs](https://curl.haxx.se/libcurl/c/CURLOPT_HTTP_VERSION.html) explain HTTP_VERSION can be set to one of several strategies for negotiating the HTTP version between client and server. Valid values are:
 
 ```{r}
 curl_symbols('CURL_HTTP_VERSION_')
@@ -270,8 +274,13 @@ handle_setopt(handle, http_version = 2)
 Note that the value `1` corresponds to HTTP 1.0 which is a legacy version of HTTP that you should not use!
 Code that sets `http_version` to `1` (or even `1.1` which R simply rounds to 1) is almost always a bug.
 
+Also note that HTTP/2 will only be used if support has been enabled in libcurl on your platform:
 
-### Performing the request
+```{r}
+curl::curl_version()['http2']
+```
+
+## Performing the request
 
 After the handle has been configured, it can be used with any of the download interfaces to perform the request. For example `curl_fetch_memory` will load store the output of the request in memory:
 
