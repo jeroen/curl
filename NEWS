@@ -6,6 +6,9 @@
    whether STARTTLS is enabled; the function documentation has been updated to
    clarify that, and the default for use_ssl has been changed to TRUE.
  - Tweak intro vignette to emphasize ENUM options which is a common source of bugs.
+ - No longer enable HTTP/2 by default on libcurl < 7.62.0. These versions had some
+   annoying HTTP/2 bugs which sometimes cause the request to fail. Note that as of
+   7.62.0 libcurl always enables HTTP/2 when possible, this doesn't change.
 
 4.2
  - Fix for old versions of libcurl (build was broken in 4.1 on RHEL / CentOS).

@@ -180,10 +180,10 @@ static void set_handle_defaults(reference *ref){
   assert(curl_easy_setopt(handle, CURLOPT_PROXYAUTH, CURLAUTH_ANY));
 
   /* enables HTTP2 on HTTPS (match behavior of curl cmd util) */
-#if defined(CURL_VERSION_HTTP2) && defined(HAS_HTTP_VERSION_2TLS)
-  if(curl_version_info(CURLVERSION_NOW)->features & CURL_VERSION_HTTP2)
-    assert(curl_easy_setopt(handle, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2TLS));
-#endif
+//#if defined(CURL_VERSION_HTTP2) && defined(HAS_HTTP_VERSION_2TLS)
+//  if(curl_version_info(CURLVERSION_NOW)->features & CURL_VERSION_HTTP2)
+//    assert(curl_easy_setopt(handle, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2TLS));
+//#endif
 
   /* set an error buffer */
   assert(curl_easy_setopt(handle, CURLOPT_ERRORBUFFER, ref->errbuf));
