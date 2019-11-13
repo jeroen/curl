@@ -264,7 +264,20 @@ curl_symbols('CURL_HTTP_VERSION_')
 
 As seen, the value `2` corresponds to `CURL_HTTP_VERSION_1_1` and `3` corresponds to `CURL_HTTP_VERSION_2_0`. 
 
-The default for http_version is `CURL_HTTP_VERSION_2TLS` which attempts HTTP/2 only for encrypted (HTTPS) connections. If you want to __disable http/2__ for whatever reason, you should set `CURL_HTTP_VERSION_1_1` which is `2`:
+As of libcurl 7.62.0, the default for http_version is `CURL_HTTP_VERSION_2TLS` which attempts HTTP/2 only for encrypted (HTTPS) connections. If you want to enable http/2 on older versions of libcurl you need to set it manually:
+
+```{r}
+# Use HTTP/2 when possbile
+handle_setopt(handle, http_version = 4)
+```
+
+Note that this only has effect if HTTP/2 support has been enabled in libcurl on your platform:
+
+```{r}
+curl::curl_version()['http2']
+```
+
+If you want to explicitly __disable http/2__ for whatever reason, you should set `CURL_HTTP_VERSION_1_1` which is `2`:
 
 ```{r}
 # Force using HTTP 1.1
@@ -273,12 +286,6 @@ handle_setopt(handle, http_version = 2)
 
 Note that the value `1` corresponds to HTTP 1.0 which is a legacy version of HTTP that you should not use!
 Code that sets `http_version` to `1` (or even `1.1` which R simply rounds to 1) is almost always a bug.
-
-Also note that HTTP/2 will only be used if support has been enabled in libcurl on your platform:
-
-```{r}
-curl::curl_version()['http2']
-```
 
 ## Performing the request
 
