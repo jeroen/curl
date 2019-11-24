@@ -18,6 +18,8 @@ environment:
     - R_VERSION: stable
       CURL_SSL_BACKEND: openssl
     - R_VERSION: devel
+    - R_VERSION: devel
+      CURL_SSL_BACKEND: openssl
 
 build_script:
   - travis-tool.sh install_deps
