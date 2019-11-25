@@ -268,7 +268,7 @@ As of libcurl 7.62.0, the default for http_version is `CURL_HTTP_VERSION_2TLS` w
 
 ```{r}
 # Use HTTP/2 when possbile
-if(curl::curl_version()['http2']){
+if(curl::curl_version()$http2){
   handle_setopt(handle, http_version = 4)
 }
 ```
