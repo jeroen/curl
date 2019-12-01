@@ -59,7 +59,7 @@ has_internet <- local({
     }
 
     # Try via a proxy (mostly for Windows)
-    test_url <- 'https://1.1.1.1'
+    test_url <- 'http://captive.apple.com/hotspot-detect.html'
     ie_proxy <- ie_get_proxy_for_url(test_url)
 
     handle <- if(any(!is.na(proxy_vars))){
@@ -74,6 +74,7 @@ has_internet <- local({
     }
     req <- try(curl_fetch_memory(url = test_url, handle = handle), silent = TRUE)
     has_internet_via_proxy <<- is.list(req) && identical(req$status_code, 200L)
+      && grepl("Success", rawToChar(req$content))
     cat(ifelse(has_internet_via_proxy, "success!\n", "failed.\n"), file = stderr())
     return(has_internet_via_proxy)
   }
