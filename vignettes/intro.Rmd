@@ -252,7 +252,7 @@ So suppose we want to set `CURLOPT_USE_SSL` to `CURLUSESSL_ALL` we would use thi
 handle_setopt(handle, use_ssl = 3)
 ```
 
-### Enable or disable HTTP/2
+### Disabling HTTP/2
 
 Another example is the [CURLOPT_HTTP_VERSION](https://curl.haxx.se/libcurl/c/CURLOPT_HTTP_VERSION.html) option. This option is needed to disable or enable HTTP/2. However some users are not aware this is actually an ENUM and not a regular numeric value!
 
@@ -264,25 +264,14 @@ curl_symbols('CURL_HTTP_VERSION_')
 
 As seen, the value `2` corresponds to `CURL_HTTP_VERSION_1_1` and `3` corresponds to `CURL_HTTP_VERSION_2_0`. 
 
-As of libcurl 7.62.0, the default for http_version is `CURL_HTTP_VERSION_2TLS` which attempts HTTP/2 only for encrypted (HTTPS) connections. If you want to enable http/2 on older versions of libcurl you need to set it manually:
+As of libcurl 7.62.0, the default `http_version` is `CURL_HTTP_VERSION_2TLS` which uses HTTP/2 when possible, but only for HTTPS connections. Package authors should usually leave the default to let curl select the best appropriate http protocol.
+
+One exception is when writing a client for a server that seems to be running a buggy HTTP/2 server. Unfortunately this is not uncommon, and curl is a bit more picky than browsers. If you are frequently seeing `Error in the HTTP2 framing layer` error messages, then there is likely a problem with the HTTP/2 layer on the server.
+
+The easiest remedy is to __disable http/2__ for this server by forcing http 1.1 until the service has upgraded their webservers. To do so, set the `http_version` to `CURL_HTTP_VERSION_1_1` (value: `2`):
 
 ```{r}
-# Use HTTP/2 when possbile
-if(curl::curl_version()$http2){
-  handle_setopt(handle, http_version = 4)
-}
-```
-
-Note that this can only be done if HTTP/2 support has been enabled in libcurl on your platform:
-
-```{r}
-curl::curl_version()['http2']
-```
-
-If you want to explicitly __disable http/2__ for whatever reason, you should set `CURL_HTTP_VERSION_1_1` which is `2`:
-
-```{r}
-# Force using HTTP 1.1
+# Force using HTTP 1.1 (the number 2 is an enum value, see above)
 handle_setopt(handle, http_version = 2)
 ```
 
