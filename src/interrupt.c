@@ -15,7 +15,7 @@ int pending_interrupt() {
 }
 
 /* created in init.c */
-CURLM * multi_handle;
+extern CURLM * multi_handle;
 
 /* Don't call Rf_error() until we remove the handle from the multi handle! */
 CURLcode curl_perform_with_interrupt(CURL *handle){
