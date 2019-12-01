@@ -43,8 +43,9 @@ has_internet <- local({
     if(isTRUE(has_internet_via_proxy))
       return(TRUE)
 
-    # Method 1: try DNS lookup
-    if(identical(nslookup('one.one.one.one', error = FALSE, ipv4_only = TRUE), '1.1.1.1'))
+    # Method 1: try DNS lookup. May resolve to 8.8.8.8 or 8.8.4.4
+    ip_addr <- nslookup('dns.google.com', error = FALSE, ipv4_only = TRUE)
+    if(grepl("^8\\.8\\.", ip_addr))
       return(TRUE)
 
     # Method 2: look for a proxy server
