@@ -11,13 +11,11 @@
 \alias{multi_fdset}
 \title{Async Multi Download}
 \usage{
-multi_add(handle, done = NULL, fail = NULL, data = NULL,
-  pool = NULL)
+multi_add(handle, done = NULL, fail = NULL, data = NULL, pool = NULL)
 
 multi_run(timeout = Inf, poll = FALSE, pool = NULL)
 
-multi_set(total_con = 50, host_con = 6, multiplex = TRUE,
-  pool = NULL)
+multi_set(total_con = 50, host_con = 6, multiplex = TRUE, pool = NULL)
 
 multi_list(pool = NULL)
 

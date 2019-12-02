@@ -4,8 +4,6 @@
 #' properly formatted \href{https://tools.ietf.org/html/rfc2822}{RFC2822} email message with From/To/Subject headers and CRLF
 #' line breaks.
 #'
-#' @details
-#'
 #' @section Specifying the server, port, and protocol:
 #'
 #' The \code{smtp_server} argument takes a hostname, or an SMTP URL:

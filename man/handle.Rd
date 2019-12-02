@@ -76,6 +76,7 @@ r <- curl_fetch_memory("http://httpbin.org/put", h)
 cat(rawToChar(r$content))
 }
 \seealso{
-Other handles: \code{\link{handle_cookies}}
+Other handles: 
+\code{\link{handle_cookies}()}
 }
 \concept{handles}

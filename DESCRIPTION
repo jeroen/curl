@@ -24,7 +24,6 @@ URL: https://jeroen.cran.dev/curl (docs)
     https://curl.haxx.se/libcurl/ (upstream)
 BugReports: https://github.com/jeroen/curl/issues
 Suggests:
-    askpass,
     spelling,
     testthat (>= 1.0.0),
     knitr,
@@ -37,6 +36,6 @@ VignetteBuilder: knitr
 Depends:
     R (>= 3.0.0)
 LazyData: true
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.1
 Encoding: UTF-8
 Language: en-US

@@ -4,8 +4,7 @@
 \alias{curl_download}
 \title{Download file to disk}
 \usage{
-curl_download(url, destfile, quiet = TRUE, mode = "wb",
-  handle = new_handle())
+curl_download(url, destfile, quiet = TRUE, mode = "wb", handle = new_handle())
 }
 \arguments{
 \item{url}{A character string naming the URL of a resource to be downloaded.}

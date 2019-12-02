@@ -4,9 +4,15 @@
 \alias{send_mail}
 \title{Send email}
 \usage{
-send_mail(mail_from, mail_rcpt, message,
-  smtp_server = "smtp://localhost", use_ssl = c("try", "no", "force"),
-  verbose = TRUE, ...)
+send_mail(
+  mail_from,
+  mail_rcpt,
+  message,
+  smtp_server = "smtp://localhost",
+  use_ssl = c("try", "no", "force"),
+  verbose = TRUE,
+  ...
+)
 }
 \arguments{
 \item{mail_from}{email address of the sender.}
@@ -35,9 +41,6 @@ with the SMTP server.}
 Use the curl SMTP client to send an email. The \code{message} argument must be
 properly formatted \href{https://tools.ietf.org/html/rfc2822}{RFC2822} email message with From/To/Subject headers and CRLF
 line breaks.
-}
-\details{
-
 }
 \section{Specifying the server, port, and protocol}{
 

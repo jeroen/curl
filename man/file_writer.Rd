@@ -26,11 +26,11 @@ tmp <- tempfile()
 writer <- file_writer(tmp)
 
 # Now it opens
-writer(charToRaw("Hello!\\n"))
-writer(charToRaw("How are you?\\n"))
+writer(charToRaw("Hello!\n"))
+writer(charToRaw("How are you?\n"))
 
 # Close it!
-writer(charToRaw("All done!\\n"), close = TRUE)
+writer(charToRaw("All done!\n"), close = TRUE)
 
 # Check it worked
 readLines(tmp)

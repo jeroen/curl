@@ -44,8 +44,8 @@ has_internet <- local({
       return(TRUE)
 
     # Method 1: try DNS lookup. May resolve to 8.8.8.8 or 8.8.4.4
-    ip_addr <- nslookup('dns.google.com', error = FALSE, ipv4_only = TRUE)
-    if(grepl("^8\\.8\\.", ip_addr))
+    ip_addr <- nslookup('dns.google.com', multiple = TRUE, error = FALSE, ipv4_only = TRUE)
+    if(any(c("8.8.4.4", "8.8.8.8") %in% ip_addr))
       return(TRUE)
 
     # Method 2: look for a proxy server
@@ -73,8 +73,8 @@ has_internet <- local({
       return(FALSE)
     }
     req <- try(curl_fetch_memory(url = test_url, handle = handle), silent = TRUE)
-    has_internet_via_proxy <<- is.list(req) && identical(req$status_code, 200L)
-      && grepl("Success", rawToChar(req$content))
+    has_internet_via_proxy <<- is.list(req) && identical(req$status_code, 200L) &&
+      grepl("Success", rawToChar(req$content))
     cat(ifelse(has_internet_via_proxy, "success!\n", "failed.\n"), file = stderr())
     return(has_internet_via_proxy)
   }

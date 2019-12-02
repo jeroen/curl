@@ -14,8 +14,14 @@ curl_fetch_disk(url, path, handle = new_handle())
 
 curl_fetch_stream(url, fun, handle = new_handle())
 
-curl_fetch_multi(url, done = NULL, fail = NULL, pool = NULL,
-  data = NULL, handle = new_handle())
+curl_fetch_multi(
+  url,
+  done = NULL,
+  fail = NULL,
+  pool = NULL,
+  data = NULL,
+  handle = new_handle()
+)
 
 curl_fetch_echo(url, handle = new_handle())
 }
@@ -80,18 +86,18 @@ res$content
 readLines(res$content)
 
 # Stream with callback
-res <- curl_fetch_stream("http://www.httpbin.org/drip?duration=5&numbytes=15&code=200", function(x){
+res <- curl_fetch_stream("http://www.httpbin.org/drip?duration=3&numbytes=15&code=200", function(x){
   cat(rawToChar(x))
 })
 
 # Async API
 data <- list()
 success <- function(res){
-  cat("Request done! Status:", res$status, "\\n")
+  cat("Request done! Status:", res$status, "\n")
   data <<- c(data, list(res))
 }
 failure <- function(msg){
-  cat("Oh noes! Request failed!", msg, "\\n")
+  cat("Oh noes! Request failed!", msg, "\n")
 }
 curl_fetch_multi("http://httpbin.org/get", success, failure)
 curl_fetch_multi("http://httpbin.org/status/418", success, failure)

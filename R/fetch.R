@@ -39,7 +39,7 @@
 #' readLines(res$content)
 #'
 #' # Stream with callback
-#' res <- curl_fetch_stream("http://www.httpbin.org/drip?duration=5&numbytes=15&code=200", function(x){
+#' res <- curl_fetch_stream("http://www.httpbin.org/drip?duration=3&numbytes=15&code=200", function(x){
 #'   cat(rawToChar(x))
 #' })
 #'
