@@ -87,7 +87,7 @@ static int xferinfo_callback(void *clientp, xftype dltotal, xftype dlnow, xftype
     dlprev = dlnow;
     if(dltotal){
       int pct_dn = (100 * dlnow)/dltotal;
-      REprintf("\r [%d%%] Downloaded %.0lf bytes...", (double) dlnow, pct_dn);
+      REprintf("\r [%d%%] Downloaded %.0lf bytes...", pct_dn, (double) dlnow);
       if(dlnow == dltotal)
         REprintf("\n");
     } else {
@@ -96,7 +96,7 @@ static int xferinfo_callback(void *clientp, xftype dltotal, xftype dlnow, xftype
   } else if(ulnow && ulnow != ulprev){
     ulprev = ulnow;
     int pct_up = (100 * ulnow)/ultotal;
-    REprintf("\r [%d%%] Uploaded %.0lf bytes...", (double) ulnow, pct_up);
+    REprintf("\r [%d%%] Uploaded %.0lf bytes...", pct_up, (double) ulnow);
     if(ulnow == ultotal)
       REprintf("\n");
   }
