@@ -7,7 +7,7 @@
 \usage{
 nslookup(host, ipv4_only = FALSE, multiple = FALSE, error = TRUE)
 
-has_internet()
+has_internet(host = "dns.google.com")
 }
 \arguments{
 \item{host}{a string with a hostname}

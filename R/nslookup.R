@@ -38,13 +38,13 @@ nslookup <- function(host, ipv4_only = FALSE, multiple = FALSE, error = TRUE){
 has_internet <- local({
   proxy_vars_previous <- NULL
   has_internet_via_proxy <- NULL
-  function(){
+  function(host="dns.google.com"){
     # do not wait for nslookup() if we know proxy works
     if(isTRUE(has_internet_via_proxy))
       return(TRUE)
 
     # Method 1: try DNS lookup. May resolve to 8.8.8.8 or 8.8.4.4
-    ip_addr <- nslookup('dns.google.com', multiple = TRUE, error = FALSE, ipv4_only = TRUE)
+    ip_addr <- nslookup(host, multiple = TRUE, error = FALSE, ipv4_only = TRUE)
     if(any(c("8.8.4.4", "8.8.8.8") %in% ip_addr))
       return(TRUE)
 
