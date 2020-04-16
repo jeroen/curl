@@ -34,18 +34,20 @@ nslookup <- function(host, ipv4_only = FALSE, multiple = FALSE, error = TRUE){
 }
 
 #' @export
+#' @param expected_addr character vector of expected ipv4 addresses corresponding
+#'     to \code{host}, of at least one should match the output of \code{nslookup}
 #' @rdname nslookup
 has_internet <- local({
   proxy_vars_previous <- NULL
   has_internet_via_proxy <- NULL
-  function(host="dns.google.com"){
+  function(host="dns.google.com", expected_addr=c("8.8.4.4", "8.8.8.8")){
     # do not wait for nslookup() if we know proxy works
     if(isTRUE(has_internet_via_proxy))
       return(TRUE)
 
     # Method 1: try DNS lookup. May resolve to 8.8.8.8 or 8.8.4.4
     ip_addr <- nslookup(host, multiple = TRUE, error = FALSE, ipv4_only = TRUE)
-    if(any(c("8.8.4.4", "8.8.8.8") %in% ip_addr))
+    if(any(expected_addr %in% ip_addr))
       return(TRUE)
 
     # Method 2: look for a proxy server

@@ -7,7 +7,7 @@
 \usage{
 nslookup(host, ipv4_only = FALSE, multiple = FALSE, error = TRUE)
 
-has_internet(host = "dns.google.com")
+has_internet(host = "dns.google.com", expected_addr = c("8.8.4.4", "8.8.8.8"))
 }
 \arguments{
 \item{host}{a string with a hostname}
@@ -17,6 +17,9 @@ has_internet(host = "dns.google.com")
 \item{multiple}{returns multiple ip addresses if possible}
 
 \item{error}{raise an error for failed DNS lookup. Otherwise returns \code{NULL}.}
+
+\item{expected_addr}{character vector of expected ipv4 addresses corresponding
+to \code{host}, of at least one should match the output of \code{nslookup}}
 }
 \description{
 The \code{nslookup} function is similar to \code{nsl} but works on all platforms
