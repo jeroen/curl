@@ -80,7 +80,7 @@ supports it, and proceed as normal otherwise.
 }
 
 \examples{
-\donttest{# Set sender and recipients (email addresses only)
+\dontrun{# Set sender and recipients (email addresses only)
 recipients <- readline("Enter your email address to receive test: ")
 sender <- 'test@noreply.com'
 

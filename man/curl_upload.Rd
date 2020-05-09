@@ -24,7 +24,7 @@ server. Uploading to HTTP means performing an \code{HTTP PUT} on that URL.
 Be aware that sftp is only available for libcurl clients built with libssh2.
 }
 \examples{
-\donttest{# Upload package to winbuilder:
+\dontrun{# Upload package to winbuilder:
 curl_upload('mypkg_1.3.tar.gz', 'ftp://win-builder.r-project.org/R-devel/')
 }
 }

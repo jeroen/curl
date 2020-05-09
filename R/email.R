@@ -53,7 +53,7 @@
 #' @param ... other options passed to \code{\link{handle_setopt}}. In most cases
 #' you will need to set a \code{username} and \code{password} to authenticate
 #' with the SMTP server.
-#' @examples \donttest{# Set sender and recipients (email addresses only)
+#' @examples \dontrun{# Set sender and recipients (email addresses only)
 #' recipients <- readline("Enter your email address to receive test: ")
 #' sender <- 'test@noreply.com'
 #'
