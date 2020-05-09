@@ -14,11 +14,10 @@ install:
 
 environment:
   matrix:
-    - R_VERSION: stable
-    - R_VERSION: stable
-      CURL_SSL_BACKEND: openssl
-    - R_VERSION: devel
-    - R_VERSION: devel
+    - R_VERSION: oldrel
+    - R_VERSION: oldrel
+    - R_VERSION: patched
+    - R_VERSION: patched
       CURL_SSL_BACKEND: openssl
 
 build_script:
