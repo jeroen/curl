@@ -10,6 +10,8 @@ matrix:
     - dist: trusty
     - dist: xenial
     - os: osx
+      osx_image: xcode11.4
+    - os: osx
       osx_image: xcode10.2
     - os: osx
       osx_image: xcode9.4
