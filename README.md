@@ -106,14 +106,19 @@ On __Fedora__, __CentOS or RHEL__ use [libcurl-devel](https://apps.fedoraproject
 sudo yum install libcurl-devel
 ````
 
-On __OS-X__ libcurl is included with the system so nothing extra is needed. However if you want to build against the most recent version of libcurl, install and force-link [curl from homebrew](https://github.com/Homebrew/homebrew-core/blob/master/Formula/curl.rb):
+On __OS-X__ libcurl is included with the system so nothing extra is needed. However if you want to build against the most recent version of libcurl, install [curl from homebrew](https://github.com/Homebrew/homebrew-core/blob/master/Formula/curl.rb). You need to set the `PKG_CONFIG_PATH` environment variable to help R find the non-default curl:
 
 ```
 brew install curl
-brew link --force curl
+export PKG_CONFIG_PATH="/usr/local/opt/curl/lib/pkgconfig"
+R
 ```
 
-Note that on OS-X you **must** recompile the R package from source after force-linking curl, otherwise you get a version conflict with the system version of libcurl.
+You have to recompile the R package from source to use the new libcurl:
+
+```r
+install.packages("curl", type = "source")
+```
 
 ## Development version
 
