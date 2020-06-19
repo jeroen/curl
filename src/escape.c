@@ -2,32 +2,22 @@
 #include <Rinternals.h>
 
 SEXP R_curl_escape(SEXP url, SEXP unescape_) {
-  if (TYPEOF(url) != STRSXP)
+  if (!Rf_isString(url))
     error("`url` must be a character vector.");
-
-  /* init curl */
-  CURL *curl = curl_easy_init();
-  if (!curl)
-    return(R_NilValue);
-
-  int unescape = asLogical(unescape_);
+  CURL *handle = curl_easy_init();
   int n = Rf_length(url);
   SEXP output = PROTECT(allocVector(STRSXP, n));
 
-  for (int i = 0; i < n; ++i) {
-    const char *in = CHAR(STRING_ELT(url, i));
-    char *out;
-    if (unescape) {
-      out = curl_easy_unescape(curl, in, 0, NULL);
-    } else {
-      out = curl_easy_escape(curl, in, 0);
+  for (int i = 0; i < n; i++) {
+    const char *input = CHAR(STRING_ELT(url, i));
+    char *out = asLogical(unescape_) ?
+      curl_easy_unescape(handle, input, 0, NULL) : curl_easy_escape(handle, input, 0);
+    if(out != NULL){
+      SET_STRING_ELT(output, i, mkCharCE(out, CE_UTF8));
+      curl_free(out);
     }
-
-    SET_STRING_ELT(output, i, mkCharCE(out, CE_UTF8));
-    curl_free(out);
   }
-
-  curl_easy_cleanup(curl);
+  curl_easy_cleanup(handle);
   UNPROTECT(1);
   return output;
 }
