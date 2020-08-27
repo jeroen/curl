@@ -10,7 +10,6 @@ matrix:
     - dist: trusty
     - dist: xenial
     - dist: bionic
-    - dist: focal
     - os: osx
       osx_image: xcode11.4
     - os: osx
