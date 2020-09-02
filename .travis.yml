@@ -5,9 +5,6 @@ fortran: false
 
 matrix:
   include:
-    - dist: precise
-      r: 3.5.3
-    - dist: trusty
     - dist: xenial
     - dist: bionic
     - os: osx
