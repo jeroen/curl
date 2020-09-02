@@ -14,6 +14,9 @@
   if (grepl("mingw", R.Version()$platform) && !file.exists(get_bundle())){
     warning("No CA bundle found. SSL validation disabled.", call. = FALSE)
   }
+  ssl <- sub("\\(.*\\)\\W*", "", curl_version()$ssl_version)
+  msg <- paste("Using libcurl", curl_version()$version, "with", ssl)
+  packageStartupMessage(msg)
 }
 
 #' @useDynLib curl R_set_bundle

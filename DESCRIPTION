@@ -36,6 +36,6 @@ VignetteBuilder: knitr
 Depends:
     R (>= 3.0.0)
 LazyData: true
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 Encoding: UTF-8
 Language: en-US
