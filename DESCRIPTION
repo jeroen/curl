@@ -40,4 +40,5 @@ RoxygenNote: 7.1.1
 Encoding: UTF-8
 Language: en-US
 Remotes: 
-  jeroen/jsonlite
+  jeroen/webutils,
+  r-lib/testthat
