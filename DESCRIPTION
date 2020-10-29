@@ -39,3 +39,5 @@ LazyData: true
 RoxygenNote: 7.1.1
 Encoding: UTF-8
 Language: en-US
+Remotes: 
+  r-lib/testthat
