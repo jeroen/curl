@@ -1,7 +1,7 @@
 Package: curl
 Type: Package
 Title: A Modern and Flexible Web Client for R
-Version: 4.3
+Version: 4.3.0.9000
 Authors@R: c(
     person("Jeroen", "Ooms", role = c("aut", "cre"), email = "jeroen@berkeley.edu",
       comment = c(ORCID = "0000-0002-4035-0289")),
@@ -20,7 +20,7 @@ Description: The curl() and curl_download() functions provide highly
 License: MIT + file LICENSE
 SystemRequirements: libcurl: libcurl-devel (rpm) or libcurl4-openssl-dev (deb).
 URL: https://jeroen.cran.dev/curl (docs)
-    https://github.com/jeroen/curl#readme (devel) 
+    https://github.com/jeroen/curl (devel) 
     https://curl.haxx.se/libcurl/ (upstream)
 BugReports: https://github.com/jeroen/curl/issues
 Suggests:
