@@ -20,14 +20,6 @@
   web client see the 'httr' package which builds on this package with http
   specific tools and logic.
 
-## Devel version
-
-Note that you cannot use `devtools::install_github()` because it uses `curl` ;)
-
-```r
-install.packages("https://github.com/jeroen/curl/archive/master.tar.gz", repos = NULL)
-```
-
 ## Documentation
 
 About the R package:
@@ -106,17 +98,20 @@ On __Fedora__, __CentOS or RHEL__ use [libcurl-devel](https://apps.fedoraproject
 sudo yum install libcurl-devel
 ````
 
-On __OS-X__ libcurl is included with the system so nothing extra is needed. However if you want to build against the most recent version of libcurl, install [curl from homebrew](https://github.com/Homebrew/homebrew-core/blob/master/Formula/curl.rb). You need to set the `PKG_CONFIG_PATH` environment variable to help R find the non-default curl:
+### MacOS using curl from homebrew
+
+On __OS-X__ libcurl is included with the system so nothing extra is needed. However if you want to build against the most recent version of libcurl, which also has many extra features enabled (sftp, http2), install [curl from homebrew](https://github.com/Homebrew/homebrew-core/blob/master/Formula/curl.rb) and then recompile the R package.
+
+You need to set the `PKG_CONFIG_PATH` environment variable to help R find the non-default curl:
 
 ```
 brew install curl
-export PKG_CONFIG_PATH="/usr/local/opt/curl/lib/pkgconfig"
-R
 ```
 
 You have to recompile the R package from source to use the new libcurl:
 
 ```r
+Sys.setenv(PKG_CONFIG_PATH="/usr/local/opt/curl/lib/pkgconfig")
 install.packages("curl", type = "source")
 ```
 
@@ -129,22 +124,3 @@ install.packages("https://github.com/jeroen/curl/archive/master.tar.gz", repos =
 ```
 
 Of course windows users need [Rtools](https://cran.r-project.org/bin/windows/Rtools/) to compile from source.
-
-## Enable HTTP/2
-
-To use HTTP/2 the `libcurl` library has to be built `--with-nghttp2` which is usually not the default. Use `curl_version()` in R to check if it is enabled. To enable it on OSX use:
-
-```
-brew install curl-openssl
-export PKG_CONFIG_PATH="/usr/local/opt/curl-openssl/lib/pkgconfig"
-R
-```
-
-And then reinstall the `curl` package from source:
-
-```r
-install.packages("https://github.com/jeroen/curl/archive/master.tar.gz", repos = NULL)
-```
-
-Check again `curl_version()` to see if HTTP/2 is enabled now.
-
