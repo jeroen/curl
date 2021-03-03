@@ -107,12 +107,14 @@ On __MacOS__ libcurl is included with the system, so usually nothing extra is ne
 brew install curl
 ```
 
-You need to set the `PKG_CONFIG_PATH` environment variable to help R find the non-default curl, when building from source:
+You need to set the `PKG_CONFIG_PATH` environment variable to help R find the non-default curl, when building from source. Run this in a __clean R session__ which does not have the curl package loaded already:
 
 ```r
 Sys.setenv(PKG_CONFIG_PATH="/usr/local/opt/curl/lib/pkgconfig")
 install.packages("curl", type = "source")
 ```
+
+Afterwards confirm the version using `curl::curl_version()`.
 
 ## Development version
 
