@@ -100,15 +100,14 @@ sudo yum install libcurl-devel
 
 ### MacOS using curl from homebrew
 
-On __OS-X__ libcurl is included with the system so nothing extra is needed. However if you want to build against the most recent version of libcurl, which also has many extra features enabled (sftp, http2), install [curl from homebrew](https://github.com/Homebrew/homebrew-core/blob/master/Formula/curl.rb) and then recompile the R package.
+On __MacOS__ libcurl is included with the system, so usually nothing extra is needed. However if you want to build against the very most recent version of libcurl, which also has many extra features enabled (sftp, http2), install [curl from homebrew](https://github.com/Homebrew/homebrew-core/blob/master/Formula/curl.rb) and then recompile the R package.
 
-You need to set the `PKG_CONFIG_PATH` environment variable to help R find the non-default curl:
 
 ```
 brew install curl
 ```
 
-You have to recompile the R package from source to use the new libcurl:
+You need to set the `PKG_CONFIG_PATH` environment variable to help R find the non-default curl, when building from source:
 
 ```r
 Sys.setenv(PKG_CONFIG_PATH="/usr/local/opt/curl/lib/pkgconfig")
