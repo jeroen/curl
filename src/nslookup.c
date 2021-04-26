@@ -3,6 +3,11 @@
 int jeroen_win32_idn_to_ascii(const char *in, char **out);
 #endif
 
+//needed to expose inet_ntop
+#ifndef _WIN32_WINNT
+#define _WIN32_WINNT 0x0600
+#endif
+
 //getaddrinfo is an extension (not C99)
 #if !defined(_WIN32) && !defined(__sun) && !defined(_POSIX_C_SOURCE)
 #define _POSIX_C_SOURCE 200112L
@@ -14,7 +19,6 @@ int jeroen_win32_idn_to_ascii(const char *in, char **out);
 #ifdef _WIN32
 #include <winsock2.h>
 #include <ws2tcpip.h>
-const char *inet_ntop(int af, const void *src, char *dst, socklen_t size);
 #else
 #include <sys/socket.h>
 #include <netinet/in.h>
