@@ -20,6 +20,7 @@ This function is only for testing purposes. It starts a local httpuv server to
 echo the request body and content type in the response.
 }
 \examples{
+if(require('httpuv')){
 h <- new_handle(url = 'https://httpbin.org/post')
 handle_setform(h, foo = "blabla", bar = charToRaw("test"),
   myfile = form_file(system.file("DESCRIPTION"), "text/description"))
@@ -32,4 +33,5 @@ cat(rawToChar(formdata$body))
 
 # Parse multipart
 webutils::parse_http(formdata$body, formdata$content_type)
+}
 }

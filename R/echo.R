@@ -8,7 +8,8 @@
 #' @param port the port number on which to run httpuv server
 #' @param progress show progress meter during http transfer
 #' @param file path or connection to write body. Default returns body as raw vector.
-#' @examples h <- new_handle(url = 'https://httpbin.org/post')
+#' @examples if(require('httpuv')){
+#' h <- new_handle(url = 'https://httpbin.org/post')
 #' handle_setform(h, foo = "blabla", bar = charToRaw("test"),
 #'   myfile = form_file(system.file("DESCRIPTION"), "text/description"))
 #'
@@ -20,6 +21,7 @@
 #'
 #' # Parse multipart
 #' webutils::parse_http(formdata$body, formdata$content_type)
+#' }
 curl_echo <- function(handle, port = 9359, progress = interactive(), file = NULL){
   progress <- isTRUE(progress)
   if(!(is.null(file) || inherits(file, "connection") || is.character(file)))

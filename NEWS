@@ -1,3 +1,7 @@
+4.3.1
+ - Make tests pass if 'httpuv' is not available (BDR)
+ - Some cleanup for Windows compilers
+
 4.3
  - No longer enable HTTP/2 by default on libcurl < 7.62.0 because some old libcurl
    versions have annoying HTTP/2 bugs which randomly cause requests to fail. Note
