@@ -1,24 +1,20 @@
 # curl
 
-##### *A Modern and Flexible Web Client for R*
+> A Modern and Flexible Web Client for R
 
-[![Build Status](https://travis-ci.org/jeroen/curl.svg?branch=master)](https://travis-ci.org/jeroen/curl)
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/jeroen/curl?branch=master&svg=true)](https://ci.appveyor.com/project/jeroen/curl)
-[![Coverage Status](https://codecov.io/github/jeroen/curl/coverage.svg?branch=master)](https://codecov.io/github/jeroen/curl?branch=master)
-[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/curl)](http://cran.r-project.org/package=curl)
-[![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/curl)](http://cran.r-project.org/web/packages/curl/index.html)
-[![Research software impact](http://depsy.org/api/package/cran/curl/badge.svg)](http://depsy.org/package/r/curl)
-[![Github Stars](https://img.shields.io/github/stars/jeroen/curl.svg?style=social&label=Github)](https://github.com/jeroen/curl)
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/curl)](https://cran.r-project.org/package=curl)
+[![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/curl)](https://cran.r-project.org/package=curl)
 
-> The curl() and curl_download() functions provide highly
-  configurable drop-in replacements for base url() and download.file() with
-  better performance, support for encryption (https, ftps), gzip compression,
-  authentication, and other libcurl goodies. The core of the package implements a
-  framework for performing fully customized requests where data can be processed
-  either in memory, on disk, or streaming via the callback or connection
-  interfaces. Some knowledge of libcurl is recommended; for a more-user-friendly
-  web client see the 'httr' package which builds on this package with http
-  specific tools and logic.
+The curl() and curl_download() functions provide highly
+configurable drop-in replacements for base url() and download.file() with
+better performance, support for encryption (https, ftps), gzip compression,
+authentication, and other libcurl goodies. The core of the package implements a
+framework for performing fully customized requests where data can be processed
+either in memory, on disk, or streaming via the callback or connection
+interfaces. Some knowledge of libcurl is recommended; for a more-user-friendly
+web client see the 'httr' package which builds on this package with http
+specific tools and logic.
 
 ## Documentation
 
@@ -28,7 +24,7 @@ About the R package:
 
 Other resources:
 
- - [libcurl handle options overview](https://curl.haxx.se/libcurl/c/curl_easy_setopt.html) (use with `handle_setopt` in R)
+ - [libcurl handle options overview](https://curl.se/libcurl/c/curl_easy_setopt.html) (use with `handle_setopt` in R)
 
 ## Hello World
 
@@ -86,13 +82,13 @@ Binary packages for __OS-X__ or __Windows__ can be installed directly from CRAN:
 install.packages("curl")
 ```
 
-Installation from source on Linux requires [`libcurl`](https://curl.haxx.se/libcurl/). On __Debian__ or __Ubuntu__ use [libcurl4-openssl-dev](https://packages.debian.org/testing/libcurl4-openssl-dev):
+Installation from source on Linux requires [`libcurl`](https://curl.se/libcurl/). On __Debian__ or __Ubuntu__ use [libcurl4-openssl-dev](https://packages.debian.org/testing/libcurl4-openssl-dev):
 
 ```
 sudo apt-get install -y libcurl-dev
 ```
 
-On __Fedora__, __CentOS or RHEL__ use [libcurl-devel](https://apps.fedoraproject.org/packages/libcurl-devel):
+On __Fedora__, __CentOS or RHEL__ use [libcurl-devel](https://src.fedoraproject.org/rpms/curl):
 
 ```
 sudo yum install libcurl-devel

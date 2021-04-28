@@ -1,5 +1,5 @@
 /* Non-blocking drop-in replacement for curl_easy_perform with support for
- * R interruptions. Based on: https://curl.haxx.se/libcurl/c/multi-single.html
+ * R interruptions. Based on: https://curl.se/libcurl/c/multi-single.html
  */
 
 #include <Rinternals.h>

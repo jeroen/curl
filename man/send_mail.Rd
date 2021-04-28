@@ -28,7 +28,7 @@ message, including sender/recipient/subject headers. See example.}
 and protocol" below.}
 
 \item{use_ssl}{Request to upgrade the connection to SSL using the STARTTLS command,
-see \href{https://curl.haxx.se/libcurl/c/CURLOPT_USE_SSL.html}{CURLOPT_USE_SSL}
+see \href{https://curl.se/libcurl/c/CURLOPT_USE_SSL.html}{CURLOPT_USE_SSL}
 for details. Default will try to SSL, proceed as normal otherwise.}
 
 \item{verbose}{print output}

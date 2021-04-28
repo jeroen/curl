@@ -26,7 +26,7 @@ library(curl)
 library(jsonlite)
 ```
 
-The curl package provides bindings to the [libcurl](https://curl.haxx.se/libcurl/) C library for R. The package supports retrieving data in-memory, downloading to disk, or streaming using the [R "connection" interface](https://stat.ethz.ch/R-manual/R-devel/library/base/html/connections.html). Some knowledge of curl is recommended to use this package. For a more user-friendly HTTP client, have a look at the  [httr](https://cran.r-project.org/package=httr/vignettes/quickstart.html) package which builds on curl with HTTP specific tools and logic.
+The curl package provides bindings to the [libcurl](https://curl.se/libcurl/) C library for R. The package supports retrieving data in-memory, downloading to disk, or streaming using the [R "connection" interface](https://stat.ethz.ch/R-manual/R-devel/library/base/html/connections.html). Some knowledge of curl is recommended to use this package. For a more user-friendly HTTP client, have a look at the  [httr](https://cran.r-project.org/package=httr/vignettes/quickstart.html) package which builds on curl with HTTP specific tools and logic.
 
 ## Request interfaces
 
@@ -184,7 +184,7 @@ head(readLines('mirrors.csv'))
 unlink('mirrors.csv')
 ```
 
-If you *do* want the `curl_fetch_*` functions to automatically raise an error, you should set the [`FAILONERROR`](https://curl.haxx.se/libcurl/c/CURLOPT_FAILONERROR.html) option to `TRUE` in the handle of the request.
+If you *do* want the `curl_fetch_*` functions to automatically raise an error, you should set the [`FAILONERROR`](https://curl.se/libcurl/c/CURLOPT_FAILONERROR.html) option to `TRUE` in the handle of the request.
 
 ```{r, error=TRUE, purl = FALSE}
 h <- new_handle(failonerror = TRUE)
@@ -209,16 +209,16 @@ handle_setheaders(h,
 )
 ```
 
-Use the `curl_options()` function to get a list of the options supported by your version of libcurl. The [libcurl documentation](https://curl.haxx.se/libcurl/c/curl_easy_setopt.html) explains what each option does. Option names are not case sensitive.
+Use the `curl_options()` function to get a list of the options supported by your version of libcurl. The [libcurl documentation](https://curl.se/libcurl/c/curl_easy_setopt.html) explains what each option does. Option names are not case sensitive.
 
-It is important you check the [libcurl documentation](https://curl.haxx.se/libcurl/c/curl_easy_setopt.html) to set options of the correct type. Options in libcurl take several types:
+It is important you check the [libcurl documentation](https://curl.se/libcurl/c/curl_easy_setopt.html) to set options of the correct type. Options in libcurl take several types:
 
  - number
  - string
  - slist (vector of strings)
  - enum (long) option
  
-The R bindings will automatically do some type checking and coercion to convert R values to appropriate libcurl option values. Logical (boolean) values in R automatically get converted to `0` or `1` for example [CURLOPT_VERBOSE](https://curl.haxx.se/libcurl/c/CURLOPT_VERBOSE.html):
+The R bindings will automatically do some type checking and coercion to convert R values to appropriate libcurl option values. Logical (boolean) values in R automatically get converted to `0` or `1` for example [CURLOPT_VERBOSE](https://curl.se/libcurl/c/CURLOPT_VERBOSE.html):
 
 
 ```{r}
@@ -240,7 +240,7 @@ handle_setopt(handle, useragent = 12345)
 
 Some curl options take an long in C that actually corresponds to an ENUM value. 
 
-For example the [CURLOPT_USE_SSL](https://curl.haxx.se/libcurl/c/CURLOPT_USE_SSL.html) docs explains that there are 4 possible values for this option: `CURLUSESSL_NONE`, `CURLUSESSL_TRY`, `CURLUSESSL_CONTROL`, and `CURLUSESSL_ALL`. To use this option you have to lookup the integer values for these enums in the symbol table. These symbol values never change, so you only need to lookup the value you need once and then hardcode the integer value in your R code.
+For example the [CURLOPT_USE_SSL](https://curl.se/libcurl/c/CURLOPT_USE_SSL.html) docs explains that there are 4 possible values for this option: `CURLUSESSL_NONE`, `CURLUSESSL_TRY`, `CURLUSESSL_CONTROL`, and `CURLUSESSL_ALL`. To use this option you have to lookup the integer values for these enums in the symbol table. These symbol values never change, so you only need to lookup the value you need once and then hardcode the integer value in your R code.
 
 ```{r}
 curl::curl_symbols("CURLUSESSL")
@@ -254,9 +254,9 @@ handle_setopt(handle, use_ssl = 3)
 
 ### Disabling HTTP/2
 
-Another example is the [CURLOPT_HTTP_VERSION](https://curl.haxx.se/libcurl/c/CURLOPT_HTTP_VERSION.html) option. This option is needed to disable or enable HTTP/2. However some users are not aware this is actually an ENUM and not a regular numeric value!
+Another example is the [CURLOPT_HTTP_VERSION](https://curl.se/libcurl/c/CURLOPT_HTTP_VERSION.html) option. This option is needed to disable or enable HTTP/2. However some users are not aware this is actually an ENUM and not a regular numeric value!
 
-The [docs](https://curl.haxx.se/libcurl/c/CURLOPT_HTTP_VERSION.html) explain HTTP_VERSION can be set to one of several strategies for negotiating the HTTP version between client and server. Valid values are:
+The [docs](https://curl.se/libcurl/c/CURLOPT_HTTP_VERSION.html) explain HTTP_VERSION can be set to one of several strategies for negotiating the HTTP version between client and server. Valid values are:
 
 ```{r}
 curl_symbols('CURL_HTTP_VERSION_')

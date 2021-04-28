@@ -38,7 +38,7 @@ In order to make SSL (https) connections, libcurl uses an SSL backend. Currently
 
 The default backend on Windows 7 and up is Secure Channel. This uses the native Windows SSL API and certificates, which is the safest choice for most users.
 
-To switch to OpenSSL, you need to set an environment variable [`CURL_SSL_BACKEND`](https://curl.haxx.se/libcurl/c/libcurl-env.html) to `"openssl"` when starting R. A good place to set this is in your `.Renviron` file in your user home (Documents) directory; the `?Startup` manual has more details.
+To switch to OpenSSL, you need to set an environment variable [`CURL_SSL_BACKEND`](https://curl.se/libcurl/c/libcurl-env.html) to `"openssl"` when starting R. A good place to set this is in your `.Renviron` file in your user home (Documents) directory; the `?Startup` manual has more details.
 
 ```
 CURL_SSL_BACKEND=openssl
@@ -69,7 +69,7 @@ It is not possible to change the SSL backend once the `curl` package has been lo
 
 Windows proxy servers are a complicated topic because depending on your corporate network configuration, different settings may be needed. If your company uses proxies with custom certificates, this might also interact with the previous topic.
 
-Proxy settings can either be configured in the handle for a single request, or globally via environment variables. This is explained in detail on the curl website detail in the manual pages for [CURLOPT_PROXY](https://curl.haxx.se/libcurl/c/CURLOPT_PROXY.html) and [libcurl-env](https://curl.haxx.se/libcurl/c/libcurl-env.html). 
+Proxy settings can either be configured in the handle for a single request, or globally via environment variables. This is explained in detail on the curl website detail in the manual pages for [CURLOPT_PROXY](https://curl.se/libcurl/c/CURLOPT_PROXY.html) and [libcurl-env](https://curl.se/libcurl/c/libcurl-env.html). 
 
 If you know the address of your proxy server you can set it via the `curlopt_proxy` option:
 
@@ -87,7 +87,7 @@ If this did not work, study the verbose output from above to see what seems to b
 curl_options('proxy')
 ```
 
-To use a global proxy server for all your requests, you can set the environment variable `http_proxy` (lowercase!) or `https_proxy` or `ALL_PROXY`. See [this page](https://curl.haxx.se/libcurl/c/libcurl-env.html) for details. This variable may be set or changed in R at runtime, for example:
+To use a global proxy server for all your requests, you can set the environment variable `http_proxy` (lowercase!) or `https_proxy` or `ALL_PROXY`. See [this page](https://curl.se/libcurl/c/libcurl-env.html) for details. This variable may be set or changed in R at runtime, for example:
 
 ```r
 Sys.setenv(ALL_PROXY = "http://proxy.mycorp.com:8080")
@@ -123,7 +123,7 @@ curl::ie_proxy_info()
 #> [1] "10.*;173.*;mail.mycorp.org;autodiscover.mycorp.org;ev.mycorp.org;ecms.mycorp.org"
 ```
 
-There are a few settings here, such as default proxy server and a list of hosts which do _not_ need proxying, usually hosts within the corporate intranet (these can probably be used in [`CURLOPT_NOPROXY`](https://curl.haxx.se/libcurl/c/CURLOPT_NOPROXY.html)). 
+There are a few settings here, such as default proxy server and a list of hosts which do _not_ need proxying, usually hosts within the corporate intranet (these can probably be used in [`CURLOPT_NOPROXY`](https://curl.se/libcurl/c/CURLOPT_NOPROXY.html)). 
 
 The most complicated case is when your network uses different proxy servers for different target urls. The `AutoConfigUrl` field above refers to a [proxy auto config](https://en.wikipedia.org/wiki/Proxy_auto-config) (PAC) script that Internet Explorer has to run to find out which proxy server it has to use for a given host. The  `curl` package exposes another function which calls out to Internet Explorer do it's thing and tell us the appropriate proxy server for a given host:
 

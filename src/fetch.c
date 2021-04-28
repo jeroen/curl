@@ -1,6 +1,6 @@
 /* *
  * Blocking easy interfaces to libcurl for R.
- * Example: http://curl.haxx.se/libcurl/c/getinmemory.html
+ * Example: https://curl.se/libcurl/c/getinmemory.html
  */
 
 #include "curl-common.h"

@@ -3,8 +3,8 @@
  * Source: https://github.com/jeroen/curl
  * Comments and contributions are welcome!
  * Helpful libcurl examples:
- *  - http://curl.haxx.se/libcurl/c/getinmemory.html
- *  - http://curl.haxx.se/libcurl/c/multi-single.html
+ *  - https://curl.se/libcurl/c/getinmemory.html
+ *  - https://curl.se/libcurl/c/multi-single.html
  * Sparse documentation about Rconnection API:
  *  - https://github.com/wch/r-source/blob/trunk/src/include/R_ext/Connections.h
  *  - http://biostatmatt.com/R/R-conn-ints/C-Structures.html

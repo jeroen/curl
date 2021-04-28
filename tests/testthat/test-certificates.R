@@ -6,7 +6,7 @@ test_that("CloudFlare / LetsEncrypt certs", {
   expect_equal(curl_fetch_memory('https://letsencrypt.org')$status_code, 200)
 
   # Test HTTP -> HTTPS (TLS 1.2) redirection
-  expect_equal(curl_fetch_memory('http://curl.haxx.se')$status_code, 200)
+  expect_equal(curl_fetch_memory('http://curl.se')$status_code, 200)
 })
 
 test_that("Invalid domain raises an error", {
