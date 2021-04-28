@@ -134,9 +134,9 @@ test_that("Platform specific features", {
   if(.Platform$OS.type == 'windows'){
     ssl_version <- curl_version()$ssl_version
     if(get_windows_build() < 7600 || grepl("openssl", Sys.getenv('CURL_SSL_BACKEND'), TRUE)){
-      expect_equal(ssl_version, "OpenSSL/1.1.1a (Schannel)")
+      expect_match(ssl_version, "OpenSSL.*\\(Schannel\\)")
     } else {
-      expect_equal(ssl_version, "(OpenSSL/1.1.1a) Schannel")
+      expect_match(ssl_version, "\\(OpenSSL.*\\) Schannel")
     }
   } else if(!is.na(curl_options()['unix_socket_path'])){
     # This should simply not error
