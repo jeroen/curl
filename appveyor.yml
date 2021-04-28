@@ -14,8 +14,8 @@ install:
 
 environment:
   matrix:
-    - R_VERSION: oldrel
-    - R_VERSION: oldrel
+    - R_VERSION: 3.6.3
+    - R_VERSION: 3.6.3
       CURL_SSL_BACKEND: openssl
     - R_VERSION: patched
     - R_VERSION: patched
