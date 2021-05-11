@@ -4,7 +4,7 @@
 \alias{curl_upload}
 \title{Upload a File}
 \usage{
-curl_upload(file, url, verbose = TRUE, reuse = TRUE, ...)
+curl_upload(file, url, verbose = TRUE, reuse = TRUE, headers = list(), ...)
 }
 \arguments{
 \item{file}{connection object or path to an existing file on disk}
@@ -14,6 +14,8 @@ curl_upload(file, url, verbose = TRUE, reuse = TRUE, ...)
 \item{verbose}{emit some progress output}
 
 \item{reuse}{try to keep alive and recycle connections when possible}
+
+\item{headers}{a list of headers passed to \code{\link{handle_setheaders}}}
 
 \item{...}{other arguments passed to \code{\link{handle_setopt}}, for
 example a \code{username} and \code{password}.}

@@ -9,12 +9,13 @@
 #' @param url where to upload, should start with e.g. \code{ftp://}
 #' @param verbose emit some progress output
 #' @param reuse try to keep alive and recycle connections when possible
+#' @param headers a list of headers passed to \code{\link{handle_setheaders}}
 #' @param ... other arguments passed to \code{\link{handle_setopt}}, for
 #' example a \code{username} and \code{password}.
 #' @examples \dontrun{# Upload package to winbuilder:
 #' curl_upload('mypkg_1.3.tar.gz', 'ftp://win-builder.r-project.org/R-devel/')
 #' }
-curl_upload <- function(file, url, verbose = TRUE, reuse = TRUE, ...) {
+curl_upload <- function(file, url, verbose = TRUE, reuse = TRUE, headers = list(), ...) {
   infilesize <- NA
   con <- if(is.character(file)){
     file <- normalizePath(file, mustWork = TRUE)
@@ -42,6 +43,7 @@ curl_upload <- function(file, url, verbose = TRUE, reuse = TRUE, ...) {
   if(!is.na(infilesize)){
     handle_setopt(h, infilesize_large = infilesize)
   }
+  handle_setheaders(h, .list = headers)
   if(grepl('/$', url) && is.character(file)){
     url <- paste0(url, basename(file))
   }
