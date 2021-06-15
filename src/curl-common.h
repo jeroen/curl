@@ -41,6 +41,9 @@ typedef struct {
   int locked;
 } reference;
 
+extern SEXP curl_safe_eval;
+extern SEXP curl_last_error;
+
 CURL* get_handle(SEXP ptr);
 reference* get_ref(SEXP ptr);
 void assert_status(CURLcode res, reference *ref);

@@ -1,6 +1,25 @@
 #include "curl-common.h"
 #include <stdint.h> /* SIZE_MAX */
 
+#include <R_ext/libextern.h>    // R_interrupts_suspended +
+
+LibExtern Rboolean R_interrupts_suspended;
+
+SEXP curl_safe_eval = NULL;
+SEXP curl_last_error = NULL;
+
+SEXP R_set_r_callbacks(SEXP eval) {
+  curl_safe_eval = eval;
+  R_PreserveObject(eval);
+  return R_NilValue;
+}
+
+SEXP R_enable_interrupts() {
+  int old = R_interrupts_suspended;
+  R_interrupts_suspended = FALSE;
+  return ScalarInteger(old);
+}
+
 CURL* get_handle(SEXP ptr){
   return get_ref(ptr)->handle;
 }
@@ -61,6 +80,24 @@ static char * parse_host(const char * input){
   return url;
 }
 
+static R_INLINE SEXP new_env(SEXP parent) {
+  SEXP env;
+  PROTECT(env = allocSExp(ENVSXP));
+  SET_FRAME(env, R_NilValue);
+  SET_ENCLOS(env, parent);
+  SET_HASHTAB(env, R_NilValue);
+  SET_ATTRIB(env, R_NilValue);
+  UNPROTECT(1);
+  return env;
+}
+
+void curl_throw_error(SEXP err) {
+  SEXP env = PROTECT(new_env(R_BaseEnv));
+  Rf_defineVar(Rf_install("err"), err, env);
+  SEXP call = PROTECT(Rf_lang2(Rf_install("stop"), err));
+  Rf_eval(call, env);
+}
+
 void assert_status(CURLcode res, reference *ref){
   // Customize better error message for timeoutsS
   if(res == CURLE_OPERATION_TIMEDOUT){
@@ -69,8 +106,16 @@ void assert_status(CURLcode res, reference *ref){
       Rf_error("%s: [%s] %s", curl_easy_strerror(res), parse_host(url), ref->errbuf);
     }
   }
-  if(res != CURLE_OK)
-    Rf_error("%s", strlen(ref->errbuf) ? ref->errbuf : curl_easy_strerror(res));
+  if(res != CURLE_OK) {
+    if(curl_last_error != NULL) {
+      SEXP err = PROTECT(curl_last_error);
+      R_ReleaseObject(curl_last_error);
+      curl_last_error = NULL;
+      curl_throw_error(err);
+    } else {
+      Rf_error("%s", strlen(ref->errbuf) ? ref->errbuf : curl_easy_strerror(res));
+    }
+  }
 }
 
 void massert(CURLMcode res){

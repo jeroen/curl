@@ -1,4 +1,9 @@
+
+#' @useDynLib curl R_set_r_callbacks
+
 .onLoad <- function(libname, pkgname){
+  .Call(R_set_r_callbacks, curl_safe_eval)
+
   if (!grepl("mingw", R.Version()$platform))
     return()
 

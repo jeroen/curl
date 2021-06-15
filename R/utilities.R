@@ -49,3 +49,21 @@ trimws <- function(x) {
 is_string <- function(x){
   is.character(x) && length(x)
 }
+
+#' @useDynLib curl R_interrupt
+interrupt_me <- function() {
+  .Call(R_interrupt)
+}
+
+#' @useDynLib curl R_enable_interrupts
+curl_safe_eval <- function(callback, down, up, interrupts_suspended) {
+  cond <- NULL
+  out <- FALSE
+  if (!interrupts_suspended) .Call(R_enable_interrupts)
+  tryCatch(
+    out <- callback(down, up),
+    error = function(err) cond <<- err,
+    interrupt = function(int) cond <<- int
+  )
+  list(out, cond)
+}
