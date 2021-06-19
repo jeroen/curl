@@ -69,6 +69,11 @@ void assert_status(CURLcode res, reference *ref){
       Rf_error("%s: [%s] %s", curl_easy_strerror(res), parse_host(url), ref->errbuf);
     }
   }
+
+  // Try to find condition raised by in callback
+  if(res == CURLE_ABORTED_BY_CALLBACK)
+    raise_callback_error();
+
   if(res != CURLE_OK)
     Rf_error("%s", strlen(ref->errbuf) ? ref->errbuf : curl_easy_strerror(res));
 }

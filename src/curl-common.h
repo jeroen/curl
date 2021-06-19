@@ -65,3 +65,4 @@ SEXP make_handle_response(reference *ref);
 SEXP reflist_init();
 SEXP reflist_add(SEXP x, SEXP target);
 SEXP reflist_remove(SEXP x, SEXP target);
+void raise_callback_error();

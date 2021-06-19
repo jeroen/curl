@@ -1,5 +1,20 @@
 #include "curl-common.h"
 
+SEXP cb_wrapper_fun = NULL;
+SEXP cb_error_fun = NULL;
+
+SEXP R_set_cb_handlers(SEXP cb_wrapper_fun_, SEXP cb_error_fun_){
+  cb_wrapper_fun = cb_wrapper_fun_;
+  cb_error_fun = cb_error_fun_;
+  return R_NilValue;
+}
+
+void raise_callback_error(){
+  SEXP call = PROTECT(Rf_lang1(cb_error_fun));
+  Rf_eval(call, R_GlobalEnv);
+  UNPROTECT(1);
+}
+
 int R_curl_callback_progress(SEXP fun,
                              double dltotal, double dlnow,
                              double ultotal, double ulnow) {
@@ -12,9 +27,9 @@ int R_curl_callback_progress(SEXP fun,
   REAL(up)[0] = ultotal;
   REAL(up)[1] = ulnow;
 
-  SEXP call = PROTECT(Rf_lang3(fun, down, up));
+  SEXP call = PROTECT(Rf_lang4(cb_wrapper_fun, fun, down, up));
   int ok;
-  SEXP res = PROTECT(R_tryEval(call, R_GlobalEnv, &ok));
+  SEXP res = PROTECT(R_tryEvalSilent(call, R_GlobalEnv, &ok));
 
   if (ok != 0) {
     UNPROTECT(4);
@@ -66,9 +81,8 @@ int R_curl_callback_debug(CURL *handle, curl_infotype type_, char *data,
   memcpy(RAW(msg), data, size);
 
   /* call the R function */
-  SEXP call = PROTECT(Rf_lang3(fun, type, msg));
-  R_tryEval(call, R_GlobalEnv, NULL);
-
+  SEXP call = PROTECT(Rf_lang4(cb_wrapper_fun, fun, type, msg));
+  R_tryEvalSilent(call, R_GlobalEnv, NULL);
   UNPROTECT(3);
   // Debug function must always return 0
   return 0;

@@ -35,6 +35,7 @@ extern SEXP R_new_handle();
 extern SEXP R_nslookup(SEXP, SEXP);
 extern SEXP R_proxy_info();
 extern SEXP R_set_bundle(SEXP);
+extern SEXP R_set_cb_handlers(SEXP, SEXP);
 extern SEXP R_split_string(SEXP, SEXP);
 extern SEXP R_total_handles();
 extern SEXP R_total_writers();
@@ -59,6 +60,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"R_handle_setform",      (DL_FUNC) &R_handle_setform,      2},
     {"R_handle_setheaders",   (DL_FUNC) &R_handle_setheaders,   2},
     {"R_handle_setopt",       (DL_FUNC) &R_handle_setopt,       3},
+    {"R_set_cb_handlers",     (DL_FUNC) &R_set_cb_handlers,     2},
     {"R_multi_add",           (DL_FUNC) &R_multi_add,           5},
     {"R_multi_cancel",        (DL_FUNC) &R_multi_cancel,        1},
     {"R_multi_fdset",         (DL_FUNC) &R_multi_fdset,         1},

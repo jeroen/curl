@@ -1,4 +1,5 @@
 .onLoad <- function(libname, pkgname){
+  init_callback_error_handlers()
   if (!grepl("mingw", R.Version()$platform))
     return()
 
