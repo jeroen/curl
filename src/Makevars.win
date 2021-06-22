@@ -1,5 +1,5 @@
 VERSION=7.64.1
-PKG_LIBS= -L../windows/libcurl-$(VERSION)/lib${R_ARCH} \
+PKG_LIBS= -L../windows/libcurl-$(VERSION)/lib${R_ARCH}${CRT} \
 	-lwinhttp -lcurl -lssh2 -lz -lssl -lcrypto -lgdi32 -lws2_32 -lcrypt32 -lwldap32
 
 PKG_CPPFLAGS= \
