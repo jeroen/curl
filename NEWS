@@ -1,6 +1,6 @@
 4.3.2
  - Windows: update binaries to openssl 1.1.1k and libssh2 1.9.0
- - Windows: add ucrt binaries
+ - Windows: fix build for experimental ucrt toolchains
 
 4.3.1
  - Make tests pass if 'httpuv' is not available (BDR)
