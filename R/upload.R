@@ -32,9 +32,9 @@ curl_upload <- function(file, url, verbose = TRUE, reuse = TRUE, ...) {
     total_bytes <<- total_bytes + length(buf)
     if(verbose){
       if(length(buf) == 0 || identical(total_bytes, infilesize)){
-        cat(sprintf("\rUploaded %d bytes... all done!\n", total_bytes), file = stderr())
+        cat(sprintf("\rUploaded %.0f bytes... all done!\n", total_bytes), file = stderr())
       } else {
-        cat(sprintf("\rUploaded %d bytes...", total_bytes), file = stderr())
+        cat(sprintf("\rUploaded %.0f bytes...", total_bytes), file = stderr())
       }
     }
     return(buf)

@@ -40,7 +40,7 @@ print.form_file <- function(x, ...){
 
 #' @export
 print.form_data <- function(x, ...){
-  txt <- paste(sprintf("Form data of length %d", length(x$value)))
+  txt <- paste(sprintf("Form data of length %.0f", length(x$value)))
   if(!is.null(x$type)){
     txt <- sprintf("%s (type: %s)", txt, x$type)
   }

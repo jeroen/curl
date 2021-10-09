@@ -73,7 +73,7 @@ curl_echo <- function(handle, port = 9359, progress = interactive(), file = NULL
       if(up[1] == 0 && down[1] == 0){
         cat("\rConnecting...", file = stderr())
       } else {
-        cat(sprintf("\rUpload: %s (%d%%)   ", format_size(up[2]),
+        cat(sprintf("\rUpload: %s (%.0f%%)   ", format_size(up[2]),
                     as.integer(100 * up[2] / up[1])), file = stderr())
       }
     }
