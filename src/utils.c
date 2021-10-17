@@ -63,7 +63,7 @@ static char * parse_host(const char * input){
 
 void assert_status(CURLcode res, reference *ref){
   // Customize better error message for timeoutsS
-  if(res == CURLE_OPERATION_TIMEDOUT){
+  if(res == CURLE_OPERATION_TIMEDOUT || res == CURLE_SSL_CACERT){
     const char *url = NULL;
     if(curl_easy_getinfo(ref->handle, CURLINFO_EFFECTIVE_URL, &url) == CURLE_OK){
       Rf_error("%s: [%s] %s", curl_easy_strerror(res), parse_host(url), ref->errbuf);
