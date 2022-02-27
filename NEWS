@@ -1,3 +1,6 @@
+4.3.3
+ - Add support for setting ssl_ctx_function callbacks
+
 4.3.2
  - Windows: update binaries to openssl 1.1.1k and libssh2 1.9.0
  - Windows: fix build for experimental ucrt toolchains

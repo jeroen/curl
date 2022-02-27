@@ -80,3 +80,14 @@ int R_curl_callback_xferinfo(SEXP fun,
                              curl_off_t  ultotal, curl_off_t  ulnow) {
   return R_curl_callback_progress(fun, dltotal, dlnow, ultotal, ulnow);
 }
+
+/* See the man page for ?ssl_ctx in the openssl R package for examples*/
+int R_curl_callback_ssl_ctx(CURL *handle, void *ssl_ctx, SEXP fun){
+  SEXP ptr = PROTECT(R_MakeExternalPtr(ssl_ctx, R_NilValue, R_NilValue));
+  Rf_setAttrib(ptr, R_ClassSymbol, Rf_mkString("ssl_ctx"));
+  SEXP call = PROTECT(Rf_lang2(fun, ptr));
+  int err = 0;
+  R_tryEval(call, R_GlobalEnv, &err);
+  UNPROTECT(2);
+  return err;
+}

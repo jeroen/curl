@@ -216,7 +216,7 @@ SEXP R_new_handle(){
   ref->handle = curl_easy_init();
   total_handles++;
   set_handle_defaults(ref);
-  SEXP prot = PROTECT(allocVector(VECSXP, 5)); //for protecting callback functions
+  SEXP prot = PROTECT(allocVector(VECSXP, 6)); //for protecting callback functions
   SEXP ptr = PROTECT(R_MakeExternalPtr(ref, R_NilValue, prot));
   R_RegisterCFinalizerEx(ptr, fin_handle, TRUE);
   setAttrib(ptr, R_ClassSymbol, mkString("curl_handle"));
@@ -314,6 +314,14 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
         (curl_debug_callback) R_curl_callback_debug));
       assert(curl_easy_setopt(handle, CURLOPT_DEBUGDATA, val));
       SET_VECTOR_ELT(prot, 4, val); //protect gc
+    } else if (key == CURLOPT_SSL_CTX_FUNCTION){
+      if (TYPEOF(val) != CLOSXP)
+        error("Value for option %s (%d) must be a function.", optname, key);
+
+      assert(curl_easy_setopt(handle, CURLOPT_SSL_CTX_FUNCTION,
+                              (curl_ssl_ctx_callback) R_curl_callback_ssl_ctx));
+      assert(curl_easy_setopt(handle, CURLOPT_SSL_CTX_DATA, val));
+      SET_VECTOR_ELT(prot, 5, val); //protect gc
     } else if (key == CURLOPT_URL) {
       /* always use utf-8 for urls */
       const char * url_utf8 = translateCharUTF8(STRING_ELT(val, 0));

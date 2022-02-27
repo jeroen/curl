@@ -13,6 +13,8 @@ PKG_TEST_HEADER="<curl/curl.h>"
 PKG_LIBS="-lcurl"
 PKG_CFLAGS=""
 
+# export PKG_CONFIG_PATH="/usr/local/opt/curl/lib/pkgconfig"
+
 # Use pkg-config if available
 pkg-config --version >/dev/null 2>&1
 if [ $? -eq 0 ]; then
