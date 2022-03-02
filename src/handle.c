@@ -344,9 +344,12 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
       }
       assert(curl_easy_setopt(handle, key, (curl_off_t) asReal(val)));
     } else if(r_curl_is_postfields_option(key) || r_curl_is_string_option(key)){
+      if(key == CURLOPT_POSTFIELDS){
+        key = CURLOPT_COPYPOSTFIELDS;
+      }
       switch (TYPEOF(val)) {
       case RAWSXP:
-        if(key == CURLOPT_POSTFIELDS || key == CURLOPT_COPYPOSTFIELDS)
+        if(key == CURLOPT_COPYPOSTFIELDS)
           assert(curl_easy_setopt(handle, CURLOPT_POSTFIELDSIZE_LARGE, (curl_off_t) Rf_length(val)));
         assert(curl_easy_setopt(handle, key, RAW(val)));
         break;
