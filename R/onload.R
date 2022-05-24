@@ -1,3 +1,4 @@
+#' @useDynLib curl, .registration = TRUE
 .onLoad <- function(libname, pkgname){
   if (!grepl("mingw", R.Version()$platform))
     return()
@@ -19,12 +20,10 @@
   packageStartupMessage(msg)
 }
 
-#' @useDynLib curl R_set_bundle
 set_bundle <- function(path){
   .Call(R_set_bundle, path)
 }
 
-#' @useDynLib curl R_get_bundle
 get_bundle <- function(){
   .Call(R_get_bundle)
 }

@@ -25,7 +25,6 @@
 #'   so you can create a pipeline of operations.
 #' @export
 #' @name handle
-#' @useDynLib curl R_new_handle
 #' @rdname handle
 #' @examples
 #' h <- new_handle()
@@ -47,7 +46,6 @@ new_handle <- function(...){
 }
 
 #' @export
-#' @useDynLib curl R_handle_setopt
 #' @param handle Handle to modify
 #' @param .list A named list of options. This is useful if you've created
 #'   a list of options elsewhere, avoiding the use of \code{do.call()}.
@@ -69,7 +67,6 @@ handle_setopt <- function(handle, ..., .list = list()){
 }
 
 #' @export
-#' @useDynLib curl R_handle_setheaders
 #' @rdname handle
 handle_setheaders <- function(handle, ..., .list = list()){
   stopifnot(inherits(handle, "curl_handle"))
@@ -85,14 +82,12 @@ handle_setheaders <- function(handle, ..., .list = list()){
   invisible(handle)
 }
 
-#' @useDynLib curl R_handle_getheaders
 #' @rdname handle
 handle_getheaders <- function(handle){
   stopifnot(inherits(handle, "curl_handle"))
   .Call(R_handle_getheaders, handle)
 }
 
-#' @useDynLib curl R_handle_getcustom
 #' @rdname handle
 handle_getcustom <- function(handle){
   stopifnot(inherits(handle, "curl_handle"))
@@ -100,7 +95,6 @@ handle_getcustom <- function(handle){
 }
 
 #' @export
-#' @useDynLib curl R_handle_setform
 #' @rdname handle
 handle_setform <- function(handle, ..., .list = list()){
   stopifnot(inherits(handle, "curl_handle"))
@@ -119,7 +113,6 @@ handle_setform <- function(handle, ..., .list = list()){
 
 #' @export
 #' @rdname handle
-#' @useDynLib curl R_handle_reset
 handle_reset <- function(handle){
   stopifnot(inherits(handle, "curl_handle"))
   .Call(R_handle_reset, handle)
@@ -131,7 +124,6 @@ handle_reset <- function(handle){
 #' The \code{handle_cookies} function returns a data frame with 7 columns as specified in the
 #' \href{http://www.cookiecentral.com/faq/#3.5}{netscape cookie file format}.
 #'
-#' @useDynLib curl R_get_handle_cookies
 #' @export
 #' @param handle a curl handle object
 #' @family handles
@@ -172,7 +164,6 @@ handle_cookies <- function(handle){
 
 #' @export
 #' @rdname handle
-#' @useDynLib curl R_get_handle_response
 handle_data <- function(handle){
   stopifnot(inherits(handle, "curl_handle"))
   out <- .Call(R_get_handle_response, handle)
@@ -189,7 +180,6 @@ print.curl_handle <- function(x, ...){
 }
 
 # Only for testing memory leaks
-#' @useDynLib curl R_total_handles
 total_handles <- function(){
   .Call(R_total_handles)
 }
