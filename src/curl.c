@@ -24,6 +24,10 @@
 #define BSWAP_32 OSSwapInt32
 #elif (defined(__OpenBSD__))
 #define BSWAP_32(x) swap32(x)
+#elif (defined(__NetBSD__))
+#include <sys/types.h>
+#include <machine/bswap.h>
+#define BSWAP_32(x) bswap32(x)
 #elif (defined(__GLIBC__))
 #include <byteswap.h>
 #define BSWAP_32(x) bswap_32(x)
