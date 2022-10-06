@@ -39,7 +39,7 @@ with the SMTP server.}
 }
 \description{
 Use the curl SMTP client to send an email. The \code{message} argument must be
-properly formatted \href{https://tools.ietf.org/html/rfc2822}{RFC2822} email message with From/To/Subject headers and CRLF
+properly formatted \href{https://www.rfc-editor.org/rfc/rfc2822}{RFC2822} email message with From/To/Subject headers and CRLF
 line breaks.
 }
 \section{Specifying the server, port, and protocol}{
