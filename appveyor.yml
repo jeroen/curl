@@ -10,6 +10,9 @@ init:
 install:
   ps: Bootstrap
 
+image: Visual Studio 2022
+
+
 # Adapt as necessary starting from here
 
 environment:
