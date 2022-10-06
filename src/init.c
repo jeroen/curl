@@ -11,9 +11,9 @@ extern SEXP R_curl_escape(SEXP, SEXP);
 extern SEXP R_curl_fetch_disk(SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP R_curl_fetch_memory(SEXP, SEXP, SEXP);
 extern SEXP R_curl_getdate(SEXP);
-extern SEXP R_curl_version();
+extern SEXP R_curl_version(void);
 extern SEXP R_download_curl(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
-extern SEXP R_get_bundle();
+extern SEXP R_get_bundle(void);
 extern SEXP R_get_handle_cookies(SEXP);
 extern SEXP R_get_handle_response(SEXP);
 extern SEXP R_get_proxy_for_url(SEXP, SEXP, SEXP);
@@ -27,18 +27,18 @@ extern SEXP R_multi_add(SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP R_multi_cancel(SEXP);
 extern SEXP R_multi_fdset(SEXP);
 extern SEXP R_multi_list(SEXP);
-extern SEXP R_multi_new();
+extern SEXP R_multi_new(void);
 extern SEXP R_multi_run(SEXP, SEXP, SEXP);
 extern SEXP R_multi_setopt(SEXP, SEXP, SEXP, SEXP);
 extern SEXP R_new_file_writer(SEXP);
-extern SEXP R_new_handle();
+extern SEXP R_new_handle(void);
 extern SEXP R_nslookup(SEXP, SEXP);
-extern SEXP R_proxy_info();
+extern SEXP R_proxy_info(void);
 extern SEXP R_set_bundle(SEXP);
 extern SEXP R_split_string(SEXP, SEXP);
-extern SEXP R_total_handles();
-extern SEXP R_total_writers();
-extern SEXP R_windows_build();
+extern SEXP R_total_handles(void);
+extern SEXP R_total_writers(void);
+extern SEXP R_windows_build(void);
 extern SEXP R_write_file_writer(SEXP, SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
@@ -79,7 +79,7 @@ static const R_CallMethodDef CallEntries[] = {
     {NULL, NULL, 0}
 };
 
-void switch_to_openssl_on_vista();
+void switch_to_openssl_on_vista(void);
 CURLM *multi_handle = NULL;
 
 attribute_visible void R_init_curl(DllInfo *info) {

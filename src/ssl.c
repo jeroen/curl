@@ -8,7 +8,7 @@
 /* Force OpenSSL on Legacy Windows (Vista/2008) which do not support TLS 1.2 natively.
  * On other systems we let libcurl choose so you can set the 'CURL_SSL_BACKEND' variable.
  */
-void switch_to_openssl_on_vista(){
+void switch_to_openssl_on_vista(void){
 #if defined(_WIN32) && defined(HAS_MULTI_SSL)
   /* If a CURL_SSL_BACKEND is set, do not override */
   char *envvar = getenv("CURL_SSL_BACKEND");

@@ -58,10 +58,10 @@ size_t push_disk(void* contents, size_t sz, size_t nmemb, FILE *ctx);
 size_t append_buffer(void *contents, size_t sz, size_t nmemb, void *ctx);
 size_t data_callback(void * data, size_t sz, size_t nmemb, SEXP fun);
 CURLcode curl_perform_with_interrupt(CURL *handle);
-int pending_interrupt();
+int pending_interrupt(void);
 SEXP make_handle_response(reference *ref);
 
 /* reflist.c */
-SEXP reflist_init();
+SEXP reflist_init(void);
 SEXP reflist_add(SEXP x, SEXP target);
 SEXP reflist_remove(SEXP x, SEXP target);

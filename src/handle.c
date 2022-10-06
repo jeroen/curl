@@ -33,7 +33,7 @@ SEXP R_set_bundle(SEXP path){
   return mkString(R_WINDOWS_CA_BUNDLE);
 }
 
-SEXP R_get_bundle(){
+SEXP R_get_bundle(void){
   return mkString(R_WINDOWS_CA_BUNDLE);
 }
 
@@ -104,7 +104,7 @@ static int xferinfo_callback(void *clientp, xftype dltotal, xftype dlnow, xftype
 }
 
 /* Set default headers here, these are only allocated once */
-static struct curl_slist * default_headers(){
+static struct curl_slist * default_headers(void){
   static struct curl_slist * headers = NULL;
   if(headers == NULL){
     headers = curl_slist_append(headers, "Expect:");
@@ -210,7 +210,7 @@ static void set_handle_defaults(reference *ref){
 #endif
 }
 
-SEXP R_new_handle(){
+SEXP R_new_handle(void){
   reference *ref = calloc(1, sizeof(reference));
   ref->refCount = 1;
   ref->handle = curl_easy_init();
@@ -458,7 +458,7 @@ SEXP make_rawvec(unsigned char *ptr, size_t size){
   return out;
 }
 
-SEXP make_namesvec(){
+SEXP make_namesvec(void){
   SEXP names = PROTECT(allocVector(STRSXP, 7));
   SET_STRING_ELT(names, 0, mkChar("url"));
   SET_STRING_ELT(names, 1, mkChar("status_code"));
@@ -496,6 +496,6 @@ SEXP R_get_handle_response(SEXP ptr){
   return make_handle_response(ref);
 }
 
-SEXP R_total_handles(){
+SEXP R_total_handles(void){
   return(ScalarInteger(total_handles));
 }

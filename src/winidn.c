@@ -66,5 +66,5 @@ int jeroen_win32_idn_to_ascii(const char *in, char **out){
 }
 
 #else
-void placeholder_to_avoid_stupid_warning(){}
+void placeholder_to_avoid_stupid_warning(void){}
 #endif

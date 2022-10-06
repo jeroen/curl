@@ -2,6 +2,7 @@
  - Add support for setting ssl_ctx_function callbacks
  - Normalize curlopt_postfields to curlopt_copypostfields to transfer ownership
    of the input data to libcurl.
+ - Fix strict-prototype errors
 
 4.3.2
  - Windows: update binaries to openssl 1.1.1k and libssh2 1.9.0

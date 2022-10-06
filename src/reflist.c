@@ -1,6 +1,6 @@
 #include <Rinternals.h>
 
-SEXP reflist_init(){
+SEXP reflist_init(void){
   return R_NilValue;
 }
 

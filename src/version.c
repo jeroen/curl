@@ -3,7 +3,7 @@
 
 #define make_string(x) x ? Rf_mkString(x) : ScalarString(NA_STRING)
 
-SEXP R_curl_version() {
+SEXP R_curl_version(void) {
   /* retrieve info from curl */
   const curl_version_info_data *data = curl_version_info(CURLVERSION_NOW);
 

@@ -38,6 +38,6 @@ SEXP R_new_file_writer(SEXP path){
   return ptr;
 }
 
-SEXP R_total_writers(){
+SEXP R_total_writers(void){
   return(ScalarInteger(total_open_writers));
 }
