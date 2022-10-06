@@ -1,5 +1,5 @@
 #!/bin/sh
-# Anticonf (tm) script by Jeroen Ooms (2019)
+# Anticonf (tm) script by Jeroen Ooms (2022)
 # This script will query 'pkg-config' for the required cflags and ldflags.
 # If pkg-config is unavailable or does not find the library, try setting
 # INCLUDE_DIR and LIB_DIR manually via e.g:
@@ -46,11 +46,11 @@ echo "Using PKG_CFLAGS=$PKG_CFLAGS"
 echo "Using PKG_LIBS=$PKG_LIBS"
 
 # Test configuration
-echo "#include $PKG_TEST_HEADER" | ${CC} ${CPPFLAGS} ${PKG_CFLAGS} ${CFLAGS} -E -xc - >/dev/null 2>&1 || R_CONFIG_ERROR=1;
+echo "#include $PKG_TEST_HEADER" | ${CC} ${CPPFLAGS} ${PKG_CFLAGS} ${CFLAGS} -E -xc - >/dev/null 2>configure.log
 
 # Customize the error
-if [ $R_CONFIG_ERROR ]; then
-  echo "------------------------- ANTICONF ERROR ---------------------------"
+if [ $? -ne 0 ]; then
+  echo "--------------------------- [ANTICONF] --------------------------------"
   echo "Configuration failed because $PKG_CONFIG_NAME was not found. Try installing:"
   echo " * deb: $PKG_DEB_NAME (Debian, Ubuntu, etc)"
   echo " * rpm: $PKG_RPM_NAME (Fedora, CentOS, RHEL)"
@@ -58,8 +58,10 @@ if [ $R_CONFIG_ERROR ]; then
   echo "PATH and PKG_CONFIG_PATH contains a $PKG_CONFIG_NAME.pc file. If pkg-config"
   echo "is unavailable you can set INCLUDE_DIR and LIB_DIR manually via:"
   echo "R CMD INSTALL --configure-vars='INCLUDE_DIR=... LIB_DIR=...'"
+  echo "-------------------------- [ERROR MESSAGE] ---------------------------"
+  cat configure.log
   echo "--------------------------------------------------------------------"
-  exit 1;
+  exit 1
 fi
 
 # Write to Makevars

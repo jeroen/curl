@@ -19,3 +19,4 @@
 ^release.R$
 bugs
 ^\.github$
+^configure.log$
