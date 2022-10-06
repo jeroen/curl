@@ -21,12 +21,14 @@ jobs:
       matrix:
         config:
           - {os: macOS-latest,   r: 'release'}
-          - {os: windows-2022,   r: 'devel'}
+          - {os: windows-latest, r: 'release', ssl-backend: openssl}
+          - {os: windows-latest, r: 'release'}
+          - {os: windows-latest, r: '4.1', ssl-backend: openssl}
           - {os: windows-latest, r: '4.1'}
           - {os: windows-latest, r: '3.6'}
           - {os: ubuntu-20.04,    r: 'devel', http-user-agent: 'release'}
           - {os: ubuntu-20.04,   r: 'release'}
-          - {os: ubuntu-18.04,   r: 'oldrel-4'}
+          - {os: ubuntu-20.04,   r: 'oldrel-4'}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -49,3 +51,5 @@ jobs:
           needs: check
 
       - uses: r-lib/actions/check-r-package@v2
+        env:
+          CURL_SSL_BACKEND: ${{ matrix.config.ssl-backend }}
