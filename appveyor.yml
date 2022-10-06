@@ -17,8 +17,8 @@ environment:
     - R_VERSION: 3.6.3
     - R_VERSION: 3.6.3
       CURL_SSL_BACKEND: openssl
-    - R_VERSION: patched
-    - R_VERSION: patched
+    - R_VERSION: 4.1.3
+    - R_VERSION: 4.1.3
       CURL_SSL_BACKEND: openssl
 
 build_script:
