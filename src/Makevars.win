@@ -5,7 +5,7 @@ TARGET = lib$(subst gcc,,$(COMPILED_BY))$(R_ARCH)
 PKG_LIBS = \
 	-L$(RWINLIB)/$(TARGET) \
 	-L$(RWINLIB)/lib$(R_ARCH) \
-	-lwinhttp -lcurl -lssh2 -lz -lssl -lcrypto -lgdi32 -lws2_32 -lcrypt32 -lwldap32
+	-lwinhttp -lcurl -lssh2 -lz -lssl -lcrypto -lzstd -lgdi32 -lws2_32 -lcrypt32 -lwldap32
 
 PKG_CPPFLAGS= \
 	-I$(RWINLIB)/include -DCURL_STATICLIB -DSTRICT_R_HEADERS
