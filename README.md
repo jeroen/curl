@@ -2,7 +2,6 @@
 
 > A Modern and Flexible Web Client for R
 
-[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/jeroen/curl?branch=master&svg=true)](https://ci.appveyor.com/project/jeroen/curl)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/curl)](https://cran.r-project.org/package=curl)
 [![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/curl)](https://cran.r-project.org/package=curl)
 
