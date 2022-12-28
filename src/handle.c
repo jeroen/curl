@@ -134,6 +134,7 @@ static void set_handle_defaults(reference *ref){
 
   /* Only set a default CA bundle for openssl */
   #ifdef _WIN32
+  curl_easy_setopt(handle, CURLOPT_SSL_OPTIONS, CURLSSLOPT_NO_REVOKE | CURLSSLOPT_NATIVE_CA);
   struct curl_tlssessioninfo *tlsinfo = NULL;
   if(curl_easy_getinfo(handle, CURLINFO_TLS_SSL_PTR, &tlsinfo) == CURLE_OK){
     if(tlsinfo->backend == CURLSSLBACKEND_OPENSSL) {
@@ -190,11 +191,6 @@ static void set_handle_defaults(reference *ref){
 
   /* dummy readfunction because default can freeze R */
   assert(curl_easy_setopt(handle, CURLOPT_READFUNCTION, dummy_read));
-
-  /* seems to be needed for native WinSSL */
-#ifdef _WIN32
-  curl_easy_setopt(handle, CURLOPT_SSL_OPTIONS, CURLSSLOPT_NO_REVOKE);
-#endif
 
   /* set default progress printer (disabled by default) */
 #ifdef HAS_XFERINFOFUNCTION

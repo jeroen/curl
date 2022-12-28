@@ -1,3 +1,7 @@
+5.0.0
+ - Windows: updated libcurl to 7.84.0 + nghttp2
+ - Windows: default to CURLSSLOPT_NATIVE_CA when using openssl
+
 4.3.3
  - Add support for setting ssl_ctx_function callbacks
  - Normalize curlopt_postfields to curlopt_copypostfields to transfer ownership
