@@ -2,7 +2,7 @@
 # Therefore you should only update the symbol table using the latest version of libcurl.
 # On Mac: 'brew install curl' will install to /usr/local/opt/curl
 
-blacklist <- c("CURL_DID_MEMORY_FUNC_TYPEDEFS", "CURL_STRICTER")
+blacklist <- c("CURL_DID_MEMORY_FUNC_TYPEDEFS", "CURL_STRICTER", "CURL_WIN32", "CURLOPT")
 
 # Function to read a symbol
 library(inline)
