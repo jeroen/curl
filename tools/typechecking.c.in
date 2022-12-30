@@ -17,10 +17,12 @@
    (option) == CURLOPT_DEBUGDATA ||                                           \
    (option) == CURLOPT_FNMATCH_DATA ||                                        \
    (option) == CURLOPT_HEADERDATA ||                                          \
+   (option) == CURLOPT_HSTSREADDATA ||                                        \
+   (option) == CURLOPT_HSTSWRITEDATA ||                                       \
    (option) == CURLOPT_INTERLEAVEDATA ||                                      \
    (option) == CURLOPT_IOCTLDATA ||                                           \
    (option) == CURLOPT_OPENSOCKETDATA ||                                      \
-   (option) == CURLOPT_PRIVATE ||                                             \
+   (option) == CURLOPT_PREREQDATA ||                                          \
    (option) == CURLOPT_PROGRESSDATA ||                                        \
    (option) == CURLOPT_READDATA ||                                            \
    (option) == CURLOPT_SEEKDATA ||                                            \
@@ -30,6 +32,7 @@
    (option) == CURLOPT_WRITEDATA ||                                           \
    (option) == CURLOPT_RESOLVER_START_DATA ||                                 \
    (option) == CURLOPT_TRAILERDATA ||                                         \
+   (option) == CURLOPT_SSH_HOSTKEYDATA ||                                     \
    0)
 
 /* evaluates to true if option takes a POST data argument (void* or char*) */

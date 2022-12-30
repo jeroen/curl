@@ -18,10 +18,12 @@
    (option) == /*CURLOPT_DEBUGDATA*/ 10095 ||                                           \
    (option) == /*CURLOPT_FNMATCH_DATA*/ 10202 ||                                        \
    (option) == /*CURLOPT_HEADERDATA*/ 10029 ||                                          \
+   (option) == /*CURLOPT_HSTSREADDATA*/ 10302 ||                                        \
+   (option) == /*CURLOPT_HSTSWRITEDATA*/ 10304 ||                                       \
    (option) == /*CURLOPT_INTERLEAVEDATA*/ 10195 ||                                      \
    (option) == /*CURLOPT_IOCTLDATA*/ 10131 ||                                           \
    (option) == /*CURLOPT_OPENSOCKETDATA*/ 10164 ||                                      \
-   (option) == /*CURLOPT_PRIVATE*/ 10103 ||                                             \
+   (option) == /*CURLOPT_PREREQDATA*/ 10313 ||                                          \
    (option) == /*CURLOPT_PROGRESSDATA*/ 10057 ||                                        \
    (option) == /*CURLOPT_READDATA*/ 10009 ||                                            \
    (option) == /*CURLOPT_SEEKDATA*/ 10168 ||                                            \
@@ -31,6 +33,7 @@
    (option) == /*CURLOPT_WRITEDATA*/ 10001 ||                                           \
    (option) == /*CURLOPT_RESOLVER_START_DATA*/ 10273 ||                                 \
    (option) == /*CURLOPT_TRAILERDATA*/ 10284 ||                                         \
+   (option) == /*CURLOPT_SSH_HOSTKEYDATA*/ 10317 ||                                     \
    0)
 
 /* evaluates to true if option takes a POST data argument (void* or char*) */
