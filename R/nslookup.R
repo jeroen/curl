@@ -14,7 +14,6 @@
 #' @param ipv4_only always return ipv4 address. Set to `FALSE` to allow for ipv6 as well.
 #' @param multiple returns multiple ip addresses if possible
 #' @rdname nslookup
-#' @useDynLib curl R_nslookup
 #' @examples # Should always work if we are online
 #' nslookup("www.r-project.org")
 #'

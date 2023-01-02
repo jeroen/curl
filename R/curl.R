@@ -10,7 +10,6 @@
 #' needs to call \code{\link{isIncomplete}} to check if the download has completed
 #' yet.
 #'
-#' @useDynLib curl R_curl_connection
 #' @export
 #' @param url character string. See examples.
 #' @param open character string. How to open the connection if it should be opened

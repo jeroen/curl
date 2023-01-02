@@ -11,7 +11,6 @@
 #' \code{curl_fetch_disk} on the other hand is to proceed as normal and write
 #' the error page to disk in case of a non success response.
 #'
-#' @useDynLib curl R_download_curl
 #' @param url A character string naming the URL of a resource to be downloaded.
 #' @param destfile A character string with the name where the downloaded file
 #'   is saved. Tilde-expansion is performed.

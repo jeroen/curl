@@ -3,7 +3,6 @@
 #' Escape all special characters (i.e. everything except for a-z, A-Z, 0-9, '-',
 #' '.', '_' or '~') for use in URLs.
 #'
-#' @useDynLib curl R_curl_escape
 #' @export
 #' @param url A character vector (typically containing urls or parameters) to be
 #'   encoded/decoded

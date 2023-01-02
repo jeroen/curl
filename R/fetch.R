@@ -27,7 +27,6 @@
 #' @param handle a curl handle object
 #' @export
 #' @rdname curl_fetch
-#' @useDynLib curl R_curl_fetch_memory
 #' @examples
 #' # Load in memory
 #' res <- curl_fetch_memory("http://httpbin.org/cookies/set?foo=123&bar=ftw")
@@ -68,7 +67,6 @@ curl_fetch_memory <- function(url, handle = new_handle()){
 #' @export
 #' @param path Path to save results
 #' @rdname curl_fetch
-#' @useDynLib curl R_curl_fetch_disk
 curl_fetch_disk <- function(url, path, handle = new_handle()){
   nonblocking <- isTRUE(getOption("curl_interrupt", TRUE))
   path <- enc2native(normalizePath(path, mustWork = FALSE))
@@ -82,7 +80,6 @@ curl_fetch_disk <- function(url, path, handle = new_handle()){
 #' @param fun Callback function. Should have one argument, which will be
 #'   a raw vector.
 #' @rdname curl_fetch
-#' @useDynLib curl R_curl_connection
 curl_fetch_stream <- function(url, fun, handle = new_handle()){
   # Blocking = TRUE and partial = TRUE to prevent busy-waiting
   con <- curl_connection(url, mode = "", handle = handle, partial = TRUE)
@@ -101,7 +98,6 @@ curl_fetch_stream <- function(url, fun, handle = new_handle()){
 #' @export
 #' @rdname curl_fetch
 #' @inheritParams multi
-#' @useDynLib curl R_curl_connection
 curl_fetch_multi <- function(url, done = NULL, fail = NULL, pool = NULL,
                              data = NULL, handle = new_handle()){
   handle_setopt(handle, url = enc2utf8(url))
