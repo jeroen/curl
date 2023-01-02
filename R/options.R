@@ -57,5 +57,6 @@ option_type_table <- function(){
   out$name <- tolower(out$name)
   out$type <- factor(out$type, levels = 0:8, labels = c("long", "values", "off_t",
     "object", "string", "slist", "cbptr", "blob", "function"))
-  as.data.frame(out, stringsAsFactors = FALSE)
+  class(out) <- 'data.frame'
+  return(out)
 }
