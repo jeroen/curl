@@ -20,7 +20,6 @@ curl_options <- function(filter = ""){
   # First try new method: list run-time options
   opts <- option_type_table()
   if(length(opts)){
-    opts <- opts[opts$alias == FALSE,]
     m <- grep(filter, opts$name, ignore.case = TRUE)
     return(structure(opts$value[m], names = opts$name[m]))
   }
