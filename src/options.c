@@ -3,17 +3,16 @@
 SEXP R_option_types(){
 #ifdef CURLOT_FLAG_ALIAS
   int len = 0;
-  const struct curl_easyoption *o = curl_easy_option_next(NULL);
-  while(o){
+  const struct curl_easyoption *o = NULL;
+  while((o = curl_easy_option_next(o))){
     if(!(o->flags & CURLOT_FLAG_ALIAS))
       len++;
-    o = curl_easy_option_next(o);
   }
   SEXP names = Rf_allocVector(STRSXP, len);
   SEXP values = Rf_allocVector(INTSXP, len);
   SEXP types = Rf_allocVector(INTSXP, len);
-  for(int i = 0; i < len;){
-    o = curl_easy_option_next(o);
+  int i = 0;
+  while((o = curl_easy_option_next(o))){
     if(!(o->flags & CURLOT_FLAG_ALIAS)){
       SET_STRING_ELT(names, i, Rf_mkChar(o->name ? o->name : "???"));
       INTEGER(values)[i] = o->id;
