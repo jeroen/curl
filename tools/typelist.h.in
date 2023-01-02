@@ -1,5 +1,3 @@
-#include <curl/curl.h>
-
 /* if headers are not included, we provide a copy */
 #ifndef CURLINC_TYPECHECK_GCC_H
 
@@ -59,23 +57,3 @@
 (x > 10000 && x < 20000 && !curlcheck_slist_option(x) && !curlcheck_cb_data_option(x));
 
 #endif
-
-int r_curl_is_string_option(CURLoption x){
-  return curlcheck_string_option(x);
-}
-
-int r_curl_is_slist_option(CURLoption x){
-  return curlcheck_slist_option(x);
-}
-
-int r_curl_is_long_option(CURLoption x){
-  return curlcheck_long_option(x);
-}
-
-int r_curl_is_off_t_option(CURLoption x){
-  return curlcheck_off_t_option(x);
-}
-
-int r_curl_is_postfields_option(CURLoption x){
-  return curlcheck_postfields_option(x);
-}
