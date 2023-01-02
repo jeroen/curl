@@ -1,6 +1,7 @@
 5.0.0
  - Windows: updated libcurl to 7.84.0 + nghttp2
  - Windows: default to CURLSSLOPT_NATIVE_CA when using openssl
+ - Use the new optiontype API for type checking if available (libcurl 7.73.0)
 
 4.3.3
  - Add support for setting ssl_ctx_function callbacks
