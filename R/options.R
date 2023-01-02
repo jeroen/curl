@@ -17,6 +17,18 @@
 #' # Symbol table
 #' curl_symbols("proxy")
 curl_options <- function(filter = ""){
+  # First try new method: list run-time options
+  opts <- option_type_table()
+  if(length(opts)){
+    opts <- opts[opts$alias == FALSE,]
+    m <- grep(filter, opts$name, ignore.case = TRUE)
+    return(structure(opts$value[m], names = opts$name[m]))
+  }
+  curl_options_fallback(filter = filter)
+}
+
+curl_options_fallback <- function(filter = ""){
+  # Fallback method: extracted from headers at build-time
   m <- grep(filter, names(option_table), ignore.case = TRUE)
   option_table[m]
 }
@@ -35,3 +47,15 @@ option_table <- (function(){
   names(option_table) <- sub("^curlopt_", "", tolower(names(option_table)))
   option_table[order(names(option_table))]
 })()
+
+
+#' This is only available for libcurl 7.73 and up.
+#' @useDynLib curl R_option_types
+option_type_table <- function(){
+  out <- .Call(R_option_types)
+  if(!length(out)) return(out)
+  out$name <- tolower(out$name)
+  out$type <- factor(out$type, levels = 0:8, labels = c("long", "values", "off_t",
+    "object", "string", "slist", "cbptr", "blob", "function"))
+  as.data.frame(out)
+}

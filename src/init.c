@@ -23,6 +23,7 @@ extern SEXP R_handle_reset(SEXP);
 extern SEXP R_handle_setform(SEXP, SEXP);
 extern SEXP R_handle_setheaders(SEXP, SEXP);
 extern SEXP R_handle_setopt(SEXP, SEXP, SEXP);
+extern SEXP R_option_types();
 extern SEXP R_multi_add(SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP R_multi_cancel(SEXP);
 extern SEXP R_multi_fdset(SEXP);
@@ -59,6 +60,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"R_handle_setform",      (DL_FUNC) &R_handle_setform,      2},
     {"R_handle_setheaders",   (DL_FUNC) &R_handle_setheaders,   2},
     {"R_handle_setopt",       (DL_FUNC) &R_handle_setopt,       3},
+    {"R_option_types",        (DL_FUNC) &R_option_types,        0},
     {"R_multi_add",           (DL_FUNC) &R_multi_add,           5},
     {"R_multi_cancel",        (DL_FUNC) &R_multi_cancel,        1},
     {"R_multi_fdset",         (DL_FUNC) &R_multi_fdset,         1},
