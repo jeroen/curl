@@ -8,6 +8,10 @@
 #define HAS_MULTI_WAIT 1
 #endif
 
+#if LIBCURL_VERSION_MAJOR > 7 || (LIBCURL_VERSION_MAJOR == 7 && LIBCURL_VERSION_MINOR >= 73)
+#define HAS_CURL_EASY_OPTION 1
+#endif
+
 typedef struct {
   unsigned char *buf;
   size_t size;

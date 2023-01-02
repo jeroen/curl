@@ -1,7 +1,7 @@
 #include "curl-common.h"
 
 SEXP R_option_types(){
-#ifdef CURLOT_FLAG_ALIAS
+#ifdef HAS_CURL_EASY_OPTION
   int len = 0;
   const struct curl_easyoption *o = NULL;
   while((o = curl_easy_option_next(o))){
