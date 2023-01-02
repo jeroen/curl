@@ -7,7 +7,7 @@
   (0 < (option) && (option) < CURLOPTTYPE_OBJECTPOINT)
 
 #define curlcheck_off_t_option(option)          \
-  ((option) > CURLOPTTYPE_OFF_T)
+  ((option) > CURLOPTTYPE_OFF_T && (option) < 40000)
 
 /* evaluates to true if option takes a data argument to pass to a callback */
 #define curlcheck_cb_data_option(option)                                      \
