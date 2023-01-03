@@ -20,7 +20,9 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: macOS-latest,   r: 'release'}
+          - {os: macOS-10.15,r: 'release'}
+          - {os: macOS-11,   r: 'release'}
+          - {os: macOS-12,   r: 'release'}
           - {os: windows-latest, r: 'release', ssl-backend: openssl}
           - {os: windows-latest, r: 'release'}
           - {os: windows-latest, r: '4.1', ssl-backend: openssl}
