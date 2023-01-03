@@ -65,9 +65,10 @@ if [ $? -ne 0 ]; then
 fi
 
 # Hack for MacOS 11 which has newer headers than the libcurl lib
-if [ "${OSTYPE:0:8}" = "darwin20" ]; then
-  PKG_CFLAGS="$PKG_CFLAGS -DDISABLE_CURL_EASY_OPTION"
-fi
+case "$OSTYPE" in
+  darwin20*)
+    PKG_CFLAGS="$PKG_CFLAGS -DDISABLE_CURL_EASY_OPTION";;
+esac
 
 # Write to Makevars
 sed -e "s|@cflags@|$PKG_CFLAGS|" -e "s|@libs@|$PKG_LIBS|" src/Makevars.in > src/Makevars
