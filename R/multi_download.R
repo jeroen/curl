@@ -8,10 +8,11 @@
 #' @param urls vector with files to download
 #' @param destfiles vector (of equal length as `urls`) with paths of output files,
 #' or `NULL` to use [basename] of urls.
-#' @param resume if the file already exists, resume the download. Note that this
-#' servers can return http errors for resources that cannot be resumed or if the download
-#' was already completed, i.e. nothing left to resume.
+#' @param resume if the file already exists, resume the download. Note that servers
+#' may return http-416 errors for resources that cannot be resumed or if the download
+#' was already completed (i.e. nothing left to resume).
 #' @param timeout in seconds, passed to [multi_run]
+#' @param progress print download progress information
 #' @param ... extra handle options passed to each request [new_handle]
 #' @examples urls <- c('https://cran.r-project.org/src/contrib/Archive/V8/V8_4.2.1.tar.gz',
 #' 'https://cran.r-project.org/src/contrib/Archive/curl/curl_4.3.2.tar.gz',
@@ -20,7 +21,7 @@
 #' 'https://httpbin.org/status/418')
 #'
 #' multi_download(urls)
-multi_download <- function(urls, destfiles = NULL, resume = FALSE, timeout = Inf, ...){
+multi_download <- function(urls, destfiles = NULL, resume = FALSE, timeout = Inf, progress = FALSE, ...){
   urls <- enc2utf8(urls)
   if(is.null(destfiles)){
     destfiles <- basename(sub("[?#].*", "", urls))
@@ -32,15 +33,21 @@ multi_download <- function(urls, destfiles = NULL, resume = FALSE, timeout = Inf
   errors <- rep(NA_character_, length(urls))
   success <- rep(NA, length(urls))
   pool <- new_pool()
+  total <- 0
   lapply(seq_along(urls), function(i){
     dest <- destfiles[i]
     handle <- new_handle(url = urls[i], ...)
+    handle_setopt(handle, noprogress = TRUE)
     if(isTRUE(resume) && file.exists(dest)){
       handle_setopt(handle, resume_from_large = file.info(dest)$size)
     }
     writer <- file_writer(dest, append = resume)
     multi_add(handle, pool = pool, data = function(buf, final){
+      total <<- total + length(buf)
       writer(buf, final)
+      if(isTRUE(progress)){
+        print_progress(success, total)
+      }
     }, done = function(req){
       success[i] <<- TRUE
     }, fail = function(err){
@@ -55,6 +62,9 @@ multi_download <- function(urls, destfiles = NULL, resume = FALSE, timeout = Inf
     writer(raw(0), close = TRUE)
   }))
   status <- multi_run(timeout = timeout, pool = pool)
+  if(isTRUE(progress)){
+    print_progress(success, total, TRUE)
+  }
   out <- lapply(handles, handle_data)
   results <- data.frame(
     success = success,
@@ -70,4 +80,16 @@ multi_download <- function(urls, destfiles = NULL, resume = FALSE, timeout = Inf
   results$headers <- lapply(out, function(x){parse_headers(x$headers)})
   class(results) <- c("tbl_df", "tbl", "data.frame")
   results
+}
+
+print_progress <- function(sucvec, total, finalize = FALSE){
+  done <- sum(!is.na(sucvec))
+  pending <- sum(is.na(sucvec))
+  downloaded <- format(structure(total, class = 'object_size'), digits = 2, units = 'Mb')
+  cat(sprintf('\rRequests status: %d done; %d in progress. Total downloaded: %s...',
+              done, pending, downloaded), file = stderr())
+  if(finalize){
+    cat("\n", file = stderr())
+    flush(stderr())
+  }
 }

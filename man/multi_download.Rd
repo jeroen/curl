@@ -4,24 +4,33 @@
 \alias{multi_download}
 \title{Download multiple files concurrently}
 \usage{
-multi_download(urls, destfiles = NULL, resume = FALSE, timeout = Inf, ...)
+multi_download(
+  urls,
+  destfiles = NULL,
+  resume = FALSE,
+  timeout = Inf,
+  progress = FALSE,
+  ...
+)
 }
 \arguments{
 \item{urls}{vector with files to download}
 
-\item{destfiles}{vector (of equal length as `urls`) with paths of output files,
-or `NULL` to use [basename] of urls.}
+\item{destfiles}{vector (of equal length as \code{urls}) with paths of output files,
+or \code{NULL} to use \link{basename} of urls.}
 
-\item{resume}{if the file already exists, resume the download. Note that this
-servers can return http errors for resources that cannot be resumed or if the download
-was already completed, i.e. nothing left to resume.}
+\item{resume}{if the file already exists, resume the download. Note that servers
+may return http-416 errors for resources that cannot be resumed or if the download
+was already completed (i.e. nothing left to resume).}
 
-\item{timeout}{in seconds, passed to [multi_run]}
+\item{timeout}{in seconds, passed to \link{multi_run}}
 
-\item{...}{extra handle options passed to [new_handle]}
+\item{progress}{print download progress information}
+
+\item{...}{extra handle options passed to each request \link{new_handle}}
 }
 \description{
-Wrapper for [multi_run()] to download multiple requests concurrently. Also supports
+Wrapper for \code{\link[=multi_run]{multi_run()}} to download multiple requests concurrently. Also supports
 resuming downloads for large files. This function does not error in case any of the
 requests fail; instead it returns a data frame with information about the requests.
 }
