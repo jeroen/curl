@@ -12,7 +12,9 @@ multi_download(urls, destfiles = NULL, resume = FALSE, timeout = Inf, ...)
 \item{destfiles}{vector (of equal length as `urls`) with paths of output files,
 or `NULL` to use [basename] of urls.}
 
-\item{resume}{if the file already exists, resume the download.}
+\item{resume}{if the file already exists, resume the download. Note that this
+servers can return http errors for resources that cannot be resumed or if the download
+was already completed, i.e. nothing left to resume.}
 
 \item{timeout}{in seconds, passed to [multi_run]}
 
@@ -27,6 +29,7 @@ requests fail; instead it returns a data frame with information about the reques
 urls <- c('https://cran.r-project.org/src/contrib/Archive/V8/V8_4.2.1.tar.gz',
 'https://cran.r-project.org/src/contrib/Archive/curl/curl_4.3.2.tar.gz',
 'https://urldoesnotexist.xyz/nothing.zip',
+'https://github.com/jeroen/curl/archive/refs/heads/master.zip',
 'https://httpbin.org/status/418')
 
 multi_download(urls)
