@@ -40,8 +40,8 @@ a list of options elsewhere, avoiding the use of \code{do.call()}.}
 }
 \value{
 A handle object (external pointer to the underlying curl handle).
-  All functions modify the handle in place but also return the handle
-  so you can create a pipeline of operations.
+All functions modify the handle in place but also return the handle
+so you can create a pipeline of operations.
 }
 \description{
 Handles are the work horses of libcurl. A handle is used to configure a

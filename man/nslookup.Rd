@@ -12,7 +12,7 @@ has_internet()
 \arguments{
 \item{host}{a string with a hostname}
 
-\item{ipv4_only}{always return ipv4 address. Set to `FALSE` to allow for ipv6 as well.}
+\item{ipv4_only}{always return ipv4 address. Set to \code{FALSE} to allow for ipv6 as well.}
 
 \item{multiple}{returns multiple ip addresses if possible}
 

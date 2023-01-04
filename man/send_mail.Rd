@@ -48,11 +48,11 @@ line breaks.
 The \code{smtp_server} argument takes a hostname, or an SMTP URL:
 
 \itemize{
-  \item \code{mail.example.com} - hostname only
-  \item \code{mail.example.com:587} - hostname and port
-  \item \code{smtp://mail.example.com} - protocol and hostname
-  \item \code{smtp://mail.example.com:587} - full SMTP URL
-  \item \code{smtps://mail.example.com:465} - full SMTPS URL
+\item \code{mail.example.com} - hostname only
+\item \code{mail.example.com:587} - hostname and port
+\item \code{smtp://mail.example.com} - protocol and hostname
+\item \code{smtp://mail.example.com:587} - full SMTP URL
+\item \code{smtps://mail.example.com:465} - full SMTPS URL
 }
 
 By default, the port will be 25, unless \code{smtps://} is specified--then

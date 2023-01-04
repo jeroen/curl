@@ -18,9 +18,8 @@ Lookup and mimic the system proxy settings on Windows as set by Internet
 Explorer. This can be used to configure curl to use the same proxy server.
 }
 \details{
-The \code{ie_proxy_info} function looks
-up your current proxy settings as configured in IE under "Internet Options"
-> "Tab: Connections" > "LAN Settings". The \code{ie_get_proxy_for_url}
+The \link{ie_proxy_info} function looks up your current proxy settings as configured
+in IE under "Internet Options" under "LAN Settings". The \link{ie_get_proxy_for_url}
 determines if and which proxy should be used to connect to a particular
 URL. If your settings have an "automatic configuration script" this
 involves downloading and executing a PAC file, which can take a while.
