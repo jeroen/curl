@@ -21,6 +21,8 @@
 #' # Parse into named list
 #' parse_headers_list(req$headers)
 parse_headers <- function(txt, multiple = FALSE){
+  if(!length(txt))
+    return(NULL)
   if(is.raw(txt)){
     txt <- rawToChar(txt)
   }

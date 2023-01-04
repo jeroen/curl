@@ -4,10 +4,12 @@
 \alias{file_writer}
 \title{File Writer}
 \usage{
-file_writer(path)
+file_writer(path, append = FALSE)
 }
 \arguments{
 \item{path}{file name or path on disk}
+
+\item{append}{open file in append mode}
 }
 \value{
 Function with signature \code{writer(data = raw(), close = FALSE)}
