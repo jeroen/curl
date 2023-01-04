@@ -2,15 +2,28 @@
 #'
 #' Wrapper for [multi_run()] to download multiple requests concurrently. Also supports
 #' resuming downloads for large files. This function does not error in case any of the
-#' requests fail; instead it returns a data frame with information about the requests.
+#' requests fail; you should inspect the returned results to see which of the requests
+#' were completed successfully.
+#'
+#' This function returns a data frame with information about each request. The `success`
+#' column indicates if the request was successfully completed (regardless of the http
+#' status code). If it failed, e.g. due to a connection issue, the error message is in
+#' the `error` column. A `success` value `NA` means that the download was still in
+#' progress when the function reached the elapsed `timeout` and has not yet been
+#' completed, perhaps it could be resumed.
+#'
+#' Upon completion, it is important to check the `status_code` column to see if any of
+#' the request may have had an HTTP error, and hence the downloaded file contains an
+#' error page instead of the requested content. Note that when `resume = TRUE` you can
+#' expect HTTP-206 or HTTP-416 responses. The latter could indicate that the file was
+#' already downloaded completely, hence there was no content left to resume.
 #'
 #' @export
 #' @param urls vector with files to download
 #' @param destfiles vector (of equal length as `urls`) with paths of output files,
 #' or `NULL` to use [basename] of urls.
-#' @param resume if the file already exists, resume the download. Note that servers
-#' may return http-416 errors for resources that cannot be resumed or if the download
-#' was already completed (i.e. nothing left to resume).
+#' @param resume if the file already exists, resume the download. Note that this may
+#' change server responses, see details.
 #' @param timeout in seconds, passed to [multi_run]
 #' @param progress print download progress information
 #' @param ... extra handle options passed to each request [new_handle]
@@ -21,7 +34,7 @@
 #' 'https://httpbin.org/status/418')
 #'
 #' multi_download(urls)
-multi_download <- function(urls, destfiles = NULL, resume = FALSE, timeout = Inf, progress = FALSE, ...){
+multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = FALSE, timeout = Inf, ...){
   urls <- enc2utf8(urls)
   if(is.null(destfiles)){
     destfiles <- basename(sub("[?#].*", "", urls))
