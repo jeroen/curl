@@ -29,10 +29,10 @@ change server responses, see details.}
 \item{...}{extra handle options passed to each request \link{new_handle}}
 }
 \description{
-Download multiple requests concurrently, and supports resuming downloads for large
-files. This function is based on \code{\link[=multi_run]{multi_run()}} and hence does not error in case any
-of the individual requests fail; you should manually inspect the returned results
-to check which of the requests were completed successfully.
+Download multiple files concurrently, with support for resuming large files.
+This function is based on \code{\link[=multi_run]{multi_run()}} and hence does not error in case any
+of the individual requests fail; you should inspect the return value to find
+out which of the downloads were completed successfully.
 }
 \details{
 Upon completion of all requests, this function returns a data frame with results.
@@ -44,10 +44,16 @@ was still in progress when the function was interrupted or reached the elapsed
 
 It is also important to inspect the \code{status_code} column to see if any of the
 requests were successful but had a non-success HTTP code, and hence the downloaded
-file probably contains an error page instead of the requested content. Note that
-when you set \code{resume = TRUE} you should expect HTTP-206 or HTTP-416 responses. The
-latter could indicate that the file was already downloaded completely, hence there
-was no content left to resume from the server.
+file probably contains an error page instead of the requested content.
+
+Note that when you set \code{resume = TRUE} you should expect HTTP-206 or HTTP-416
+responses. The latter could indicate that the file was already complete, hence
+there was no content left to resume from the server. If you try to resume a file
+download but the server does not support this, success if \code{FALSE} and the file
+will not be touched. In fact, if we request to a download to be resumed and the
+server responds \verb{HTTP 200} instead of \verb{HTTP 206}, libcurl will error and not
+download anything, because this probably means the server did not respect our
+range request and is sending us the full file.
 }
 \examples{
 urls <- c('https://cran.r-project.org/src/contrib/Archive/V8/V8_4.2.1.tar.gz',

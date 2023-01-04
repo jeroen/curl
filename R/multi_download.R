@@ -1,9 +1,9 @@
 #' Advanced download interface
 #'
-#' Download multiple requests concurrently, and supports resuming downloads for large
-#' files. This function is based on [multi_run()] and hence does not error in case any
-#' of the individual requests fail; you should manually inspect the returned results
-#' to check which of the requests were completed successfully.
+#' Download multiple files concurrently, with support for resuming large files.
+#' This function is based on [multi_run()] and hence does not error in case any
+#' of the individual requests fail; you should inspect the return value to find
+#' out which of the downloads were completed successfully.
 #'
 #' Upon completion of all requests, this function returns a data frame with results.
 #' The `success` column indicates if a request was successfully completed (regardless
@@ -14,10 +14,16 @@
 #'
 #' It is also important to inspect the `status_code` column to see if any of the
 #' requests were successful but had a non-success HTTP code, and hence the downloaded
-#' file probably contains an error page instead of the requested content. Note that
-#' when you set `resume = TRUE` you should expect HTTP-206 or HTTP-416 responses. The
-#' latter could indicate that the file was already downloaded completely, hence there
-#' was no content left to resume from the server.
+#' file probably contains an error page instead of the requested content.
+#'
+#' Note that when you set `resume = TRUE` you should expect HTTP-206 or HTTP-416
+#' responses. The latter could indicate that the file was already complete, hence
+#' there was no content left to resume from the server. If you try to resume a file
+#' download but the server does not support this, success if `FALSE` and the file
+#' will not be touched. In fact, if we request to a download to be resumed and the
+#' server responds `HTTP 200` instead of `HTTP 206`, libcurl will error and not
+#' download anything, because this probably means the server did not respect our
+#' range request and is sending us the full file.
 #'
 #' @export
 #' @param urls vector with files to download
