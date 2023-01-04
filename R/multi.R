@@ -40,6 +40,7 @@
 #'
 #' @name multi
 #' @rdname multi
+#' @seealso Advanced download interface: [multi_download]
 #' @useDynLib curl R_multi_add
 #' @param handle a curl \link{handle} with preconfigured \code{url} option.
 #' @param done callback function for completed request. Single argument with

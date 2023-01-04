@@ -124,3 +124,6 @@ multi_run()
 readLines("output.txt")
 unlink("output.txt")
 }
+\seealso{
+Advanced download interface: \link{multi_download}
+}

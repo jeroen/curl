@@ -11,7 +11,11 @@
 #' \code{curl_fetch_disk} on the other hand is to proceed as normal and write
 #' the error page to disk in case of a non success response.
 #'
+#' For a more advanced download interface which supports concurrent requests and
+#' resuming large files, have a look at the [multi_download] function.
+#'
 #' @useDynLib curl R_download_curl
+#' @seealso Advanced download interface: [multi_download]
 #' @param url A character string naming the URL of a resource to be downloaded.
 #' @param destfile A character string with the name where the downloaded file
 #'   is saved. Tilde-expansion is performed.
