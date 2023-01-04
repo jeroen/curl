@@ -13,7 +13,6 @@ extern SEXP R_curl_fetch_memory(SEXP, SEXP, SEXP);
 extern SEXP R_curl_getdate(SEXP);
 extern SEXP R_curl_version(void);
 extern SEXP R_download_curl(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
-extern SEXP R_get_bundle(void);
 extern SEXP R_get_handle_cookies(SEXP);
 extern SEXP R_get_handle_response(SEXP);
 extern SEXP R_get_proxy_for_url(SEXP, SEXP, SEXP);
@@ -35,7 +34,6 @@ extern SEXP R_new_file_writer(SEXP);
 extern SEXP R_new_handle(void);
 extern SEXP R_nslookup(SEXP, SEXP);
 extern SEXP R_proxy_info(void);
-extern SEXP R_set_bundle(SEXP);
 extern SEXP R_split_string(SEXP, SEXP);
 extern SEXP R_total_handles(void);
 extern SEXP R_total_writers(void);
@@ -50,7 +48,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"R_curl_getdate",        (DL_FUNC) &R_curl_getdate,        1},
     {"R_curl_version",        (DL_FUNC) &R_curl_version,        0},
     {"R_download_curl",       (DL_FUNC) &R_download_curl,       6},
-    {"R_get_bundle",          (DL_FUNC) &R_get_bundle,          0},
     {"R_get_handle_cookies",  (DL_FUNC) &R_get_handle_cookies,  1},
     {"R_get_handle_response", (DL_FUNC) &R_get_handle_response, 1},
     {"R_get_proxy_for_url",   (DL_FUNC) &R_get_proxy_for_url,   3},
@@ -72,7 +69,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"R_new_handle",          (DL_FUNC) &R_new_handle,          0},
     {"R_nslookup",            (DL_FUNC) &R_nslookup,            2},
     {"R_proxy_info",          (DL_FUNC) &R_proxy_info,          0},
-    {"R_set_bundle",          (DL_FUNC) &R_set_bundle,          1},
     {"R_split_string",        (DL_FUNC) &R_split_string,        2},
     {"R_total_handles",       (DL_FUNC) &R_total_handles,       0},
     {"R_total_writers",       (DL_FUNC) &R_total_writers,       0},
