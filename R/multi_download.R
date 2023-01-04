@@ -12,7 +12,7 @@
 #' servers can return http errors for resources that cannot be resumed or if the download
 #' was already completed, i.e. nothing left to resume.
 #' @param timeout in seconds, passed to [multi_run]
-#' @param ... extra handle options passed to [new_handle]
+#' @param ... extra handle options passed to each request [new_handle]
 #' @examples urls <- c('https://cran.r-project.org/src/contrib/Archive/V8/V8_4.2.1.tar.gz',
 #' 'https://cran.r-project.org/src/contrib/Archive/curl/curl_4.3.2.tar.gz',
 #' 'https://urldoesnotexist.xyz/nothing.zip',
@@ -21,6 +21,7 @@
 #'
 #' multi_download(urls)
 multi_download <- function(urls, destfiles = NULL, resume = FALSE, timeout = Inf, ...){
+  urls <- enc2utf8(urls)
   if(is.null(destfiles)){
     destfiles <- basename(sub("[?#].*", "", urls))
   }
@@ -29,6 +30,7 @@ multi_download <- function(urls, destfiles = NULL, resume = FALSE, timeout = Inf
   handles <- rep(list(NULL), length(urls))
   writers <- rep(list(NULL), length(urls))
   errors <- rep(NA_character_, length(urls))
+  success <- rep(NA, length(urls))
   pool <- new_pool()
   lapply(seq_along(urls), function(i){
     dest <- destfiles[i]
@@ -39,7 +41,10 @@ multi_download <- function(urls, destfiles = NULL, resume = FALSE, timeout = Inf
     writer <- file_writer(dest, append = resume)
     multi_add(handle, pool = pool, data = function(buf, final){
       writer(buf, final)
+    }, done = function(req){
+      success[i] <<- TRUE
     }, fail = function(err){
+      success[i] <<- FALSE
       errors[i] <<- err
     })
     handles[[i]] <<- handle
@@ -51,8 +56,8 @@ multi_download <- function(urls, destfiles = NULL, resume = FALSE, timeout = Inf
   }))
   status <- multi_run(timeout = timeout, pool = pool)
   out <- lapply(handles, handle_data)
-  df <- data.frame(
-    success = is.na(errors),
+  results <- data.frame(
+    success = success,
     status_code = sapply(out, function(x){x$status_code}),
     url = sapply(out, function(x){x$url}),
     destfile = destfiles,
@@ -62,7 +67,7 @@ multi_download <- function(urls, destfiles = NULL, resume = FALSE, timeout = Inf
     time = sapply(out, function(x){unname(x$times['total'])}),
     stringsAsFactors = FALSE
   )
-  df$headers <- lapply(out, function(x){parse_headers(x$headers)})
-  class(df) <- c("tbl_df", "tbl", "data.frame")
-  list(status = status, results = df)
+  results$headers <- lapply(out, function(x){parse_headers(x$headers)})
+  class(results) <- c("tbl_df", "tbl", "data.frame")
+  results
 }
