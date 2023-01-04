@@ -26,17 +26,6 @@ extern int r_curl_is_postfields_option(CURLoption x);
 #define HAS_CURLOPT_EXPECT_100_TIMEOUT_MS 1
 #endif
 
-char R_WINDOWS_CA_BUNDLE[MAX_PATH];
-
-SEXP R_set_bundle(SEXP path){
-  strcpy(R_WINDOWS_CA_BUNDLE, CHAR(asChar(path)));
-  return mkString(R_WINDOWS_CA_BUNDLE);
-}
-
-SEXP R_get_bundle(void){
-  return mkString(R_WINDOWS_CA_BUNDLE);
-}
-
 int total_handles = 0;
 
 void clean_handle(reference *ref){
@@ -141,13 +130,6 @@ static void set_handle_defaults(reference *ref){
       const char *ca_bundle = getenv("CURL_CA_BUNDLE");
       if(ca_bundle != NULL) {
         curl_easy_setopt(handle, CURLOPT_CAINFO, ca_bundle);
-      } else if( R_WINDOWS_CA_BUNDLE != NULL && strlen(R_WINDOWS_CA_BUNDLE)){
-        /* on windows a cert bundle is included with R version 3.2.0 */
-        curl_easy_setopt(handle, CURLOPT_CAINFO, R_WINDOWS_CA_BUNDLE);
-      } else {
-        /* disable cert validation for older versions of R */
-        curl_easy_setopt(handle, CURLOPT_SSL_VERIFYHOST, 0L);
-        curl_easy_setopt(handle, CURLOPT_SSL_VERIFYPEER, 0L);
       }
     }
   }
