@@ -1,22 +1,23 @@
-#' Download multiple files concurrently
+#' Advanced download interface
 #'
-#' Wrapper for [multi_run()] to download multiple requests concurrently. Also supports
-#' resuming downloads for large files. This function does not error in case any of the
-#' requests fail; you should inspect the returned results to see which of the requests
-#' were completed successfully.
+#' Download multiple requests concurrently, and supports resuming downloads for large
+#' files. This function is based on [multi_run()] and hence does not error in case any
+#' of the individual requests fail; you should manually inspect the returned results
+#' to check which of the requests were completed successfully.
 #'
-#' This function returns a data frame with information about each request. The `success`
-#' column indicates if the request was successfully completed (regardless of the http
-#' status code). If it failed, e.g. due to a connection issue, the error message is in
-#' the `error` column. A `success` value `NA` means that the download was still in
-#' progress when the function reached the elapsed `timeout` and has not yet been
-#' completed, perhaps it could be resumed.
+#' Upon completion of all requests, this function returns a data frame with results.
+#' The `success` column indicates if a request was successfully completed (regardless
+#' of the HTTP status code). If it failed, e.g. due to a networking issue, the error
+#' message is in the `error` column. A `success` value `NA` indicates that the request
+#' was still in progress when the function was interrupted or reached the elapsed
+#' `timeout` and perhaps the download can be resumed if the server supports it.
 #'
-#' Upon completion, it is important to check the `status_code` column to see if any of
-#' the request may have had an HTTP error, and hence the downloaded file contains an
-#' error page instead of the requested content. Note that when `resume = TRUE` you can
-#' expect HTTP-206 or HTTP-416 responses. The latter could indicate that the file was
-#' already downloaded completely, hence there was no content left to resume.
+#' It is also important to inspect the `status_code` column to see if any of the
+#' requests were successful but had a non-success HTTP code, and hence the downloaded
+#' file probably contains an error page instead of the requested content. Note that
+#' when you set `resume = TRUE` you should expect HTTP-206 or HTTP-416 responses. The
+#' latter could indicate that the file was already downloaded completely, hence there
+#' was no content left to resume from the server.
 #'
 #' @export
 #' @param urls vector with files to download
