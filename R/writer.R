@@ -8,6 +8,7 @@
 #'
 #' @export
 #' @param path file name or path on disk
+#' @param append open file in append mode
 #' @return Function with signature \code{writer(data = raw(), close = FALSE)}
 #' @examples
 #' # Doesn't open yet
@@ -23,9 +24,9 @@
 #'
 #' # Check it worked
 #' readLines(tmp)
-file_writer <- function(path){
+file_writer <- function(path, append = FALSE){
   path <- enc2native(normalizePath(path, mustWork = FALSE))
-  fp <- new_file_writer(path)
+  fp <- new_file_writer(path, append)
   structure(function(data = raw(), close = FALSE){
     stopifnot(is.raw(data))
     write_file_writer(fp, data, as.logical(close))
@@ -33,8 +34,8 @@ file_writer <- function(path){
 }
 
 #' @useDynLib curl R_new_file_writer
-new_file_writer <- function(path){
-  .Call(R_new_file_writer, path)
+new_file_writer <- function(path, append){
+  .Call(R_new_file_writer, list(path, append))
 }
 
 #' @useDynLib curl R_write_file_writer
