@@ -48,9 +48,9 @@ option_table <- (function(){
 })()
 
 
-#' This is only available for libcurl 7.73 and up.
 #' @useDynLib curl R_option_types
 option_type_table <- function(){
+  # Only available for libcurl 7.73 and up.
   out <- .Call(R_option_types)
   if(!length(out)) return(out)
   out$name <- tolower(out$name)
