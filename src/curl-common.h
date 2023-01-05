@@ -1,4 +1,8 @@
 #include <Rinternals.h>
+
+/* for now we use the old form APIs to support older distros */
+#define CURL_DISABLE_DEPRECATION 1
+
 #include <curl/curl.h>
 #include <curl/easy.h>
 #include <string.h>
