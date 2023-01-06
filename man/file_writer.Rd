@@ -2,7 +2,7 @@
 % Please edit documentation in R/writer.R
 \name{file_writer}
 \alias{file_writer}
-\title{File Writer}
+\title{Lazy File Writer}
 \usage{
 file_writer(path, append = FALSE)
 }
@@ -20,7 +20,9 @@ Generates a closure that writes binary (raw) data to a file.
 \details{
 The writer function automatically opens the file on the first write and closes when
 it goes out of scope, or explicitly by setting \code{close = TRUE}. This can be used
-for the \code{data} callback in \code{multi_add()} or \code{curl_fetch_multi()}.
+for the \code{data} callback in \code{multi_add()} or \code{curl_fetch_multi()} such
+that we only keep open file handles for active downloads. This prevents running out
+of file descriptors when performing thousands of concurrent requests.
 }
 \examples{
 # Doesn't open yet
