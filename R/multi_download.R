@@ -59,7 +59,9 @@ multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = FA
     handle <- new_handle(url = urls[i], ...)
     handle_setopt(handle, noprogress = TRUE)
     if(isTRUE(resume) && file.exists(dest)){
-      handle_setopt(handle, resume_from_large = file.info(dest)$size)
+      startsize <- file.info(dest)$size
+      handle_setopt(handle, resume_from_large = startsize)
+      total <<- total + startsize
     }
     writer <- file_writer(dest, append = resume)
     multi_add(handle, pool = pool, data = function(buf, final){
@@ -76,6 +78,9 @@ multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = FA
     })
     handles[[i]] <<- handle
     writers[[i]] <<- writer
+    if(isTRUE(progress) && (i %% 100 == 0)){
+      print_stream("\rPreparing request %d of %d...", i, length(urls))
+    }
   })
   on.exit(lapply(writers, function(writer){
     # fallback to close writer in case the download got interrupted
@@ -105,11 +110,15 @@ multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = FA
 print_progress <- function(sucvec, total, finalize = FALSE){
   done <- sum(!is.na(sucvec))
   pending <- sum(is.na(sucvec))
-  downloaded <- format(structure(total, class = 'object_size'), digits = 2, units = 'Mb')
-  cat(sprintf('\rRequests status: %d done; %d in progress. Total downloaded: %s...',
-              done, pending, downloaded), file = stderr())
+  downloaded <- format(structure(total, class = 'object_size'), digits = 0, units = 'auto')
+  print_stream('\rRequests status: %d done; %d in progress. Total downloaded: %s...',
+              done, pending, downloaded)
   if(finalize){
     cat("\n", file = stderr())
     flush(stderr())
   }
+}
+
+print_stream <- function(...){
+  cat(sprintf(...), file = stderr())
 }
