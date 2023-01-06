@@ -39,7 +39,7 @@ option_table <- (function(){
 
 
 #' @useDynLib curl R_option_types
-option_type_table <- function(){
+make_option_type_table <- function(){
   # Only available for libcurl 7.73 and up.
   out <- .Call(R_option_types)
   if(!length(out)) return(out)
@@ -53,9 +53,8 @@ curl_options_list <- local({
   cache <- NULL
   function(){
     if(is.null(cache)){
-      opts <- option_type_table()
-      cache <<- if(length(opts)){
-        structure(opts$value, names = opts$name)
+      cache <<- if(length(option_type_table)){
+        structure(option_type_table$value, names = option_type_table$name)
       } else {
         # Fallback method: extracted from headers at build-time
         option_table
