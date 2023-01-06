@@ -19,7 +19,7 @@
 curl_options <- function(filter = ""){
   opts <- curl_options_list()
   m <- grep(filter, names(opts), ignore.case = TRUE)
-  option_table[m]
+  opts[m]
 }
 
 option_table <- (function(){
