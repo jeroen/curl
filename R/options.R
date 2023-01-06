@@ -17,18 +17,8 @@
 #' # Symbol table
 #' curl_symbols("proxy")
 curl_options <- function(filter = ""){
-  # First try new method: list run-time options
-  opts <- option_type_table()
-  if(length(opts)){
-    m <- grep(filter, opts$name, ignore.case = TRUE)
-    return(structure(opts$value[m], names = opts$name[m]))
-  }
-  curl_options_fallback(filter = filter)
-}
-
-curl_options_fallback <- function(filter = ""){
-  # Fallback method: extracted from headers at build-time
-  m <- grep(filter, names(option_table), ignore.case = TRUE)
+  opts <- curl_options_list()
+  m <- grep(filter, names(opts), ignore.case = TRUE)
   option_table[m]
 }
 
@@ -58,3 +48,19 @@ option_type_table <- function(){
     "object", "string", "slist", "cbptr", "blob", "function"))
   structure(out, class = 'data.frame', row.names = seq_along(out$name))
 }
+
+curl_options_list <- local({
+  cache <- NULL
+  function(){
+    if(is.null(cache)){
+      opts <- option_type_table()
+      cache <<- if(length(opts)){
+        structure(opts$value, names = opts$name)
+      } else {
+        # Fallback method: extracted from headers at build-time
+        option_table
+      }
+    }
+    return(cache)
+  }
+})
