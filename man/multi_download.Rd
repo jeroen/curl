@@ -56,6 +56,7 @@ download anything, because this probably means the server did not respect our
 range request and is sending us the full file.
 }
 \examples{
+\dontrun{
 urls <- c('https://cran.r-project.org/src/contrib/Archive/V8/V8_4.2.1.tar.gz',
 'https://cran.r-project.org/src/contrib/Archive/curl/curl_4.3.2.tar.gz',
 'https://urldoesnotexist.xyz/nothing.zip',
@@ -63,4 +64,5 @@ urls <- c('https://cran.r-project.org/src/contrib/Archive/V8/V8_4.2.1.tar.gz',
 'https://httpbin.org/status/418')
 
 multi_download(urls)
+}
 }

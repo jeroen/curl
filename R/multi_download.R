@@ -34,13 +34,15 @@
 #' @param timeout in seconds, passed to [multi_run]
 #' @param progress print download progress information
 #' @param ... extra handle options passed to each request [new_handle]
-#' @examples urls <- c('https://cran.r-project.org/src/contrib/Archive/V8/V8_4.2.1.tar.gz',
+#' @examples \dontrun{
+#' urls <- c('https://cran.r-project.org/src/contrib/Archive/V8/V8_4.2.1.tar.gz',
 #' 'https://cran.r-project.org/src/contrib/Archive/curl/curl_4.3.2.tar.gz',
 #' 'https://urldoesnotexist.xyz/nothing.zip',
 #' 'https://github.com/jeroen/curl/archive/refs/heads/master.zip',
 #' 'https://httpbin.org/status/418')
 #'
 #' multi_download(urls)
+#' }
 multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = FALSE, timeout = Inf, ...){
   urls <- enc2utf8(urls)
   if(is.null(destfiles)){
