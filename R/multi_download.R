@@ -54,6 +54,7 @@ multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = FA
   writers <- rep(list(NULL), length(urls))
   errors <- rep(NA_character_, length(urls))
   success <- rep(NA, length(urls))
+  resumefrom <- rep(0, length(urls))
   pool <- new_pool()
   total <- 0
   lapply(seq_along(urls), function(i){
@@ -64,6 +65,7 @@ multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = FA
       startsize <- file.info(dest)$size
       handle_setopt(handle, resume_from_large = startsize)
       total <<- total + startsize
+      resumefrom[i] <- startsize
     }
     writer <- file_writer(dest, append = resume)
     multi_add(handle, pool = pool, data = function(buf, final){
@@ -96,6 +98,7 @@ multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = FA
   results <- data.frame(
     success = success,
     status_code = sapply(out, function(x){x$status_code}),
+    resumefrom = resumefrom,
     url = sapply(out, function(x){x$url}),
     destfile = destfiles,
     error = errors,
