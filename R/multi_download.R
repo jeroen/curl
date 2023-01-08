@@ -112,17 +112,26 @@ multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = FA
   results
 }
 
-print_progress <- function(sucvec, total, finalize = FALSE){
-  done <- sum(!is.na(sucvec))
-  pending <- sum(is.na(sucvec))
-  downloaded <- format(structure(total, class = 'object_size'), digits = 0, units = 'auto')
-  print_stream('\rRequests status: %d done; %d in progress. Total downloaded: %s...',
-              done, pending, downloaded)
-  if(finalize){
-    cat("\n", file = stderr())
-    flush(stderr())
+# Print at most 10x per second
+print_progress <- local({
+  last <- 0
+  throttle <- 0.1
+  function(sucvec, total, finalize = FALSE){
+    now <- unclass(Sys.time())
+    if(now - last > throttle){
+      last <<- now
+      done <- sum(!is.na(sucvec))
+      pending <- sum(is.na(sucvec))
+      downloaded <- format(structure(total, class = 'object_size'), digits = 0, units = 'auto')
+      print_stream('\rRequests status: %d done; %d in progress. Total downloaded: %s...',
+                   done, pending, downloaded)
+      if(finalize){
+        cat("\n", file = stderr())
+        flush(stderr())
+      }
+    }
   }
-}
+})
 
 print_stream <- function(...){
   cat(sprintf(...), file = stderr())
