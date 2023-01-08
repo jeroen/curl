@@ -65,8 +65,9 @@ if [ $? -ne 0 ]; then
 fi
 
 # Hack for MacOS 11 which has newer headers than the libcurl lib
-case "$OSTYPE" in
-  darwin20*)
+OSVER=`uname -or` 2>/dev/null || true
+case "$OSVER" in
+  "Darwin 20"*)
     PKG_CFLAGS="$PKG_CFLAGS -DDISABLE_CURL_EASY_OPTION";;
 esac
 
