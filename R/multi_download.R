@@ -90,10 +90,14 @@ multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = FA
     # fallback to close writer in case the download got interrupted
     writer(raw(0), close = TRUE)
   }))
-  status <- multi_run(timeout = timeout, pool = pool)
-  if(isTRUE(progress)){
-    print_progress(success, total, TRUE)
-  }
+  tryCatch({
+    multi_run(timeout = timeout, pool = pool)
+    if(isTRUE(progress)){
+      print_progress(success, total, TRUE)
+    }
+  }, interrupt = function(e){
+    message("download interrupted")
+  })
   out <- lapply(handles, handle_data)
   results <- data.frame(
     success = success,
@@ -118,17 +122,17 @@ print_progress <- local({
   throttle <- ifelse(interactive(), 0.1, 1)
   function(sucvec, total, finalize = FALSE){
     now <- unclass(Sys.time())
-    if(now - last > throttle){
+    if(isTRUE(finalize) || now - last > throttle){
       last <<- now
       done <- sum(!is.na(sucvec))
       pending <- sum(is.na(sucvec))
       downloaded <- format(structure(total, class = 'object_size'), digits = 0, units = 'auto')
       print_stream('\rRequests status: %d done; %d in progress. Total downloaded: %s...',
                    done, pending, downloaded)
-      if(finalize){
-        cat("\n", file = stderr())
-        flush(stderr())
-      }
+    }
+    if(finalize){
+      cat("done!\n", file = stderr())
+      flush(stderr())
     }
   }
 })
