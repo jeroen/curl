@@ -112,10 +112,10 @@ multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = FA
   results
 }
 
-# Print at most 10x per second
+# Print at most 10x per second in interactive, and once per sec in batch/CI
 print_progress <- local({
   last <- 0
-  throttle <- 0.1
+  throttle <- ifelse(interactive(), 0.1, 1)
   function(sucvec, total, finalize = FALSE){
     now <- unclass(Sys.time())
     if(now - last > throttle){
