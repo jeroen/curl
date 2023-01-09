@@ -187,6 +187,16 @@ handle_speed <- function(handle){
   .Call(R_get_handle_speed, handle)
 }
 
+#' @useDynLib curl R_get_handle_clength
+handle_clength <- function(handle){
+  .Call(R_get_handle_clength, handle)
+}
+
+#' @useDynLib curl R_get_handle_received
+handle_received <- function(handle){
+  .Call(R_get_handle_received, handle)
+}
+
 #' @export
 print.curl_handle <- function(x, ...){
   stopifnot(inherits(x, "curl_handle"))

@@ -478,7 +478,7 @@ SEXP R_get_handle_response(SEXP ptr){
 
 SEXP R_get_handle_speed(SEXP ptr){
   CURL *handle = get_handle(ptr);
-#ifdef HAS_DOWNLOAD_T
+#ifdef CURL_TYPEOF_CURL_OFF_T
   curl_off_t dl = 0;
   curl_off_t ul = 0;
   curl_easy_getinfo(handle, CURLINFO_SPEED_DOWNLOAD_T, &dl);
@@ -494,6 +494,31 @@ SEXP R_get_handle_speed(SEXP ptr){
   REAL(out)[1] = (double) ul;
   return out;
 }
+
+SEXP R_get_handle_clength(SEXP ptr){
+  CURL *handle = get_handle(ptr);
+#ifdef CURL_TYPEOF_CURL_OFF_T
+  curl_off_t cl = 0;
+  curl_easy_getinfo(handle, CURLINFO_CONTENT_LENGTH_DOWNLOAD_T, &cl);
+#else
+  double cl = 0;
+  curl_easy_getinfo(handle, CURLINFO_CONTENT_LENGTH_DOWNLOAD, &cl);
+#endif
+  return Rf_ScalarReal((double) cl < 0 ? NA_REAL : cl);
+}
+
+SEXP R_get_handle_received(SEXP ptr){
+  CURL *handle = get_handle(ptr);
+#ifdef CURL_TYPEOF_CURL_OFF_T
+  curl_off_t dl = 0;
+  curl_easy_getinfo(handle, CURLINFO_SIZE_DOWNLOAD_T, &dl);
+#else
+  double dl = 0;
+  curl_easy_getinfo(handle, CURLINFO_SIZE_DOWNLOAD, &dl);
+#endif
+  return Rf_ScalarReal((double) dl);
+}
+
 
 SEXP R_total_handles(void){
   return(ScalarInteger(total_handles));

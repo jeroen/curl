@@ -13,8 +13,10 @@ extern SEXP R_curl_fetch_memory(SEXP, SEXP, SEXP);
 extern SEXP R_curl_getdate(SEXP);
 extern SEXP R_curl_version(void);
 extern SEXP R_download_curl(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP R_get_handle_clength(SEXP);
 extern SEXP R_get_handle_cookies(SEXP);
 extern SEXP R_get_handle_speed(SEXP);
+extern SEXP R_get_handle_received(SEXP);
 extern SEXP R_get_handle_response(SEXP);
 extern SEXP R_get_proxy_for_url(SEXP, SEXP, SEXP);
 extern SEXP R_handle_getcustom(SEXP);
@@ -49,8 +51,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"R_curl_getdate",        (DL_FUNC) &R_curl_getdate,        1},
     {"R_curl_version",        (DL_FUNC) &R_curl_version,        0},
     {"R_download_curl",       (DL_FUNC) &R_download_curl,       6},
+    {"R_get_handle_clength",  (DL_FUNC) &R_get_handle_clength,  1},
     {"R_get_handle_cookies",  (DL_FUNC) &R_get_handle_cookies,  1},
     {"R_get_handle_speed",    (DL_FUNC) &R_get_handle_speed,    1},
+    {"R_get_handle_received", (DL_FUNC) &R_get_handle_received, 1},
     {"R_get_handle_response", (DL_FUNC) &R_get_handle_response, 1},
     {"R_get_proxy_for_url",   (DL_FUNC) &R_get_proxy_for_url,   3},
     {"R_handle_getcustom",    (DL_FUNC) &R_handle_getcustom,    1},

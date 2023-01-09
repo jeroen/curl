@@ -56,6 +56,7 @@ multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = TR
   success <- rep(NA, length(urls))
   resumefrom <- rep(0, length(urls))
   dlspeed <- rep(0, length(urls))
+  expected <- rep(NA, length(urls))
   pool <- new_pool()
   total <- 0
   lapply(seq_along(urls), function(i){
@@ -73,13 +74,18 @@ multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = TR
       total <<- total + length(buf)
       writer(buf, final)
       if(isTRUE(progress)){
+        if(is.na(expected[i])){
+          expected[i] <<- handle_clength(handle) + resumefrom[i]
+        }
         dlspeed[i] <<- ifelse(final, 0, handle_speed(handle)[1])
-        print_progress(success, total, sum(dlspeed))
+        print_progress(success, total, sum(dlspeed), sum(expected))
       }
     }, done = function(req){
+      expected[i] <<- handle_received(handle) + resumefrom[i]
       success[i] <<- TRUE
       dlspeed[i] <<- 0
     }, fail = function(err){
+      expected[i] <<- handle_received(handle) + resumefrom[i]
       success[i] <<- FALSE
       errors[i] <<- err
       dlspeed[i] <<- 0
@@ -97,7 +103,7 @@ multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = TR
   tryCatch({
     multi_run(timeout = timeout, pool = pool)
     if(isTRUE(progress)){
-      print_progress(success, total, sum(dlspeed), TRUE)
+      print_progress(success, total, sum(dlspeed), sum(expected), TRUE)
     }
   }, interrupt = function(e){
     message("download interrupted")
@@ -123,19 +129,20 @@ multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = TR
 # Print at most 10x per second in interactive, and once per sec in batch/CI
 print_progress <- local({
   last <- 0
-  function(sucvec, total, speed, finalize = FALSE){
+  function(sucvec, total, speed, expected, finalize = FALSE){
     throttle <- ifelse(interactive(), 0.1, 5)
     now <- unclass(Sys.time())
     if(isTRUE(finalize) || now - last > throttle){
       last <<- now
       done <- sum(!is.na(sucvec))
       pending <- sum(is.na(sucvec))
+      pctstr <- sprintf("(%s%%)", ifelse(is.na(expected), "??", as.character(round(100 * total/expected))))
       speedstr <- if(!finalize){
         sprintf(" (avg %s/s)", format(structure(speed, class = 'object_size'), digits = 2, units = 'auto'))
       } else {""}
       downloaded <- format(structure(total, class = 'object_size'), digits = 0, units = 'auto')
-      print_stream('\rDownload status: %d done; %d in progress. Total size: %s%s...',
-                   done, pending, downloaded, speedstr)
+      print_stream('\rDownload status: %d done; %d in progress%s. Total size: %s %s...',
+                   done, pending, speedstr, downloaded, pctstr)
     }
     if(finalize){
       cat(" done!             \n", file = stderr())
