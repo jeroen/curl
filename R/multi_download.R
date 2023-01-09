@@ -124,7 +124,7 @@ multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = TR
 print_progress <- local({
   last <- 0
   function(sucvec, total, speed, finalize = FALSE){
-    throttle <- ifelse(interactive(), 0.1, 1.0)
+    throttle <- ifelse(interactive(), 0.1, 5)
     now <- unclass(Sys.time())
     if(isTRUE(finalize) || now - last > throttle){
       last <<- now
@@ -134,11 +134,11 @@ print_progress <- local({
         sprintf(" (avg %s/s)", format(structure(speed, class = 'object_size'), digits = 2, units = 'auto'))
       } else {""}
       downloaded <- format(structure(total, class = 'object_size'), digits = 0, units = 'auto')
-      print_stream('\rRequests status: %d done; %d in progress. Total size: %s%s...',
+      print_stream('\rDownload status: %d done; %d in progress. Total size: %s%s...',
                    done, pending, downloaded, speedstr)
     }
     if(finalize){
-      cat(" done!           \n", file = stderr())
+      cat(" done!             \n", file = stderr())
       flush(stderr())
     }
   }
