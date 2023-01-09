@@ -43,7 +43,7 @@
 #'
 #' multi_download(urls)
 #' }
-multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = FALSE, timeout = Inf, ...){
+multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = TRUE, timeout = Inf, ...){
   urls <- enc2utf8(urls)
   if(is.null(destfiles)){
     destfiles <- basename(sub("[?#].*", "", urls))
@@ -55,6 +55,7 @@ multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = FA
   errors <- rep(NA_character_, length(urls))
   success <- rep(NA, length(urls))
   resumefrom <- rep(0, length(urls))
+  dlspeed <- rep(0, length(urls))
   pool <- new_pool()
   total <- 0
   lapply(seq_along(urls), function(i){
@@ -72,13 +73,16 @@ multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = FA
       total <<- total + length(buf)
       writer(buf, final)
       if(isTRUE(progress)){
-        print_progress(success, total)
+        dlspeed[i] <<- ifelse(final, 0, handle_speed(handle)[1])
+        print_progress(success, total, sum(dlspeed))
       }
     }, done = function(req){
       success[i] <<- TRUE
+      dlspeed[i] <<- 0
     }, fail = function(err){
       success[i] <<- FALSE
       errors[i] <<- err
+      dlspeed[i] <<- 0
     })
     handles[[i]] <<- handle
     writers[[i]] <<- writer
@@ -93,7 +97,7 @@ multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = FA
   tryCatch({
     multi_run(timeout = timeout, pool = pool)
     if(isTRUE(progress)){
-      print_progress(success, total, TRUE)
+      print_progress(success, total, sum(dlspeed), TRUE)
     }
   }, interrupt = function(e){
     message("download interrupted")
@@ -119,19 +123,22 @@ multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = FA
 # Print at most 10x per second in interactive, and once per sec in batch/CI
 print_progress <- local({
   last <- 0
-  throttle <- ifelse(interactive(), 0.1, 1)
-  function(sucvec, total, finalize = FALSE){
+  function(sucvec, total, speed, finalize = FALSE){
+    throttle <- ifelse(interactive(), 0.1, 1.0)
     now <- unclass(Sys.time())
     if(isTRUE(finalize) || now - last > throttle){
       last <<- now
       done <- sum(!is.na(sucvec))
       pending <- sum(is.na(sucvec))
+      speedstr <- if(!finalize){
+        sprintf(" (avg %s/s)", format(structure(speed, class = 'object_size'), digits = 2, units = 'auto'))
+      } else {""}
       downloaded <- format(structure(total, class = 'object_size'), digits = 0, units = 'auto')
-      print_stream('\rRequests status: %d done; %d in progress. Total downloaded: %s...',
-                   done, pending, downloaded)
+      print_stream('\rRequests status: %d done; %d in progress. Total size: %s%s...',
+                   done, pending, downloaded, speedstr)
     }
     if(finalize){
-      cat("done!\n", file = stderr())
+      cat(" done!           \n", file = stderr())
       flush(stderr())
     }
   }

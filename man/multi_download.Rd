@@ -8,7 +8,7 @@ multi_download(
   urls,
   destfiles = NULL,
   resume = FALSE,
-  progress = FALSE,
+  progress = TRUE,
   timeout = Inf,
   ...
 )

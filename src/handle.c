@@ -476,6 +476,25 @@ SEXP R_get_handle_response(SEXP ptr){
   return make_handle_response(ref);
 }
 
+SEXP R_get_handle_speed(SEXP ptr){
+  CURL *handle = get_handle(ptr);
+#ifdef HAS_DOWNLOAD_T
+  curl_off_t dl = 0;
+  curl_off_t ul = 0;
+  curl_easy_getinfo(handle, CURLINFO_SPEED_DOWNLOAD_T, &dl);
+  curl_easy_getinfo(handle, CURLINFO_SPEED_UPLOAD_T, &ul);
+#else
+  double dl = 0;
+  double ul = 0;
+  curl_easy_getinfo(handle, CURLINFO_SPEED_DOWNLOAD, &dl);
+  curl_easy_getinfo(handle, CURLINFO_SPEED_UPLOAD, &ul);
+#endif
+  SEXP out = Rf_allocVector(REALSXP, 2);
+  REAL(out)[0] = (double) dl;
+  REAL(out)[1] = (double) ul;
+  return out;
+}
+
 SEXP R_total_handles(void){
   return(ScalarInteger(total_handles));
 }
