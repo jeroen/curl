@@ -28,6 +28,28 @@ change server responses, see details.}
 
 \item{...}{extra handle options passed to each request \link{new_handle}}
 }
+\value{
+The function returns a data frame with one row for each downloaded file and
+the following columns:
+\itemize{
+\item \code{success} if the HTTP request was successfully performed, regardless of the
+response status code. This is \code{FALSE} in case of a network error, or in case
+you tried to resume from a server that did not support this. A value of \code{NA}
+means the download was interrupted while in progress.
+\item \code{status_code} the HTTP status code from the request. A successful download is
+usually \code{200} for full requests or \code{206} for resumed requests. Anything else
+could indicate that the downloaded file contains an error page instead of the
+requested content.
+\item \code{resumefrom} the file size before the request, in case a download was resumed.
+\item \code{url} final url (after redirects) of the request.
+\item \code{destfile} downloaded file on disk.
+\item \code{error} if \code{success == FALSE} this column contains an error message.
+\item \code{type} the \code{Content-Type} response header value.
+\item \code{modified} the \code{Last-Modified} response header value.
+\item \code{time} total elapsed download time for this file in seconds.
+\item \code{headers} vector with http response headers for the request.
+}
+}
 \description{
 Download multiple files concurrently, with support for resuming large files.
 This function is based on \code{\link[=multi_run]{multi_run()}} and hence does not error in case any

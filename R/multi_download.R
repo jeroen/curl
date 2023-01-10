@@ -25,6 +25,25 @@
 #' download anything, because this probably means the server did not respect our
 #' range request and is sending us the full file.
 #'
+#' @returns The function returns a data frame with one row for each downloaded file and
+#' the following columns:
+#'  - `success` if the HTTP request was successfully performed, regardless of the
+#'  response status code. This is `FALSE` in case of a network error, or in case
+#'  you tried to resume from a server that did not support this. A value of `NA`
+#'  means the download was interrupted while in progress.
+#'  - `status_code` the HTTP status code from the request. A successful download is
+#'  usually `200` for full requests or `206` for resumed requests. Anything else
+#'  could indicate that the downloaded file contains an error page instead of the
+#'  requested content.
+#'  - `resumefrom` the file size before the request, in case a download was resumed.
+#'  - `url` final url (after redirects) of the request.
+#'  - `destfile` downloaded file on disk.
+#'  - `error` if `success == FALSE` this column contains an error message.
+#'  - `type` the `Content-Type` response header value.
+#'  - `modified` the `Last-Modified` response header value.
+#'  - `time` total elapsed download time for this file in seconds.
+#'  - `headers` vector with http response headers for the request.
+#'
 #' @export
 #' @param urls vector with files to download
 #' @param destfiles vector (of equal length as `urls`) with paths of output files,
