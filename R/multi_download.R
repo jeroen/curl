@@ -157,9 +157,9 @@ print_progress <- local({
       pending <- sum(is.na(sucvec))
       pctstr <- sprintf("(%s%%)", ifelse(is.na(expected), "??", as.character(round(100 * total/expected))))
       speedstr <- if(!finalize){
-        sprintf(" (avg %s/s)", format(structure(speed, class = 'object_size'), digits = 2, units = 'auto'))
+        sprintf(" (%s/s)", format_size(speed))
       } else {""}
-      downloaded <- format(structure(total, class = 'object_size'), digits = 0, units = 'auto')
+      downloaded <- format_size(total)
       print_stream('\rDownload status: %d done; %d in progress%s. Total size: %s %s...',
                    done, pending, speedstr, downloaded, pctstr)
     }
