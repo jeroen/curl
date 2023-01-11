@@ -76,15 +76,31 @@ will not be touched. In fact, if we request to a download to be resumed and the
 server responds \verb{HTTP 200} instead of \verb{HTTP 206}, libcurl will error and not
 download anything, because this probably means the server did not respect our
 range request and is sending us the full file.
+\subsection{About HTTP/2}{
+
+Availability of HTTP/2 can increase the performance when making many parallel
+requests to a server, because HTTP/2 can multiplex many requests over a single
+TCP connection. Support for HTTP/2 depends on the version of \code{libcurl} that
+your system has, and the TLS back-end that is in use, check \link{curl_version}.
+
+On Windows and MacOS you can switch the active TLS backend by setting an
+environment variable \href{https://curl.se/libcurl/c/libcurl-env.html}{\code{CURL_SSL_BACKEND}}
+in your \verb{~/.Renviron} file. On Windows you can switch between \code{SecureChannel}
+and \code{OpenSSL} and on MacOS you can use either \code{SecureTransport} or \code{OpenSSL}.
+}
 }
 \examples{
 \dontrun{
-urls <- c('https://cran.r-project.org/src/contrib/Archive/V8/V8_4.2.1.tar.gz',
-'https://cran.r-project.org/src/contrib/Archive/curl/curl_4.3.2.tar.gz',
-'https://urldoesnotexist.xyz/nothing.zip',
-'https://github.com/jeroen/curl/archive/refs/heads/master.zip',
-'https://httpbin.org/status/418')
+# Download all reverse dependencies for the 'curl' package from CRAN:
+pkg <- 'curl'
+mirror <- 'https://cloud.r-project.org'
+db <- available.packages(repos = mirror)
+packages <- c(pkg, tools::package_dependencies(pkg, db = db, reverse = TRUE)[[pkg]])
+versions <- db[packages,'Version']
+urls <- sprintf("\%s/src/contrib/\%s_\%s.tar.gz", mirror, packages,  versions)
+res <- multi_download(urls)
+res
 
-multi_download(urls)
+# And then you could use: tools:::check_packages_in_dir()
 }
 }

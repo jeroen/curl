@@ -25,6 +25,18 @@
 #' download anything, because this probably means the server did not respect our
 #' range request and is sending us the full file.
 #'
+#' ## About HTTP/2
+#'
+#' Availability of HTTP/2 can increase the performance when making many parallel
+#' requests to a server, because HTTP/2 can multiplex many requests over a single
+#' TCP connection. Support for HTTP/2 depends on the version of `libcurl` that
+#' your system has, and the TLS back-end that is in use, check [curl_version].
+#'
+#' On Windows and MacOS you can switch the active TLS backend by setting an
+#' environment variable [`CURL_SSL_BACKEND`](https://curl.se/libcurl/c/libcurl-env.html)
+#' in your `~/.Renviron` file. On Windows you can switch between `SecureChannel`
+#' and `OpenSSL` and on MacOS you can use either `SecureTransport` or `OpenSSL`.
+#'
 #' @returns The function returns a data frame with one row for each downloaded file and
 #' the following columns:
 #'  - `success` if the HTTP request was successfully performed, regardless of the
@@ -54,13 +66,17 @@
 #' @param progress print download progress information
 #' @param ... extra handle options passed to each request [new_handle]
 #' @examples \dontrun{
-#' urls <- c('https://cran.r-project.org/src/contrib/Archive/V8/V8_4.2.1.tar.gz',
-#' 'https://cran.r-project.org/src/contrib/Archive/curl/curl_4.3.2.tar.gz',
-#' 'https://urldoesnotexist.xyz/nothing.zip',
-#' 'https://github.com/jeroen/curl/archive/refs/heads/master.zip',
-#' 'https://httpbin.org/status/418')
+#' # Download all reverse dependencies for the 'curl' package from CRAN:
+#' pkg <- 'curl'
+#' mirror <- 'https://cloud.r-project.org'
+#' db <- available.packages(repos = mirror)
+#' packages <- c(pkg, tools::package_dependencies(pkg, db = db, reverse = TRUE)[[pkg]])
+#' versions <- db[packages,'Version']
+#' urls <- sprintf("%s/src/contrib/%s_%s.tar.gz", mirror, packages,  versions)
+#' res <- multi_download(urls)
+#' res
 #'
-#' multi_download(urls)
+#' # And then you could use: tools:::check_packages_in_dir()
 #' }
 multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = TRUE, timeout = Inf, ...){
   urls <- enc2utf8(urls)
