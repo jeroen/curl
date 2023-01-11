@@ -35,7 +35,8 @@
 #' On Windows and MacOS you can switch the active TLS backend by setting an
 #' environment variable [`CURL_SSL_BACKEND`](https://curl.se/libcurl/c/libcurl-env.html)
 #' in your `~/.Renviron` file. On Windows you can switch between `SecureChannel`
-#' and `OpenSSL` and on MacOS you can use either `SecureTransport` or `OpenSSL`.
+#' and `OpenSSL` (only the latter supports HTTP/2) and on MacOS you can use either
+#' `SecureTransport` or `OpenSSL`.
 #'
 #' @returns The function returns a data frame with one row for each downloaded file and
 #' the following columns:
@@ -79,8 +80,8 @@
 #' versions <- db[packages,'Version']
 #' urls <- sprintf("%s/src/contrib/%s_%s.tar.gz", mirror, packages,  versions)
 #' res <- multi_download(urls)
-#' res
-#' # And then you could use: tools:::check_packages_in_dir()
+#' all.equal(unname(tools::md5sum(res$destfile)), unname(db[packages, 'MD5sum']))
+#' # And then you could use e.g.: tools:::check_packages_in_dir()
 #'
 #' # Example: URL checker
 #' pkg_url_checker <- function(dir){
@@ -91,7 +92,7 @@
 #' }
 #'
 #' # Use a local package source directory
-#' pkg_url_checker("~/workspace/curl")
+#' pkg_url_checker(".")
 #'
 #' }
 multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = TRUE, timeout = Inf, ...){
