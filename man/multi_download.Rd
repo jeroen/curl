@@ -91,6 +91,7 @@ and \code{OpenSSL} and on MacOS you can use either \code{SecureTransport} or \co
 }
 \examples{
 \dontrun{
+# Example: revdep checker
 # Download all reverse dependencies for the 'curl' package from CRAN:
 pkg <- 'curl'
 mirror <- 'https://cloud.r-project.org'
@@ -100,7 +101,18 @@ versions <- db[packages,'Version']
 urls <- sprintf("\%s/src/contrib/\%s_\%s.tar.gz", mirror, packages,  versions)
 res <- multi_download(urls)
 res
-
 # And then you could use: tools:::check_packages_in_dir()
+
+# Example: URL checker
+pkg_url_checker <- function(dir){
+  db <- tools:::url_db_from_package_sources(dir)
+  res <- multi_download(db$URL, rep('/dev/null', nrow(db)), nobody=TRUE)
+  db$OK <- res$status == 200
+  db
+}
+
+# Use a local package source directory
+pkg_url_checker("~/workspace/curl")
+
 }
 }

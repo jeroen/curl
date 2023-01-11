@@ -66,6 +66,7 @@
 #' @param progress print download progress information
 #' @param ... extra handle options passed to each request [new_handle]
 #' @examples \dontrun{
+#' # Example: revdep checker
 #' # Download all reverse dependencies for the 'curl' package from CRAN:
 #' pkg <- 'curl'
 #' mirror <- 'https://cloud.r-project.org'
@@ -75,15 +76,26 @@
 #' urls <- sprintf("%s/src/contrib/%s_%s.tar.gz", mirror, packages,  versions)
 #' res <- multi_download(urls)
 #' res
-#'
 #' # And then you could use: tools:::check_packages_in_dir()
+#'
+#' # Example: URL checker
+#' pkg_url_checker <- function(dir){
+#'   db <- tools:::url_db_from_package_sources(dir)
+#'   res <- multi_download(db$URL, rep('/dev/null', nrow(db)), nobody=TRUE)
+#'   db$OK <- res$status == 200
+#'   db
+#' }
+#'
+#' # Use a local package source directory
+#' pkg_url_checker("~/workspace/curl")
+#'
 #' }
 multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = TRUE, timeout = Inf, ...){
   urls <- enc2utf8(urls)
   if(is.null(destfiles)){
     destfiles <- basename(sub("[?#].*", "", urls))
   }
-  dupes <- destfiles[duplicated(destfiles)]
+  dupes <- setdiff(destfiles[duplicated(destfiles)], c("/dev/null", "NUL"))
   if(length(dupes)){
     stop("Duplicate destfiles: ", paste(dupes, collapse = ', '))
   }
@@ -175,7 +187,7 @@ print_progress <- local({
       last <<- now
       done <- sum(!is.na(sucvec))
       pending <- sum(is.na(sucvec))
-      pctstr <- sprintf("(%s%%)", ifelse(is.na(expected), "??", as.character(round(100 * total/expected))))
+      pctstr <- sprintf("(%s%%)", ifelse(is.na(expected) || expected == 0, "??", as.character(round(100 * total/expected))))
       speedstr <- if(!finalize){
         sprintf(" (%s/s)", format_size(speed))
       } else {""}
