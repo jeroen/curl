@@ -14,7 +14,7 @@ jobs:
   R-CMD-check:
     runs-on: ${{ matrix.config.os }}
 
-    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
+    name: ${{ matrix.config.os }} (${{ matrix.config.r }}) ${{ matrix.config.ssl-backend }}
 
     strategy:
       fail-fast: false
@@ -22,7 +22,9 @@ jobs:
         config:
           - {os: macOS-10.15,r: 'release'}
           - {os: macOS-11,   r: 'release'}
+          - {os: macOS-11,   r: 'release', ssl-backend: SecureTransport}
           - {os: macOS-12,   r: 'release'}
+          - {os: macOS-12,   r: 'release', ssl-backend: SecureTransport}
           - {os: windows-latest, r: 'release', ssl-backend: openssl}
           - {os: windows-latest, r: 'release'}
           - {os: windows-latest, r: '4.1', ssl-backend: openssl}
@@ -47,8 +49,15 @@ jobs:
           use-public-rspm: true
 
       - uses: r-lib/actions/setup-r-dependencies@v2
+        if: runner.os == 'windows'
         with:
           extra-packages: any::rcmdcheck
+          needs: check
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        if: runner.os != 'windows'
+        with:
+          extra-packages: any::rcmdcheck, rstudio/httpuv#352
           needs: check
 
       - uses: r-lib/actions/check-r-package@v2
