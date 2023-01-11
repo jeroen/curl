@@ -191,7 +191,7 @@ print_progress <- local({
       last <<- now
       done <- sum(!is.na(sucvec))
       pending <- sum(is.na(sucvec))
-      pctstr <- if(identical(expected, 0L)){
+      pctstr <- if(!identical(expected, 0.0)){
         sprintf("(%s%%)", ifelse(is.na(expected), "??", as.character(round(100 * total/expected))))
       } else {""}
       speedstr <- if(!finalize){
