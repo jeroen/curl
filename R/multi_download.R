@@ -31,12 +31,15 @@
 #' requests to a server, because HTTP/2 can multiplex many requests over a single
 #' TCP connection. Support for HTTP/2 depends on the version of `libcurl` that
 #' your system has, and the TLS back-end that is in use, check [curl_version].
+#' For clients or servers without HTTP/2, curl makes at most 6 connections per
+#' host over which it distributes the queued downloads.
 #'
 #' On Windows and MacOS you can switch the active TLS backend by setting an
 #' environment variable [`CURL_SSL_BACKEND`](https://curl.se/libcurl/c/libcurl-env.html)
 #' in your `~/.Renviron` file. On Windows you can switch between `SecureChannel`
-#' and `OpenSSL` (only the latter supports HTTP/2) and on MacOS you can use either
-#' `SecureTransport` or `OpenSSL`.
+#' (default) and `OpenSSL` where only the latter supports HTTP/2. On MacOS you
+#' can use either `SecureTransport` or `LibreSSL`, the default varies by MacOS
+#' version.
 #'
 #' @returns The function returns a data frame with one row for each downloaded file and
 #' the following columns:
