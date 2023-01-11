@@ -83,6 +83,10 @@ multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = TR
   if(is.null(destfiles)){
     destfiles <- basename(sub("[?#].*", "", urls))
   }
+  dupes <- destfiles[duplicated(destfiles)]
+  if(length(dupes)){
+    stop("Duplicate destfiles: ", paste(dupes, collapse = ', '))
+  }
   stopifnot(length(urls) == length(destfiles))
   destfiles <- normalizePath(destfiles, mustWork = FALSE)
   handles <- rep(list(NULL), length(urls))
