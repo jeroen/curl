@@ -66,6 +66,10 @@
 #' @param progress print download progress information
 #' @param ... extra handle options passed to each request [new_handle]
 #' @examples \dontrun{
+#' # Example: some large files
+#' urls <- sprintf("https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2021-%02d.parquet", 1:12)
+#' res <- multi_download(urls, resume = TRUE) # You can interrupt (ESC) and resume
+#'
 #' # Example: revdep checker
 #' # Download all reverse dependencies for the 'curl' package from CRAN:
 #' pkg <- 'curl'
@@ -187,7 +191,9 @@ print_progress <- local({
       last <<- now
       done <- sum(!is.na(sucvec))
       pending <- sum(is.na(sucvec))
-      pctstr <- sprintf("(%s%%)", ifelse(is.na(expected) || expected == 0, "??", as.character(round(100 * total/expected))))
+      pctstr <- if(identical(expected, 0L)){
+        sprintf("(%s%%)", ifelse(is.na(expected), "??", as.character(round(100 * total/expected))))
+      } else {""}
       speedstr <- if(!finalize){
         sprintf(" (%s/s)", format_size(speed))
       } else {""}
