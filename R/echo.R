@@ -64,9 +64,6 @@ curl_echo <- function(handle, port = 9359, progress = interactive(), file = NULL
   # Workaround bug in httpuv on windows that keeps protecting handler until next startServer()
   on.exit(rm(handle), add = TRUE)
 
-  # httpuv 1.3.4 supports non-blocking service()
-  waittime <- ifelse(utils::packageVersion('httpuv') > "1.3.3", NA, 1)
-
   # Post data from curl
   xfer <- function(down, up){
     if(progress){
@@ -78,7 +75,7 @@ curl_echo <- function(handle, port = 9359, progress = interactive(), file = NULL
       }
     }
     # Need very low wait to prevent gridlocking!
-    httpuv::service(waittime)
+    httpuv::service(NA)
     TRUE
   }
   handle_setopt(handle, connecttimeout = 2, xferinfofunction = xfer, noprogress = FALSE, forbid_reuse = TRUE)
