@@ -9,7 +9,7 @@
 \alias{multi_cancel}
 \alias{new_pool}
 \alias{multi_fdset}
-\title{Async Multi Download}
+\title{Async Concurrent Requests}
 \usage{
 multi_add(handle, done = NULL, fail = NULL, data = NULL, pool = NULL)
 
@@ -58,6 +58,7 @@ May also be an integer in which case it returns after n requests have completed.
 \description{
 AJAX style concurrent requests, possibly using HTTP/2 multiplexing.
 Results are only available via callback functions. Advanced use only!
+For downloading many files in parallel use \link{multi_download} instead.
 }
 \details{
 Requests are created in the usual way using a curl \link{handle} and added
