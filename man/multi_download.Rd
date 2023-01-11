@@ -96,7 +96,8 @@ version.
 \examples{
 \dontrun{
 # Example: some large files
-urls <- sprintf("https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2021-\%02d.parquet", 1:12)
+urls <- sprintf(
+  "https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2021-\%02d.parquet", 1:12)
 res <- multi_download(urls, resume = TRUE) # You can interrupt (ESC) and resume
 
 # Example: revdep checker
