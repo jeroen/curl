@@ -8,9 +8,9 @@ SEXP R_option_types(void){
     if(!(o->flags & CURLOT_FLAG_ALIAS))
       len++;
   }
-  SEXP names = Rf_allocVector(STRSXP, len);
-  SEXP values = Rf_allocVector(INTSXP, len);
-  SEXP types = Rf_allocVector(INTSXP, len);
+  SEXP names = PROTECT(Rf_allocVector(STRSXP, len));
+  SEXP values = PROTECT(Rf_allocVector(INTSXP, len));
+  SEXP types = PROTECT(Rf_allocVector(INTSXP, len));
   int i = 0;
   while((o = curl_easy_option_next(o))){
     if(!(o->flags & CURLOT_FLAG_ALIAS)){
@@ -30,7 +30,7 @@ SEXP R_option_types(void){
   SET_STRING_ELT(listnms, 0, Rf_mkChar("name"));
   SET_STRING_ELT(listnms, 1, Rf_mkChar("value"));
   SET_STRING_ELT(listnms, 2, Rf_mkChar("type"));
-  UNPROTECT(2);
+  UNPROTECT(5);
   return out;
 #else
   return R_NilValue;
