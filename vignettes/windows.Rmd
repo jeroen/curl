@@ -37,7 +37,7 @@ In order to make SSL (https) connections, libcurl uses an SSL backend. Currently
 | __support https proxy server__            | No                              | Yes                    |
 | __support client certificate authentication__     | No                              | Yes                    |
 
-[^1]: As of version 5 we now default to [CURLSSLOPT_NATIVE_CA](https://curl.se/libcurl/c/CURLOPT_SSL_OPTIONS.html). To use a traditional PEM bundle set the CURL_CA_BUNDLE environment variable.
+[^1]: As of version 5 we now default to [`CURLSSLOPT_NATIVE_CA`](https://curl.se/libcurl/c/CURLOPT_SSL_OPTIONS.html). To use a traditional PEM bundle set the CURL_CA_BUNDLE environment variable.
 
 The default backend on Windows 7 and up is Secure Channel. This uses the native Windows SSL API and certificates, which is the safest choice for most users.
 
