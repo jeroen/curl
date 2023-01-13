@@ -49,15 +49,8 @@ jobs:
           use-public-rspm: true
 
       - uses: r-lib/actions/setup-r-dependencies@v2
-        if: runner.os == 'windows'
         with:
           extra-packages: any::rcmdcheck
-          needs: check
-
-      - uses: r-lib/actions/setup-r-dependencies@v2
-        if: runner.os != 'windows'
-        with:
-          extra-packages: any::rcmdcheck, rstudio/httpuv
           needs: check
 
       - uses: r-lib/actions/check-r-package@v2
