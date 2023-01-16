@@ -1,3 +1,7 @@
+5.0.1
+ - Setting verbose=TRUE now prints to R's stderr instead of the process, such that
+   it works better with some GUIs.
+
 5.0.0
  - New function multi_download() which supports concurrent downloads and resuming
    download for large files, while giving detailed progress information.

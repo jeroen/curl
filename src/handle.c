@@ -109,6 +109,15 @@ static void set_headers(reference *ref, struct curl_slist *newheaders){
                           newheaders ? newheaders : default_headers()));
 }
 
+static int default_verbose_cb(CURL *handle, curl_infotype type, char *data, size_t size, void *userptr){
+  if(type < 3){
+    char prefix = type == CURLINFO_TEXT ? '*' : (type == CURLINFO_HEADER_IN ? '<' : '>');
+    REprintf("%c %.*s", prefix, size, data);
+  }
+  return 0;
+}
+
+
 /* These are defaulst that we always want to set */
 static void set_handle_defaults(reference *ref){
 
@@ -188,6 +197,9 @@ static void set_handle_defaults(reference *ref){
 #ifdef HAS_CURLOPT_EXPECT_100_TIMEOUT_MS
   assert(curl_easy_setopt(handle, CURLOPT_EXPECT_100_TIMEOUT_MS, 0L));
 #endif
+
+  /* Send verbose outout to R front-end virtual stderr */
+  assert(curl_easy_setopt(handle, CURLOPT_DEBUGFUNCTION, default_verbose_cb));
 }
 
 SEXP R_new_handle(void){
