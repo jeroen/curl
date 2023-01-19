@@ -15,7 +15,7 @@ form_file <- function(path, type = NULL, name = base::basename(path)){
   if(!is.null(type)){
     stopifnot(is.character(type))
   }
-  structure(list(path = path, name = name, type = type), class = "form_file")
+  structure(list(path = path, type = type, name = name), class = "form_file")
 }
 
 #' @export
