@@ -10,7 +10,7 @@
 #' @export
 #' @name multipart
 #' @rdname multipart
-form_file <- function(path, type = NULL, name = base::basename(path)){
+form_file <- function(path, type = NULL, name = NULL) {
   path <- enc2native(normalizePath(path[1], mustWork = TRUE))
   if(!is.null(type)){
     stopifnot(is.character(type))

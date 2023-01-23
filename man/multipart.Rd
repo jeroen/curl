@@ -6,7 +6,7 @@
 \alias{form_data}
 \title{POST files or data}
 \usage{
-form_file(path, type = NULL, name = base::basename(path))
+form_file(path, type = NULL, name = NULL)
 
 form_data(value, type = NULL)
 }
