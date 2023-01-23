@@ -19,12 +19,22 @@ struct curl_httppost* make_form(SEXP form){
     } else if(isVector(val) && Rf_length(val)){
       if(isString(VECTOR_ELT(val, 0))){
         //assume a form_file upload
-        const char * path = CHAR(asChar(VECTOR_ELT(val, 0)));
-        if(isString(VECTOR_ELT(val, 1))){
+        const char *path = CHAR(asChar(VECTOR_ELT(val, 0)));
+        if(isString(VECTOR_ELT(val, 1))) {
           const char *content_type = CHAR(asChar(VECTOR_ELT(val, 1)));
-          curl_formadd(&post, &last, CURLFORM_COPYNAME, name, CURLFORM_FILE, path, CURLFORM_CONTENTTYPE, content_type, CURLFORM_END);
+          if(isString(VECTOR_ELT(val, 2))) {
+            const char *file_name = CHAR(asChar(VECTOR_ELT(val, 2)));
+            curl_formadd(&post, &last, CURLFORM_COPYNAME, name, CURLFORM_FILE, path, CURLFORM_CONTENTTYPE, content_type, CURLFORM_FILENAME, file_name, CURLFORM_END);
+          } else {
+            curl_formadd(&post, &last, CURLFORM_COPYNAME, name, CURLFORM_FILE, path, CURLFORM_CONTENTTYPE, content_type, CURLFORM_END);
+          }
         } else {
-          curl_formadd(&post, &last, CURLFORM_COPYNAME, name, CURLFORM_FILE, path, CURLFORM_END);
+          if(isString(VECTOR_ELT(val, 2))) {
+            const char *file_name = CHAR(asChar(VECTOR_ELT(val, 2)));
+            curl_formadd(&post, &last, CURLFORM_COPYNAME, name, CURLFORM_FILE, path, CURLFORM_FILENAME, file_name, CURLFORM_END);
+          } else {
+            curl_formadd(&post, &last, CURLFORM_COPYNAME, name, CURLFORM_FILE, path, CURLFORM_END);
+          }
         }
       } else {
         //assume a form_value upload

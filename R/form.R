@@ -6,15 +6,16 @@
 #'
 #' @param path a string with a path to an existing file on disk
 #' @param type MIME content-type of the file.
+#' @param name a string with the file name to use for the upload
 #' @export
 #' @name multipart
 #' @rdname multipart
-form_file <- function(path, type = NULL){
+form_file <- function(path, type = NULL, name = NULL) {
   path <- enc2native(normalizePath(path[1], mustWork = TRUE))
   if(!is.null(type)){
     stopifnot(is.character(type))
   }
-  structure(list(path = path, type = type), class = "form_file")
+  structure(list(path = path, type = type, name = name), class = "form_file")
 }
 
 #' @export
@@ -32,6 +33,9 @@ form_data <- function(value, type = NULL){
 #' @export
 print.form_file <- function(x, ...){
   txt <- paste("Form file:", basename(x$path))
+  if(!is.null(x$name)) {
+    txt <- sprintf("%s => %s", txt, x$name)
+  }
   if(!is.null(x$type)){
     txt <- sprintf("%s (type: %s)", txt, x$type)
   }

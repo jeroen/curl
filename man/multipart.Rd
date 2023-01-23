@@ -6,7 +6,7 @@
 \alias{form_data}
 \title{POST files or data}
 \usage{
-form_file(path, type = NULL)
+form_file(path, type = NULL, name = NULL)
 
 form_data(value, type = NULL)
 }
@@ -14,6 +14,8 @@ form_data(value, type = NULL)
 \item{path}{a string with a path to an existing file on disk}
 
 \item{type}{MIME content-type of the file.}
+
+\item{name}{a string with the file name to use for the upload}
 
 \item{value}{a character or raw vector to post}
 }
