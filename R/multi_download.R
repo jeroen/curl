@@ -91,7 +91,7 @@
 #' pkg_url_checker <- function(dir){
 #'   db <- tools:::url_db_from_package_sources(dir)
 #'   res <- multi_download(db$URL, rep('/dev/null', nrow(db)), nobody=TRUE)
-#'   db$OK <- res$status == 200
+#'   db$OK <- res$status_code == 200
 #'   db
 #' }
 #'
