@@ -10,6 +10,10 @@
 #define HAS_CURLMOPT_MAX_TOTAL_CONNECTIONS 1
 #endif
 
+#if LIBCURL_VERSION_MAJOR > 7 || (LIBCURL_VERSION_MAJOR == 7 && LIBCURL_VERSION_MINOR >= 67)
+#define HAS_CURLMOPT_MAX_CONCURRENT_STREAMS 1
+#endif
+
 multiref *get_multiref(SEXP ptr){
   if(TYPEOF(ptr) != EXTPTRSXP || !Rf_inherits(ptr, "curl_multi"))
     Rf_error("pool ptr is not a curl_multi handle");
@@ -243,7 +247,7 @@ SEXP R_multi_new(void){
   return ptr;
 }
 
-SEXP R_multi_setopt(SEXP pool_ptr, SEXP total_con, SEXP host_con, SEXP multiplex){
+SEXP R_multi_setopt(SEXP pool_ptr, SEXP total_con, SEXP host_con, SEXP multiplex, SEXP max_streams){
   #ifdef HAS_CURLMOPT_MAX_TOTAL_CONNECTIONS
     CURLM *multi = get_multiref(pool_ptr)->m;
     massert(curl_multi_setopt(multi, CURLMOPT_MAX_TOTAL_CONNECTIONS, (long) asInteger(total_con)));
@@ -254,6 +258,9 @@ SEXP R_multi_setopt(SEXP pool_ptr, SEXP total_con, SEXP host_con, SEXP multiplex
   #ifdef CURLPIPE_MULTIPLEX
     massert(curl_multi_setopt(multi, CURLMOPT_PIPELINING,
                               asLogical(multiplex) ? CURLPIPE_MULTIPLEX : CURLPIPE_NOTHING));
+  #endif
+  #ifdef HAS_CURLMOPT_MAX_CONCURRENT_STREAMS
+    massert(curl_multi_setopt(multi, CURLMOPT_MAX_CONCURRENT_STREAMS, (long) asInteger(max_streams)));
   #endif
 
   return pool_ptr;
