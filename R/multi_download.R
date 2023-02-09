@@ -144,6 +144,9 @@ multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = TR
       expected[i] <<- handle_received(handle) + resumefrom[i]
       success[i] <<- TRUE
       dlspeed[i] <<- 0
+      if(expected[i] == 0 && !file.exists(dest)){
+        file.create(dest) #create empty file
+      }
     }, fail = function(err){
       expected[i] <<- handle_received(handle) + resumefrom[i]
       success[i] <<- FALSE
