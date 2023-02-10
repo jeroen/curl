@@ -26,11 +26,6 @@ extern int r_curl_is_postfields_option(CURLoption x);
 #define HAS_CURLOPT_EXPECT_100_TIMEOUT_MS 1
 #endif
 
-
-#if LIBCURL_VERSION_MAJOR > 7 || (LIBCURL_VERSION_MAJOR == 7 && LIBCURL_VERSION_MINOR >= 43)
-#define HAS_CURLOPT_PIPEWAIT 1
-#endif
-
 int total_handles = 0;
 
 void clean_handle(reference *ref){
@@ -201,10 +196,6 @@ static void set_handle_defaults(reference *ref){
   set_headers(ref, NULL);
 #ifdef HAS_CURLOPT_EXPECT_100_TIMEOUT_MS
   assert(curl_easy_setopt(handle, CURLOPT_EXPECT_100_TIMEOUT_MS, 0L));
-#endif
-
-#ifdef HAS_CURLOPT_PIPEWAIT
-  assert(curl_easy_setopt(handle, CURLOPT_PIPEWAIT, 1L));
 #endif
 
   /* Send verbose outout to R front-end virtual stderr */
