@@ -1,6 +1,8 @@
 5.0.1
  - Setting verbose=TRUE now prints to R's stderr instead of the process, such that
    it works better with some GUIs.
+ - multi_download() now sets mtime for downloaded files from server
+ - Fix for multi_download() when downloading 0byte files
 
 5.0.0
  - New function multi_download() which supports concurrent downloads and resuming
