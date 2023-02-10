@@ -1,5 +1,4 @@
 5.0.1
- - Allow setting max concurrent streams in multi pools.
  - Setting verbose=TRUE now prints to R's stderr instead of the process, such that
    it works better with some GUIs.
 

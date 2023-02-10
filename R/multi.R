@@ -136,19 +136,17 @@ multi_run <- function(timeout = Inf, poll = FALSE, pool = NULL){
 #' @param total_con max total concurrent connections.
 #' @param host_con max concurrent connections per host.
 #' @param multiplex enable HTTP/2 multiplexing if supported by host and client.
-#' @param max_streams max concurrent http/2 streams if `multiplex` is enabled.
 #' @export
 #' @useDynLib curl R_multi_setopt
 #' @rdname multi
-multi_set <- function(total_con = 50, host_con = 6, multiplex = TRUE, max_streams = 100, pool = NULL){
+multi_set <- function(total_con = 50, host_con = 6, multiplex = TRUE, pool = NULL){
   if(is.null(pool))
     pool <- multi_default()
   stopifnot(inherits(pool, "curl_multi"))
   stopifnot(is.numeric(total_con))
   stopifnot(is.numeric(host_con))
   stopifnot(is.logical(multiplex))
-  stopifnot(is.numeric(max_streams))
-  .Call(R_multi_setopt, pool, total_con, host_con, multiplex, max_streams)
+  .Call(R_multi_setopt, pool, total_con, host_con, multiplex)
 }
 
 #' @export
@@ -172,9 +170,9 @@ multi_cancel <- function(handle){
 #' @export
 #' @useDynLib curl R_multi_new
 #' @rdname multi
-new_pool <- function(total_con = 100, host_con = 6, multiplex = TRUE, max_streams = 100){
+new_pool <- function(total_con = 100, host_con = 6, multiplex = TRUE){
   pool <- .Call(R_multi_new)
-  multi_set(pool = pool, total_con = total_con, host_con = host_con, multiplex = multiplex, max_streams = max_streams)
+  multi_set(pool = pool, total_con = total_con, host_con = host_con, multiplex = multiplex)
 }
 
 multi_default <- local({

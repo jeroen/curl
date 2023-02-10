@@ -15,19 +15,13 @@ multi_add(handle, done = NULL, fail = NULL, data = NULL, pool = NULL)
 
 multi_run(timeout = Inf, poll = FALSE, pool = NULL)
 
-multi_set(
-  total_con = 50,
-  host_con = 6,
-  multiplex = TRUE,
-  max_streams = 100,
-  pool = NULL
-)
+multi_set(total_con = 50, host_con = 6, multiplex = TRUE, pool = NULL)
 
 multi_list(pool = NULL)
 
 multi_cancel(handle)
 
-new_pool(total_con = 100, host_con = 6, multiplex = TRUE, max_streams = 100)
+new_pool(total_con = 100, host_con = 6, multiplex = TRUE)
 
 multi_fdset(pool = NULL)
 }
@@ -60,8 +54,6 @@ May also be an integer in which case it returns after n requests have completed.
 \item{host_con}{max concurrent connections per host.}
 
 \item{multiplex}{enable HTTP/2 multiplexing if supported by host and client.}
-
-\item{max_streams}{max concurrent http/2 streams if \code{multiplex} is enabled.}
 }
 \description{
 AJAX style concurrent requests, possibly using HTTP/2 multiplexing.
