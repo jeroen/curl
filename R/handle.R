@@ -197,6 +197,11 @@ handle_received <- function(handle){
   .Call(R_get_handle_received, handle)
 }
 
+#' @useDynLib curl R_get_handle_mtime
+handle_mtime <- function(handle){
+  .Call(R_get_handle_mtime, handle)
+}
+
 #' @export
 print.curl_handle <- function(x, ...){
   stopifnot(inherits(x, "curl_handle"))

@@ -531,6 +531,9 @@ SEXP R_get_handle_received(SEXP ptr){
   return Rf_ScalarReal((double) dl);
 }
 
+SEXP R_get_handle_mtime(SEXP ptr){
+  return make_filetime(get_handle(ptr));
+}
 
 SEXP R_total_handles(void){
   return(ScalarInteger(total_handles));

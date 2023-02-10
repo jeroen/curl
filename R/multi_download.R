@@ -147,6 +147,10 @@ multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = TR
       if(expected[i] == 0 && !file.exists(dest)){
         file.create(dest) #create empty file
       }
+      mtime <- handle_mtime(handle)
+      if(!is.na(mtime)){
+        Sys.setFileTime(dest, handle_mtime(handle))
+      }
     }, fail = function(err){
       expected[i] <<- handle_received(handle) + resumefrom[i]
       success[i] <<- FALSE

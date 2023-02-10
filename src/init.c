@@ -15,6 +15,7 @@ extern SEXP R_curl_version(void);
 extern SEXP R_download_curl(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP R_get_handle_clength(SEXP);
 extern SEXP R_get_handle_cookies(SEXP);
+extern SEXP R_get_handle_mtime(SEXP);
 extern SEXP R_get_handle_speed(SEXP);
 extern SEXP R_get_handle_received(SEXP);
 extern SEXP R_get_handle_response(SEXP);
@@ -53,6 +54,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"R_download_curl",       (DL_FUNC) &R_download_curl,       6},
     {"R_get_handle_clength",  (DL_FUNC) &R_get_handle_clength,  1},
     {"R_get_handle_cookies",  (DL_FUNC) &R_get_handle_cookies,  1},
+    {"R_get_handle_mtime",    (DL_FUNC) &R_get_handle_mtime,    1},
     {"R_get_handle_speed",    (DL_FUNC) &R_get_handle_speed,    1},
     {"R_get_handle_received", (DL_FUNC) &R_get_handle_received, 1},
     {"R_get_handle_response", (DL_FUNC) &R_get_handle_response, 1},
