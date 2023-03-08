@@ -388,6 +388,17 @@ The `form_file` function is used to upload files with the form post. It has two 
 
 The `form_data` function is similar but simply posts a string or raw value with a custom content-type.
 
+You can also be more explicit by setting the `customrequest` handle to "POST" and assigning the appropriate data to the option `postfields`.
+
+```{r}
+h <- new_handle() %>%
+  handle_setheaders('Content-Type' = 'application/json') %>%
+  handle_setopt(customrequest = "POST") %>%
+  handle_setopt(postfields = '{"data":{"value":[1,2,3],"tag":["numbers"]}}')
+
+req <- curl_fetch_memory("https://eu.httpbin.org/post", handle = h)
+```
+
 ### Using pipes
 
 All of the `handle_xxx` functions return the handle object so that function calls can be chained using the popular pipe operators:
