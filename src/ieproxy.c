@@ -12,7 +12,7 @@
 #define WINHTTP_AUTOPROXY_RUN_INPROCESS         0x00010000
 #define WINHTTP_AUTOPROXY_RUN_OUTPROCESS_ONLY   0x00020000
 
-SEXP proxy_namesvec(){
+static SEXP proxy_namesvec(void){
   SEXP names = PROTECT(allocVector(STRSXP, 4));
   SET_STRING_ELT(names, 0, mkChar("AutoDetect"));
   SET_STRING_ELT(names, 1, mkChar("AutoConfigUrl"));
@@ -22,7 +22,7 @@ SEXP proxy_namesvec(){
   return names;
 }
 
-SEXP auto_namesvec(){
+static SEXP auto_namesvec(void){
   SEXP names = PROTECT(allocVector(STRSXP, 3));
   SET_STRING_ELT(names, 0, mkChar("HasProxy"));
   SET_STRING_ELT(names, 1, mkChar("Proxy"));
@@ -31,7 +31,7 @@ SEXP auto_namesvec(){
   return names;
 }
 
-SEXP R_proxy_info(){
+SEXP R_proxy_info(void){
   WINHTTP_CURRENT_USER_IE_PROXY_CONFIG MyProxyConfig;
   if(!WinHttpGetIEProxyConfigForCurrentUser(&MyProxyConfig)){
     return R_NilValue;
