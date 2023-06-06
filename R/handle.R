@@ -31,14 +31,14 @@
 #' h <- new_handle()
 #' handle_setopt(h, customrequest = "PUT")
 #' handle_setform(h, a = "1", b = "2")
-#' r <- curl_fetch_memory("https://hb.r-universe.dev/put", h)
+#' r <- curl_fetch_memory("https://hb.cran.dev/put", h)
 #' cat(rawToChar(r$content))
 #'
 #' # Or use the list form
 #' h <- new_handle()
 #' handle_setopt(h, .list = list(customrequest = "PUT"))
 #' handle_setform(h, .list = list(a = "1", b = "2"))
-#' r <- curl_fetch_memory("https://hb.r-universe.dev/put", h)
+#' r <- curl_fetch_memory("https://hb.cran.dev/put", h)
 #' cat(rawToChar(r$content))
 new_handle <- function(...){
   h <- .Call(R_new_handle)
@@ -140,11 +140,11 @@ handle_reset <- function(handle){
 #' handle_cookies(h)
 #'
 #' # Server sets cookies
-#' req <- curl_fetch_memory("https://hb.r-universe.dev/cookies/set?foo=123&bar=ftw", handle = h)
+#' req <- curl_fetch_memory("https://hb.cran.dev/cookies/set?foo=123&bar=ftw", handle = h)
 #' handle_cookies(h)
 #'
 #' # Server deletes cookies
-#' req <- curl_fetch_memory("https://hb.r-universe.dev/cookies/delete?foo", handle = h)
+#' req <- curl_fetch_memory("https://hb.cran.dev/cookies/delete?foo", handle = h)
 #' handle_cookies(h)
 #'
 #' # Cookies will survive a reset!

@@ -65,12 +65,12 @@
 #'   cat(paste("Failed request:", str), file = stderr())
 #' }
 #' # This handle will take longest (3sec)
-#' h1 <- new_handle(url = "https://hb.r-universe.dev/delay/3")
+#' h1 <- new_handle(url = "https://hb.cran.dev/delay/3")
 #' multi_add(h1, done = success, fail = failure)
 #'
 #' # This handle writes data to a file
 #' con <- file("output.txt")
-#' h2 <- new_handle(url = "https://hb.r-universe.dev/post", postfields = "bla bla")
+#' h2 <- new_handle(url = "https://hb.cran.dev/post", postfields = "bla bla")
 #' multi_add(h2, done = success, fail = failure, data = con)
 #'
 #' # This handle raises an error

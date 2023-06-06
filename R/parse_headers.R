@@ -14,7 +14,7 @@
 #' @param multiple parse multiple sets of headers separated by a blank line. See details.
 #' @export
 #' @rdname parse_headers
-#' @examples req <- curl_fetch_memory("https://hb.r-universe.dev/redirect/3")
+#' @examples req <- curl_fetch_memory("https://hb.cran.dev/redirect/3")
 #' parse_headers(req$headers)
 #' parse_headers(req$headers, multiple = TRUE)
 #'

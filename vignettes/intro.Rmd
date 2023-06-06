@@ -45,7 +45,7 @@ The `curl_fetch_memory` function is a blocking interface which waits for the req
 
 
 ```{r}
-req <- curl_fetch_memory("https://hb.r-universe.dev/get?foo=123")
+req <- curl_fetch_memory("https://hb.cran.dev/get?foo=123")
 str(req)
 parse_headers(req$headers)
 jsonlite::prettify(rawToChar(req$content))
@@ -59,7 +59,7 @@ The second method is `curl_download`, which has been designed as a drop-in repla
 
 ```{r}
 tmp <- tempfile()
-curl_download("https://hb.r-universe.dev/get?bar=456", tmp)
+curl_download("https://hb.cran.dev/get?bar=456", tmp)
 jsonlite::prettify(readLines(tmp))
 ```
 
@@ -68,7 +68,7 @@ jsonlite::prettify(readLines(tmp))
 The most flexible interface is the `curl` function, which has been designed as a drop-in replacement for base `url`. It will create a so-called connection object, which allows for incremental (asynchronous) reading of the response.
 
 ```{r}
-con <- curl("https://hb.r-universe.dev/get")
+con <- curl("https://hb.cran.dev/get")
 open(con)
 
 # Get 3 lines
@@ -115,7 +115,7 @@ pool <- new_pool()
 cb <- function(req){cat("done:", req$url, ": HTTP:", req$status, "\n")}
 curl_fetch_multi('https://www.google.com', done = cb, pool = pool)
 curl_fetch_multi('https://cloud.r-project.org', done = cb, pool = pool)
-curl_fetch_multi('https://hb.r-universe.dev/blabla', done = cb, pool = pool)
+curl_fetch_multi('https://hb.cran.dev/blabla', done = cb, pool = pool)
 ```
 
 When we call `multi_run()`, all scheduled requests are performed concurrently. The callback functions get triggered when each request completes.
@@ -283,14 +283,14 @@ Code that sets `http_version` to `1` (or even `1.1` which R simply rounds to 1) 
 After the handle has been configured, it can be used with any of the download interfaces to perform the request. For example `curl_fetch_memory` will load store the output of the request in memory:
 
 ```{r}
-req <- curl_fetch_memory("https://hb.r-universe.dev/post", handle = h)
+req <- curl_fetch_memory("https://hb.cran.dev/post", handle = h)
 jsonlite::prettify(rawToChar(req$content))
 ```
 
 Alternatively we can use `curl()` to read the data of via a connection interface:
 
 ```{r}
-con <- curl("https://hb.r-universe.dev/post", handle = h)
+con <- curl("https://hb.cran.dev/post", handle = h)
 jsonlite::prettify(readLines(con))
 ```
 
@@ -302,14 +302,14 @@ Or we can use `curl_download` to write the response to disk:
 
 ```{r}
 tmp <- tempfile()
-curl_download("https://hb.r-universe.dev/post", destfile = tmp, handle = h)
+curl_download("https://hb.cran.dev/post", destfile = tmp, handle = h)
 jsonlite::prettify(readLines(tmp))
 ```
 
 Or perform the same request with a multi pool:
 
 ```{r}
-curl_fetch_multi("https://hb.r-universe.dev/post", handle = h, done = function(res){
+curl_fetch_multi("https://hb.cran.dev/post", handle = h, done = function(res){
   cat("Request complete! Response content:\n")
   cat(rawToChar(res$content))
 })
@@ -327,12 +327,12 @@ Curl handles automatically keep track of cookies set by the server. At any given
 h <- new_handle()
 
 # Ask server to set some cookies
-req <- curl_fetch_memory("https://hb.r-universe.dev/cookies/set?foo=123&bar=ftw", handle = h)
-req <- curl_fetch_memory("https://hb.r-universe.dev/cookies/set?baz=moooo", handle = h)
+req <- curl_fetch_memory("https://hb.cran.dev/cookies/set?foo=123&bar=ftw", handle = h)
+req <- curl_fetch_memory("https://hb.cran.dev/cookies/set?baz=moooo", handle = h)
 handle_cookies(h)
 
 # Unset a cookie
-req <- curl_fetch_memory("https://hb.r-universe.dev/cookies/delete?foo", handle = h)
+req <- curl_fetch_memory("https://hb.cran.dev/cookies/delete?foo", handle = h)
 handle_cookies(h)
 ```
 
@@ -345,7 +345,7 @@ In most cases you should not re-use a single handle object for more than one req
 In recent versions of the curl package there are no performance benefits of reusing handles. The overhead of creating and configuring a new handle object is negligible. The safest way to issue multiple requests, either to a single server or multiple servers is by using a separate handle for each request (which is the default)
 
 ```{r}
-req1 <- curl_fetch_memory("https://hb.r-universe.dev/get")
+req1 <- curl_fetch_memory("https://hb.cran.dev/get")
 req2 <- curl_fetch_memory("https://www.r-project.org")
 ```
 
@@ -381,7 +381,7 @@ handle_setform(h,
   description = form_file(system.file("DESCRIPTION")),
   logo = form_file(file.path(R.home('doc'), "html/logo.jpg"), "image/jpeg")
 )
-req <- curl_fetch_memory("https://hb.r-universe.dev/post", handle = h)
+req <- curl_fetch_memory("https://hb.cran.dev/post", handle = h)
 ```
 
 The `form_file` function is used to upload files with the form post. It has two arguments: a file path, and optionally a content-type value. If no content-type is set, curl will guess the content type of the file based on the file extension.
@@ -398,6 +398,6 @@ library(magrittr)
 new_handle() %>%
   handle_setopt(copypostfields = "moo=moomooo") %>%
   handle_setheaders("Content-Type"="text/moo", "Cache-Control"="no-cache", "User-Agent"="A cow") %>%
-  curl_fetch_memory(url = "https://hb.r-universe.dev/post") %$% content %>% 
+  curl_fetch_memory(url = "https://hb.cran.dev/post") %$% content %>% 
   rawToChar %>% jsonlite::prettify()
 ```

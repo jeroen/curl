@@ -78,16 +78,16 @@ function is triggered with the error message.
 \examples{
 \donttest{
 # Load in memory
-res <- curl_fetch_memory("https://hb.r-universe.dev/cookies/set?foo=123&bar=ftw")
+res <- curl_fetch_memory("https://hb.cran.dev/cookies/set?foo=123&bar=ftw")
 res$content
 
 # Save to disk
-res <- curl_fetch_disk("https://hb.r-universe.dev/stream/10", tempfile())
+res <- curl_fetch_disk("https://hb.cran.dev/stream/10", tempfile())
 res$content
 readLines(res$content)
 
 # Stream with callback
-drip_url <- "https://hb.r-universe.dev/drip?duration=3&numbytes=15&code=200"
+drip_url <- "https://hb.cran.dev/drip?duration=3&numbytes=15&code=200"
 res <- curl_fetch_stream(drip_url, function(x){
   cat(rawToChar(x))
 })
@@ -101,8 +101,8 @@ success <- function(res){
 failure <- function(msg){
   cat("Oh noes! Request failed!", msg, "\n")
 }
-curl_fetch_multi("https://hb.r-universe.dev/get", success, failure)
-curl_fetch_multi("https://hb.r-universe.dev/status/418", success, failure)
+curl_fetch_multi("https://hb.cran.dev/get", success, failure)
+curl_fetch_multi("https://hb.cran.dev/status/418", success, failure)
 curl_fetch_multi("https://urldoesnotexist.xyz", success, failure)
 multi_run()
 str(data)

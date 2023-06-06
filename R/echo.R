@@ -9,7 +9,7 @@
 #' @param progress show progress meter during http transfer
 #' @param file path or connection to write body. Default returns body as raw vector.
 #' @examples if(require('httpuv')){
-#' h <- new_handle(url = 'https://hb.r-universe.dev/post')
+#' h <- new_handle(url = 'https://hb.cran.dev/post')
 #' handle_setform(h, foo = "blabla", bar = charToRaw("test"),
 #'   myfile = form_file(system.file("DESCRIPTION"), "text/description"))
 #'

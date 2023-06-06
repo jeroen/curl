@@ -4,7 +4,7 @@
 \alias{curl}
 \title{Curl connection interface}
 \usage{
-curl(url = "https://hb.r-universe.dev/get", open = "", handle = new_handle())
+curl(url = "https://hb.cran.dev/get", open = "", handle = new_handle())
 }
 \arguments{
 \item{url}{character string. See examples.}
@@ -28,7 +28,7 @@ yet.
 }
 \examples{
 \dontrun{
-con <- curl("https://hb.r-universe.dev/get")
+con <- curl("https://hb.cran.dev/get")
 readLines(con)
 
 # Auto-opened connections can be recycled
@@ -38,20 +38,20 @@ close(con)
 rawToChar(bin)
 
 # HTTP error
-curl("https://hb.r-universe.dev/status/418", "r")
+curl("https://hb.cran.dev/status/418", "r")
 
 # Follow redirects
-readLines(curl("https://hb.r-universe.dev/redirect/3"))
+readLines(curl("https://hb.cran.dev/redirect/3"))
 
 # Error after redirect
-curl("https://hb.r-universe.dev/redirect-to?url=https://hb.r-universe.dev/status/418", "r")
+curl("https://hb.cran.dev/redirect-to?url=https://hb.cran.dev/status/418", "r")
 
 # Auto decompress Accept-Encoding: gzip / deflate (rfc2616 #14.3)
-readLines(curl("https://hb.r-universe.dev/gzip"))
-readLines(curl("https://hb.r-universe.dev/deflate"))
+readLines(curl("https://hb.cran.dev/gzip"))
+readLines(curl("https://hb.cran.dev/deflate"))
 
 # Binary support
-buf <- readBin(curl("https://hb.r-universe.dev/bytes/98765", "rb"), raw(), 1e5)
+buf <- readBin(curl("https://hb.cran.dev/bytes/98765", "rb"), raw(), 1e5)
 length(buf)
 
 # Read file from disk
