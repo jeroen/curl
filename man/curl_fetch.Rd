@@ -76,17 +76,19 @@ requests (when \code{curl_fetch_memory} would raise an error), the \code{fail}
 function is triggered with the error message.
 }
 \examples{
+\donttest{
 # Load in memory
-res <- curl_fetch_memory("http://httpbin.org/cookies/set?foo=123&bar=ftw")
+res <- curl_fetch_memory("https://hb.r-universe.dev/cookies/set?foo=123&bar=ftw")
 res$content
 
 # Save to disk
-res <- curl_fetch_disk("http://httpbin.org/stream/10", tempfile())
+res <- curl_fetch_disk("https://hb.r-universe.dev/stream/10", tempfile())
 res$content
 readLines(res$content)
 
 # Stream with callback
-res <- curl_fetch_stream("http://www.httpbin.org/drip?duration=3&numbytes=15&code=200", function(x){
+drip_url <- "https://hb.r-universe.dev/drip?duration=3&numbytes=15&code=200"
+res <- curl_fetch_stream(drip_url, function(x){
   cat(rawToChar(x))
 })
 
@@ -99,9 +101,10 @@ success <- function(res){
 failure <- function(msg){
   cat("Oh noes! Request failed!", msg, "\n")
 }
-curl_fetch_multi("http://httpbin.org/get", success, failure)
-curl_fetch_multi("http://httpbin.org/status/418", success, failure)
+curl_fetch_multi("https://hb.r-universe.dev/get", success, failure)
+curl_fetch_multi("https://hb.r-universe.dev/status/418", success, failure)
 curl_fetch_multi("https://urldoesnotexist.xyz", success, failure)
 multi_run()
 str(data)
+}
 }

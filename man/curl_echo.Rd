@@ -21,7 +21,7 @@ echo the request body and content type in the response.
 }
 \examples{
 if(require('httpuv')){
-h <- new_handle(url = 'https://httpbin.org/post')
+h <- new_handle(url = 'https://hb.r-universe.dev/post')
 handle_setform(h, foo = "blabla", bar = charToRaw("test"),
   myfile = form_file(system.file("DESCRIPTION"), "text/description"))
 

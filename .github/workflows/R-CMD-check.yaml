@@ -57,3 +57,5 @@ jobs:
       - uses: r-lib/actions/check-r-package@v2
         env:
           CURL_SSL_BACKEND: ${{ matrix.config.ssl-backend }}
+        with:
+          args: 'c("--no-manual", "--as-cran", "--run-donttest")'
