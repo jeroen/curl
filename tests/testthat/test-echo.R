@@ -2,6 +2,7 @@ context("echo")
 
 test_that("roundtrip large data", {
   skip_if_not_installed('httpuv')
+  skip_if_not_installed('webutils')
   bindata <- serialize(rnorm(1e5), NULL)
   input_url <- 'https://fakeserver.org:99/my/endpoint'
   handle <- curl::new_handle(url = input_url)
