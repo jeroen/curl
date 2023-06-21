@@ -1,3 +1,6 @@
+5.0.2
+ - Fix a unit test for behavioral change in libcurl 8.0.0
+
 5.0.1
  - Setting verbose=TRUE now prints to R's stderr instead of the process, such that
    it works better with some GUIs.
