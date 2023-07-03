@@ -5,6 +5,7 @@
  - Setting verbose=TRUE now prints to R's stderr instead of the process, such that
    it works better with some GUIs.
  - multi_download() now sets mtime for downloaded files from server
+ - form_file() now supports setting an alternate file name (#290)
  - Fix for multi_download() when downloading 0byte files
  - Use a self hosted httpbin test server
 
