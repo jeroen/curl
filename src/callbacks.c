@@ -57,6 +57,16 @@ size_t R_curl_callback_read(char *buffer, size_t size, size_t nitems, SEXP fun) 
   return bytes_read;
 }
 
+/* origin is always SEEK_SET in libcurl, not really useful to pass on */
+int R_curl_callback_seek(SEXP fun, curl_off_t offset, int origin){
+  SEXP soffset = PROTECT(ScalarReal(offset));
+  SEXP call = PROTECT(Rf_lang2(fun, soffset));
+  int ok;
+  R_tryEval(call, R_GlobalEnv, &ok);
+  UNPROTECT(2);
+  return ok ? CURL_SEEKFUNC_FAIL : CURL_SEEKFUNC_OK;
+}
+
 int R_curl_callback_debug(CURL *handle, curl_infotype type_, char *data,
                           size_t size, SEXP fun) {
 
