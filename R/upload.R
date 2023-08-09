@@ -38,6 +38,8 @@ curl_upload <- function(file, url, verbose = TRUE, reuse = TRUE, ...) {
       }
     }
     return(buf)
+  }, seekfunction = function(offset){
+    seek(con, where = offset)
   }, forbid_reuse = !isTRUE(reuse), verbose = verbose, ...)
   if(!is.na(infilesize)){
     handle_setopt(h, infilesize_large = infilesize)
