@@ -1,11 +1,10 @@
-VERSION=7.84.0
-RWINLIB = ../windows/libcurl-$(VERSION)
+RWINLIB = ../windows/libcurl
 TARGET = lib$(subst gcc,,$(COMPILED_BY))$(R_ARCH)
 
 PKG_LIBS = \
 	-L$(RWINLIB)/$(TARGET) \
-	-L$(RWINLIB)/lib$(R_ARCH) \
-	-lwinhttp -lcurl -lnghttp2 -lssh2 -lz -lssl -lcrypto -lgdi32 -lws2_32 -lcrypt32 -lwldap32
+	-L$(RWINLIB)/lib \
+	-lwinhttp -lcurl -lnghttp2 -lssh2 -lz -lssl -lcrypto -lgdi32 -lws2_32 -lcrypt32 -lbcrypt -lwldap32
 
 PKG_CPPFLAGS= \
 	-I$(RWINLIB)/include -DCURL_STATICLIB -DSTRICT_R_HEADERS
@@ -16,7 +15,7 @@ clean:
 	rm -f $(SHLIB) $(OBJECTS)
 
 winlibs: clean
-	"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" "../tools/winlibs.R" $(VERSION)
+	"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" "../tools/winlibs.R"
 	echo '#include <curl/curl.h>' | $(CC) $(PKG_CPPFLAGS) -std=gnu99 -E -xc - | grep "^[ \t]*CURLOPT_.*," | sed s/,// > ../tools/option_table.txt
 
 .PHONY: all winlibs clean
