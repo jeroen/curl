@@ -1,5 +1,32 @@
 #include <Rinternals.h>
 
+
+#ifdef _WIN32
+#include <windows.h>
+#include <sys/time.h>
+static const char *lastError(){
+  DWORD res = GetLastError();
+  static char buf[1000], *p;
+  FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                NULL, res,
+                MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                buf, 1000, NULL);
+  p = buf+strlen(buf) -1;
+  if(*p == '\n') *p = '\0';
+  p = buf+strlen(buf) -1;
+  if(*p == '\r') *p = '\0';
+  p = buf+strlen(buf) -1;
+  if(*p == '.') *p = '\0';
+  return buf;
+}
+#else
+#include <errno.h>
+#include <string.h>
+static const char *lastError(){
+  return strerror(errno);
+}
+#endif
+
 static int total_open_writers = 0;
 
 void fin_file_writer(SEXP ptr){
@@ -20,7 +47,7 @@ SEXP R_write_file_writer(SEXP ptr, SEXP buf, SEXP close){
       SEXP append = VECTOR_ELT(R_ExternalPtrTag(ptr), 1);
       fp = fopen(CHAR(STRING_ELT(path, 0)), Rf_asLogical(append) ? "ab" : "wb");
       if(!fp)
-        Rf_error("Failed to open file: %s", CHAR(STRING_ELT(path, 0)));
+        Rf_error("Failed to open file: %s\n%s", CHAR(STRING_ELT(path, 0)), lastError());
       R_SetExternalPtrAddr(ptr, fp);
       total_open_writers++;
     }
