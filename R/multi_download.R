@@ -68,6 +68,7 @@
 #' change server responses, see details.
 #' @param timeout in seconds, passed to [multi_run]
 #' @param progress print download progress information
+#' @param multiplex passed to [new_pool]
 #' @param ... extra handle options passed to each request [new_handle]
 #' @examples \dontrun{
 #' # Example: some large files
@@ -99,7 +100,8 @@
 #' pkg_url_checker(".")
 #'
 #' }
-multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = TRUE, timeout = Inf, ...){
+multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = TRUE,
+                           timeout = Inf, multiplex = FALSE, ...){
   urls <- enc2utf8(urls)
   if(is.null(destfiles)){
     destfiles <- basename(sub("[?#].*", "", urls))
@@ -117,7 +119,7 @@ multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = TR
   resumefrom <- rep(0, length(urls))
   dlspeed <- rep(0, length(urls))
   expected <- rep(NA, length(urls))
-  pool <- new_pool()
+  pool <- new_pool(multiplex = multiplex)
   total <- 0
   lapply(seq_along(urls), function(i){
     dest <- destfiles[i]
