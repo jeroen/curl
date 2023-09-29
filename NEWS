@@ -1,5 +1,5 @@
 5.1.0
- - Windows: update to libcurl 8.1.2 + nghttp2 2-1.56 + openssl 3.1.2.
+ - Windows: update to libcurl 8.3.0 + nghttp2 2-1.56 + openssl 3.1.2.
 
 5.0.2
  - Fix a unit test for behavioral change in libcurl 8.0.0
