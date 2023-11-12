@@ -1,3 +1,6 @@
+5.2.0
+ - The CURL_CA_BUNDLE envvar is now also used on non-Windows.
+
 5.1.0
  - Windows: update to libcurl 8.3.0 + nghttp2 2-1.56 + openssl 3.1.2.
 
