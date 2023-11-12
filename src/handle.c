@@ -136,10 +136,9 @@ static void set_handle_defaults(reference *ref){
   curl_easy_setopt(handle, CURLOPT_SSL_OPTIONS, CURLSSLOPT_NO_REVOKE);
   struct curl_tlssessioninfo *tlsinfo = NULL;
   if(curl_easy_getinfo(handle, CURLINFO_TLS_SSL_PTR, &tlsinfo) == CURLE_OK){
-    if(tlsinfo->backend == CURLSSLBACKEND_OPENSSL && ca_bundle == NULL) {
-      curl_easy_setopt(handle, CURLOPT_SSL_OPTIONS, CURLSSLOPT_NO_REVOKE | CURLSSLOPT_NATIVE_CA);
-    } else if(tlsinfo->backend == CURLSSLBACKEND_SCHANNEL){
+    if(tlsinfo->backend == CURLSSLBACKEND_SCHANNEL) {
       ca_bundle = NULL;
+      curl_easy_setopt(handle, CURLOPT_SSL_OPTIONS, CURLSSLOPT_NO_REVOKE | CURLSSLOPT_NATIVE_CA);
     }
   }
   #endif
