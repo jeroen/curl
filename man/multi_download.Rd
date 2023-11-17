@@ -10,7 +10,7 @@ multi_download(
   resume = FALSE,
   progress = TRUE,
   timeout = Inf,
-  multiplex = FALSE,
+  pool = NULL,
   ...
 )
 }
@@ -27,7 +27,8 @@ change server responses, see details.}
 
 \item{timeout}{in seconds, passed to \link{multi_run}}
 
-\item{multiplex}{passed to \link{new_pool}}
+\item{pool}{a multi handle created by \link{new_pool}.
+Default is to use \link{new_pool(multiplex = FALSE)}.}
 
 \item{...}{extra handle options passed to each request \link{new_handle}}
 }
