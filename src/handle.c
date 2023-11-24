@@ -112,7 +112,7 @@ static void set_headers(reference *ref, struct curl_slist *newheaders){
 static int default_verbose_cb(CURL *handle, curl_infotype type, char *data, size_t size, void *userptr){
   if(type < 3){
     char prefix = type == CURLINFO_TEXT ? '*' : (type == CURLINFO_HEADER_IN ? '<' : '>');
-    REprintf("%c %.*s", prefix, size, data);
+    REprintf("%c %.*s", prefix, (int) size, data);
   }
   return 0;
 }

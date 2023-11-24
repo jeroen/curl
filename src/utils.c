@@ -84,7 +84,7 @@ void stop_for_status(CURL *http_handle){
 
   /* check http status code. Not sure what this does for ftp. */
   if(status >= 300)
-    error("HTTP error %d.", status);
+    error("HTTP error %ld.", status);
 }
 
 /* make sure to call curl_slist_free_all on this object */
