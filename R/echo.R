@@ -4,6 +4,7 @@
 #' echo the request body and content type in the response.
 #'
 #' @export
+#' @rdname curl_echo
 #' @param handle a curl handle object
 #' @param port the port number on which to run httpuv server
 #' @param progress show progress meter during http transfer
@@ -22,7 +23,7 @@
 #' # Parse multipart
 #' webutils::parse_http(formdata$body, formdata$content_type)
 #' }
-curl_echo <- function(handle, port = 9359, progress = interactive(), file = NULL){
+curl_echo <- function(handle, port = find_port(), progress = interactive(), file = NULL){
   progress <- isTRUE(progress)
   if(!(is.null(file) || inherits(file, "connection") || is.character(file)))
     stop("Argument 'file' must be a file path or connection object")
@@ -122,4 +123,15 @@ format_size <- function(x){
   if(x < 1048576)
     return(sprintf("%.2f Kb", x / 1024))
   return(sprintf("%.2f Mb", x / 1048576))
+}
+
+#' @export
+#' @rdname curl_echo
+#' @useDynLib curl R_findport
+#' @param range optional integer vector of ports to consider
+find_port <- function(range = NULL){
+  if(!length(range))
+    range <- sample(1024:49151)
+  range <- as.integer(range)
+  .Call(R_findport, range)
 }

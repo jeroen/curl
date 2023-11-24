@@ -2,9 +2,12 @@
 % Please edit documentation in R/echo.R
 \name{curl_echo}
 \alias{curl_echo}
+\alias{find_port}
 \title{Echo Service}
 \usage{
-curl_echo(handle, port = 9359, progress = interactive(), file = NULL)
+curl_echo(handle, port = find_port(), progress = interactive(), file = NULL)
+
+find_port(range = NULL)
 }
 \arguments{
 \item{handle}{a curl handle object}
@@ -14,6 +17,8 @@ curl_echo(handle, port = 9359, progress = interactive(), file = NULL)
 \item{progress}{show progress meter during http transfer}
 
 \item{file}{path or connection to write body. Default returns body as raw vector.}
+
+\item{range}{optional integer vector of ports to consider}
 }
 \description{
 This function is only for testing purposes. It starts a local httpuv server to
