@@ -130,6 +130,16 @@ static size_t rcurl_read(void *target, size_t sz, size_t ni, Rconnection con) {
 
   /* append data to the target buffer */
   size_t total_size = pop(target, req_size, req);
+
+  if (total_size > 0 && (!con->blocking || req->partial)) {
+      // If we can return data without waiting, and the connection is
+      // non-blocking (or using curl_fetch_stream()), do so.
+      // This ensures that bytes we already received get flushed
+      // to the target buffer before a connection error.
+      con->incomplete = req->has_more || req->size;
+      return total_size;
+  }
+
   while((req_size > total_size) && req->has_more) {
     /* wait for activity, timeout or "nothing" */
 #ifdef HAS_MULTI_WAIT
