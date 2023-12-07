@@ -27,6 +27,7 @@ Suggests:
     testthat (>= 1.0.0),
     knitr,
     jsonlite,
+    later,
     rmarkdown,
     magrittr,
     httpuv (>= 1.4.4),
