@@ -70,6 +70,16 @@
 #' @param progress print download progress information
 #' @param pool a multi handle created by \link{new_pool}.
 #'   Default is to use [new_pool(multiplex = FALSE)].
+#' @param max_retries The maximum number of retry attempts for each download.
+#'   If a download fails due to a network issue or receives an HTTP status code
+#'   specified in `retry_status_codes`, it will be retried up to `max_retries` times
+#'   before giving up. The default value is 0.
+#' @param retry_status_codes A vector of HTTP status codes that should trigger
+#'   a retry of the download. Only these specified status codes will lead to
+#'   a retry, in addition to any network failures. Common codes for retry might
+#'   include 500 (Internal Server Error), 502 (Bad Gateway), 503 (Service Unavailable),
+#'   and 504 (Gateway Timeout). The default value is `NULL`
+#'   (i.e. no retry attempts for non-zero status codes).
 #' @param ... extra handle options passed to each request [new_handle]
 #' @examples \dontrun{
 #' # Example: some large files
@@ -102,7 +112,8 @@
 #'
 #' }
 multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = TRUE,
-                           multi_timeout = Inf, pool = NULL, ...){
+                           multi_timeout = Inf, pool = NULL, max_retries = 0,
+                           retry_status_codes = NULL, ...){
   urls <- enc2utf8(urls)
   if(is.null(destfiles)){
     destfiles <- basename(sub("[?#].*", "", urls))
@@ -120,6 +131,8 @@ multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = TR
   resumefrom <- rep(0, length(urls))
   dlspeed <- rep(0, length(urls))
   expected <- rep(NA, length(urls))
+  retry_count <- rep(0, length(urls)) # Retry count for each URL
+  status_codes <- rep(NA_integer_, length(urls)) # Status codes for each URL
   if (is.null(pool)) {
     pool <- new_pool(multiplex = FALSE)
   }
@@ -135,33 +148,50 @@ multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = TR
       resumefrom[i] <- startsize
     }
     writer <- file_writer(dest, append = resume)
-    multi_add(handle, pool = pool, data = function(buf, final){
-      total <<- total + length(buf)
-      writer(buf, final)
-      if(isTRUE(progress)){
-        if(is.na(expected[i])){
-          expected[i] <<- handle_clength(handle) + resumefrom[i]
+
+    # Function to retry the download
+    try_download <- function() {
+      multi_add(handle, pool = pool, data = function(buf, final){
+        total <<- total + length(buf)
+        writer(buf, final)
+        if(isTRUE(progress)){
+          if(is.na(expected[i])){
+            expected[i] <<- handle_clength(handle) + resumefrom[i]
+          }
+          dlspeed[i] <<- ifelse(final, 0, handle_speed(handle)[1])
+          print_progress(success, total, sum(dlspeed), sum(expected))
         }
-        dlspeed[i] <<- ifelse(final, 0, handle_speed(handle)[1])
-        print_progress(success, total, sum(dlspeed), sum(expected))
-      }
-    }, done = function(req){
-      expected[i] <<- handle_received(handle) + resumefrom[i]
-      success[i] <<- TRUE
-      dlspeed[i] <<- 0
-      if(expected[i] == 0 && !file.exists(dest)){
-        file.create(dest) #create empty file
-      }
-      mtime <- handle_mtime(handle)
-      if(!is.na(mtime)){
-        Sys.setFileTime(dest, handle_mtime(handle))
-      }
-    }, fail = function(err){
-      expected[i] <<- handle_received(handle) + resumefrom[i]
-      success[i] <<- FALSE
-      errors[i] <<- err
-      dlspeed[i] <<- 0
-    })
+      }, done = function(req){
+        status_codes[i] <<- req$status_code
+        expected[i] <<- handle_received(handle) + resumefrom[i]
+        if(req$status_code %in% retry_status_codes && retry_count[i] < max_retries){
+          retry_count[i] <<- retry_count[i] + 1
+          try_download() # Recursive call to retry download
+        } else {
+          success[i] <<- TRUE
+          dlspeed[i] <<- 0
+          if(expected[i] == 0 && !file.exists(dest)){
+            file.create(dest) #create empty file
+          }
+          mtime <- handle_mtime(handle)
+          if(!is.na(mtime)){
+            Sys.setFileTime(dest, handle_mtime(handle))
+          }
+        }
+      }, fail = function(err){
+        expected[i] <<- handle_received(handle) + resumefrom[i]
+        if(retry_count[i] < max_retries){
+          retry_count[i] <<- retry_count[i] + 1
+          try_download() # Recursive call to retry download
+        } else {
+          success[i] <<- FALSE
+          errors[i] <<- err
+          dlspeed[i] <<- 0
+        }
+      })
+    }
+
+    try_download() # Initial download attempt
     handles[[i]] <<- handle
     writers[[i]] <<- writer
     if(isTRUE(progress) && (i %% 100 == 0)){
@@ -191,6 +221,7 @@ multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = TR
     type = sapply(out, function(x){x$type}),
     modified = structure(sapply(out, function(x){x$modified}), class = c("POSIXct", "POSIXt")),
     time = sapply(out, function(x){unname(x$times['total'])}),
+    retry_count = retry_count,
     stringsAsFactors = FALSE
   )
   results$headers <- lapply(out, function(x){parse_headers(x$headers)})
