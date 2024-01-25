@@ -34,8 +34,8 @@ for details. Default will try to SSL, proceed as normal otherwise.}
 \item{verbose}{print output}
 
 \item{...}{other options passed to \code{\link{handle_setopt}}. In most cases
-you will need to set a \code{username} and \code{password} to authenticate
-with the SMTP server.}
+you will need to set a \code{username} and \code{password} or \code{login_options}
+to authenticate with the SMTP server, see details.}
 }
 \description{
 Use the curl SMTP client to send an email. The \code{message} argument must be
@@ -57,6 +57,13 @@ The \code{smtp_server} argument takes a hostname, or an SMTP URL:
 
 By default, the port will be 25, unless \code{smtps://} is specified--then
 the default will be 465 instead.
+
+For internet SMTP servers you probably need to pass a
+\href{https://curl.se/libcurl/c/CURLOPT_USERNAME.html}{username} and
+\href{https://curl.se/libcurl/c/CURLOPT_PASSWORD.html}{passwords} option.
+For some servers you also need to pass a string with
+\href{https://curl.se/libcurl/c/CURLOPT_LOGIN_OPTIONS.html}{login_options}
+for example \code{login_options="AUTH=NTLM"}.
 }
 
 \section{Encrypting connections via SMTPS or STARTTLS}{
