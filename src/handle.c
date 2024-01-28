@@ -172,7 +172,6 @@ static void set_handle_defaults(reference *ref){
 
   /* allow all authentication methods */
   assert(curl_easy_setopt(handle, CURLOPT_HTTPAUTH, CURLAUTH_ANY));
-  assert(curl_easy_setopt(handle, CURLOPT_UNRESTRICTED_AUTH, 1L));
   assert(curl_easy_setopt(handle, CURLOPT_PROXYAUTH, CURLAUTH_ANY));
 
   /* enables HTTP2 on HTTPS (match behavior of curl cmd util) */
