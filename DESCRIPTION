@@ -29,7 +29,6 @@ Suggests:
     jsonlite,
     later,
     rmarkdown,
-    magrittr,
     httpuv (>= 1.4.4),
     webutils
 VignetteBuilder: knitr
