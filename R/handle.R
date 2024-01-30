@@ -80,8 +80,9 @@ handle_setheaders <- function(handle, ..., .list = list()){
   opts$Expect = ""
   names <- names(opts)
   values <- as.character(unlist(opts))
-  vec <- paste0(names, ": ", values)
-  .Call(R_handle_setheaders, handle, vec)
+  postfix <- ifelse(grepl("^\\s+$", values), ";", paste(":", values))
+  headers <- paste0(names, postfix)
+  .Call(R_handle_setheaders, handle, headers)
   invisible(handle)
 }
 

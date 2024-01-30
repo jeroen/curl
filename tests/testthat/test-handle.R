@@ -103,6 +103,16 @@ test_that("setting request headers", {
   expect_length(curl:::handle_getheaders(h), 0)
 })
 
+
+test_that("Set blank and NULL headers", {
+  skip_if_not_installed('httpuv')
+  skip_if_not_installed('webutils')
+  h <- new_handle(url = 'https://httpbin.org/get')
+  handle_setheaders(h, "accept-encoding" = "", "accept" = "", "user-agent" = "", foo = " ", bar = "\t")
+  req <- curl::curl_echo(h)
+  expect_equal(req$headers, c(bar = "", foo = "", host = "httpbin.org"))
+})
+
 test_that("Custom vector options", {
   h <- new_handle()
   x <- c("foo@gmail.com", "bar@jkhk.nl")
