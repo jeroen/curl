@@ -236,13 +236,6 @@ SEXP R_handle_reset(SEXP ptr){
   return ScalarLogical(1);
 }
 
-SEXP R_handle_setheaders(SEXP ptr, SEXP vec){
-  if(!isString(vec))
-    error("header vector must be a string.");
-  set_headers(get_ref(ptr), vec_to_slist(vec));
-  return ScalarLogical(1);
-}
-
 SEXP R_handle_getheaders(SEXP ptr){
   reference *ref = get_ref(ptr);
   return slist_to_vec(ref->headers);
@@ -327,7 +320,9 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
       const char * url_utf8 = translateCharUTF8(STRING_ELT(val, 0));
       assert(curl_easy_setopt(handle, CURLOPT_URL, url_utf8));
     } else if(key == CURLOPT_HTTPHEADER){
-      R_handle_setheaders(ptr, val);
+      if(!isString(val))
+        error("Value for option %s (%d) must be a string vector", optname, key);
+      set_headers(get_ref(ptr), vec_to_slist(val));
     } else if (r_curl_is_slist_option(key)) {
       if(!isString(val))
         error("Value for option %s (%d) must be a string vector", optname, key);
