@@ -6,6 +6,7 @@
  - Fix an issue where curl_fetch_stream() might not return all bytes received
    by the C layer if the server closed the connection mid-response.
  - No longer enable CURLOPT_UNRESTRICTED_AUTH by default
+ - Fix code to build with -DR_NO_REMAP (add all the Rf_ prefixes)
 
 5.2.0
  - The CURL_CA_BUNDLE envvar is now also used on non-Windows.

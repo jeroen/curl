@@ -44,7 +44,7 @@ SEXP reflist_remove(SEXP x, SEXP target){
   Rf_error("Object not found in reflist!");
 }
 
-SEXP reflist_Rf_length(SEXP x) {
+SEXP reflist_length(SEXP x) {
   if(!Rf_isPairList(x))
     Rf_error("Not a LISTSXP");
   int i = 0;
