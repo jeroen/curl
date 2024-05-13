@@ -120,4 +120,3 @@ install.packages("https://github.com/jeroen/curl/archive/master.tar.gz", repos =
 ```
 
 Of course windows users need [Rtools](https://cran.r-project.org/bin/windows/Rtools/) to compile from source.
-
