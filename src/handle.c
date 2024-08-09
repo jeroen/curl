@@ -148,8 +148,11 @@ static void set_handle_defaults(reference *ref){
     curl_easy_setopt(handle, CURLOPT_CAINFO, ca_bundle);
   }
 
-  /* needed to support compressed responses */
-  assert(curl_easy_setopt(handle, CURLOPT_ENCODING, ""));
+  static const curl_version_info_data *version = NULL;
+  if(version == NULL)
+    version = curl_version_info(CURLVERSION_NOW);
+  /* Enable compression. On MacOS libcurl 8.7.1, deflate is broken, so dont ask for it */
+  assert(curl_easy_setopt(handle, CURLOPT_ENCODING, version->version_num == 0x080701 ? "gzip" : ""));
 
   /* follow redirect */
   assert(curl_easy_setopt(handle, CURLOPT_FOLLOWLOCATION, 1L));

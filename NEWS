@@ -1,3 +1,6 @@
+5.2.2
+ - Disable a compression test for libcurl 8.7.1 which has a bug for deflate
+
 5.2.1
  - In handle_setheader(), setting a header to a non-empty whitespace string will
    now send a blank header. Using an empty string will still remove the header

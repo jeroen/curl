@@ -3,6 +3,8 @@ context("Connections")
 h <- new_handle()
 
 test_that("Compression and destroying connection", {
+  # Compression is broken in 8.7.1, see https://github.com/curl/curl/issues/13493
+  skip_if(curl::curl_version()$version == '8.7.1')
   con <- curl(httpbin("deflate"), handle = h)
   expect_equal(jsonlite::fromJSON(readLines(con))$deflate, TRUE)
   expect_false(isOpen(con))
