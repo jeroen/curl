@@ -1,8 +1,7 @@
-# Fallback for older rtools without
-PKG_LIBS_CURL = $(shell pkg-config --libs libcurl)
-ifeq (,$(PKG_LIBS_CURL))
-  include Makevars.win
-else
-  PKG_LIBS = $(PKG_LIBS_CURL) -lwinhttp
+HAS_CURL_OK = $(shell pkg-config --atleast-version 8.6.0 libcurl && echo "OK")
+ifeq ($(HAS_CURL_OK), OK)
+  PKG_LIBS = $(shell pkg-config --libs libcurl) -lwinhttp
   PKG_CPPFLAGS = $(shell pkg-config --cflags libcurl) -DCURL_STATICLIB -DSTRICT_R_HEADERS -DR_NO_REMAP
+else
+  include Makevars.win
 endif
