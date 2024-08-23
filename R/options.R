@@ -29,7 +29,7 @@ option_table <- (function(){
   } else if(file.exists("../tools/option_table.txt")){
     source("../tools/option_table.txt", env)
   } else {
-    stop("Failed to find 'tools/option_table.txt' from:", getwd())
+    return(NULL)
   }
 
   option_table <- unlist(as.list(env))
