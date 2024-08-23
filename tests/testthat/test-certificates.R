@@ -10,11 +10,11 @@ test_that("CloudFlare / LetsEncrypt certs", {
 })
 
 test_that("Invalid domain raises an error", {
-  ipaddr <- nslookup("www.google.com", ipv4_only = TRUE)
-  fake_url <- paste0("https://", ipaddr)
-  expect_error(curl_fetch_memory(fake_url), "certificate")
-  expect_is(curl_fetch_memory(fake_url, handle = new_handle(
-    ssl_verifyhost = FALSE, ssl_verifypeer = FALSE))$status, "integer")
+  ipaddr <- nslookup("www.r-project.org", ipv4_only = TRUE)
+  h <- new_handle(resolve = paste0("fakehostname:443:", ipaddr))
+  expect_error(curl_fetch_memory("https://fakehostname", handle = h), "certificate")
+  handle_setopt(h, ssl_verifyhost = FALSE, ssl_verifypeer = FALSE)
+  expect_is(curl_fetch_memory("https://fakehostname", handle = h)$status, "integer")
 })
 
 test_that("GC works", {
