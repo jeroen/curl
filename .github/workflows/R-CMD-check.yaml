@@ -20,8 +20,8 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: macOS-12,   r: 'release'}
-          - {os: macOS-12,   r: 'release', ssl-backend: SecureTransport}
+          - {os: macOS-12,   r: 'oldrel'}
+          - {os: macOS-12,   r: 'oldrel', ssl-backend: SecureTransport}
           - {os: macOS-13,   r: 'release'}
           - {os: macOS-13,   r: 'release', ssl-backend: SecureTransport}
           - {os: macOS-14,   r: 'release'}
