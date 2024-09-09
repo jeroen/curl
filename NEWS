@@ -1,3 +1,6 @@
+5.2.3
+ - Remove some CMD check verbosity per new CRAN rules
+
 5.2.2
  - Disable a compression test for libcurl 8.7.1 which has a bug for deflate
  - Change a unit test to work around firewall problems on CRANs WinBuilder
