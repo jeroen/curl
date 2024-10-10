@@ -79,3 +79,9 @@ SEXP make_handle_response(reference *ref);
 SEXP reflist_init(void);
 SEXP reflist_add(SEXP x, SEXP target);
 SEXP reflist_remove(SEXP x, SEXP target);
+
+/* Workaround for CRAN using outdated MacOS11 SDK */
+#if defined(__APPLE__) && !defined(HAS_CURL_EASY_OPTION)
+#include "libcurl-options-polyfill.h"
+#define HAS_CURL_EASY_OPTION 1
+#endif
