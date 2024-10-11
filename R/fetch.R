@@ -61,7 +61,7 @@
 #' str(data)
 #' }
 curl_fetch_memory <- function(url, handle = new_handle()){
-  nonblocking <- isTRUE(getOption("curl_interrupt", TRUE))
+  nonblocking <- use_shared_multi_handle(url)
   output <- .Call(R_curl_fetch_memory, enc2utf8(url), handle, nonblocking)
   res <- handle_data(handle)
   res$content <- output
@@ -73,7 +73,7 @@ curl_fetch_memory <- function(url, handle = new_handle()){
 #' @rdname curl_fetch
 #' @useDynLib curl R_curl_fetch_disk
 curl_fetch_disk <- function(url, path, handle = new_handle()){
-  nonblocking <- isTRUE(getOption("curl_interrupt", TRUE))
+  nonblocking <- use_shared_multi_handle(url)
   path <- enc2native(normalizePath(path, mustWork = FALSE))
   output <- .Call(R_curl_fetch_disk, enc2utf8(url), handle, path, "wb", nonblocking)
   res <- handle_data(handle)

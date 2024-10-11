@@ -36,10 +36,22 @@
 #' }
 curl_download <- function(url, destfile, quiet = TRUE, mode = "wb", handle = new_handle()){
   destfile <- enc2native(normalizePath(destfile, mustWork = FALSE))
-  nonblocking <- isTRUE(getOption("curl_interrupt", TRUE))
+  nonblocking <- use_shared_multi_handle(url)
   tmp <- enc2native(paste0(destfile, ".curltmp"))
   on.exit(unlink(tmp))
   .Call(R_download_curl, url, tmp, quiet, mode, handle, nonblocking)
   file.rename(tmp, destfile)
   invisible(destfile)
+}
+
+# Workaround for https://github.com/curl/curl/issues/13731
+# FTP requests should NOT use the shared connection pool on these versions
+use_shared_multi_handle <- function(url){
+  if(is.character(url) && !grepl('^http', url)){
+    ver <- curl::curl_version()$version
+    if(ver > '8.4.0' && ver < '8.8.0'){
+      return(FALSE)
+    }
+  }
+  isTRUE(getOption("curl_interrupt", TRUE))
 }
