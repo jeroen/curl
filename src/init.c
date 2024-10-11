@@ -87,17 +87,17 @@ static const R_CallMethodDef CallEntries[] = {
 };
 
 void switch_to_openssl_on_vista(void);
-CURLM *multi_handle = NULL;
+CURLM *shared_multi_handle = NULL;
 
 attribute_visible void R_init_curl(DllInfo *info) {
   switch_to_openssl_on_vista();
   curl_global_init(CURL_GLOBAL_DEFAULT);
-  multi_handle = curl_multi_init();
+  shared_multi_handle = curl_multi_init();
   R_registerRoutines(info, NULL, CallEntries, NULL, NULL);
   R_useDynamicSymbols(info, FALSE);
 }
 
 attribute_visible void R_unload_curl(DllInfo *info) {
-  curl_multi_cleanup(multi_handle);
+  curl_multi_cleanup(shared_multi_handle);
   //curl_global_cleanup();
 }
