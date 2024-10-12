@@ -9,8 +9,10 @@ multi_download(
   destfiles = NULL,
   resume = FALSE,
   progress = TRUE,
-  timeout = Inf,
-  multiplex = FALSE,
+  multi_timeout = Inf,
+  pool = NULL,
+  max_retries = 0,
+  retry_status_codes = NULL,
   ...
 )
 }
@@ -25,9 +27,22 @@ change server responses, see details.}
 
 \item{progress}{print download progress information}
 
-\item{timeout}{in seconds, passed to \link{multi_run}}
+\item{multi_timeout}{in seconds, passed to \link{multi_run}}
 
-\item{multiplex}{passed to \link{new_pool}}
+\item{pool}{a multi handle created by \link{new_pool}.
+Default is to use \link{new_pool(multiplex = FALSE)}.}
+
+\item{max_retries}{The maximum number of retry attempts for each download.
+If a download fails due to a network issue or receives an HTTP status code
+specified in \code{retry_status_codes}, it will be retried up to \code{max_retries} times
+before giving up. The default value is 0.}
+
+\item{retry_status_codes}{A vector of HTTP status codes that should trigger
+a retry of the download. Only these specified status codes will lead to
+a retry, in addition to any network failures. Common codes for retry might
+include 500 (Internal Server Error), 502 (Bad Gateway), 503 (Service Unavailable),
+and 504 (Gateway Timeout). The default value is \code{NULL}
+(i.e. no retry attempts for non-zero status codes).}
 
 \item{...}{extra handle options passed to each request \link{new_handle}}
 }
@@ -65,7 +80,7 @@ The \code{success} column indicates if a request was successfully completed (reg
 of the HTTP status code). If it failed, e.g. due to a networking issue, the error
 message is in the \code{error} column. A \code{success} value \code{NA} indicates that the request
 was still in progress when the function was interrupted or reached the elapsed
-\code{timeout} and perhaps the download can be resumed if the server supports it.
+\code{multi_timeout} and perhaps the download can be resumed if the server supports it.
 
 It is also important to inspect the \code{status_code} column to see if any of the
 requests were successful but had a non-success HTTP code, and hence the downloaded
