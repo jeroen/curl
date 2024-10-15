@@ -180,14 +180,14 @@ multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = TR
   out <- lapply(handles, handle_data)
   results <- data.frame(
     success = success,
-    status_code = sapply(out, function(x){x$status_code}),
+    status_code = vapply(out, function(x){x$status_code}, numeric(1)),
     resumefrom = resumefrom,
-    url = sapply(out, function(x){x$url}),
+    url = vapply(out, function(x){x$url}, character(1)),
     destfile = destfiles,
     error = errors,
-    type = sapply(out, function(x){x$type}),
-    modified = structure(sapply(out, function(x){x$modified}), class = c("POSIXct", "POSIXt")),
-    time = sapply(out, function(x){unname(x$times['total'])}),
+    type = vapply(out, function(x){x$type}, character(1)),
+    modified = structure(vapply(out, function(x){x$modified}, numeric(1)), class = c("POSIXct", "POSIXt")),
+    time = vapply(out, function(x){unname(x$times['total'])}, numeric(1)),
     stringsAsFactors = FALSE
   )
   results$headers <- lapply(out, function(x){parse_headers(x$headers)})
