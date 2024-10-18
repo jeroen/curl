@@ -19,6 +19,7 @@ Description: The curl() and curl_download() functions provide highly
     specific tools and logic.
 License: MIT + file LICENSE
 SystemRequirements: libcurl: libcurl-devel (rpm) or libcurl4-openssl-dev (deb).
+    Version 7.80 or up is recommended. 
 URL: https://jeroen.r-universe.dev/curl
     https://curl.se/libcurl/
 BugReports: https://github.com/jeroen/curl/issues
@@ -34,7 +35,7 @@ Suggests:
 VignetteBuilder: knitr
 Depends:
     R (>= 3.0.0)
-RoxygenNote: 7.3.0
+RoxygenNote: 7.3.2.9000
 Encoding: UTF-8
 Language: en-US
 Roxygen: list(markdown = TRUE)
