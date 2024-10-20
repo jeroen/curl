@@ -1,6 +1,11 @@
-5.3.0
+6.0.0
  - Workaround for bug in libcurl < 8.8.0, do not use shared connection pool
    for FTP requests on these libcurl versions.
+ - On MacOS we require at least libcurl 7.80.0 which is included with all current
+   versions (13 and up). Also MacOS 11 (big-sur) and 12 (monterey) are supported
+   but a somewhat recent system update is needed; we recommend to use the final
+   releases (11.7 and 12.7) on these systems if you are unable to update to
+   MacOS 13 or newer.
 
 5.2.3
  - Remove some CMD check verbosity per new CRAN rules
