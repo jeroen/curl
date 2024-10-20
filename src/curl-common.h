@@ -20,6 +20,10 @@
 #define HAS_CURL_PARSER 1
 #endif
 
+#if LIBCURL_VERSION_MAJOR > 7 || (LIBCURL_VERSION_MAJOR == 7 && LIBCURL_VERSION_MINOR >= 80)
+#define HAS_CURL_PARSER_STRERROR
+#endif
+
 #ifndef DISABLE_CURL_EASY_OPTION
 #if LIBCURL_VERSION_MAJOR > 7 || (LIBCURL_VERSION_MAJOR == 7 && LIBCURL_VERSION_MINOR >= 73)
 #define HAS_CURL_EASY_OPTION 1
@@ -87,5 +91,7 @@ SEXP reflist_remove(SEXP x, SEXP target);
 /* Workaround for CRAN using outdated MacOS11 SDK */
 #if defined(__APPLE__) && !defined(HAS_CURL_EASY_OPTION)
 #include "libcurl-options-polyfill.h"
+const char *curl_url_strerror(CURLUcode);
 #define HAS_CURL_EASY_OPTION 1
+#define HAS_CURL_PARSER_STRERROR 1
 #endif

@@ -3,7 +3,7 @@
 #ifdef HAS_CURL_PARSER
 static void fail_if(CURLUcode err){
   if(err != CURLUE_OK)
-#if LIBCURL_VERSION_MAJOR > 7 || (LIBCURL_VERSION_MAJOR == 7 && LIBCURL_VERSION_MINOR >= 80)
+#ifdef HAS_CURL_PARSER_STRERROR
     Rf_error("Failed to parse URL: %s", curl_url_strerror(err));
 #else
     Rf_error("Failed to parse URL: error code %d", err);
