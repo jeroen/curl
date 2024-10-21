@@ -64,6 +64,11 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
+# On MacOS the runtime version can be different from SDK version
+if [ `uname` = "Darwin" ] && ${R_HOME}/bin/Rscript tools/testversion.R; then
+  PKG_CFLAGS="$PKG_CFLAGS -DENABLE_ALL_FEATURES"
+fi
+
 # Write to Makevars
 sed -e "s|@cflags@|$PKG_CFLAGS|" -e "s|@libs@|$PKG_LIBS|" src/Makevars.in > src/Makevars
 
