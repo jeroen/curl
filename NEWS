@@ -4,6 +4,7 @@
  - The MacOS binary packages now require at least libcurl 7.80 which is included
    with all current MacOS versions (13+) as well as recent patch releases for
    legacy MacOS versions (11.7 and 12.7).
+ - Windows: update to libcurl 8.8.0
 
 5.2.3
  - Remove some CMD check verbosity per new CRAN rules
