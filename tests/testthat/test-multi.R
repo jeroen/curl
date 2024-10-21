@@ -2,7 +2,7 @@ context("Multi handle")
 
 test_that("Timeout works", {
   skip_on_os("solaris")
-  h1 <- new_handle(url = httpbin("delay/3"))
+  h1 <- new_handle(url = httpbin(paste0("delay/3?nocache=", runif(1))))
   h2 <- new_handle(url = httpbin("post"), postfields = "bla bla")
   h3 <- new_handle(url = "https://urldoesnotexist.xyz", connecttimeout = 1)
   h4 <- new_handle(url = "http://localhost:14", connecttimeout = 1)
