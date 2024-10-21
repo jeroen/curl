@@ -64,14 +64,6 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-# Disable purling on oldrel due to https://github.com/yihui/knitr/issues/2338
-if [ `uname` = "Darwin" ] && [ "${R_VERSION}" = "4.3.3" ]; then
-  for file in vignettes/*.Rmd; do
-    sed -i '' '/```/,$d' $file || true
-    touch inst/doc/*  || true
-  done
-fi
-
 # Write to Makevars
 sed -e "s|@cflags@|$PKG_CFLAGS|" -e "s|@libs@|$PKG_LIBS|" src/Makevars.in > src/Makevars
 
