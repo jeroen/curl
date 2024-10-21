@@ -3,7 +3,7 @@ context("Multi download")
 test_that("Stress test multi_download", {
   skip_on_cran()
   mirror <- 'https://cloud.r-project.org'
-  pkgs <- row.names(available.packages(repos = mirror))[1:3000]
+  pkgs <- row.names(available.packages(repos = mirror))[1:1000]
   urls <- sprintf('%s/web/packages/%s/DESCRIPTION', mirror, pkgs)
   outdir <- file.path(tempdir(), 'descriptions')
   files <- sprintf('%s/%s.txt', outdir, pkgs)

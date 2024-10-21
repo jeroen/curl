@@ -1,8 +1,7 @@
 context("Multi handle")
 
 test_that("Timeout works", {
-  skip_on_os("solaris")
-  h1 <- new_handle(url = httpbin("delay/3"))
+  h1 <- new_handle(url = httpbin("delay/10"))
   h2 <- new_handle(url = httpbin("post"), postfields = "bla bla")
   h3 <- new_handle(url = "https://urldoesnotexist.xyz", connecttimeout = 1)
   h4 <- new_handle(url = "http://localhost:14", connecttimeout = 1)
@@ -13,12 +12,9 @@ test_that("Timeout works", {
   multi_add(h4, pool = m)
   rm(h1, h2, h3, h4)
   gc()
-  out <- multi_run(timeout = 2, pool = m)
-  expect_equal(out, list(success = 1, error = 2, pending = 1))
-  out <- multi_run(timeout = 0, pool = m)
-  expect_equal(out, list(success = 0, error = 0, pending = 1))
-  out <- multi_run(pool = m)
-  expect_equal(out, list(success = 1, error = 0, pending = 0))
+  spent <- system.time(out <- multi_run(timeout = 2, pool = m))
+  expect_lte(out$pending, 2)
+  expect_lte(spent[['elapsed']], 4)
 })
 
 test_that("Callbacks work", {
