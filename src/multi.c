@@ -6,7 +6,7 @@
  *  - Use Rf_eval() to callback instead of R_tryEval() to propagate interrupt or error back to C
  */
 
-#if LIBCURL_VERSION_MAJOR > 7 || (LIBCURL_VERSION_MAJOR == 7 && LIBCURL_VERSION_MINOR >= 30)
+#if AT_LEAST_CURL(7, 30)
 #define HAS_CURLMOPT_MAX_TOTAL_CONNECTIONS 1
 #endif
 

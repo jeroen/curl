@@ -14,15 +14,11 @@ extern int r_curl_is_postfields_option(CURLoption x);
 #define MAX_PATH 1024
 #endif
 
-#if LIBCURL_VERSION_MAJOR > 7 || (LIBCURL_VERSION_MAJOR == 7 && LIBCURL_VERSION_MINOR >= 47)
-#define HAS_HTTP_VERSION_2TLS 1
-#endif
-
-#if LIBCURL_VERSION_MAJOR > 7 || (LIBCURL_VERSION_MAJOR == 7 && LIBCURL_VERSION_MINOR >= 32)
+#if AT_LEAST_CURL(7, 32)
 #define HAS_XFERINFOFUNCTION 1
 #endif
 
-#if LIBCURL_VERSION_MAJOR > 7 || (LIBCURL_VERSION_MAJOR == 7 && LIBCURL_VERSION_MINOR >= 36)
+#if AT_LEAST_CURL(7, 36)
 #define HAS_CURLOPT_EXPECT_100_TIMEOUT_MS 1
 #endif
 
@@ -176,12 +172,6 @@ static void set_handle_defaults(reference *ref){
   /* allow all authentication methods */
   assert(curl_easy_setopt(handle, CURLOPT_HTTPAUTH, CURLAUTH_ANY));
   assert(curl_easy_setopt(handle, CURLOPT_PROXYAUTH, CURLAUTH_ANY));
-
-  /* enables HTTP2 on HTTPS (match behavior of curl cmd util) */
-//#if defined(CURL_VERSION_HTTP2) && defined(HAS_HTTP_VERSION_2TLS)
-//  if(curl_version_info(CURLVERSION_NOW)->features & CURL_VERSION_HTTP2)
-//    assert(curl_easy_setopt(handle, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2TLS));
-//#endif
 
   /* set an error buffer */
   assert(curl_easy_setopt(handle, CURLOPT_ERRORBUFFER, ref->errbuf));
