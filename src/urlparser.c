@@ -15,10 +15,10 @@ static SEXP get_field(CURLU *h, CURLUPart part, CURLUcode field_missing){
   SEXP field = NULL;
   CURLUcode err = curl_url_get(h, part, &str, 0);
   if(err == field_missing && err != CURLUE_OK){
-    field = NA_STRING;
+    field = R_NilValue;
   } else {
     fail_if(err);
-    field = Rf_mkCharCE(str, CE_UTF8);
+    field = make_string(str);
   }
   curl_free(str);
   return field;
@@ -43,17 +43,17 @@ static SEXP make_url_names(void){
 SEXP R_parse_url(SEXP url) {
   CURLU *h = curl_url();
   fail_if(curl_url_set(h, CURLUPART_URL, CHAR(STRING_ELT(url, 0)), 0));
-  SEXP out = PROTECT(Rf_allocVector(STRSXP, 10));
-  SET_STRING_ELT(out, 0, get_field(h, CURLUPART_URL, CURLUE_OK));
-  SET_STRING_ELT(out, 1, get_field(h, CURLUPART_SCHEME, CURLUE_NO_SCHEME));
-  SET_STRING_ELT(out, 2, get_field(h, CURLUPART_HOST, CURLUE_NO_HOST));
-  SET_STRING_ELT(out, 3, get_field(h, CURLUPART_PORT, CURLUE_NO_PORT));
-  SET_STRING_ELT(out, 4, get_field(h, CURLUPART_PATH, CURLUE_OK));
-  SET_STRING_ELT(out, 5, get_field(h, CURLUPART_QUERY, CURLUE_NO_QUERY));
-  SET_STRING_ELT(out, 6, get_field(h, CURLUPART_FRAGMENT, CURLUE_NO_FRAGMENT));
-  SET_STRING_ELT(out, 7, get_field(h, CURLUPART_USER, CURLUE_NO_USER));
-  SET_STRING_ELT(out, 8, get_field(h, CURLUPART_PASSWORD, CURLUE_NO_PASSWORD));
-  SET_STRING_ELT(out, 9, get_field(h, CURLUPART_OPTIONS, CURLUE_NO_OPTIONS));
+  SEXP out = PROTECT(Rf_allocVector(VECSXP, 10));
+  SET_VECTOR_ELT(out, 0, get_field(h, CURLUPART_URL, CURLUE_OK));
+  SET_VECTOR_ELT(out, 1, get_field(h, CURLUPART_SCHEME, CURLUE_NO_SCHEME));
+  SET_VECTOR_ELT(out, 2, get_field(h, CURLUPART_HOST, CURLUE_NO_HOST));
+  SET_VECTOR_ELT(out, 3, get_field(h, CURLUPART_PORT, CURLUE_NO_PORT));
+  SET_VECTOR_ELT(out, 4, get_field(h, CURLUPART_PATH, CURLUE_OK));
+  SET_VECTOR_ELT(out, 5, get_field(h, CURLUPART_QUERY, CURLUE_NO_QUERY));
+  SET_VECTOR_ELT(out, 6, get_field(h, CURLUPART_FRAGMENT, CURLUE_NO_FRAGMENT));
+  SET_VECTOR_ELT(out, 7, get_field(h, CURLUPART_USER, CURLUE_NO_USER));
+  SET_VECTOR_ELT(out, 8, get_field(h, CURLUPART_PASSWORD, CURLUE_NO_PASSWORD));
+  SET_VECTOR_ELT(out, 9, get_field(h, CURLUPART_OPTIONS, CURLUE_NO_OPTIONS));
   curl_url_cleanup(h);
   Rf_setAttrib(out, R_NamesSymbol, make_url_names());
   UNPROTECT(1);

@@ -8,8 +8,6 @@ extern int r_curl_is_off_t_option(CURLoption x);
 extern int r_curl_is_string_option(CURLoption x);
 extern int r_curl_is_postfields_option(CURLoption x);
 
-#define make_string(x) x ? Rf_mkString(x) : Rf_ScalarString(NA_STRING)
-
 #ifndef MAX_PATH
 #define MAX_PATH 1024
 #endif

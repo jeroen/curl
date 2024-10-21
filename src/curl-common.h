@@ -8,6 +8,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+#define make_string(x) x ? Rf_mkString(x) : Rf_ScalarString(NA_STRING)
+
 #define AT_LEAST_CURL(x,y) (LIBCURL_VERSION_MAJOR > x || (LIBCURL_VERSION_MAJOR == x && LIBCURL_VERSION_MINOR >= y))
 
 #if AT_LEAST_CURL(7, 28)

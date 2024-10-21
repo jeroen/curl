@@ -1,14 +1,11 @@
-#include <curl/curl.h>
-#include <Rinternals.h>
-
-#define make_string(x) x ? Rf_mkString(x) : Rf_ScalarString(NA_STRING)
+#include "curl-common.h"
 
 SEXP R_curl_version(void) {
   /* retrieve info from curl */
   const curl_version_info_data *data = curl_version_info(CURLVERSION_NOW);
 
   /* put stuff in a list */
-  SEXP list = PROTECT(Rf_allocVector(VECSXP, 11));
+  SEXP list = PROTECT(Rf_allocVector(VECSXP, 12));
   SET_VECTOR_ELT(list, 0, make_string(data->version));
   SET_VECTOR_ELT(list, 1, make_string(LIBCURL_VERSION));
   SET_VECTOR_ELT(list, 2, make_string(data->ssl_version));
@@ -28,7 +25,7 @@ SEXP R_curl_version(void) {
   SET_VECTOR_ELT(list, 7, protocols);
 
   /* add list names */
-  SEXP names = PROTECT(Rf_allocVector(STRSXP, 11));
+  SEXP names = PROTECT(Rf_allocVector(STRSXP, 12));
   SET_STRING_ELT(names, 0, Rf_mkChar("version"));
   SET_STRING_ELT(names, 1, Rf_mkChar("headers"));
   SET_STRING_ELT(names, 2, Rf_mkChar("ssl_version"));
@@ -40,6 +37,7 @@ SEXP R_curl_version(void) {
   SET_STRING_ELT(names, 8, Rf_mkChar("ipv6"));
   SET_STRING_ELT(names, 9, Rf_mkChar("http2"));
   SET_STRING_ELT(names, 10, Rf_mkChar("idn"));
+  SET_STRING_ELT(names, 11, Rf_mkChar("url_parser"));
   Rf_setAttrib(list, R_NamesSymbol, names);
 
   #ifdef CURL_VERSION_IPV6
@@ -58,6 +56,12 @@ SEXP R_curl_version(void) {
     SET_VECTOR_ELT(list, 10, Rf_ScalarLogical(data->features & CURL_VERSION_IDN));
   #else
     SET_VECTOR_ELT(list, 10, Rf_ScalarLogical(0));
+  #endif
+
+  #ifdef HAS_CURL_PARSER
+    SET_VECTOR_ELT(list, 11, Rf_ScalarLogical(1));
+  #else
+    SET_VECTOR_ELT(list, 11, Rf_ScalarLogical(0));
   #endif
 
   /* return */

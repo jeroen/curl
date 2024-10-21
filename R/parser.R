@@ -8,5 +8,5 @@
 #' @useDynLib curl R_parse_url
 parse_url <- function(url){
   stopifnot(is.character(url))
-  as.list(.Call(R_parse_url, url))
+  .Call(R_parse_url, url)
 }
