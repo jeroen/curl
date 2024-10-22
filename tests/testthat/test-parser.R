@@ -1,6 +1,5 @@
 test_that("Basic URL parser",{
   version <- as.numeric_version(curl::curl_version()$version)
-  skip_if(version < "7.62")
   url <- 'https://jerry:secret@google.com:888/foo/bar?test=123#bla'
   out <- parse_url(url)
   expect_equal(out$url, url)

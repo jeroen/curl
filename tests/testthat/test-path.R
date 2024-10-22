@@ -22,6 +22,7 @@ test_that("curl_download() and curl_fetch_disk() can write to a non-ASCII path",
 })
 
 test_that("curl_download() does not store failed downloads", {
+  skip_if_not(grepl('UTF-8', Sys.getlocale()))
   dest1 <- tempfile(pattern = tricky_filename)
   curl_download(httpbin("get"), destfile = dest1)
   expect_true(file.exists(dest1))
