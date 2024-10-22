@@ -8,5 +8,12 @@
 #' @useDynLib curl R_parse_url
 parse_url <- function(url){
   stopifnot(is.character(url))
-  .Call(R_parse_url, url)
+  result <- .Call(R_parse_url, url)
+  if(length(result$scheme))
+    result$scheme <- sub("\\:$", "", result$scheme)
+  if(length( result$query))
+    result$query <- sub("^\\?", "", result$query)
+  if(length(result$fragment))
+    result$fragment <- sub("^\\#", "", result$fragment)
+  result
 }

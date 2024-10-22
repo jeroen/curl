@@ -12,3 +12,4 @@ tools/option_table.txt
 inst/doc
 windows
 configure.log
+src/ada*
