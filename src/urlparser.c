@@ -39,8 +39,8 @@ SEXP R_parse_url(SEXP url) {
   SET_VECTOR_ELT(out, 6, get_ada_field(ada_get_hash(result)));
   SET_VECTOR_ELT(out, 7, get_ada_field(ada_get_username(result)));
   SET_VECTOR_ELT(out, 8, get_ada_field(ada_get_password(result)));
-
   Rf_setAttrib(out, R_NamesSymbol, make_url_names());
+  Rf_setAttrib(out, R_ClassSymbol, Rf_mkString("ada"));
   UNPROTECT(1);
   return out;
 }
