@@ -64,8 +64,11 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-# On MacOS the runtime version can be different from SDK version
-if [ `uname` = "Darwin" ] && ${R_HOME}/bin/Rscript tools/testversion.R; then
+# On curl < 7.62 (RHEL-8) enable the fallback
+if [ "$TEST_ADA_PARSER" ] || ! ${R_HOME}/bin/Rscript tools/testversion.R "7.62"; then
+  tar xf tools/ada.tar.gz -C src
+  PKG_CFLAGS="$PKG_CFLAGS -DUSE_ADA_PARSER"
+elif [ `uname` = "Darwin" ] && ${R_HOME}/bin/Rscript tools/testversion.R "7.80"; then
   PKG_CFLAGS="$PKG_CFLAGS -DENABLE_ALL_FEATURES"
 fi
 
