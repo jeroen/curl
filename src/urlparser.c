@@ -82,7 +82,6 @@ SEXP R_parse_url(SEXP url) {
   SET_VECTOR_ELT(out, 6, get_field(h, CURLUPART_FRAGMENT, CURLUE_NO_FRAGMENT));
   SET_VECTOR_ELT(out, 7, get_field(h, CURLUPART_USER, CURLUE_NO_USER));
   SET_VECTOR_ELT(out, 8, get_field(h, CURLUPART_PASSWORD, CURLUE_NO_PASSWORD));
-  SET_VECTOR_ELT(out, 9, get_field(h, CURLUPART_OPTIONS, CURLUE_NO_OPTIONS));
   curl_url_cleanup(h);
   Rf_setAttrib(out, R_NamesSymbol, make_url_names());
   UNPROTECT(1);
