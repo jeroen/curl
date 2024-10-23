@@ -2,7 +2,7 @@
 % Please edit documentation in R/parser.R
 \name{parse_url}
 \alias{parse_url}
-\title{Parse a URL}
+\title{Normalizing URL parser}
 \usage{
 parse_url(url, baseurl = NULL, decode = TRUE)
 }
@@ -16,7 +16,8 @@ Set to \code{FALSE} to get results in url-encoded format.}
 }
 \description{
 Interfaces the libcurl \href{https://curl.se/libcurl/c/libcurl-url.html}{URL parser}.
-The URL is automatically normalized wrt URL-encoding.
+URLs are automatically normalized, for example for input that is url-encoded or
+contains paths with \verb{../}, see examples.
 When parsing hyperlinks inside a HTML document, it is possible to set \code{baseurl}
 to the location of the document such that relative links can be resolved.
 }
@@ -50,10 +51,13 @@ Results should be identical, though curl has much nicer error messages.
 url <- "https://jerry:secret@google.com:888/foo/bar?test=123#bla"
 parse_url(url)
 
-# Resolve relative links
+# Resolve relative links from a baseurl
 parse_url("/somelink", baseurl = url)
 
-# Normalize URL-encoding (these URLs are equivalent):
+# Paths get normalized
+parse_url("https://foobar.com/foo/bar/../baz/../yolo")$url
+
+# Also normalizes URL-encoding (these URLs are equivalent):
 url1 <- "https://ja.wikipedia.org/wiki/\u5bff\u53f8"
 url2 <- "https://ja.wikipedia.org/wiki/\%e5\%af\%bf\%e5\%8f\%b8"
 parse_url(url1)$path

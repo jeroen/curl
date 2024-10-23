@@ -1,7 +1,8 @@
-#' Parse a URL
+#' Normalizing URL parser
 #'
 #' Interfaces the libcurl [URL parser](https://curl.se/libcurl/c/libcurl-url.html).
-#' The URL is automatically normalized wrt URL-encoding.
+#' URLs are automatically normalized, for example for input that is url-encoded or
+#' contains paths with `../`, see examples.
 #' When parsing hyperlinks inside a HTML document, it is possible to set `baseurl`
 #' to the location of the document such that relative links can be resolved.
 #'
@@ -38,10 +39,13 @@
 #' url <- "https://jerry:secret@google.com:888/foo/bar?test=123#bla"
 #' parse_url(url)
 #'
-#' # Resolve relative links
+#' # Resolve relative links from a baseurl
 #' parse_url("/somelink", baseurl = url)
 #'
-#' # Normalize URL-encoding (these URLs are equivalent):
+#' # Paths get normalized
+#' parse_url("https://foobar.com/foo/bar/../baz/../yolo")$url
+#'
+#' # Also normalizes URL-encoding (these URLs are equivalent):
 #' url1 <- "https://ja.wikipedia.org/wiki/\u5bff\u53f8"
 #' url2 <- "https://ja.wikipedia.org/wiki/%e5%af%bf%e5%8f%b8"
 #' parse_url(url1)$path
@@ -67,6 +71,9 @@ normalize_all <- function(result){
   })
 }
 
+
+# NB: Ada also automatically removes the 'port' if it is the default
+# for that scheme such as https://host:443. I don't think we can prevent that.
 normalize_ada <- function(result){
   if(length(result$scheme))
     result$scheme <- sub("\\:$", "", result$scheme)
