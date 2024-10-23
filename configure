@@ -65,6 +65,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # On curl < 7.62 (RHEL-8) enable the fallback
+#TEST_ADA_PARSER=1
 if [ "$TEST_ADA_PARSER" ] || ! ${R_HOME}/bin/Rscript tools/testversion.R "7.62"; then
   tar xf tools/ada.tar.gz -C src
   PKG_CFLAGS="$PKG_CFLAGS -DUSE_ADA_PARSER"

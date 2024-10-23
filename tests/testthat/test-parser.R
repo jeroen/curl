@@ -1,5 +1,4 @@
 test_that("Basic URL parser",{
-  version <- as.numeric_version(curl::curl_version()$version)
   url <- 'https://jerry:secret@google.com:888/foo/bar?test=123#bla'
   out <- parse_url(url)
   expect_equal(out$url, url)
@@ -21,4 +20,21 @@ test_that("Relative links need a baseurl",{
   expect_equal(out2$url, "https://jerry:secret@google.com:888/foo/test2")
   expect_error(parse_url("/test1"))
   expect_error(parse_url("./test2"))
+})
+
+test_that("Consistent URL encoding", {
+  url1 <- "https://ja.wikipedia.org/wiki/\u5bff\u53f8"
+  url2 <- "https://ja.wikipedia.org/wiki/%e5%af%bf%e5%8f%b8"
+  out1 <- parse_url(url1)
+  out2 <- parse_url(url2)
+  out3 <- parse_url(url1, decode = FALSE)
+  out4 <- parse_url(url2, decode = FALSE)
+  expect_equal(out1$url, url1)
+  expect_equal(out1$path, sub("^.*/wiki", "/wiki", url1))
+  expect_equal(out2$url, url1)
+  expect_equal(out2$path, sub("^.*/wiki", "/wiki", url1))
+  expect_equal(tolower(out3$url), url2)
+  expect_equal(tolower(out3$path), sub("^.*/wiki", "/wiki", url2))
+  expect_equal(tolower(out4$url), url2)
+  expect_equal(tolower(out4$path), sub("^.*/wiki", "/wiki", url2))
 })

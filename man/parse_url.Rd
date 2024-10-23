@@ -4,15 +4,19 @@
 \alias{parse_url}
 \title{Parse a URL}
 \usage{
-parse_url(url, baseurl = NULL)
+parse_url(url, baseurl = NULL, decode = TRUE)
 }
 \arguments{
 \item{url}{a character string of length one}
 
 \item{baseurl}{if url is a relative path, this url is used as the parent.}
+
+\item{decode}{return result in normalized \link[=curl_escape]{url-decoded} form.
+Set to FALSE to get results in url-encoded form.}
 }
 \description{
-Simple wrapper for the libcurl \href{https://curl.se/libcurl/c/libcurl-url.html}{URL parsing interface}.
+Interfaces the libcurl \href{https://curl.se/libcurl/c/libcurl-url.html}{URL parser}.
+Results get normalized wrt URL-encoding of input URL.
 When parsing hyperlinks inside a HTML document, it is possible to set \code{baseurl}
 to the location of the document such that relative links can be resolved.
 }
@@ -28,4 +32,12 @@ parse_url(url)
 
 # Resolve relative links
 parse_url("/somelink", baseurl = url)
+
+# Normalize URL-encoding (these URLs are equivalent):
+url1 <- "https://ja.wikipedia.org/wiki/\u5bff\u53f8"
+url2 <- "https://ja.wikipedia.org/wiki/\%e5\%af\%bf\%e5\%8f\%b8"
+parse_url(url1)$path
+parse_url(url2)$path
+parse_url(url1, decode = FALSE)$path
+parse_url(url1, decode = FALSE)$path
 }

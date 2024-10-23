@@ -1,17 +1,20 @@
 #' Parse a URL
 #'
-#' Simple wrapper for the libcurl [URL parsing interface](https://curl.se/libcurl/c/libcurl-url.html).
+#' Interfaces the libcurl [URL parser](https://curl.se/libcurl/c/libcurl-url.html).
+#' Results get normalized wrt URL-encoding of input URL.
 #' When parsing hyperlinks inside a HTML document, it is possible to set `baseurl`
 #' to the location of the document such that relative links can be resolved.
 #'
 #' On platforms that do not have a recent enough curl version (basically only
-#' RHEL-8) the [ADA](https://www.ada-url.com/) parser is used as fallback.
-#' Results should be identical between the parsers, though curl is a bit more
-#' strict on validating of URLs and has nicer error messages.
+#' RHEL-8) the [Ada URL](https://www.ada-url.com/) library is used as fallback.
+#' Results should be identical between the parsers, though curl has much nicer
+#' error messages.
 #'
 #' @export
 #' @param url a character string of length one
 #' @param baseurl if url is a relative path, this url is used as the parent.
+#' @param decode return result in normalized [url-decoded][curl_escape] form.
+#' Set to FALSE to get results in url-encoded form.
 #' @useDynLib curl R_parse_url
 #' @examples
 #' url <- "https://jerry:secret@google.com:888/foo/bar?test=123#bla"
@@ -19,18 +22,41 @@
 #'
 #' # Resolve relative links
 #' parse_url("/somelink", baseurl = url)
-parse_url <- function(url, baseurl = NULL){
+#'
+#' # Normalize URL-encoding (these URLs are equivalent):
+#' url1 <- "https://ja.wikipedia.org/wiki/\u5bff\u53f8"
+#' url2 <- "https://ja.wikipedia.org/wiki/%e5%af%bf%e5%8f%b8"
+#' parse_url(url1)$path
+#' parse_url(url2)$path
+#' parse_url(url1, decode = FALSE)$path
+#' parse_url(url1, decode = FALSE)$path
+parse_url <- function(url, baseurl = NULL, decode = TRUE){
   stopifnot(is.character(url))
   baseurl < as.character(baseurl)
   result <- .Call(R_parse_url, url, baseurl)
   if(inherits(result, 'ada')){
-    if(length(result$scheme))
-      result$scheme <- sub("\\:$", "", result$scheme)
-    if(length( result$query))
-      result$query <- sub("^\\?", "", result$query)
-    if(length(result$fragment))
-      result$fragment <- sub("^\\#", "", result$fragment)
-    result <- unclass(result)
+    result <- normalize_ada(result)
+  }
+  if(isTRUE(decode)){
+    result <- normalize_all(result)
   }
   result
+}
+
+normalize_all <- function(result){
+  lapply(result, function(x){
+    if(length(x)) curl_unescape(x)
+  })
+}
+
+# ADA automatically URL-encodes things to "normalize" but therefore we can't
+# know if the input was already URL encoded or not.
+normalize_ada <- function(result){
+  if(length(result$scheme))
+    result$scheme <- sub("\\:$", "", result$scheme)
+  if(length( result$query))
+    result$query <- sub("^\\?", "", result$query)
+  if(length(result$fragment))
+    result$fragment <- sub("^\\#", "", result$fragment)
+  unclass(result)
 }
