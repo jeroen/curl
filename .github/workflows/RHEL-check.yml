@@ -33,13 +33,17 @@ jobs:
           subscription-manager register \
             --org ${{ secrets.REDHAT_ORG }} \
             --activationkey ${{ secrets.REDHAT_KEY }}
-          yum install -y --allowerasing diffutils perl libcurl
         shell: bash
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck
           needs: check
+
+      - name: Unregister
+        if: always()
+        run: |
+          subscription-manager unregister || true
 
       - uses: r-lib/actions/check-r-package@v2
         with:
@@ -48,8 +52,3 @@ jobs:
           NOT_CRAN: true
           _R_CHECK_DOC_SIZES_: FALSE
           LANG: en_US.UTF-8
-
-      - name: Unregister
-        if: always()
-        run: |
-          subscription-manager unregister || true
