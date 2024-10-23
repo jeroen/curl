@@ -35,9 +35,11 @@ a list with the following elements:
 \item \emph{fragment}: the hash part after the \verb{#} of the url
 \item \emph{user}: authentication username
 \item \emph{password}: authentication password
+\item \emph{params}: named vector with parsed parameters from \code{query} if given
 }
 
-Elements that are not present in the URL are set to \code{NULL}.
+Each element above is either a string or \code{NULL} (if unset), except for \code{params}
+which is always a character vector (of length 0 if no query is set).
 
 For more details on the URL format see
 \href{https://datatracker.ietf.org/doc/html/rfc3986}{rfc3986}

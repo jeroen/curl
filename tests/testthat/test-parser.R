@@ -44,3 +44,9 @@ test_that("IPv6 address is understood", {
   expect_equal(out$host, '[2001:db8::1]')
   expect_equal(out$port, '8080')
 })
+
+test_that("Decoding parameters", {
+  out <- parse_url('https://www.test.com/bla?tv=tom%26jerry&math=1%2B1+%3D+2&empty')
+  expect_equal(out$params, c(tv = "tom&jerry", math = "1+1 = 2", empty = ""))
+})
+

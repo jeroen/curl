@@ -18,8 +18,10 @@
 #'  - *fragment*: the hash part after the `#` of the url
 #'  - *user*: authentication username
 #'  - *password*: authentication password
+#'  - *params*: named vector with parsed parameters from `query` if given
 #'
-#' Elements that are not present in the URL are set to `NULL`.
+#' Each element above is either a string or `NULL` (if unset), except for `params`
+#' which is always a character vector (of length 0 if no query is set).
 #'
 #' For more details on the URL format see
 #' [rfc3986](https://datatracker.ietf.org/doc/html/rfc3986)
@@ -59,16 +61,24 @@ parse_url <- function(url, baseurl = NULL, decode = TRUE){
   if(inherits(result, 'ada')){
     result <- normalize_ada(result)
   }
+  # Need to parse query before url-decoding
+  result$params <- tryCatch(parse_query(result$query), error = message)
+
   if(isTRUE(decode)){
-    result <- normalize_all(result)
+    if(length(result$url))
+      result$url <- curl_unescape(result$url)
+    if(length(result$path))
+      result$path <- curl_unescape(result$path)
+    if(length(result$query))
+      result$query <- curl_unescape(result$query)
+    if(length(result$fragment))
+      result$fragment <- curl_unescape(result$fragment)
+    if(length(result$user))
+      result$user <- curl_unescape(result$user)
+    if(length(result$password))
+      result$password <- curl_unescape(result$password)
   }
   result
-}
-
-normalize_all <- function(result){
-  lapply(result, function(x){
-    if(length(x)) curl_unescape(x)
-  })
 }
 
 
@@ -82,4 +92,16 @@ normalize_ada <- function(result){
   if(length(result$fragment))
     result$fragment <- sub("^\\#", "", result$fragment)
   unclass(result)
+}
+
+parse_query <- function(query){
+  if(!length(query)) return(character())
+  query <- chartr('+',' ', query)
+  argstr <- strsplit(query, "&", fixed = TRUE)[[1]]
+  args <- lapply(argstr, function(x){
+    c(curl_unescape(strsplit(x, "=", fixed = TRUE)[[1]]), "")
+  })
+  values <- vapply(args, `[`, character(1), 2)
+  names(values) <- vapply(args, `[`, character(1), 1)
+  return(values)
 }
