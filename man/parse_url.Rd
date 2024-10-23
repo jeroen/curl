@@ -11,20 +11,40 @@ parse_url(url, baseurl = NULL, decode = TRUE)
 
 \item{baseurl}{if url is a relative path, this url is used as the parent.}
 
-\item{decode}{return result in normalized \link[=curl_escape]{url-decoded} form.
-Set to FALSE to get results in url-encoded form.}
+\item{decode}{return \link[=curl_escape]{url-decoded} results.
+Set to \code{FALSE} to get results in url-encoded format.}
 }
 \description{
 Interfaces the libcurl \href{https://curl.se/libcurl/c/libcurl-url.html}{URL parser}.
-Results get normalized wrt URL-encoding of input URL.
+The URL is automatically normalized wrt URL-encoding.
 When parsing hyperlinks inside a HTML document, it is possible to set \code{baseurl}
 to the location of the document such that relative links can be resolved.
 }
 \details{
+A valid URL requires at least a scheme and a host, other parts are optional.
+If the input URL is invalid, the function raises an error. Otherwise it returns
+a list with the following elements:
+\itemize{
+\item \emph{url}: the normalized input URL
+\item \emph{scheme}: the protocol part before the \verb{://} (required)
+\item \emph{host}: name of host only (required)
+\item \emph{port}: decimal between 0 and 65535
+\item \emph{path}: normalized (url-decoded) path up till the \verb{?} of the url
+\item \emph{query}: aka search, part between the \verb{?} and \verb{#} of the url
+\item \emph{fragment}: the hash part after the \verb{#} of the url
+\item \emph{user}: authentication username
+\item \emph{password}: authentication password
+}
+
+Elements that are not present in the URL are set to \code{NULL}.
+
+For more details on the URL format see
+\href{https://datatracker.ietf.org/doc/html/rfc3986}{rfc3986}
+or the steps explained in the \href{https://url.spec.whatwg.org/#concept-basic-url-parser}{whatwg basic url parser}.
+
 On platforms that do not have a recent enough curl version (basically only
-RHEL-8) the \href{https://www.ada-url.com/}{ADA} parser is used as fallback.
-Results should be identical between the parsers, though curl is a bit more
-strict on validating of URLs and has nicer error messages.
+RHEL-8) the \href{https://www.ada-url.com/}{Ada URL} library is used as fallback.
+Results should be identical, though curl has much nicer error messages.
 }
 \examples{
 url <- "https://jerry:secret@google.com:888/foo/bar?test=123#bla"

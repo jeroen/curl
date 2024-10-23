@@ -1,20 +1,38 @@
 #' Parse a URL
 #'
 #' Interfaces the libcurl [URL parser](https://curl.se/libcurl/c/libcurl-url.html).
-#' Results get normalized wrt URL-encoding of input URL.
+#' The URL is automatically normalized wrt URL-encoding.
 #' When parsing hyperlinks inside a HTML document, it is possible to set `baseurl`
 #' to the location of the document such that relative links can be resolved.
 #'
+#' A valid URL requires at least a scheme and a host, other parts are optional.
+#' If the input URL is invalid, the function raises an error. Otherwise it returns
+#' a list with the following elements:
+#'  - *url*: the normalized input URL
+#'  - *scheme*: the protocol part before the `://` (required)
+#'  - *host*: name of host only (required)
+#'  - *port*: decimal between 0 and 65535
+#'  - *path*: normalized (url-decoded) path up till the `?` of the url
+#'  - *query*: aka search, part between the `?` and `#` of the url
+#'  - *fragment*: the hash part after the `#` of the url
+#'  - *user*: authentication username
+#'  - *password*: authentication password
+#'
+#' Elements that are not present in the URL are set to `NULL`.
+#'
+#' For more details on the URL format see
+#' [rfc3986](https://datatracker.ietf.org/doc/html/rfc3986)
+#' or the steps explained in the [whatwg basic url parser](https://url.spec.whatwg.org/#concept-basic-url-parser).
+#'
 #' On platforms that do not have a recent enough curl version (basically only
 #' RHEL-8) the [Ada URL](https://www.ada-url.com/) library is used as fallback.
-#' Results should be identical between the parsers, though curl has much nicer
-#' error messages.
+#' Results should be identical, though curl has much nicer error messages.
 #'
 #' @export
 #' @param url a character string of length one
 #' @param baseurl if url is a relative path, this url is used as the parent.
-#' @param decode return result in normalized [url-decoded][curl_escape] form.
-#' Set to FALSE to get results in url-encoded form.
+#' @param decode return [url-decoded][curl_escape] results.
+#' Set to `FALSE` to get results in url-encoded format.
 #' @useDynLib curl R_parse_url
 #' @examples
 #' url <- "https://jerry:secret@google.com:888/foo/bar?test=123#bla"
@@ -49,12 +67,10 @@ normalize_all <- function(result){
   })
 }
 
-# ADA automatically URL-encodes things to "normalize" but therefore we can't
-# know if the input was already URL encoded or not.
 normalize_ada <- function(result){
   if(length(result$scheme))
     result$scheme <- sub("\\:$", "", result$scheme)
-  if(length( result$query))
+  if(length(result$query))
     result$query <- sub("^\\?", "", result$query)
   if(length(result$fragment))
     result$fragment <- sub("^\\#", "", result$fragment)
