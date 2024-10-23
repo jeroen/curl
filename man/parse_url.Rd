@@ -23,23 +23,23 @@ to the location of the document such that relative links can be resolved.
 }
 \details{
 A valid URL requires at least a scheme and a host, other parts are optional.
-If the input URL is invalid, the function raises an error. Otherwise it returns
+If these are missing, the parser raises an error. Otherwise it returns
 a list with the following elements:
 \itemize{
 \item \emph{url}: the normalized input URL
 \item \emph{scheme}: the protocol part before the \verb{://} (required)
-\item \emph{host}: name of host only (required)
+\item \emph{host}: name of host without port (required)
 \item \emph{port}: decimal between 0 and 65535
-\item \emph{path}: normalized (url-decoded) path up till the \verb{?} of the url
-\item \emph{query}: aka search, part between the \verb{?} and \verb{#} of the url
+\item \emph{path}: normalized path up till the \verb{?} of the url
+\item \emph{query}: search query: part between the \verb{?} and \verb{#} of the url. Use \code{params} below to get individual parameters from the query.
 \item \emph{fragment}: the hash part after the \verb{#} of the url
 \item \emph{user}: authentication username
 \item \emph{password}: authentication password
 \item \emph{params}: named vector with parsed parameters from \code{query} if given
 }
 
-Each element above is either a string or \code{NULL} (if unset), except for \code{params}
-which is always a character vector (of length 0 if no query is set).
+Each element above is either a string or \code{NULL} if unset, except for \code{params}
+which is always a character vector (of length 0 if no query is given).
 
 For more details on the URL format see
 \href{https://datatracker.ietf.org/doc/html/rfc3986}{rfc3986}
@@ -47,7 +47,7 @@ or the steps explained in the \href{https://url.spec.whatwg.org/#concept-basic-u
 
 On platforms that do not have a recent enough curl version (basically only
 RHEL-8) the \href{https://www.ada-url.com/}{Ada URL} library is used as fallback.
-Results should be identical, though curl has much nicer error messages.
+Results should be identical, though curl has nicer error messages.
 }
 \examples{
 url <- "https://jerry:secret@google.com:888/foo/bar?test=123#bla"

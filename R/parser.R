@@ -7,21 +7,21 @@
 #' to the location of the document such that relative links can be resolved.
 #'
 #' A valid URL requires at least a scheme and a host, other parts are optional.
-#' If the input URL is invalid, the function raises an error. Otherwise it returns
+#' If these are missing, the parser raises an error. Otherwise it returns
 #' a list with the following elements:
 #'  - *url*: the normalized input URL
 #'  - *scheme*: the protocol part before the `://` (required)
-#'  - *host*: name of host only (required)
+#'  - *host*: name of host without port (required)
 #'  - *port*: decimal between 0 and 65535
-#'  - *path*: normalized (url-decoded) path up till the `?` of the url
-#'  - *query*: aka search, part between the `?` and `#` of the url
+#'  - *path*: normalized path up till the `?` of the url
+#'  - *query*: search query: part between the `?` and `#` of the url. Use `params` below to get individual parameters from the query.
 #'  - *fragment*: the hash part after the `#` of the url
 #'  - *user*: authentication username
 #'  - *password*: authentication password
 #'  - *params*: named vector with parsed parameters from `query` if given
 #'
-#' Each element above is either a string or `NULL` (if unset), except for `params`
-#' which is always a character vector (of length 0 if no query is set).
+#' Each element above is either a string or `NULL` if unset, except for `params`
+#' which is always a character vector (of length 0 if no query is given).
 #'
 #' For more details on the URL format see
 #' [rfc3986](https://datatracker.ietf.org/doc/html/rfc3986)
@@ -29,7 +29,7 @@
 #'
 #' On platforms that do not have a recent enough curl version (basically only
 #' RHEL-8) the [Ada URL](https://www.ada-url.com/) library is used as fallback.
-#' Results should be identical, though curl has much nicer error messages.
+#' Results should be identical, though curl has nicer error messages.
 #'
 #' @export
 #' @param url a character string of length one
