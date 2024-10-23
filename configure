@@ -66,11 +66,11 @@ fi
 
 # On curl < 7.62 (RHEL-8) enable the fallback
 #TEST_ADA_PARSER=1
-if [ "$TEST_ADA_PARSER" ] || ! ${R_HOME}/bin/Rscript tools/testversion.R "7.62"; then
+if [ "$TEST_ADA_PARSER" ] || ! ${R_HOME}/bin/Rscript --vanilla tools/testversion.R "7.62"; then
   tar xf tools/ada.tar.gz -C src
   PKG_CFLAGS="$PKG_CFLAGS -DUSE_ADA_PARSER"
   echo "CXX_STD=CXX17" >> src/Makevars.in
-elif [ `uname` = "Darwin" ] && ${R_HOME}/bin/Rscript tools/testversion.R "7.80"; then
+elif [ `uname` = "Darwin" ] && ${R_HOME}/bin/Rscript --vanilla tools/testversion.R "7.80"; then
   PKG_CFLAGS="$PKG_CFLAGS -DENABLE_ALL_FEATURES"
 fi
 
