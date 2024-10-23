@@ -38,7 +38,7 @@ extern SEXP R_multi_setopt(SEXP, SEXP, SEXP, SEXP);
 extern SEXP R_new_file_writer(SEXP);
 extern SEXP R_new_handle(void);
 extern SEXP R_nslookup(SEXP, SEXP);
-extern SEXP R_parse_url(SEXP);
+extern SEXP R_parse_url(SEXP, SEXP);
 extern SEXP R_proxy_info(void);
 extern SEXP R_split_string(SEXP, SEXP);
 extern SEXP R_total_handles(void);
@@ -78,7 +78,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"R_new_file_writer",     (DL_FUNC) &R_new_file_writer,     1},
     {"R_new_handle",          (DL_FUNC) &R_new_handle,          0},
     {"R_nslookup",            (DL_FUNC) &R_nslookup,            2},
-    {"R_parse_url",           (DL_FUNC) &R_parse_url,           1},
+    {"R_parse_url",           (DL_FUNC) &R_parse_url,           2},
     {"R_proxy_info",          (DL_FUNC) &R_proxy_info,          0},
     {"R_split_string",        (DL_FUNC) &R_split_string,        2},
     {"R_total_handles",       (DL_FUNC) &R_total_handles,       0},

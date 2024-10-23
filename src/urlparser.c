@@ -23,8 +23,10 @@ static SEXP get_ada_field(ada_string val){
   return Rf_ScalarString(Rf_mkCharLenCE(val.data, val.length, CE_UTF8));
 }
 
-SEXP R_parse_url(SEXP url) {
-  ada_url *result = ada_parse(CHAR(STRING_ELT(url, 0)), Rf_length(STRING_ELT(url, 0)));
+SEXP R_parse_url(SEXP url, SEXP baseurl) {
+  ada_url *result = Rf_length(baseurl) == 0 ?
+    ada_parse(get_string(url), Rf_length(STRING_ELT(url, 0))) :
+    ada_parse_with_base(get_string(url), Rf_length(STRING_ELT(url, 0)), get_string(baseurl), Rf_length(STRING_ELT(baseurl, 0)));
   if(!ada_is_valid(result)){
     ada_free(result);
     Rf_error("ADA failed to parse URL");
@@ -69,8 +71,10 @@ static SEXP get_field(CURLU *h, CURLUPart part, CURLUcode field_missing){
   return field;
 }
 
-SEXP R_parse_url(SEXP url) {
+SEXP R_parse_url(SEXP url, SEXP baseurl) {
   CURLU *h = curl_url();
+  if(Rf_length(baseurl))
+    fail_if(curl_url_set(h, CURLUPART_URL, CHAR(STRING_ELT(baseurl, 0)), 0));
   fail_if(curl_url_set(h, CURLUPART_URL, CHAR(STRING_ELT(url, 0)), 0));
   SEXP out = PROTECT(Rf_allocVector(VECSXP, 9));
   SET_VECTOR_ELT(out, 0, get_field(h, CURLUPART_URL, CURLUE_OK));
@@ -88,7 +92,7 @@ SEXP R_parse_url(SEXP url) {
   return out;
 }
 #else
-SEXP R_parse_url(SEXP url) {
+SEXP R_parse_url(SEXP url, SEXP baseurl) {
   Rf_error("URL parser not suppored, this libcurl is too old");
 }
 #endif

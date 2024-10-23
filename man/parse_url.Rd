@@ -4,12 +4,24 @@
 \alias{parse_url}
 \title{Parse a URL}
 \usage{
-parse_url(url)
+parse_url(url, baseurl = NULL)
 }
 \arguments{
 \item{url}{a character string of length one}
+
+\item{baseurl}{if url is a relative path, this url is used as the parent.}
 }
 \description{
-Wrapper for the libcurl \href{https://curl.se/libcurl/c/libcurl-url.html}{URL parsing interface}.
-This requires at least libcurl 7.62.
+Simple wrapper for the libcurl \href{https://curl.se/libcurl/c/libcurl-url.html}{URL parsing interface}.
+}
+\details{
+When parsing hyperlinks inside a HTML document, it is possible to set \code{baseurl}
+to the location of the document such that relative links can be resolved.
+}
+\examples{
+url <- "https://jerry:secret@google.com:888/foo/bar?test=123#bla"
+parse_url(url)
+
+# Resolve relative links
+parse_url("/somelink", baseurl = url)
 }
