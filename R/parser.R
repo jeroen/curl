@@ -1,9 +1,13 @@
 #' Parse a URL
 #'
 #' Simple wrapper for the libcurl [URL parsing interface](https://curl.se/libcurl/c/libcurl-url.html).
-#'
 #' When parsing hyperlinks inside a HTML document, it is possible to set `baseurl`
 #' to the location of the document such that relative links can be resolved.
+#'
+#' On platforms that do not have a recent enough curl version (basically only
+#' RHEL-8) the [ADA](https://www.ada-url.com/) parser is used as fallback.
+#' Results should be identical between the parsers, though curl is a bit more
+#' strict on validating of URLs and has nicer error messages.
 #'
 #' @export
 #' @param url a character string of length one

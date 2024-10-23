@@ -13,10 +13,14 @@ parse_url(url, baseurl = NULL)
 }
 \description{
 Simple wrapper for the libcurl \href{https://curl.se/libcurl/c/libcurl-url.html}{URL parsing interface}.
-}
-\details{
 When parsing hyperlinks inside a HTML document, it is possible to set \code{baseurl}
 to the location of the document such that relative links can be resolved.
+}
+\details{
+On platforms that do not have a recent enough curl version (basically only
+RHEL-8) the \href{https://www.ada-url.com/}{ADA} parser is used as fallback.
+Results should be identical between the parsers, though curl is a bit more
+strict on validating of URLs and has nicer error messages.
 }
 \examples{
 url <- "https://jerry:secret@google.com:888/foo/bar?test=123#bla"
