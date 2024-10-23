@@ -39,7 +39,7 @@ void clean_handle(reference *ref){
   }
 }
 
-void fin_handle(SEXP ptr){
+static void fin_handle(SEXP ptr){
   reference *ref = (reference*) R_ExternalPtrAddr(ptr);
 
   //this kind of strange but the multi finalizer needs the ptr value
@@ -94,6 +94,13 @@ static struct curl_slist * default_headers(void){
   }
   return headers;
 }
+
+static void assert_setopt(CURLcode res, const char *name){
+  if(res != CURLE_OK)
+    Rf_error("Error setting option '%s': %s", name, curl_easy_strerror(res));
+}
+
+#define set_option(handle, option, value, name) assert_setopt(curl_easy_setopt(handle, option, value), name)
 
 static void set_headers(reference *ref, struct curl_slist *newheaders){
   if(ref->headers)
@@ -254,62 +261,55 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
     const char* optname = CHAR(STRING_ELT(optnames, i));
     SEXP val = VECTOR_ELT(values, i);
     if(val == R_NilValue){
-      assert(curl_easy_setopt(handle, key, NULL));
+      set_option(handle, key, NULL, optname);
 #ifdef HAS_XFERINFOFUNCTION
     } else if (key == CURLOPT_XFERINFOFUNCTION) {
       if (TYPEOF(val) != CLOSXP)
         Rf_error("Value for option %s (%d) must be a function.", optname, key);
 
-      assert(curl_easy_setopt(handle, CURLOPT_XFERINFOFUNCTION,
-                              (curl_progress_callback) R_curl_callback_xferinfo));
-      assert(curl_easy_setopt(handle, CURLOPT_XFERINFODATA, val));
-      assert(curl_easy_setopt(handle, CURLOPT_NOPROGRESS, 0));
+      set_option(handle, CURLOPT_XFERINFOFUNCTION, (curl_progress_callback) R_curl_callback_xferinfo, optname);
+      set_option(handle, CURLOPT_XFERINFODATA, val, optname);
+      set_option(handle, CURLOPT_NOPROGRESS, 0, optname);
       SET_VECTOR_ELT(prot, 1, val); //protect gc
 #endif
     } else if (key == CURLOPT_PROGRESSFUNCTION) {
       if (TYPEOF(val) != CLOSXP)
         Rf_error("Value for option %s (%d) must be a function.", optname, key);
 
-      assert(curl_easy_setopt(handle, CURLOPT_PROGRESSFUNCTION,
-        (curl_progress_callback) R_curl_callback_progress));
-      assert(curl_easy_setopt(handle, CURLOPT_PROGRESSDATA, val));
-      assert(curl_easy_setopt(handle, CURLOPT_NOPROGRESS, 0));
+      set_option(handle, CURLOPT_PROGRESSFUNCTION,(curl_progress_callback) R_curl_callback_progress, optname);
+      set_option(handle, CURLOPT_PROGRESSDATA, val, optname);
+      set_option(handle, CURLOPT_NOPROGRESS, 0, optname);
       SET_VECTOR_ELT(prot, 2, val); //protect gc
     } else if (key == CURLOPT_READFUNCTION) {
       if (TYPEOF(val) != CLOSXP)
         Rf_error("Value for option %s (%d) must be a function.", optname, key);
 
-      assert(curl_easy_setopt(handle, CURLOPT_READFUNCTION,
-        (curl_read_callback) R_curl_callback_read));
-      assert(curl_easy_setopt(handle, CURLOPT_READDATA, val));
+      set_option(handle, CURLOPT_READFUNCTION, (curl_read_callback) R_curl_callback_read, optname);
+      set_option(handle, CURLOPT_READDATA, val, optname);
       SET_VECTOR_ELT(prot, 3, val); //protect gc
     } else if (key == CURLOPT_DEBUGFUNCTION) {
       if (TYPEOF(val) != CLOSXP)
         Rf_error("Value for option %s (%d) must be a function.", optname, key);
-
-      assert(curl_easy_setopt(handle, CURLOPT_DEBUGFUNCTION,
-        (curl_debug_callback) R_curl_callback_debug));
-      assert(curl_easy_setopt(handle, CURLOPT_DEBUGDATA, val));
+      set_option(handle, CURLOPT_DEBUGFUNCTION, (curl_debug_callback) R_curl_callback_debug, optname);
+      set_option(handle, CURLOPT_DEBUGDATA, val, optname);
       SET_VECTOR_ELT(prot, 4, val); //protect gc
     } else if (key == CURLOPT_SSL_CTX_FUNCTION){
       if (TYPEOF(val) != CLOSXP)
         Rf_error("Value for option %s (%d) must be a function.", optname, key);
 
-      assert(curl_easy_setopt(handle, CURLOPT_SSL_CTX_FUNCTION,
-                              (curl_ssl_ctx_callback) R_curl_callback_ssl_ctx));
-      assert(curl_easy_setopt(handle, CURLOPT_SSL_CTX_DATA, val));
+      set_option(handle, CURLOPT_SSL_CTX_FUNCTION, (curl_ssl_ctx_callback) R_curl_callback_ssl_ctx, optname);
+      set_option(handle, CURLOPT_SSL_CTX_DATA, val, optname);
       SET_VECTOR_ELT(prot, 5, val); //protect gc
     } else if (key == CURLOPT_SEEKFUNCTION) {
       if (TYPEOF(val) != CLOSXP)
         Rf_error("Value for option %s (%d) must be a function.", optname, key);
-      assert(curl_easy_setopt(handle, CURLOPT_SEEKFUNCTION,
-                              (curl_seek_callback) R_curl_callback_seek));
-      assert(curl_easy_setopt(handle, CURLOPT_SEEKDATA, val));
+      set_option(handle, CURLOPT_SEEKFUNCTION, (curl_seek_callback) R_curl_callback_seek, optname);
+      set_option(handle, CURLOPT_SEEKDATA, val, optname);
       SET_VECTOR_ELT(prot, 6, val); //protect gc
     } else if (key == CURLOPT_URL) {
       /* always use utf-8 for urls */
       const char * url_utf8 = Rf_translateCharUTF8(STRING_ELT(val, 0));
-      assert(curl_easy_setopt(handle, CURLOPT_URL, url_utf8));
+      set_option(handle, CURLOPT_URL, url_utf8, optname);
     } else if(key == CURLOPT_HTTPHEADER){
       if(!Rf_isString(val))
         Rf_error("Value for option %s (%d) must be a string vector", optname, key);
@@ -318,17 +318,15 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
       if(!Rf_isString(val))
         Rf_error("Value for option %s (%d) must be a string vector", optname, key);
       ref->custom = vec_to_slist(val);
-      assert(curl_easy_setopt(handle, key, ref->custom));
+      set_option(handle, key, ref->custom, optname);
     } else if(r_curl_is_long_option(key)){
-      if(!Rf_isNumeric(val) || Rf_length(val) != 1) {
+      if(!Rf_isNumeric(val) || Rf_length(val) != 1)
         Rf_error("Value for option %s (%d) must be a number.", optname, key);
-      }
-      assert(curl_easy_setopt(handle, key, (long) Rf_asInteger(val)));
+      set_option(handle, key, (long) Rf_asInteger(val), optname);
     } else if(r_curl_is_off_t_option(key)){
-      if(!Rf_isNumeric(val) || Rf_length(val) != 1) {
+      if(!Rf_isNumeric(val) || Rf_length(val) != 1)
         Rf_error("Value for option %s (%d) must be a number.", optname, key);
-      }
-      assert(curl_easy_setopt(handle, key, (curl_off_t) Rf_asReal(val)));
+      set_option(handle, key, (curl_off_t) Rf_asReal(val), optname);
     } else if(r_curl_is_postfields_option(key) || r_curl_is_string_option(key)){
       if(key == CURLOPT_POSTFIELDS){
         key = CURLOPT_COPYPOSTFIELDS;
@@ -336,13 +334,13 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
       switch (TYPEOF(val)) {
       case RAWSXP:
         if(key == CURLOPT_COPYPOSTFIELDS)
-          assert(curl_easy_setopt(handle, CURLOPT_POSTFIELDSIZE_LARGE, (curl_off_t) Rf_length(val)));
-        assert(curl_easy_setopt(handle, key, RAW(val)));
+          set_option(handle, CURLOPT_POSTFIELDSIZE_LARGE, (curl_off_t) Rf_length(val), optname);
+        set_option(handle, key, RAW(val), optname);
         break;
       case STRSXP:
         if (Rf_length(val) != 1)
           Rf_error("Value for option %s (%d) must be length-1 string", optname, key);
-        assert(curl_easy_setopt(handle, key, CHAR(STRING_ELT(val, 0))));
+        set_option(handle, key, CHAR(STRING_ELT(val, 0)), optname);
         break;
       default:
         Rf_error("Value for option %s (%d) must be a string or raw vector.", optname, key);
