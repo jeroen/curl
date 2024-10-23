@@ -38,3 +38,9 @@ test_that("Consistent URL encoding", {
   expect_equal(tolower(out4$url), url2)
   expect_equal(tolower(out4$path), sub("^.*/wiki", "/wiki", url2))
 })
+
+test_that("IPv6 address is understood", {
+  out <- parse_url('http://[2001:db8::1]:8080')
+  expect_equal(out$host, '[2001:db8::1]')
+  expect_equal(out$port, '8080')
+})
