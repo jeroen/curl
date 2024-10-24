@@ -183,7 +183,7 @@ multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = TR
     status_code = vapply(out, function(x){x$status_code}, numeric(1)),
     resumefrom = resumefrom,
     url = vapply(out, function(x){x$url}, character(1)),
-    destfile = destfiles,
+    destfile = normalizePath(destfiles, mustWork = FALSE),
     error = errors,
     type = vapply(out, function(x){x$type}, character(1)),
     modified = structure(vapply(out, function(x){x$modified}, numeric(1)), class = c("POSIXct", "POSIXt")),
