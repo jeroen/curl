@@ -18,10 +18,16 @@
 #'  - *fragment*: the hash part after the `#` of the url
 #'  - *user*: authentication username
 #'  - *password*: authentication password
-#'  - *params*: named vector with parsed parameters from `query` if given
+#'  - *params*: named vector with parameters from `query` if set
 #'
-#' Each element above is either a string or `NULL` if unset, except for `params`
-#' which is always a character vector (of length 0 if no query is given).
+#' Each element above is either a string or `NULL`, except for `params` which
+#' is always a character vector with the length equal to the number of parameters.
+#'
+#' Note that the `params` field is only usable if the `query` is in the usual
+#' `application/x-www-form-urlencoded` format which is technically not part of
+#' the RFC. Some services may use e.g. a json blob as the query, in which case
+#' the parsed `params` field here can be ignored. There is no way for the parser
+#' to automatically infer or validate the query format, this is up to the caller.
 #'
 #' For more details on the URL format see
 #' [rfc3986](https://datatracker.ietf.org/doc/html/rfc3986)
@@ -29,32 +35,35 @@
 #'
 #' On platforms that do not have a recent enough curl version (basically only
 #' RHEL-8) the [Ada URL](https://www.ada-url.com/) library is used as fallback.
-#' Results should be identical, though curl has nicer error messages.
+#' Results should be identical, though curl has nicer error messages. This is
+#' a temporary solution, we plan to remove the fallback when old systems are
+#' no longer supported.
 #'
 #' @export
 #' @param url a character string of length one
 #' @param baseurl if url is a relative path, this url is used as the parent.
 #' @param decode return [url-decoded][curl_escape] results.
 #' Set to `FALSE` to get results in url-encoded format.
+#' @param params parse individual parameters from query in `application/x-www-form-urlencoded` format.
 #' @useDynLib curl R_parse_url
 #' @examples
 #' url <- "https://jerry:secret@google.com:888/foo/bar?test=123#bla"
-#' parse_url(url)
+#' curl_parse_url(url)
 #'
 #' # Resolve relative links from a baseurl
-#' parse_url("/somelink", baseurl = url)
+#' curl_parse_url("/somelink", baseurl = url)
 #'
 #' # Paths get normalized
-#' parse_url("https://foobar.com/foo/bar/../baz/../yolo")$url
+#' curl_parse_url("https://foobar.com/foo/bar/../baz/../yolo")$url
 #'
 #' # Also normalizes URL-encoding (these URLs are equivalent):
 #' url1 <- "https://ja.wikipedia.org/wiki/\u5bff\u53f8"
 #' url2 <- "https://ja.wikipedia.org/wiki/%e5%af%bf%e5%8f%b8"
-#' parse_url(url1)$path
-#' parse_url(url2)$path
-#' parse_url(url1, decode = FALSE)$path
-#' parse_url(url1, decode = FALSE)$path
-parse_url <- function(url, baseurl = NULL, decode = TRUE){
+#' curl_parse_url(url1)$path
+#' curl_parse_url(url2)$path
+#' curl_parse_url(url1, decode = FALSE)$path
+#' curl_parse_url(url1, decode = FALSE)$path
+curl_parse_url <- function(url, baseurl = NULL, decode = TRUE, params = TRUE){
   stopifnot(is.character(url))
   baseurl < as.character(baseurl)
   result <- .Call(R_parse_url, url, baseurl)
@@ -62,7 +71,9 @@ parse_url <- function(url, baseurl = NULL, decode = TRUE){
     result <- normalize_ada(result)
   }
   # Need to parse query before url-decoding
-  result$params <- tryCatch(parse_query(result$query), error = message)
+  if(params){
+    result$params <- tryCatch(parse_query_urlencoded(result$query), error = message)
+  }
 
   if(isTRUE(decode)){
     if(length(result$url))
@@ -94,7 +105,8 @@ normalize_ada <- function(result){
   unclass(result)
 }
 
-parse_query <- function(query){
+# Parses a string in 'application/x-www-form-urlencoded' format
+parse_query_urlencoded <- function(query){
   if(!length(query)) return(character())
   query <- chartr('+',' ', query)
   argstr <- strsplit(query, "&", fixed = TRUE)[[1]]

@@ -41,12 +41,15 @@ libssh
 libssl
 netscape
 openssl
+params
 preconfigured
 proxying
 rb
+rfc
 sftp
 slist
 smtp
 ssl
 webservers
+whatwg
 zlib
