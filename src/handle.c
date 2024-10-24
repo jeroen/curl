@@ -7,6 +7,7 @@ extern int r_curl_is_long_option(CURLoption x);
 extern int r_curl_is_off_t_option(CURLoption x);
 extern int r_curl_is_string_option(CURLoption x);
 extern int r_curl_is_postfields_option(CURLoption x);
+extern int r_curl_ignore_option(CURLoption x);
 
 #ifndef MAX_PATH
 #define MAX_PATH 1024
@@ -314,6 +315,8 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
       if(!Rf_isString(val))
         Rf_error("Value for option %s (%d) must be a string vector", optname, key);
       set_headers(get_ref(ptr), vec_to_slist(val));
+    } else if (r_curl_ignore_option(key)) {
+      Rf_warning("Ignoring option %s (this option should not be set manually)", optname);
     } else if (r_curl_is_slist_option(key)) {
       if(!Rf_isString(val))
         Rf_error("Value for option %s (%d) must be a string vector", optname, key);
