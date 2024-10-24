@@ -11,8 +11,6 @@ PKG_CPPFLAGS= \
 
 all: clean winlibs
 
-$(OBJECTS): winlibs
-
 clean:
 	rm -f $(SHLIB) $(OBJECTS)
 
