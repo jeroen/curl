@@ -18,7 +18,7 @@ jobs:
   R-CMD-check:
     runs-on: ${{ matrix.config.os }}
 
-    name: ${{ matrix.config.os }} (${{ matrix.config.r }}) ${{ matrix.config.ssl-backend }}
+    name: ${{ matrix.config.os }} (${{ matrix.config.r }}) ${{ matrix.config.ssl-backend }} ${{ matrix.config.parser }}
 
     strategy:
       fail-fast: false
@@ -39,7 +39,7 @@ jobs:
           - {os: ubuntu-24.04, r: 'devel', http-user-agent: 'release'}
           - {os: ubuntu-24.04, r: 'release'}
           - {os: ubuntu-22.04, r: 'release'}
-          - {os: ubuntu-20.04, r: 'release'}
+          - {os: ubuntu-20.04, r: 'release', parser: "Ada-parser" }
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -64,5 +64,7 @@ jobs:
       - uses: r-lib/actions/check-r-package@v2
         env:
           CURL_SSL_BACKEND: ${{ matrix.config.ssl-backend }}
+          TEST_ADA_PARSER: ${{ matrix.config.parser }}
+
         with:
           args: 'c("--no-manual", "--as-cran", "--run-donttest")'
