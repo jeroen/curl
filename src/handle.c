@@ -163,6 +163,10 @@ static void set_handle_defaults(reference *ref){
   /* a sensible timeout (10s) */
   assert(curl_easy_setopt(handle, CURLOPT_CONNECTTIMEOUT, 10L));
 
+  /* error if download is stalled for 10 minutes (prevent CI hangs) */
+  assert(curl_easy_setopt(handle, CURLOPT_LOW_SPEED_LIMIT, 1L));
+  assert(curl_easy_setopt(handle, CURLOPT_LOW_SPEED_TIME, 600L));
+
   /* needed to start the cookie engine */
   assert(curl_easy_setopt(handle, CURLOPT_COOKIEFILE, ""));
   assert(curl_easy_setopt(handle, CURLOPT_FILETIME, 1L));

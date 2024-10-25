@@ -2,6 +2,7 @@
  - New parse_url() function to expose curl URL parsing interface.
  - Workaround for bug in libcurl < 8.8.0, do not use shared connection pool
    for FTP requests on these libcurl versions.
+ - Default behavior is now to error if a download is stalled for 600 seconds
  - The MacOS binary packages now require at least libcurl 7.80 which is included
    with all current MacOS versions (13+) as well as recent patch releases for
    legacy MacOS versions (11.7 and 12.7).
