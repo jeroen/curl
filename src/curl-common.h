@@ -96,11 +96,5 @@ SEXP reflist_remove(SEXP x, SEXP target);
 
 /* Workaround for CRAN using outdated MacOS11 SDK */
 #if defined(__APPLE__) && !defined(HAS_CURL_EASY_OPTION) && defined(ENABLE_ALL_FEATURES)
-#include "libcurl-options-polyfill.h"
-const char *curl_url_strerror(CURLUcode);
-#define CURLINFO_EFFECTIVE_METHOD CURLINFO_STRING + 58
-#define CURL_HTTP_VERSION_3 30
-#define HAS_CURL_EASY_OPTION 1
-#define HAS_CURL_PARSER_STRERROR 1
-#define HAS_CURLINFO_EFFECTIVE_METHOD
+#include "macos-polyfill.h"
 #endif
