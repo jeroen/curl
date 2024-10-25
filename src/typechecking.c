@@ -1,15 +1,5 @@
 #include "curl-common.h"
 
-int r_curl_ignore_option(CURLoption x){
-  switch (x) {
-  case CURLOPT_POSTFIELDSIZE:
-  case CURLOPT_POSTFIELDSIZE_LARGE:
-    return 1;
-  default:
-    return 0;
-  }
-}
-
 #ifdef HAS_CURL_EASY_OPTION
 
 int r_curl_is_string_option(CURLoption x){
