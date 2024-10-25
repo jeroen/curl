@@ -21,7 +21,7 @@ extern int r_curl_ignore_option(CURLoption x);
 #define HAS_CURLOPT_EXPECT_100_TIMEOUT_MS 1
 #endif
 
-int total_handles = 0;
+static int total_handles = 0;
 
 void clean_handle(reference *ref){
   if(ref->refCount == 0){
@@ -54,7 +54,7 @@ static void fin_handle(SEXP ptr){
 }
 
 /* the default readfunc os fread which can cause R to freeze */
-size_t dummy_read(char *buffer, size_t size, size_t nitems, void *instream){
+static size_t dummy_read(char *buffer, size_t size, size_t nitems, void *instream){
   return 0;
 }
 
@@ -367,7 +367,7 @@ SEXP R_handle_setform(SEXP ptr, SEXP form){
   return Rf_ScalarLogical(1);
 }
 
-SEXP make_timevec(CURL *handle){
+static SEXP make_timevec(CURL *handle){
   double time_redirect, time_lookup, time_connect, time_pre, time_start, time_total;
   assert(curl_easy_getinfo(handle, CURLINFO_REDIRECT_TIME, &time_redirect));
   assert(curl_easy_getinfo(handle, CURLINFO_NAMELOOKUP_TIME, &time_lookup));
@@ -397,7 +397,7 @@ SEXP make_timevec(CURL *handle){
 }
 
 /* Extract current cookies (state) from handle */
-SEXP make_cookievec(CURL *handle){
+static SEXP make_cookievec(CURL *handle){
   /* linked list of strings */
   struct curl_slist *cookies;
   assert(curl_easy_getinfo(handle, CURLINFO_COOKIELIST, &cookies));
@@ -406,25 +406,37 @@ SEXP make_cookievec(CURL *handle){
   return out;
 }
 
-SEXP make_status(CURL *handle){
+static SEXP make_info_integer(CURL *handle, CURLINFO info){
   long res_status;
-  assert(curl_easy_getinfo(handle, CURLINFO_RESPONSE_CODE, &res_status));
+  assert(curl_easy_getinfo(handle, info, &res_status));
   return Rf_ScalarInteger(res_status);
 }
 
-SEXP make_ctype(CURL *handle){
-  char * ct;
-  assert(curl_easy_getinfo(handle, CURLINFO_CONTENT_TYPE, &ct));
-  return make_string(ct);
+static SEXP make_info_string(CURL *handle, CURLINFO info){
+  char *res_url = NULL;
+  assert(curl_easy_getinfo(handle, info, &res_url));
+  return make_string(res_url);
 }
 
-SEXP make_url(CURL *handle){
-  char *res_url;
-  assert(curl_easy_getinfo(handle, CURLINFO_EFFECTIVE_URL, &res_url));
-  return Rf_ScalarString(Rf_mkCharCE(res_url, CE_UTF8));
+static SEXP make_info_http_version(CURL * handle){
+  long res = 0;
+  assert(curl_easy_getinfo(handle, CURLINFO_HTTP_VERSION, &res));
+  switch (res) {
+  case CURL_HTTP_VERSION_1_0:
+  case CURL_HTTP_VERSION_1_1:
+    return Rf_ScalarInteger(1);
+  case CURL_HTTP_VERSION_2_0:
+    return Rf_ScalarInteger(2);
+#if AT_LEAST_CURL(7, 66)
+  case CURL_HTTP_VERSION_3:
+    return Rf_ScalarInteger(3);
+#endif
+  default:
+    return Rf_ScalarInteger(NA_INTEGER);
+  }
 }
 
-SEXP make_filetime(CURL *handle){
+static SEXP make_filetime(CURL *handle){
   long filetime;
   assert(curl_easy_getinfo(handle, CURLINFO_FILETIME, &filetime));
   if(filetime < 0){
@@ -441,7 +453,7 @@ SEXP make_filetime(CURL *handle){
   return out;
 }
 
-SEXP make_rawvec(unsigned char *ptr, size_t size){
+static SEXP make_rawvec(unsigned char *ptr, size_t size){
   SEXP out = PROTECT(Rf_allocVector(RAWSXP, size));
   if(size > 0)
     memcpy(RAW(out), ptr, size);
@@ -449,15 +461,18 @@ SEXP make_rawvec(unsigned char *ptr, size_t size){
   return out;
 }
 
-SEXP make_namesvec(void){
-  SEXP names = PROTECT(Rf_allocVector(STRSXP, 7));
+static SEXP make_namesvec(void){
+  SEXP names = PROTECT(Rf_allocVector(STRSXP, 10));
   SET_STRING_ELT(names, 0, Rf_mkChar("url"));
   SET_STRING_ELT(names, 1, Rf_mkChar("status_code"));
   SET_STRING_ELT(names, 2, Rf_mkChar("type"));
   SET_STRING_ELT(names, 3, Rf_mkChar("headers"));
   SET_STRING_ELT(names, 4, Rf_mkChar("modified"));
   SET_STRING_ELT(names, 5, Rf_mkChar("times"));
-  SET_STRING_ELT(names, 6, Rf_mkChar("content"));
+  SET_STRING_ELT(names, 6, Rf_mkChar("scheme"));
+  SET_STRING_ELT(names, 7, Rf_mkChar("http_version"));
+  SET_STRING_ELT(names, 8, Rf_mkChar("method"));
+  SET_STRING_ELT(names, 9, Rf_mkChar("content"));
   UNPROTECT(1);
   return names;
 }
@@ -468,14 +483,19 @@ SEXP R_get_handle_cookies(SEXP ptr){
 
 SEXP make_handle_response(reference *ref){
   CURL *handle = ref->handle;
-  SEXP res = PROTECT(Rf_allocVector(VECSXP, 7));
-  SET_VECTOR_ELT(res, 0, make_url(handle));
-  SET_VECTOR_ELT(res, 1, make_status(handle));
-  SET_VECTOR_ELT(res, 2, make_ctype(handle));
+  SEXP res = PROTECT(Rf_allocVector(VECSXP, 10));
+  SET_VECTOR_ELT(res, 0, make_info_string(handle, CURLINFO_EFFECTIVE_URL));
+  SET_VECTOR_ELT(res, 1, make_info_integer(handle, CURLINFO_RESPONSE_CODE));
+  SET_VECTOR_ELT(res, 2, make_info_string(handle, CURLINFO_CONTENT_TYPE));
   SET_VECTOR_ELT(res, 3, make_rawvec(ref->resheaders.buf, ref->resheaders.size));
   SET_VECTOR_ELT(res, 4, make_filetime(handle));
   SET_VECTOR_ELT(res, 5, make_timevec(handle));
-  SET_VECTOR_ELT(res, 6, R_NilValue);
+  SET_VECTOR_ELT(res, 6, make_info_string(handle, CURLINFO_SCHEME));
+  SET_VECTOR_ELT(res, 7, make_info_http_version(handle));
+#ifdef HAS_CURLINFO_EFFECTIVE_METHOD
+  SET_VECTOR_ELT(res, 8, make_info_string(handle, CURLINFO_EFFECTIVE_METHOD));
+#endif
+  SET_VECTOR_ELT(res, 9, R_NilValue);
   Rf_setAttrib(res, R_NamesSymbol, make_namesvec());
   UNPROTECT(1);
   return res;

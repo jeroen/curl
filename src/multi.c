@@ -148,7 +148,7 @@ SEXP R_multi_run(SEXP pool_ptr, SEXP timeout, SEXP max){
           if(Rf_isFunction(cb_complete)){
             int arglen = Rf_length(FORMALS(cb_complete));
             SEXP out = PROTECT(make_handle_response(ref));
-            SET_VECTOR_ELT(out, 6, buf);
+            SET_VECTOR_ELT(out, 9, buf);
             SEXP call = PROTECT(Rf_lcons(cb_complete, arglen ? Rf_lcons(out, R_NilValue) : R_NilValue));
             //R_tryEval(call, R_GlobalEnv, &cbfail);
             Rf_eval(call, R_GlobalEnv); //OK to error here

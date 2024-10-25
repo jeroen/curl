@@ -24,6 +24,10 @@
 #define HAS_CURL_PARSER 1
 #endif
 
+#if AT_LEAST_CURL(7, 72)
+#define HAS_CURLINFO_EFFECTIVE_METHOD 1
+#endif
+
 #if AT_LEAST_CURL(7, 73)
 #define HAS_CURL_EASY_OPTION 1
 #endif
@@ -94,6 +98,9 @@ SEXP reflist_remove(SEXP x, SEXP target);
 #if defined(__APPLE__) && !defined(HAS_CURL_EASY_OPTION) && defined(ENABLE_ALL_FEATURES)
 #include "libcurl-options-polyfill.h"
 const char *curl_url_strerror(CURLUcode);
+#define CURLINFO_EFFECTIVE_METHOD CURLINFO_STRING + 58
+#define CURL_HTTP_VERSION_3 30
 #define HAS_CURL_EASY_OPTION 1
 #define HAS_CURL_PARSER_STRERROR 1
+#define HAS_CURLINFO_EFFECTIVE_METHOD
 #endif
