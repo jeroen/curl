@@ -1,12 +1,12 @@
 #' Normalizing URL parser
 #'
 #' Interfaces the libcurl [URL parser](https://curl.se/libcurl/c/libcurl-url.html).
-#' URLs are automatically normalized, for example for input that is url-encoded or
-#' contains paths with `../`, see examples.
-#' When parsing hyperlinks inside a HTML document, it is possible to set `baseurl`
-#' to the location of the document such that relative links can be resolved.
+#' URLs are automatically normalized where possible, such as in the case of
+#' relative paths or url-encoded queries (see examples).
+#' When parsing hyperlinks from a HTML document, it is possible to set `baseurl`
+#' to the location of the document itself such that relative links can be resolved.
 #'
-#' A valid URL requires at least a scheme and a host, other parts are optional.
+#' A valid URL contains at least a scheme and a host, other pieces are optional.
 #' If these are missing, the parser raises an error. Otherwise it returns
 #' a list with the following elements:
 #'  - *url*: the normalized input URL
@@ -41,10 +41,10 @@
 #'
 #' @export
 #' @param url a character string of length one
-#' @param baseurl if url is a relative path, this url is used as the parent.
-#' @param decode return [url-decoded][curl_escape] results.
-#' Set to `FALSE` to get results in url-encoded format.
-#' @param params parse individual parameters from query in `application/x-www-form-urlencoded` format.
+#' @param baseurl use this as the parent if `url` may be a relative path
+#' @param decode automatically [url-decode][curl_escape] output.
+#' Set to `FALSE` to get output in url-encoded format.
+#' @param params parse individual parameters assuming query is in `application/x-www-form-urlencoded` format.
 #' @useDynLib curl R_parse_url
 #' @examples
 #' url <- "https://jerry:secret@google.com:888/foo/bar?test=123#bla"
@@ -65,6 +65,7 @@
 #' curl_parse_url(url1, decode = FALSE)$path
 curl_parse_url <- function(url, baseurl = NULL, decode = TRUE, params = TRUE){
   stopifnot(is.character(url))
+  stopifnot(length(url) == 1)
   baseurl < as.character(baseurl)
   result <- .Call(R_parse_url, url, baseurl)
   if(inherits(result, 'ada')){

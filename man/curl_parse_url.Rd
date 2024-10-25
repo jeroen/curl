@@ -9,22 +9,22 @@ curl_parse_url(url, baseurl = NULL, decode = TRUE, params = TRUE)
 \arguments{
 \item{url}{a character string of length one}
 
-\item{baseurl}{if url is a relative path, this url is used as the parent.}
+\item{baseurl}{use this as the parent if \code{url} may be a relative path}
 
-\item{decode}{return \link[=curl_escape]{url-decoded} results.
-Set to \code{FALSE} to get results in url-encoded format.}
+\item{decode}{automatically \link[=curl_escape]{url-decode} output.
+Set to \code{FALSE} to get output in url-encoded format.}
 
-\item{params}{parse individual parameters from query in \code{application/x-www-form-urlencoded} format.}
+\item{params}{parse individual parameters assuming query is in \code{application/x-www-form-urlencoded} format.}
 }
 \description{
 Interfaces the libcurl \href{https://curl.se/libcurl/c/libcurl-url.html}{URL parser}.
-URLs are automatically normalized, for example for input that is url-encoded or
-contains paths with \verb{../}, see examples.
-When parsing hyperlinks inside a HTML document, it is possible to set \code{baseurl}
-to the location of the document such that relative links can be resolved.
+URLs are automatically normalized where possible, such as in the case of
+relative paths or url-encoded queries (see examples).
+When parsing hyperlinks from a HTML document, it is possible to set \code{baseurl}
+to the location of the document itself such that relative links can be resolved.
 }
 \details{
-A valid URL requires at least a scheme and a host, other parts are optional.
+A valid URL contains at least a scheme and a host, other pieces are optional.
 If these are missing, the parser raises an error. Otherwise it returns
 a list with the following elements:
 \itemize{

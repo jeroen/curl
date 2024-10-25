@@ -28,7 +28,7 @@ curl_fetch_echo(url, handle = new_handle())
 \arguments{
 \item{url}{A character string naming the URL of a resource to be downloaded.}
 
-\item{handle}{a curl handle object}
+\item{handle}{A curl handle object.}
 
 \item{path}{Path to save results}
 
@@ -52,28 +52,30 @@ the \code{done} callback (which is usually what you want).}
 }
 \description{
 Low-level bindings to write data from a URL into memory, disk or a callback
-function. These are mainly intended for \code{httr}, most users will be better
-off using the \code{\link{curl}} or \code{\link{curl_download}} function, or the
-http specific wrappers in the \code{httr} package.
+function. These are mainly intended for \link[httr:httr]{httr}, most users will be
+better off using the \code{\link[=curl]{curl()}} or
+\code{\link[=curl_download]{curl_download()}} functions, or the HTTP-specific
+wrappers in the \href{https://httr.r-lib.org/}{httr} package.
 }
 \details{
-The curl_fetch functions automatically raise an error upon protocol problems
-(network, disk, ssl) but do not implement application logic. For example for
-you need to check the status code of http requests yourself in the response,
+The \verb{curl_fetch_*()} functions automatically raise an error upon protocol problems
+(network, disk, TLS, etc.) but do not implement application logic. For example,
+you need to check the status code of HTTP requests in the response by yourself,
 and deal with it accordingly.
 
-Both \code{curl_fetch_memory} and \code{curl_fetch_disk} have a blocking and
+Both \code{curl_fetch_memory()} and \code{curl_fetch_disk} have a blocking and a
 non-blocking C implementation. The latter is slightly slower but allows for
 interrupting the download prematurely (using e.g. CTRL+C or ESC). Interrupting
 is enabled when R runs in interactive mode or when
 \code{getOption("curl_interrupt") == TRUE}.
 
-The \code{curl_fetch_multi} function is the asynchronous equivalent of
-\code{curl_fetch_memory}. It wraps \code{multi_add} to schedule requests which
-are executed concurrently when calling \code{multi_run}. For each successful
-request the \code{done} callback is triggered with response data. For failed
-requests (when \code{curl_fetch_memory} would raise an error), the \code{fail}
-function is triggered with the error message.
+The \code{curl_fetch_multi()} function is the asynchronous equivalent of
+\code{curl_fetch_memory()}. It wraps \code{\link[=multi_add]{multi_add()}} to
+schedule requests which are executed concurrently when calling
+\code{\link[=multi_run]{multi_run()}}\code{}. For each successful request, the
+\code{done} callback is triggered with response data. For failed requests
+(when \code{curl_fetch_memory()} would raise an error), the \code{fail} function
+is triggered with the error message.
 }
 \examples{
 \donttest{
