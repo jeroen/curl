@@ -2,84 +2,30 @@
 
 > A Modern and Flexible Web Client for R
 
-[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/curl)](https://cran.r-project.org/package=curl)
-[![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/curl)](https://cran.r-project.org/package=curl)
+[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/curl)](https://cran.r-project.org/package=curl)
+[![CRAN RStudio mirror downloads](https://cranlogs.r-pkg.org/badges/curl)](https://cran.r-project.org/package=curl)
 
-The curl() and curl_download() functions provide highly
-configurable drop-in replacements for base url() and download.file() with
-better performance, support for encryption (https, ftps), gzip compression,
-authentication, and other libcurl goodies. The core of the package implements a
-framework for performing fully customized requests where data can be processed
-either in memory, on disk, or streaming via the callback or connection
-interfaces. Some knowledge of libcurl is recommended; for a more-user-friendly
-web client see the 'httr' package which builds on this package with http
-specific tools and logic.
-
-## Documentation
-
-About the R package:
-
- - Vignette: [curl: A Modern and Flexible Web Client for R](https://cran.r-project.org/web/packages/curl/vignettes/intro.html)
-
-Other resources:
-
- - [libcurl handle options overview](https://curl.se/libcurl/c/curl_easy_setopt.html) (use with `handle_setopt` in R)
-
-## Hello World
-
-There are three download interfaces (memory, disk and streaming). Always start by setting up a request handle:
-
-```r
-library(curl)
-h <- new_handle(copypostfields = "moo=moomooo")
-handle_setheaders(h,
-  "Content-Type" = "text/moo",
-  "Cache-Control" = "no-cache",
-  "User-Agent" = "A cow"
-)
-```
-
-Perform request and download response in memory:
-
-```r
-# Perform the request
-req <- curl_fetch_memory("http://httpbin.org/post", handle = h)
-
-# Show some outputs
-parse_headers(req$headers)
-cat(rawToChar(req$content))
-str(req)
-```
-
-Or alternatively, write response to disk:
-
-```r
-tmp <- tempfile()
-curl_download("https://httpbin.org/post", tmp, handle = h)
-readLines(tmp)
-```
-
-Or stream response via Connection interface:
-
-```r
-con <- curl("https://httpbin.org/post", handle = h)
-open(con)
-
-# Get 3 lines
-readLines(con, n = 3)
-
-# Get remaining lines and close connection
-readLines(con)
-close(con)
-```
+Bindings to [libcurl](https://curl.se/libcurl/) for performing fully
+customizable HTTP/FTP/SCP requests where responses can be processed either in
+memory, on disk, or streaming via the callback or connection interfaces. Some 
+knowledge of 'libcurl' is recommended; for a more-user-friendly web client see
+the 'httr2' package which builds on this package with http specific tools and logic
 
 ## Installation
 
-Binary packages for __OS-X__ or __Windows__ can be installed directly from CRAN:
+The latest version of the package can be installed from r-universe:
 
 ```r
-install.packages("curl")
+install.packages("curl", repos = "https://jeroen.r-universe.dev")
 ```
+
+Other resources to get started:
+
+ - [Intro vignette](https://cran.r-project.org/web/packages/curl/vignettes/intro.html): *curl - A Modern and Flexible Web Client for R*
+ - [R-universe page](https://jeroen.r-universe.dev/curl) latest development information and resources 
+ - [Libcurl handle options](https://curl.se/libcurl/c/curl_easy_setopt.html): overview of available options in libcurl
+
+## Install from source on Linux / MacOS
 
 Installation from source on Linux requires [`libcurl`](https://curl.se/libcurl/). On __Debian__ or __Ubuntu__ use [libcurl4-openssl-dev](https://packages.debian.org/testing/libcurl4-openssl-dev):
 
@@ -93,30 +39,16 @@ On __Fedora__, __CentOS or RHEL__ use [libcurl-devel](https://src.fedoraproject.
 sudo yum install libcurl-devel
 ````
 
-### MacOS using curl from homebrew
-
-On __MacOS__ libcurl is included with the system, so usually nothing extra is needed. However if you want to build against the very most recent version of libcurl, which also has many extra features enabled (sftp, http2), install [curl from homebrew](https://github.com/Homebrew/homebrew-core/blob/master/Formula/curl.rb) and then recompile the R package.
+On __MacOS__ libcurl is included with the system, so usually nothing extra is needed. However if you want to test using the very most recent version of libcurl you can install [curl from homebrew](https://github.com/Homebrew/homebrew-core/blob/master/Formula/c/curl.rb) and then recompile the R package:
 
 
-```
+```sh
 brew install curl pkg-config
 ```
 
 You need to set the `PKG_CONFIG_PATH` environment variable to help R find the non-default curl, when building from source. Run this in a __clean R session__ which does not have the curl package loaded already:
 
 ```r
-Sys.setenv(PKG_CONFIG_PATH="/usr/local/opt/curl/lib/pkgconfig")
+Sys.setenv(PKG_CONFIG_PATH="/opt/homebrew/opt/curl/lib/pkgconfig:/usr/local/opt/curl/lib/pkgconfig")
 install.packages("curl", type = "source")
 ```
-
-Afterwards confirm the version using `curl::curl_version()`.
-
-## Development version
-
-Because `devtools` and `httr` depend on `curl`, installing with `install_github` does not work well. The easiest way to install the development version of `curl` is a clean R session:
-
-```r
-install.packages("https://github.com/jeroen/curl/archive/master.tar.gz", repos = NULL)
-```
-
-Of course windows users need [Rtools](https://cran.r-project.org/bin/windows/Rtools/) to compile from source.
