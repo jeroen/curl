@@ -6,7 +6,6 @@
 \alias{handle_setopt}
 \alias{handle_setheaders}
 \alias{handle_getheaders}
-\alias{handle_getcustom}
 \alias{handle_setform}
 \alias{handle_reset}
 \alias{handle_data}
@@ -19,8 +18,6 @@ handle_setopt(handle, ..., .list = list())
 handle_setheaders(handle, ..., .list = list())
 
 handle_getheaders(handle)
-
-handle_getcustom(handle)
 
 handle_setform(handle, ..., .list = list())
 

@@ -94,7 +94,6 @@ handle_getheaders <- function(handle){
 }
 
 #' @useDynLib curl R_handle_getcustom
-#' @rdname handle
 handle_getcustom <- function(handle){
   stopifnot(inherits(handle, "curl_handle"))
   .Call(R_handle_getcustom, handle)
