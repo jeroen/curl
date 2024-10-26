@@ -37,6 +37,8 @@ download, and raises an error when status is non-successful. The behavior of
 \code{curl_fetch_disk} on the other hand is to proceed as normal and write
 the error page to disk in case of a non success response.
 
+The \code{curl_download} function does support resuming and removes the temporary
+file if the download did not complete successfully.
 For a more advanced download interface which supports concurrent requests and
 resuming large files, have a look at the \link{multi_download} function.
 }
