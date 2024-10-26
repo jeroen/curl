@@ -211,7 +211,7 @@ SEXP R_new_handle(void){
   ref->handle = curl_easy_init();
   total_handles++;
   set_handle_defaults(ref);
-  SEXP prot = PROTECT(Rf_allocVector(VECSXP, 7)); //for protecting callback functions
+  SEXP prot = PROTECT(Rf_allocVector(VECSXP, 8)); //for protecting callback functions
   SEXP ptr = PROTECT(R_MakeExternalPtr(ref, R_NilValue, prot));
   R_RegisterCFinalizerEx(ptr, fin_handle, TRUE);
   Rf_setAttrib(ptr, R_ClassSymbol, Rf_mkString("curl_handle"));
@@ -332,12 +332,13 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
         Rf_error("Value for option %s (%d) must be a number.", optname, key);
       set_option(handle, key, (curl_off_t) Rf_asReal(val), optname);
     } else if(r_curl_is_postfields_option(key) || r_curl_is_string_option(key)){
-      if(key == CURLOPT_POSTFIELDS){
-        key = CURLOPT_COPYPOSTFIELDS;
+      if(r_curl_is_postfields_option(key)){
+        key = CURLOPT_POSTFIELDS; //avoid bug #313
+        SET_VECTOR_ELT(prot, 7, val);
       }
       switch (TYPEOF(val)) {
       case RAWSXP:
-        if(key == CURLOPT_COPYPOSTFIELDS)
+        if(key == CURLOPT_POSTFIELDS)
           set_option(handle, CURLOPT_POSTFIELDSIZE_LARGE, (curl_off_t) Rf_length(val), optname);
         set_option(handle, key, RAW(val), optname);
         break;
