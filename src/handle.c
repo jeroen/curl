@@ -339,7 +339,7 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
       switch (TYPEOF(val)) {
       case RAWSXP:
         if(key == CURLOPT_POSTFIELDS)
-          set_option(handle, CURLOPT_POSTFIELDSIZE_LARGE, (curl_off_t) Rf_length(val), optname);
+          set_option(handle, CURLOPT_POSTFIELDSIZE_LARGE, (curl_off_t) Rf_xlength(val), optname);
         set_option(handle, key, RAW(val), optname);
         break;
       case STRSXP:
