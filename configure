@@ -13,7 +13,7 @@ PKG_TEST_HEADER="<curl/curl.h>"
 PKG_LIBS="-lcurl"
 PKG_CFLAGS=""
 
-# export PKG_CONFIG_PATH="/usr/local/opt/curl/lib/pkgconfig"
+export PKG_CONFIG_PATH="/opt/homebrew/opt/curl/lib/pkgconfig"
 
 # Use pkg-config if available
 pkg-config --version >/dev/null 2>&1
