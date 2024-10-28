@@ -10,7 +10,7 @@
 #' of the HTTP status code). If it failed, e.g. due to a networking issue, the error
 #' message is in the `error` column. A `success` value `NA` indicates that the request
 #' was still in progress when the function was interrupted or reached the elapsed
-#' `timeout` and perhaps the download can be resumed if the server supports it.
+#' `multi_timeout` and perhaps the download can be resumed if the server supports it.
 #'
 #' It is also important to inspect the `status_code` column to see if any of the
 #' requests were successful but had a non-success HTTP code, and hence the downloaded
@@ -66,7 +66,7 @@
 #' or `NULL` to use [basename] of urls.
 #' @param resume if the file already exists, resume the download. Note that this may
 #' change server responses, see details.
-#' @param timeout in seconds, passed to [multi_run]
+#' @param multi_timeout in seconds, passed to [multi_run]
 #' @param progress print download progress information
 #' @param multiplex passed to [new_pool]
 #' @param ... extra handle options passed to each request [new_handle]
@@ -101,7 +101,7 @@
 #'
 #' }
 multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = TRUE,
-                           timeout = Inf, multiplex = FALSE, ...){
+                           multi_timeout = Inf, multiplex = FALSE, ...){
   urls <- enc2utf8(urls)
   if(is.null(destfiles)){
     destfiles <- basename(sub("[?#].*", "", urls))
@@ -170,7 +170,7 @@ multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = TR
     writer(raw(0), close = TRUE)
   }))
   tryCatch({
-    multi_run(timeout = timeout, pool = pool)
+    multi_run(timeout = multi_timeout, pool = pool)
     if(isTRUE(progress)){
       print_progress(success, total, sum(dlspeed), sum(expected), TRUE)
     }
