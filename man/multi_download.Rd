@@ -15,7 +15,8 @@ multi_download(
 )
 }
 \arguments{
-\item{urls}{vector with files to download}
+\item{urls}{vector with URLs to download. Alternatively it may also be a
+list of \link[=new_handle]{handle} objects that have the \code{url} option already set.}
 
 \item{destfiles}{vector (of equal length as \code{urls}) with paths of output files,
 or \code{NULL} to use \link{basename} of urls.}

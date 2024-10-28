@@ -61,7 +61,8 @@
 #'  - `headers` vector with http response headers for the request.
 #'
 #' @export
-#' @param urls vector with files to download
+#' @param urls vector with URLs to download. Alternatively it may also be a
+#' list of [handle][new_handle] objects that have the `url` option already set.
 #' @param destfiles vector (of equal length as `urls`) with paths of output files,
 #' or `NULL` to use [basename] of urls.
 #' @param resume if the file already exists, resume the download. Note that this may
@@ -102,9 +103,13 @@
 #' }
 multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = TRUE,
                            multi_timeout = Inf, multiplex = FALSE, ...){
-  urls <- enc2utf8(urls)
+  if(inherits(urls, 'curl_handle'))
+    urls <- list(urls)
+  if(!is.character(urls) && !is.list(urls))
+    stop("Argument 'urls' must be a character vector or list of handles")
+  handles <- lapply(urls, make_one_handle)
   if(is.null(destfiles)){
-    destfiles <- basename(sub("[?#].*", "", urls))
+    destfiles <- vapply(handles, guess_handle_filename, character(1))
   }
   dupes <- setdiff(destfiles[duplicated(destfiles)], c("/dev/null", "NUL"))
   if(length(dupes)){
@@ -112,7 +117,6 @@ multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = TR
   }
   stopifnot(length(urls) == length(destfiles))
   destfiles <- normalizePath(destfiles, mustWork = FALSE)
-  handles <- rep(list(NULL), length(urls))
   writers <- rep(list(NULL), length(urls))
   errors <- rep(NA_character_, length(urls))
   success <- rep(NA, length(urls))
@@ -123,8 +127,8 @@ multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = TR
   total <- 0
   lapply(seq_along(urls), function(i){
     dest <- destfiles[i]
-    handle <- new_handle(url = urls[i], ...)
-    handle_setopt(handle, noprogress = TRUE)
+    handle <- handles[[i]]
+    handle_setopt(handle, ..., noprogress = TRUE)
     if(isTRUE(resume) && file.exists(dest)){
       startsize <- file.info(dest)$size
       handle_setopt(handle, resume_from_large = startsize)
@@ -159,7 +163,6 @@ multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = TR
       errors[i] <<- err
       dlspeed[i] <<- 0
     })
-    handles[[i]] <<- handle
     writers[[i]] <<- writer
     if(isTRUE(progress) && (i %% 100 == 0)){
       print_stream("\rPreparing request %d of %d...", i, length(urls))
@@ -193,6 +196,28 @@ multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = TR
   results$headers <- lapply(out, function(x){parse_headers(x$headers)})
   class(results) <- c("tbl_df", "tbl", "data.frame")
   results
+}
+
+make_one_handle <- function(url_or_handle){
+  if(inherits(url_or_handle, 'curl_handle')){
+    handle <- url_or_handle
+    url <- handle_data(handle)$url
+    if(is.na(url) || identical(url, ""))
+      stop("Handle passed to multi_download() but has no URL set")
+    return(handle)
+  }
+  if(is.character(url_or_handle)){
+    return(new_handle(url = url_or_handle))
+  }
+  stop("Argument urls does not contain url or curl handle")
+}
+
+guess_handle_filename <- function(handle){
+  url <- handle_data(handle)$url
+  destfile <- basename(curl_parse_url(url)$path)
+  if(!length(destfile) || is.na(destfile) || !nchar(destfile))
+    stop("Failed to guess filename for: ", url)
+  destfile
 }
 
 # Print at most 10x per second in interactive, and once per sec in batch/CI

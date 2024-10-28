@@ -1,5 +1,17 @@
 context("Multi download")
 
+test_that("Support preconfigured handles", {
+  expect_error(multi_download(new_handle()), 'no URL')
+  expect_error(multi_download(new_handle(url = 'https://www.google.com')), 'filename')
+  h1 <- new_handle(url = httpbin("html"))
+  h2 <- new_handle(url = httpbin("robots.txt"))
+  df <- multi_download(c(h1, h2), progress = FALSE)
+  expect_equal(df$destfile, normalizePath(c('html', 'robots.txt')))
+  expect_equal(df$status_code, c(200, 200))
+  unlink(c('html', 'robots.txt'))
+})
+
+
 test_that("Stress test multi_download", {
   skip_on_cran()
   mirror <- 'https://cloud.r-project.org'
