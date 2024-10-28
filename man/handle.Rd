@@ -27,8 +27,8 @@ handle_data(handle)
 }
 \arguments{
 \item{...}{named options / headers to be set in the handle.
-To send a file, see \code{\link{form_file}}. To list all allowed options,
-see \code{\link{curl_options}}}
+To send a file, see \code{\link[=form_file]{form_file()}}. To list all allowed options,
+see \code{\link[=curl_options]{curl_options()}}}
 
 \item{handle}{Handle to modify}
 
@@ -43,8 +43,8 @@ so you can create a pipeline of operations.
 \description{
 Handles are the work horses of libcurl. A handle is used to configure a
 request with custom options, headers and payload. Once the handle has been
-set up, it can be passed to any of the download functions such as \code{\link{curl}}
-,\code{\link{curl_download}} or \code{\link{curl_fetch_memory}}. The handle will maintain
+set up, it can be passed to any of the download functions such as \code{\link[=curl]{curl()}}
+,\code{\link[=curl_download]{curl_download()}} or \code{\link[=curl_fetch_memory]{curl_fetch_memory()}}. The handle will maintain
 state in between requests, including keep-alive connections, cookies and
 settings.
 }

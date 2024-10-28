@@ -27,8 +27,8 @@ Path of downloaded file (invisibly).
 \description{
 Libcurl implementation of \code{C_download} (the "internal" download method)
 with added support for https, ftps, gzip, etc. Default behavior is identical
-to \code{\link{download.file}}, but request can be fully configured by passing
-a custom \code{\link{handle}}.
+to \code{\link[=download.file]{download.file()}}, but request can be fully configured by passing
+a custom \code{\link[=handle]{handle()}}.
 }
 \details{
 The main difference between \code{curl_download} and \code{curl_fetch_disk}

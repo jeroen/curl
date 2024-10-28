@@ -18,8 +18,8 @@ curl_version <- function(){
 #' Parse date/time
 #'
 #' Can be used to parse dates appearing in http response headers such
-#' as \code{Expires} or \code{Last-Modified}. Automatically recognizes
-#' most common formats. If the format is known, \code{\link{strptime}}
+#' as `Expires` or `Last-Modified`. Automatically recognizes
+#' most common formats. If the format is known, [strptime()]
 #' might be easier.
 #'
 #' @param datestring a string consisting of a timestamp

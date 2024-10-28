@@ -12,7 +12,7 @@ parse_date(datestring)
 \description{
 Can be used to parse dates appearing in http response headers such
 as \code{Expires} or \code{Last-Modified}. Automatically recognizes
-most common formats. If the format is known, \code{\link{strptime}}
+most common formats. If the format is known, \code{\link[=strptime]{strptime()}}
 might be easier.
 }
 \examples{

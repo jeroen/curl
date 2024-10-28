@@ -9,18 +9,18 @@ curl_upload(file, url, verbose = TRUE, reuse = TRUE, ...)
 \arguments{
 \item{file}{connection object or path to an existing file on disk}
 
-\item{url}{where to upload, should start with e.g. \code{ftp://}}
+\item{url}{where to upload, should start with e.g. \verb{ftp://}}
 
 \item{verbose}{emit some progress output}
 
 \item{reuse}{try to keep alive and recycle connections when possible}
 
-\item{...}{other arguments passed to \code{\link{handle_setopt}}, for
+\item{...}{other arguments passed to \code{\link[=handle_setopt]{handle_setopt()}}, for
 example a \code{username} and \code{password}.}
 }
 \description{
-Upload a file to an \code{http://}, \code{ftp://}, or \code{sftp://} (ssh)
-server. Uploading to HTTP means performing an \code{HTTP PUT} on that URL.
+Upload a file to an \verb{http://}, \verb{ftp://}, or \verb{sftp://} (ssh)
+server. Uploading to HTTP means performing an \verb{HTTP PUT} on that URL.
 Be aware that sftp is only available for libcurl clients built with libssh2.
 }
 \examples{

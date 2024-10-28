@@ -24,7 +24,7 @@ these go into the \code{message} headers.}
 message, including sender/recipient/subject headers. See example.}
 
 \item{smtp_server}{hostname or address of the SMTP server, or, an
-\code{smtp://} or \code{smtps://} URL. See "Specifying the server, port,
+\verb{smtp://} or \verb{smtps://} URL. See "Specifying the server, port,
 and protocol" below.}
 
 \item{use_ssl}{Request to upgrade the connection to SSL using the STARTTLS command,
@@ -33,7 +33,7 @@ for details. Default will try to SSL, proceed as normal otherwise.}
 
 \item{verbose}{print output}
 
-\item{...}{other options passed to \code{\link{handle_setopt}}. In most cases
+\item{...}{other options passed to \code{\link[=handle_setopt]{handle_setopt()}}. In most cases
 you will need to set a \code{username} and \code{password} or \code{login_options}
 to authenticate with the SMTP server, see details.}
 }
@@ -50,12 +50,12 @@ The \code{smtp_server} argument takes a hostname, or an SMTP URL:
 \itemize{
 \item \code{mail.example.com} - hostname only
 \item \code{mail.example.com:587} - hostname and port
-\item \code{smtp://mail.example.com} - protocol and hostname
-\item \code{smtp://mail.example.com:587} - full SMTP URL
-\item \code{smtps://mail.example.com:465} - full SMTPS URL
+\item \verb{smtp://mail.example.com} - protocol and hostname
+\item \verb{smtp://mail.example.com:587} - full SMTP URL
+\item \verb{smtps://mail.example.com:465} - full SMTPS URL
 }
 
-By default, the port will be 25, unless \code{smtps://} is specified--then
+By default, the port will be 25, unless \verb{smtps://} is specified--then
 the default will be 465 instead.
 
 For internet SMTP servers you probably need to pass a
@@ -75,11 +75,11 @@ Alternatively, a regular insecure smtp connection can be "upgraded" to a
 secure TLS connection using the STARTTLS command. It is important to know
 which method your server expects.
 
-If your smtp server listens on port 465, then use a  \code{smtps://hostname:465}
+If your smtp server listens on port 465, then use a  \verb{smtps://hostname:465}
 URL. The SMTPS protocol \emph{guarantees} that TLS will be used to protect
 all communications from the start.
 
-If your email server listens on port 25 or 587, use an \code{smtp://} URL in
+If your email server listens on port 25 or 587, use an \verb{smtp://} URL in
 combination with the  \code{use_ssl} parameter to control if the connection
 should be upgraded with STARTTLS. The default value \code{"try"} will
 \emph{opportunistically} try to upgrade to a secure connection if the server

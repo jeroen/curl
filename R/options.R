@@ -1,8 +1,8 @@
 #' List curl version and options.
 #'
-#' \code{curl_version()} shows the versions of libcurl, libssl and zlib and
-#' supported protocols. \code{curl_options()} lists all options available in
-#' the current version of libcurl.  The dataset \code{curl_symbols} lists all
+#' `curl_version()` shows the versions of libcurl, libssl and zlib and
+#' supported protocols. `curl_options()` lists all options available in
+#' the current version of libcurl.  The dataset `curl_symbols` lists all
 #' symbols (including options) provides more information about the symbols,
 #' including when support was added/removed from libcurl.
 #'

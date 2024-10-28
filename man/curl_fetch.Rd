@@ -52,10 +52,7 @@ the \code{done} callback (which is usually what you want).}
 }
 \description{
 Low-level bindings to write data from a URL into memory, disk or a callback
-function. These are mainly intended for \link[httr:httr]{httr}, most users will be
-better off using the \code{\link[=curl]{curl()}} or
-\code{\link[=curl_download]{curl_download()}} functions, or the HTTP-specific
-wrappers in the \href{https://httr.r-lib.org/}{httr} package.
+function.
 }
 \details{
 The \verb{curl_fetch_*()} functions automatically raise an error upon protocol problems

@@ -15,15 +15,15 @@ initially. Currently only "r" and "rb" are supported.}
 \item{handle}{a curl handle object}
 }
 \description{
-Drop-in replacement for base \code{\link{url}} that supports https, ftps,
-gzip, deflate, etc. Default behavior is identical to \code{\link{url}}, but
-request can be fully configured by passing a custom \code{\link{handle}}.
+Drop-in replacement for base \code{\link[=url]{url()}} that supports https, ftps,
+gzip, deflate, etc. Default behavior is identical to \code{\link[=url]{url()}}, but
+request can be fully configured by passing a custom \code{\link[=handle]{handle()}}.
 }
 \details{
 As of version 2.3 curl connections support \code{open(con, blocking = FALSE)}.
 In this case \code{readBin} and \code{readLines} will return immediately with data
 that is available without waiting. For such non-blocking connections the caller
-needs to call \code{\link{isIncomplete}} to check if the download has completed
+needs to call \code{\link[=isIncomplete]{isIncomplete()}} to check if the download has completed
 yet.
 }
 \examples{
