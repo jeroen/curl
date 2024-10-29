@@ -38,39 +38,31 @@ void reset_errbuf(reference *ref){
 }
 
 void assert(CURLcode res){
-  if(res != CURLE_OK)
-    Rf_error("%s", curl_easy_strerror(res));
-}
-
-static char * parse_host(const char * input){
-  static char buf[8000] = {0};
-  char *url = buf;
-  strncpy(url, input, 7999);
-
-  char *ptr = NULL;
-  if((ptr = strstr(url, "://")))
-    url = ptr + 3;
-  if((ptr = strchr(url, '/')))
-    *ptr = 0;
-  if((ptr = strchr(url, '#')))
-    *ptr = 0;
-  if((ptr = strchr(url, '?')))
-    *ptr = 0;
-  if((ptr = strchr(url, '@')))
-    url = ptr + 1;
-  return url;
+  if(res == CURLE_OK)
+    return;
+  SEXP code = PROTECT(Rf_ScalarInteger(res));
+  SEXP message = PROTECT(make_string(curl_easy_strerror(res)));
+  SEXP expr = PROTECT(Rf_install("raise_libcurl_error"));
+  SEXP call = PROTECT(Rf_lang3(expr, code, message));
+  Rf_eval(call, R_FindNamespace(Rf_mkString("curl")));
+  UNPROTECT(4);
+  Rf_error("Failed to raise gert S3 error (%s)", curl_easy_strerror(res));
 }
 
 void assert_status(CURLcode res, reference *ref){
-  // Customize better error message for timeoutsS
-  if(res == CURLE_OPERATION_TIMEDOUT || res == CURLE_SSL_CACERT){
-    const char *url = NULL;
-    if(curl_easy_getinfo(ref->handle, CURLINFO_EFFECTIVE_URL, &url) == CURLE_OK){
-      Rf_error("%s: [%s] %s", curl_easy_strerror(res), parse_host(url), ref->errbuf);
-    }
-  }
-  if(res != CURLE_OK)
-    Rf_error("%s", strlen(ref->errbuf) ? ref->errbuf : curl_easy_strerror(res));
+  if(res == CURLE_OK)
+    return;
+  const char *source_url = NULL;
+  curl_easy_getinfo(ref->handle, CURLINFO_EFFECTIVE_URL, &source_url);
+  SEXP url = PROTECT(make_string(source_url));
+  SEXP code = PROTECT(Rf_ScalarInteger(res));
+  SEXP message = PROTECT(make_string(curl_easy_strerror(res)));
+  SEXP errbuf = PROTECT(make_string(ref->errbuf));
+  SEXP expr = PROTECT(Rf_install("raise_libcurl_error"));
+  SEXP call = PROTECT(Rf_lang5(expr, code, message, errbuf, url));
+  Rf_eval(call, R_FindNamespace(Rf_mkString("curl")));
+  UNPROTECT(6);
+  Rf_error("Failed to raise gert S3 error (%s)", curl_easy_strerror(res));
 }
 
 void massert(CURLMcode res){

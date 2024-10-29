@@ -49,3 +49,22 @@ trimws <- function(x) {
 is_string <- function(x){
   is.character(x) && length(x)
 }
+
+# Callback for typed libcurl errors
+raise_libcurl_error <- function(errnum, message, errbuf = NULL, source_url = NULL){
+  error_code <- libcurl_error_codes[errnum]
+  if(length(url)){
+    host <- curl_parse_url(source_url)$host
+    if(length(host) && nchar(host))
+      message <- sprintf('%s [%s]', message, host)
+  }
+  if(length(errbuf) && nchar(errbuf)){
+    message <- sprintf('%s: %s', message, errbuf)
+  }
+  cl <- sys.call(-1)
+  e <- structure(
+    class = c(error_code, "libcurl_error", "error", "condition"),
+    list(message = message, call = cl)
+  )
+  stop(e)
+}
