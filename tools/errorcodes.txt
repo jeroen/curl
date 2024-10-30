@@ -56,7 +56,7 @@ CURLE_TOO_MANY_REDIRECTS,      /* 47 - catch endless re-direct loops */
 CURLE_UNKNOWN_OPTION,          /* 48 - User specified an unknown option */
 CURLE_SETOPT_OPTION_SYNTAX,    /* 49 - Malformed setopt option */
 CURLE_OBSOLETE50,              /* 50 - NOT USED */
-CURLE_OBSOLETE51,              /* 51 - NOT USED */
+CURLE_PEER_FAILED_VERIFICATION,              /* 51 - NOT USED */
 CURLE_GOT_NOTHING,             /* 52 - when this is a specific error */
 CURLE_SSL_ENGINE_NOTFOUND,     /* 53 - SSL crypto engine not found */
 CURLE_SSL_ENGINE_SETFAILED,    /* 54 - can not set SSL crypto engine as
@@ -69,7 +69,7 @@ CURLE_SSL_CIPHER,              /* 59 - could not use specified cipher */
 CURLE_PEER_FAILED_VERIFICATION, /* 60 - peer's certificate or fingerprint
                                    was not verified fine */
 CURLE_BAD_CONTENT_ENCODING,    /* 61 - Unrecognized/bad encoding */
-CURLE_OBSOLETE62,              /* 62 - NOT IN USE since 7.82.0 */
+CURLE_LDAP_INVALID_URL,              /* 62 - NOT IN USE since 7.82.0 */
 CURLE_FILESIZE_EXCEEDED,       /* 63 - Maximum file size exceeded */
 CURLE_USE_SSL_FAILED,          /* 64 - Requested FTP SSL level failed */
 CURLE_SEND_FAIL_REWIND,        /* 65 - Sending the data requires a rewind
@@ -84,8 +84,8 @@ CURLE_TFTP_ILLEGAL,            /* 71 - Illegal TFTP operation */
 CURLE_TFTP_UNKNOWNID,          /* 72 - Unknown transfer ID */
 CURLE_REMOTE_FILE_EXISTS,      /* 73 - File already exists */
 CURLE_TFTP_NOSUCHUSER,         /* 74 - No such user */
-CURLE_OBSOLETE75,              /* 75 - NOT IN USE since 7.82.0 */
-CURLE_OBSOLETE76,              /* 76 - NOT IN USE since 7.82.0 */
+CURLE_CONV_FAILED,              /* 75 - NOT IN USE since 7.82.0 */
+CURLE_CONV_REQD,              /* 76 - NOT IN USE since 7.82.0 */
 CURLE_SSL_CACERT_BADFILE,      /* 77 - could not load CACERT file, missing
                                   or wrong format */
 CURLE_REMOTE_FILE_NOT_FOUND,   /* 78 - remote file not found */
