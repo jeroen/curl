@@ -66,7 +66,9 @@ fi
 
 # On curl < 7.62 (RHEL-8) enable the fallback
 #TEST_ADA_PARSER=1
-if [ "$TEST_ADA_PARSER" ] || ! ${R_HOME}/bin/Rscript --vanilla tools/testversion.R "7.62"; then
+if [ -z "$TEST_ADA_PARSER" ] && pkg-config --atleast-version="7.80" $PKG_CONFIG_NAME; then
+  echo "Found recent recent version of libcurl"
+elif [ "$TEST_ADA_PARSER" ] || ! ${R_HOME}/bin/Rscript --vanilla tools/testversion.R "7.62"; then
   tar xf tools/ada.tar.gz -C src
   PKG_CFLAGS="$PKG_CFLAGS -DUSE_ADA_PARSER"
   echo "CXX_STD=CXX17" >> src/Makevars.in
