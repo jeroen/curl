@@ -132,7 +132,7 @@ test_that("Custom vector options", {
 
 test_that("Timeout error includes hostname", {
   h <- new_handle(timeout = 1L)
-  expect_error(curl_fetch_memory('https://httpbin.org/delay/10', handle = h), 'Timeout was reached [httpbin.org]', fixed = TRUE)
+  expect_error(curl_fetch_memory('https://httpbin.org/delay/10', handle = h), 'Timeout was reached [httpbin.org]', class = 'curl_error_operation_timedout', fixed = TRUE)
 })
 
 test_that("Platform specific features", {

@@ -25,7 +25,7 @@ test_that("Connection interface", {
 
   # test error
   con <- curl(httpbin("status/418"))
-  expect_error(readLines(con))
+  expect_error(expect_warning(readLines(con), '418'), 'cannot open')
   close(con) #destroy
 
   # test not error
