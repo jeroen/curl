@@ -175,6 +175,9 @@ void cleanup(Rconnection con) {
 
   /* free thee handle connection */
   curl_multi_remove_handle(req->manager, req->handle);
+  curl_easy_setopt(req->handle, CURLOPT_WRITEFUNCTION, NULL);
+  curl_easy_setopt(req->handle, CURLOPT_WRITEDATA, NULL);
+  curl_easy_setopt(req->handle, CURLOPT_FAILONERROR, 0L);
   ref->locked = 0;
 
   /* delayed finalizer cleanup */
@@ -193,6 +196,9 @@ void reset(Rconnection con) {
   //Rprintf("Resetting connection object.\n");
   request *req = (request*) con->private;
   curl_multi_remove_handle(req->manager, req->handle);
+  curl_easy_setopt(req->handle, CURLOPT_WRITEFUNCTION, NULL);
+  curl_easy_setopt(req->handle, CURLOPT_WRITEDATA, NULL);
+  curl_easy_setopt(req->handle, CURLOPT_FAILONERROR, 0L);
   req->ref->locked = 0;
   con->isopen = FALSE;
   con->text = TRUE;
@@ -231,6 +237,8 @@ static Rboolean rcurl_open(Rconnection con) {
   /* fully non-blocking has 's' in open mode */
   int block_open = strchr(con->mode, 's') == NULL;
   int force_open = strchr(con->mode, 'f') != NULL;
+  if(block_open && !force_open)
+    curl_easy_setopt(handle, CURLOPT_FAILONERROR, 1L);
 
  /* Wait for first data to arrive. Monitoring a change in status code does not
    suffice in case of http redirects */
@@ -239,14 +247,12 @@ static Rboolean rcurl_open(Rconnection con) {
     int numfds;
     massert(curl_multi_wait(req->manager, NULL, 0, 1000, &numfds));
 #endif
-    fetchdata(req);
+    fetchdata(req); //TODO: this errors but should actually return FALSE
   }
 
   /* check http status code */
   /* Stream connections should be checked via handle_data() */
   /* Non-blocking open connections get checked during read */
-  if(block_open && !force_open)
-    stop_for_status(handle);
 
   /* set mode in case open() changed it */
   con->text = strchr(con->mode, 'b') ? FALSE : TRUE;

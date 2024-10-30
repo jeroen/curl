@@ -46,7 +46,6 @@ void assert(CURLcode res){
   SEXP call = PROTECT(Rf_lang3(expr, code, message));
   Rf_eval(call, R_FindNamespace(Rf_mkString("curl")));
   UNPROTECT(4);
-  Rf_error("Failed to raise gert S3 error (%s)", curl_easy_strerror(res));
 }
 
 void assert_status(CURLcode res, reference *ref){
@@ -62,21 +61,11 @@ void assert_status(CURLcode res, reference *ref){
   SEXP call = PROTECT(Rf_lang5(expr, code, message, errbuf, url));
   Rf_eval(call, R_FindNamespace(Rf_mkString("curl")));
   UNPROTECT(6);
-  Rf_error("Failed to raise gert S3 error (%s)", curl_easy_strerror(res));
 }
 
 void massert(CURLMcode res){
   if(res != CURLM_OK)
     Rf_error("%s", curl_multi_strerror(res));
-}
-
-void stop_for_status(CURL *http_handle){
-  long status = 0;
-  assert(curl_easy_getinfo(http_handle, CURLINFO_RESPONSE_CODE, &status));
-
-  /* check http status code. Not sure what this does for ftp. */
-  if(status >= 300)
-    Rf_error("HTTP error %ld.", status);
 }
 
 /* make sure to call curl_slist_free_all on this object */
