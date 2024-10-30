@@ -1,5 +1,3 @@
-context("Reusable handle")
-
 h <- new_handle()
 
 test_that("Perform", {

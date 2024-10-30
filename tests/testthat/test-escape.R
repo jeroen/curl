@@ -1,5 +1,3 @@
-context("URL escaping")
-
 test_that("basic encoding", {
   expect_equal("a%2Fb%2Fc", curl_escape("a/b/c"))
   expect_equal("a = b + c", curl_unescape("a%20%3D%20b%20%2B%20c"))

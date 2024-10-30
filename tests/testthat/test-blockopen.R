@@ -1,5 +1,3 @@
-context("Non-blocking opening connection")
-
 read_text <- function(x){
   while (isIncomplete(x)) {
     Sys.sleep(0.1)

@@ -1,5 +1,3 @@
-context("Upload File")
-
 test_that("File upload", {
   file <- system.file('DESCRIPTION', package = 'curl')
   res <- curl_upload(file, httpbin('/anything'), verbose = FALSE)

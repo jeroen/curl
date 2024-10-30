@@ -1,5 +1,3 @@
-context("Multi download")
-
 test_that("Support preconfigured handles", {
   expect_error(multi_download(new_handle()), 'no URL')
   expect_error(multi_download(new_handle(url = 'https://www.google.com')), 'filename')

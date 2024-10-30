@@ -1,5 +1,3 @@
-context("Garbage collection")
-
 gc()
 h1 <- new_handle()
 test <- function(){

@@ -1,5 +1,3 @@
-context("Paths")
-
 tricky_filename <- "\u00C0\u00CB\u00D0"
 
 # https://github.com/jeroen/curl/issues/182

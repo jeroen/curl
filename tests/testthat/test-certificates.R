@@ -1,5 +1,3 @@
-context("Certificate validation")
-
 # This tests TLS 1.2
 test_that("CloudFlare / LetsEncrypt certs", {
   expect_equal(curl_fetch_memory('https://www.opencpu.org')$status_code, 200)

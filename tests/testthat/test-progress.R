@@ -1,5 +1,3 @@
-context("Garbage collection")
-
 test_that("callbacks are protected", {
   progress <- function(down, up) { TRUE }
   h <- new_handle(progressfunction = progress, noprogress = FALSE)

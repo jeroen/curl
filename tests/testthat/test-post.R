@@ -1,5 +1,3 @@
-context("Posting data")
-
 h <- new_handle()
 
 test_that("Post text data", {

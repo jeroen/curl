@@ -1,5 +1,3 @@
-context("Cookies")
-
 h <- new_handle()
 
 test_that("No cookies", {

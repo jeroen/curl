@@ -1,5 +1,3 @@
-context("Nonblocking connection")
-
 test_that("Non blocking connections ", {
   h <- new_handle()
   con <- curl(httpbin("drip?duration=3&numbytes=50&code=200"), handle = h)

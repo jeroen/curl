@@ -1,5 +1,3 @@
-context("Seek")
-
 test_that("Seeking works after redirect",{
   skip_on_cran()
   str <- paste(letters, collapse = '')

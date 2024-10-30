@@ -1,5 +1,3 @@
-context("Multi handle")
-
 test_that("Timeout works", {
   h1 <- new_handle(url = httpbin("delay/10"))
   h2 <- new_handle(url = httpbin("post"), postfields = "bla bla")

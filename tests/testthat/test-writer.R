@@ -1,5 +1,3 @@
-context("File Writer")
-
 test_that("File writer is properly cleaned", {
   fp1 <- file_writer(tempfile())
   fp2 <- file_writer(tempfile())

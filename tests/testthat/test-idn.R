@@ -1,5 +1,3 @@
-context("IDN")
-
 test_that("IDN domain names",{
   # OSX does not support IDN by default :(
   skip_if_not(curl_version()$idn, "libcurl does not have libidn")

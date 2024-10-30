@@ -1,5 +1,4 @@
 # Some of these unit tests fail if you reuse the handle. Don't know why. Maybe cache related.
-context("Authentication")
 
 test_that("Permission denied", {
   h <- new_handle()

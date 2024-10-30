@@ -1,5 +1,3 @@
-context("Connections")
-
 h <- new_handle()
 
 test_that("Compression and destroying connection", {
