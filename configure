@@ -13,7 +13,7 @@ PKG_TEST_HEADER="<curl/curl.h>"
 PKG_LIBS="-lcurl"
 PKG_CFLAGS=""
 
-export PKG_CONFIG_PATH="/opt/homebrew/opt/curl/lib/pkgconfig"
+#export PKG_CONFIG_PATH="/opt/homebrew/opt/curl/lib/pkgconfig"
 
 # Use pkg-config if available
 pkg-config --version >/dev/null 2>&1
@@ -71,7 +71,7 @@ if [ "$TEST_ADA_PARSER" ] || ! ${R_HOME}/bin/Rscript --vanilla tools/testversion
   PKG_CFLAGS="$PKG_CFLAGS -DUSE_ADA_PARSER"
   echo "CXX_STD=CXX17" >> src/Makevars.in
 elif [ `uname` = "Darwin" ] && ${R_HOME}/bin/Rscript --vanilla tools/testversion.R "7.80"; then
-  PKG_CFLAGS="$PKG_CFLAGS -DENABLE_ALL_FEATURES"
+  PKG_CFLAGS="$PKG_CFLAGS -DENABLE_MACOS_POLYFILL"
 fi
 
 # Write to Makevars
