@@ -189,19 +189,13 @@ SEXP R_multi_run(SEXP pool_ptr, SEXP timeout, SEXP max){
     if(total_pending == 0 && !dirty)
       break;
 
-#ifdef HAS_MULTI_WAIT
-    /* wait for activity, timeout or "nothing" */
     int numfds;
     double waitforit = fmin(time_max - seconds_elapsed, 1); //at most 1 sec to support interrupts
     if(time_max > 0)
       massert(curl_multi_wait(multi, NULL, 0, (int) waitforit * 1000, &numfds));
-#endif
 
     /* poll libcurl for new data - updates total_pending */
-    CURLMcode res = CURLM_CALL_MULTI_PERFORM;
-    while(res == CURLM_CALL_MULTI_PERFORM)
-      res = curl_multi_perform(multi, &(total_pending));
-    if(res != CURLM_OK)
+    if(curl_multi_perform(multi, &(total_pending)) != CURLM_OK)
       break;
   }
 

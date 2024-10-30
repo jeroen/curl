@@ -98,7 +98,7 @@ static size_t pop(void *target, size_t max, request *req){
   return copy_size;
 }
 
-void check_manager(CURLM *manager, reference *ref) {
+static void check_handles(CURLM *manager, reference *ref) {
   for(int msg = 1; msg > 0;){
     CURLMsg *out = curl_multi_info_read(manager, &msg);
     if(out)
@@ -106,31 +106,16 @@ void check_manager(CURLM *manager, reference *ref) {
   }
 }
 
-//NOTE: renamed because the name 'fetch' caused crash/conflict on Solaris.
-void fetchdata(request *req) {
+static void fetchdata(request *req) {
   R_CheckUserInterrupt();
-  long timeout = 10*1000;
-  massert(curl_multi_timeout(req->manager, &timeout));
-  /* massert(curl_multi_perform(req->manager, &(req->has_more))); */
-
-  /* On libcurl < 7.20 we need to check for CURLM_CALL_MULTI_PERFORM, see docs */
-  CURLMcode res = CURLM_CALL_MULTI_PERFORM;
-  while(res == CURLM_CALL_MULTI_PERFORM){
-    res = curl_multi_perform(req->manager, &(req->has_more));
-  }
-  massert(res);
-  /* End */
-  check_manager(req->manager, req->ref);
+  massert(curl_multi_perform(req->manager, &(req->has_more)));
+  check_handles(req->manager, req->ref);
 }
 
-/* Support for readBin() */
 static size_t rcurl_read(void *target, size_t sz, size_t ni, Rconnection con) {
   request *req = (request*) con->private;
   size_t req_size = sz * ni;
-
-  /* append data to the target buffer */
   size_t total_size = pop(target, req_size, req);
-
   if (total_size > 0 && (!con->blocking || req->partial)) {
       // If we can return data without waiting, and the connection is
       // non-blocking (or using curl_fetch_stream()), do so.
@@ -141,12 +126,9 @@ static size_t rcurl_read(void *target, size_t sz, size_t ni, Rconnection con) {
   }
 
   while((req_size > total_size) && req->has_more) {
-    /* wait for activity, timeout or "nothing" */
-#ifdef HAS_MULTI_WAIT
     int numfds;
     if(con->blocking)
       massert(curl_multi_wait(req->manager, NULL, 0, 1000, &numfds));
-#endif
     fetchdata(req);
     total_size += pop((char*)target + total_size, (req_size-total_size), req);
 
@@ -158,7 +140,6 @@ static size_t rcurl_read(void *target, size_t sz, size_t ni, Rconnection con) {
   return total_size;
 }
 
-/* naive implementation of readLines */
 static int rcurl_fgetc(Rconnection con) {
   int x = 0;
 #ifdef WORDS_BIGENDIAN
@@ -168,8 +149,7 @@ static int rcurl_fgetc(Rconnection con) {
 #endif
 }
 
-void cleanup(Rconnection con) {
-  //Rprintf("Destroying connection.\n");
+static void cleanup(Rconnection con) {
   request *req = (request*) con->private;
   reference *ref = req->ref;
 
@@ -192,8 +172,7 @@ void cleanup(Rconnection con) {
 }
 
 /* reset to pre-opened state */
-void reset(Rconnection con) {
-  //Rprintf("Resetting connection object.\n");
+static void reset(Rconnection con) {
   request *req = (request*) con->private;
   curl_multi_remove_handle(req->manager, req->handle);
   curl_easy_setopt(req->handle, CURLOPT_WRITEFUNCTION, NULL);
@@ -243,10 +222,8 @@ static Rboolean rcurl_open(Rconnection con) {
  /* Wait for first data to arrive. Monitoring a change in status code does not
    suffice in case of http redirects */
   while(block_open && req->has_more && !req->has_data) {
-#ifdef HAS_MULTI_WAIT
     int numfds;
     massert(curl_multi_wait(req->manager, NULL, 0, 1000, &numfds));
-#endif
     fetchdata(req); //TODO: this errors but should actually return FALSE
   }
 

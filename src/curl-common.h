@@ -14,10 +14,6 @@
 //TODO: switch to CURL_AT_LEAST_VERSION
 #define AT_LEAST_CURL(x,y) (LIBCURL_VERSION_MAJOR > x || (LIBCURL_VERSION_MAJOR == x && LIBCURL_VERSION_MINOR >= y))
 
-#if AT_LEAST_CURL(7, 28)
-#define HAS_MULTI_WAIT 1
-#endif
-
 #if AT_LEAST_CURL(7, 55)
 #define USE_CURL_OFF_T 1
 #endif

@@ -52,20 +52,12 @@ CURLcode curl_perform_with_interrupt(CURL *handle){
       break;
     }
 
-#ifdef HAS_MULTI_WAIT
-    /* wait for activity, timeout or "nothing" */
     int numfds;
     if(curl_multi_wait(multi_handle, NULL, 0, 1000, &numfds) != CURLM_OK)
       break;
-#endif
-
-    /* Required by old versions of libcurl */
-    CURLMcode res = CURLM_CALL_MULTI_PERFORM;
-    while(res == CURLM_CALL_MULTI_PERFORM)
-      res = curl_multi_perform(multi_handle, &(still_running));
 
     /* check for multi errors */
-    if(res != CURLM_OK)
+    if(curl_multi_perform(multi_handle, &(still_running)) != CURLM_OK)
       break;
   }
 
