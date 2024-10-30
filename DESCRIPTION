@@ -13,8 +13,7 @@ Description: Bindings to libcurl <https://curl.se/libcurl/> for performing fully
     knowledge of 'libcurl' is recommended; for a more-user-friendly web client see
     the 'httr2' package which builds on this package with http specific tools and logic.
 License: MIT + file LICENSE
-SystemRequirements: libcurl: libcurl-devel (rpm) or libcurl4-openssl-dev (deb).
-    Version 7.80 or up is recommended. 
+SystemRequirements: libcurl (>= 7.62): libcurl-devel (rpm) or libcurl4-openssl-dev (deb)
 URL: https://jeroen.r-universe.dev/curl
 BugReports: https://github.com/jeroen/curl/issues
 Suggests:
