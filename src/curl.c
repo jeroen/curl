@@ -224,7 +224,16 @@ static Rboolean rcurl_open(Rconnection con) {
   while(block_open && req->has_more && !req->has_data) {
     int numfds;
     massert(curl_multi_wait(req->manager, NULL, 0, 1000, &numfds));
-    fetchdata(req); //TODO: this errors but should actually return FALSE
+    massert(curl_multi_perform(req->manager, &(req->has_more)));
+    for(int msg = 1; msg > 0;){
+      CURLMsg *out = curl_multi_info_read(req->manager, &msg);
+      if(out && out->data.result != CURLE_OK){
+        const char *errmsg = strlen(req->ref->errbuf) ? req->ref->errbuf : curl_easy_strerror(out->data.result);
+        Rf_warning("Failed to open '%s': %s", req->url, errmsg);
+        reset(con);
+        return FALSE;
+      }
+    }
   }
 
   /* check http status code */

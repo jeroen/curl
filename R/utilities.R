@@ -53,7 +53,7 @@ is_string <- function(x){
 # Callback for typed libcurl errors
 raise_libcurl_error <- function(errnum, message, errbuf = NULL, source_url = NULL){
   error_code <- libcurl_error_codes[errnum]
-  if(length(url)){
+  if(is_string(source_url)){
     host <- curl_parse_url(source_url)$host
     if(is_string(host))
       message <- sprintf('%s [%s]', message, host)
