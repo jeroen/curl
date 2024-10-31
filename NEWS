@@ -1,8 +1,8 @@
 6.0.0
  - New parse_url() function to expose curl URL parsing interface.
  - Errors now have classes and more detailed messages
- - Workaround for bug in libcurl < 8.8.0, do not use shared connection pool
-   for FTP requests on these libcurl versions.
+ - Do not use shared connection pool for FTP requests (works around bug in
+   libcurl < 8.8.0)
  - Properly clean handle when open() fails for a curl() connection
  - Parameter 'timeout' renamed to 'multi-timeout' in multi_download()
  - Default behavior is now to error if a download is stalled for 600 seconds
