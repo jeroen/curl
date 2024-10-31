@@ -229,7 +229,7 @@ static Rboolean rcurl_open(Rconnection con) {
       CURLMsg *out = curl_multi_info_read(req->manager, &msg);
       if(out && out->data.result != CURLE_OK){
         const char *errmsg = strlen(req->ref->errbuf) ? req->ref->errbuf : curl_easy_strerror(out->data.result);
-        Rf_warning("Failed to open '%s': %s", req->url, errmsg);
+        Rf_warningcall(R_NilValue, "Failed to open '%s': %s", req->url, errmsg);
         reset(con);
         return FALSE;
       }
