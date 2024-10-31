@@ -37,11 +37,13 @@ void reset_errbuf(reference *ref){
   memset(ref->errbuf, 0, CURL_ERROR_SIZE);
 }
 
-void assert(CURLcode res){
+void assert_message(CURLcode res, const char *str){
   if(res == CURLE_OK)
     return;
+  if(str == NULL)
+    str = curl_easy_strerror(res);
   SEXP code = PROTECT(Rf_ScalarInteger(res));
-  SEXP message = PROTECT(make_string(curl_easy_strerror(res)));
+  SEXP message = PROTECT(make_string(str));
   SEXP expr = PROTECT(Rf_install("raise_libcurl_error"));
   SEXP call = PROTECT(Rf_lang3(expr, code, message));
   Rf_eval(call, R_FindNamespace(Rf_mkString("curl")));

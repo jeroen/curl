@@ -10,6 +10,7 @@
 
 #define make_string(x) x ? Rf_mkString(x) : Rf_ScalarString(NA_STRING)
 #define get_string(x) CHAR(STRING_ELT(x, 0))
+#define assert(x) assert_message(x, NULL)
 
 //TODO: switch to CURL_AT_LEAST_VERSION
 #define AT_LEAST_CURL(x,y) (LIBCURL_VERSION_MAJOR > x || (LIBCURL_VERSION_MAJOR == x && LIBCURL_VERSION_MINOR >= y))
@@ -70,7 +71,7 @@ typedef struct {
 CURL* get_handle(SEXP ptr);
 reference* get_ref(SEXP ptr);
 void assert_status(CURLcode res, reference *ref);
-void assert(CURLcode res);
+void assert_message(CURLcode res, const char *str);
 void massert(CURLMcode res);
 SEXP slist_to_vec(struct curl_slist *slist);
 struct curl_slist* vec_to_slist(SEXP vec);
