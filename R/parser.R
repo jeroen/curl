@@ -118,3 +118,7 @@ parse_query_urlencoded <- function(query){
   names(values) <- vapply(args, `[`, character(1), 1)
   return(values)
 }
+
+try_parse_url <- function(url){
+  tryCatch(curl_parse_url(url), error = function(e){})
+}
