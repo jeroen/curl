@@ -44,6 +44,7 @@ SEXP R_parse_url(SEXP url, SEXP baseurl) {
   Rf_setAttrib(out, R_NamesSymbol, make_url_names());
   Rf_setAttrib(out, R_ClassSymbol, Rf_mkString("ada"));
   UNPROTECT(1);
+  ada_free(result);
   return out;
 }
 
@@ -76,9 +77,9 @@ static SEXP get_field(CURLU *h, CURLUPart part, CURLUcode field_missing){
 SEXP R_parse_url(SEXP url, SEXP baseurl) {
   CURLU *h = curl_url();
   if(Rf_length(baseurl)){
-    fail_if(curl_url_set(h, CURLUPART_URL, CHAR(STRING_ELT(baseurl, 0)), CURLU_NON_SUPPORT_SCHEME | CURLU_URLENCODE));
+    fail_if(curl_url_set(h, CURLUPART_URL, get_string(baseurl), CURLU_NON_SUPPORT_SCHEME | CURLU_URLENCODE));
   }
-  fail_if(curl_url_set(h, CURLUPART_URL, CHAR(STRING_ELT(url, 0)), CURLU_NON_SUPPORT_SCHEME | CURLU_URLENCODE));
+  fail_if(curl_url_set(h, CURLUPART_URL, get_string(url), CURLU_NON_SUPPORT_SCHEME | CURLU_URLENCODE));
   SEXP out = PROTECT(Rf_allocVector(VECSXP, 9));
   SET_VECTOR_ELT(out, 0, get_field(h, CURLUPART_URL, CURLUE_OK));
   SET_VECTOR_ELT(out, 1, get_field(h, CURLUPART_SCHEME, CURLUE_NO_SCHEME));
