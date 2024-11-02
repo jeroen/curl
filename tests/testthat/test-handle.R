@@ -147,7 +147,7 @@ test_that("Platform specific features", {
   if(.Platform$OS.type == 'windows'){
     ver <- curl_version()
     ssl_version <- ver$ssl_version
-    if(grepl("schannel", Sys.getenv('CURL_SSL_BACKEND'), TRUE)){
+    if(grepl("schannel", Sys.getenv('CURL_SSL_BACKEND'), TRUE) || compareVersion(ver$version, '8') == -1){
       expect_match(ssl_version, "\\(OpenSSL.*\\) Schannel")
     } else {
       expect_match(ssl_version, "OpenSSL.*\\(Schannel\\)")
