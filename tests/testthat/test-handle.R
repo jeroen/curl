@@ -145,11 +145,12 @@ test_that("Error classes", {
 
 test_that("Platform specific features", {
   if(.Platform$OS.type == 'windows'){
-    ssl_version <- curl_version()$ssl_version
-    if(get_windows_build() < 7600 || grepl("openssl", Sys.getenv('CURL_SSL_BACKEND'), TRUE)){
-      expect_match(ssl_version, "OpenSSL.*\\(Schannel\\)")
-    } else {
+    ver <- curl_version()
+    ssl_version <- ver$ssl_version
+    if(grepl("schannel", Sys.getenv('CURL_SSL_BACKEND'), TRUE)){
       expect_match(ssl_version, "\\(OpenSSL.*\\) Schannel")
+    } else {
+      expect_match(ssl_version, "OpenSSL.*\\(Schannel\\)")
     }
   } else if(!is.na(curl_options()['unix_socket_path'])){
     # This should simply not error

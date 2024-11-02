@@ -88,11 +88,11 @@ static const R_CallMethodDef CallEntries[] = {
     {NULL, NULL, 0}
 };
 
-void switch_to_openssl_on_vista(void);
+void select_tls_backend(void);
 CURLM *shared_multi_handle = NULL;
 
 attribute_visible void R_init_curl(DllInfo *info) {
-  switch_to_openssl_on_vista();
+  select_tls_backend();
   curl_global_init(CURL_GLOBAL_DEFAULT);
   shared_multi_handle = curl_multi_init();
   R_registerRoutines(info, NULL, CallEntries, NULL, NULL);
