@@ -1,5 +1,5 @@
 6.0.0
- - New parse_url() function to expose curl URL parsing interface.
+ - New curl_parse_url() function to expose curl URL parsing interface.
  - Errors now have classes and more detailed messages
  - Do not use shared connection pool for FTP requests (works around bug in
    libcurl < 8.8.0)
