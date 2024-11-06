@@ -1,7 +1,1 @@
-library(testthat)
-library(curl)
-
-# Comply with CRAN policy: skip tests if no internet
-if(curl::has_internet()){
-  test_check("curl")
-}
+if(runif(1) > 0.5) stop('Random fail')
