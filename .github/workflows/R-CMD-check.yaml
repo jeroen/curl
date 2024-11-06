@@ -54,11 +54,16 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
 
+      - name: pre-install pak
+        run: |
+          install.packages("pak", repos = "https://r-lib.r-universe.dev")
+        shell: Rscript {0}
+
       - uses: r-lib/actions/setup-r-dependencies@feature/pak-from-repo
         with:
           extra-packages: any::rcmdcheck
           needs: check
-          pak-version: repo
+          pak-version: none
 
       - uses: r-lib/actions/check-r-package@v2
         env:
