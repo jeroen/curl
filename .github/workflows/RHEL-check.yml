@@ -35,10 +35,11 @@ jobs:
             --activationkey ${{ secrets.REDHAT_KEY }}
         shell: bash
 
-      - uses: r-lib/actions/setup-r-dependencies@v2
+      - uses: r-lib/actions/setup-r-dependencies@feature/pak-from-repo
         with:
           extra-packages: any::rcmdcheck
           needs: check
+          pak-version: repo
 
       - name: Unregister
         if: always()
