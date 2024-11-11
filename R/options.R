@@ -23,7 +23,7 @@ curl_options <- function(filter = ""){
 }
 
 # Remove this when RHEL-8 is EOL
-option_table_legacy <- if(libcurlVersion() < "7.73.0"){
+option_table_legacy <- if(grepl("^7", libcurlVersion())){
   (function(){
     env <- new.env()
     if(file.exists("tools/option_table.txt")){
