@@ -22,21 +22,23 @@ curl_options <- function(filter = ""){
   opts[m]
 }
 
-option_table <- (function(){
-  env <- new.env()
-  if(file.exists("tools/option_table.txt")){
-    source("tools/option_table.txt", env)
-  } else if(file.exists("../tools/option_table.txt")){
-    source("../tools/option_table.txt", env)
-  } else {
-    stop("Failed to find 'tools/option_table.txt' from:", getwd())
-  }
+# Remove this when RHEL-8 is EOL
+option_table_legacy <- if(libcurlVersion() < "7.73.0"){
+  (function(){
+    env <- new.env()
+    if(file.exists("tools/option_table.txt")){
+      source("tools/option_table.txt", env)
+    } else if(file.exists("../tools/option_table.txt")){
+      source("../tools/option_table.txt", env)
+    } else {
+      stop("Failed to find 'tools/option_table.txt' from:", getwd())
+    }
 
-  option_table <- unlist(as.list(env))
-  names(option_table) <- sub("^curlopt_", "", tolower(names(option_table)))
-  option_table[order(names(option_table))]
-})()
-
+    option_table <- unlist(as.list(env))
+    names(option_table) <- sub("^curlopt_", "", tolower(names(option_table)))
+    option_table[order(names(option_table))]
+  })()
+}
 
 #' @useDynLib curl R_option_types
 make_option_type_table <- function(){
@@ -57,7 +59,7 @@ curl_options_list <- local({
         structure(option_type_table$value, names = option_type_table$name)
       } else {
         # Fallback method: extracted from headers at build-time
-        option_table
+        option_table_legacy
       }
     }
     return(cache)

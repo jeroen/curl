@@ -79,7 +79,7 @@ fi
 # Write to Makevars
 sed -e "s|@cflags@|$PKG_CFLAGS|" -e "s|@libs@|$PKG_LIBS|" src/Makevars.in > src/Makevars
 
-# Extract curlopt symbols
+# Legacy option list (remove this when RHEL8 is EOL)
 echo '#include <curl/curl.h>' | ${CC} ${CPPFLAGS} ${PKG_CFLAGS} ${CFLAGS} -E -xc - \
   | grep "^[ \t]*CURLOPT_.*," | sed s/,// > tools/option_table.txt
 
