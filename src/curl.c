@@ -290,6 +290,9 @@ SEXP R_curl_connection(SEXP url, SEXP ptr, SEXP partial) {
   /* protect the handle */
   (req->ref->refCount)++;
 
+  /* store the CURLM address in con->ex_ptr which is the 'conn_id' attribute */
+  R_SetExternalPtrAddr((SEXP) con->ex_ptr, req->manager);
+
   UNPROTECT(1);
   return rc;
 }
