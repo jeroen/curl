@@ -293,3 +293,41 @@ SEXP R_curl_connection(SEXP url, SEXP ptr, SEXP partial) {
   UNPROTECT(1);
   return rc;
 }
+
+void mref_finalizer(SEXP ptr){
+  multiref *mref = (multiref *) R_ExternalPtrAddr(ptr);
+  free(mref);
+  R_ClearExternalPtr(ptr);
+}
+
+/* wraps a connection so it can be passed to functions expecting curl multi pools */
+SEXP R_curl_connection_pool(SEXP ptr) {
+
+  if(!Rf_inherits(ptr, "curl"))
+    Rf_error("con is not a curl connection");
+
+  SEXP attr = Rf_getAttrib(ptr, Rf_install("conn_id"));
+  SEXP pool_ptr = R_ExternalPtrProtected(attr);
+
+  if (pool_ptr == R_NilValue) {
+
+    PROTECT(attr);
+    Rconnection con = R_GetConnection(ptr);
+    request *req = (request *) con->private;
+    CURLM *multi = req->manager;
+    if(!multi)
+      Rf_error("CURLM pointer is dead");
+
+    multiref *mref = calloc(1, sizeof(multiref));
+    mref->m = multi;
+    pool_ptr = R_MakeExternalPtr(mref, R_NilValue, R_NilValue);
+    R_SetExternalPtrProtected(attr, pool_ptr);
+    R_RegisterCFinalizerEx(pool_ptr, mref_finalizer, 1);
+    Rf_classgets(pool_ptr, Rf_mkString("curl_multi"));
+    UNPROTECT(1);
+
+  }
+
+  return pool_ptr;
+
+}

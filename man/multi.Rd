@@ -9,6 +9,7 @@
 \alias{multi_cancel}
 \alias{new_pool}
 \alias{multi_fdset}
+\alias{connection_pool}
 \title{Async Concurrent Requests}
 \usage{
 multi_add(handle, done = NULL, fail = NULL, data = NULL, pool = NULL)
@@ -24,6 +25,8 @@ multi_cancel(handle)
 new_pool(total_con = 100, host_con = 6, multiplex = TRUE)
 
 multi_fdset(pool = NULL)
+
+connection_pool(con)
 }
 \arguments{
 \item{handle}{a curl \link{handle} with preconfigured \code{url} option.}
@@ -54,6 +57,8 @@ May also be an integer in which case it returns after n requests have completed.
 \item{host_con}{max concurrent connections per host.}
 
 \item{multiplex}{enable HTTP/2 multiplexing if supported by host and client.}
+
+\item{con}{a curl connection.}
 }
 \description{
 AJAX style concurrent requests, possibly using HTTP/2 multiplexing.
@@ -95,6 +100,9 @@ is equivalent to the \code{curl_multi_fdset} and
 \code{curl_multi_timeout} calls. It is handy for applications that is
 expecting input (or writing output) through both curl, and other file
 descriptors.
+
+The \link{connection_pool} function wraps a curl connection to allow it to be
+passed to other multi functions as it were a pool (multi handle).
 }
 \examples{
 results <- list()

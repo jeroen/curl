@@ -39,6 +39,9 @@
 #' expecting input (or writing output) through both curl, and other file
 #' descriptors.
 #'
+#' The [connection_pool] function wraps a curl connection to allow it to be
+#' passed to other multi functions as it were a pool (multi handle).
+#'
 #' @name multi
 #' @rdname multi
 #' @seealso Advanced download interface: [multi_download]
@@ -201,4 +204,13 @@ multi_fdset <- function(pool = NULL){
     pool <- multi_default()
   stopifnot(inherits(pool, "curl_multi"))
   .Call(R_multi_fdset, pool)
+}
+
+#' @param con a curl connection.
+#' @export
+#' @useDynLib curl R_curl_connection_pool
+#' @rdname multi
+#'
+connection_pool <- function(con) {
+  .Call(R_curl_connection_pool, con)
 }
