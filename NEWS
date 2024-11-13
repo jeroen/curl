@@ -1,3 +1,6 @@
+6.0.1
+ - Fix a build issue with libcurl 8.11.0
+
 6.0.0
  - New curl_parse_url() function to expose curl URL parsing interface.
  - Errors now have classes and more detailed messages
