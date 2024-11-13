@@ -34,7 +34,7 @@
 #' or the steps explained in the [whatwg basic url parser](https://url.spec.whatwg.org/#concept-basic-url-parser).
 #'
 #' On platforms that do not have a recent enough curl version (basically only
-#' RHEL-8) the [Ada URL](https://www.ada-url.com/) library is used as fallback.
+#' RHEL-8) the [Ada URL](https://github.com/ada-url/ada) library is used as fallback.
 #' Results should be identical, though curl has nicer error messages. This is
 #' a temporary solution, we plan to remove the fallback when old systems are
 #' no longer supported.

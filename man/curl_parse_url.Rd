@@ -54,7 +54,7 @@ For more details on the URL format see
 or the steps explained in the \href{https://url.spec.whatwg.org/#concept-basic-url-parser}{whatwg basic url parser}.
 
 On platforms that do not have a recent enough curl version (basically only
-RHEL-8) the \href{https://www.ada-url.com/}{Ada URL} library is used as fallback.
+RHEL-8) the \href{https://github.com/ada-url/ada}{Ada URL} library is used as fallback.
 Results should be identical, though curl has nicer error messages. This is
 a temporary solution, we plan to remove the fallback when old systems are
 no longer supported.
