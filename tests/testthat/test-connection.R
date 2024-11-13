@@ -35,3 +35,13 @@ test_that("Connection interface", {
   expect_equal(handle_data(h)$status_code, 418L)
   close(con) #destroy
 })
+
+test_that("Can retrieve fds from a connection", {
+  con <- curl(httpbin("get?test=blabla"), handle = h)
+  fds <- multi_fdset(con)
+  expect_type(fds, "list")
+  close(con)
+  not <- "not a connection"
+  class(not) <- "curl"
+  expect_error(multi_fdset(not))
+})
