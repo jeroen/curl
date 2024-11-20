@@ -46,8 +46,9 @@ void assert_message(CURLcode res, const char *str){
   SEXP message = PROTECT(make_string(str));
   SEXP expr = PROTECT(Rf_install("raise_libcurl_error"));
   SEXP call = PROTECT(Rf_lang3(expr, code, message));
-  Rf_eval(call, R_FindNamespace(Rf_mkString("curl")));
-  UNPROTECT(4);
+  SEXP env = PROTECT(R_FindNamespace(Rf_mkString("curl")));
+  Rf_eval(call, env);
+  UNPROTECT(5); //never happens
 }
 
 void assert_status(CURLcode res, reference *ref){
@@ -61,8 +62,9 @@ void assert_status(CURLcode res, reference *ref){
   SEXP errbuf = PROTECT(make_string(ref->errbuf));
   SEXP expr = PROTECT(Rf_install("raise_libcurl_error"));
   SEXP call = PROTECT(Rf_lang5(expr, code, message, errbuf, url));
-  Rf_eval(call, R_FindNamespace(Rf_mkString("curl")));
-  UNPROTECT(6);
+  SEXP env = PROTECT(R_FindNamespace(Rf_mkString("curl")));
+  Rf_eval(call, env);
+  UNPROTECT(7); //never happens
 }
 
 void massert(CURLMcode res){
