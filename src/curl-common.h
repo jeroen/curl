@@ -8,7 +8,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define make_string(x) x ? Rf_mkString(x) : Rf_ScalarString(NA_STRING)
+#define make_string(x) x != NULL ? Rf_mkString(x) : Rf_ScalarString(NA_STRING)
 #define get_string(x) CHAR(STRING_ELT(x, 0))
 #define assert(x) assert_message(x, NULL)
 
