@@ -23,6 +23,10 @@
 #define HAS_CURL_PARSER 1
 #endif
 
+#if AT_LEAST_CURL(7, 67)
+#define HAS_MAX_STREAMS 1
+#endif
+
 #if AT_LEAST_CURL(7, 72)
 #define HAS_CURLINFO_EFFECTIVE_METHOD 1
 #endif

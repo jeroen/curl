@@ -74,7 +74,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"R_multi_list",          (DL_FUNC) &R_multi_list,          1},
     {"R_multi_new",           (DL_FUNC) &R_multi_new,           0},
     {"R_multi_run",           (DL_FUNC) &R_multi_run,           3},
-    {"R_multi_setopt",        (DL_FUNC) &R_multi_setopt,        4},
+    {"R_multi_setopt",        (DL_FUNC) &R_multi_setopt,        5},
     {"R_new_file_writer",     (DL_FUNC) &R_new_file_writer,     1},
     {"R_new_handle",          (DL_FUNC) &R_new_handle,          0},
     {"R_nslookup",            (DL_FUNC) &R_nslookup,            2},
