@@ -1,6 +1,19 @@
 #include "curl-common.h"
 #include <stdint.h> /* SIZE_MAX */
 
+#ifdef _WIN32
+#include <Rembedded.h>
+void send_r_interrupt() {
+  UserBreak = 1;
+  R_CheckUserInterrupt();
+}
+#else
+#include <Rinterface.h>
+void send_r_interrupt() {
+  Rf_onintr();
+}
+#endif
+
 CURL* get_handle(SEXP ptr){
   return get_ref(ptr)->handle;
 }
@@ -40,6 +53,8 @@ void reset_errbuf(reference *ref){
 void assert_message(CURLcode res, const char *str){
   if(res == CURLE_OK)
     return;
+  if(res == CURLE_ABORTED_BY_CALLBACK)
+    send_r_interrupt();
   if(str == NULL)
     str = curl_easy_strerror(res);
   SEXP code = PROTECT(Rf_ScalarInteger(res));
@@ -54,6 +69,8 @@ void assert_message(CURLcode res, const char *str){
 void assert_status(CURLcode res, reference *ref){
   if(res == CURLE_OK)
     return;
+  if(res == CURLE_ABORTED_BY_CALLBACK)
+    send_r_interrupt();
   const char *source_url = NULL;
   curl_easy_getinfo(ref->handle, CURLINFO_EFFECTIVE_URL, &source_url);
   SEXP url = PROTECT(make_string(source_url));
