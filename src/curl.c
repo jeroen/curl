@@ -224,6 +224,10 @@ static Rboolean rcurl_open(Rconnection con) {
   while(block_open && req->has_more && !req->has_data) {
     int numfds;
     massert(curl_multi_wait(req->manager, NULL, 0, 1000, &numfds));
+    if(pending_interrupt()) {
+      reset(con); //cleanup before jumping
+      assert_message(CURLE_ABORTED_BY_CALLBACK, NULL);
+    }
     massert(curl_multi_perform(req->manager, &(req->has_more)));
     for(int msg = 1; msg > 0;){
       CURLMsg *out = curl_multi_info_read(req->manager, &msg);
