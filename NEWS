@@ -3,6 +3,7 @@
  - Enable CURLOPT_PIPEWAIT by default to prefer multiplex when possible
  - Enable setting max_streams in multi_set(), default to 10
  - Allow open(curl::curl()) to be interrupted
+ - Interrupting a download no longer causes an error (#365)
 
 6.0.1
  - Fix a build issue with libcurl 8.11.0
