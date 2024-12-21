@@ -2,15 +2,20 @@
 #include <stdint.h> /* SIZE_MAX */
 
 #ifdef _WIN32
+extern Rboolean R_Interactive;
 #include <Rembedded.h>
 void send_r_interrupt() {
-  UserBreak = 1;
-  R_CheckUserInterrupt();
+  if(R_Interactive == TRUE){
+    UserBreak = 1;
+    R_CheckUserInterrupt();
+  }
 }
 #else
 #include <Rinterface.h>
 void send_r_interrupt() {
-  Rf_onintr();
+  if(R_Interactive == TRUE){
+    Rf_onintr();
+  }
 }
 #endif
 
