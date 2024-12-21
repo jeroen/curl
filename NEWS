@@ -1,4 +1,4 @@
-6.0.2
+6.1.0
  - Fix a rchk bug
  - Enable CURLOPT_PIPEWAIT by default to prefer multiplex when possible
  - Enable setting max_streams in multi_set(), default to 10
