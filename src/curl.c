@@ -226,7 +226,7 @@ static Rboolean rcurl_open(Rconnection con) {
     massert(curl_multi_wait(req->manager, NULL, 0, 1000, &numfds));
     if(pending_interrupt()) {
       reset(con); //cleanup before jumping
-      assert_message(CURLE_ABORTED_BY_CALLBACK, "");
+      assert_message(CURLE_ABORTED_BY_CALLBACK, NULL);
     }
     massert(curl_multi_perform(req->manager, &(req->has_more)));
     for(int msg = 1; msg > 0;){
