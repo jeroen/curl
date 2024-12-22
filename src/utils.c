@@ -3,13 +3,13 @@
 
 #ifdef _WIN32
 #include <Rembedded.h>
-void send_r_interrupt() {
+void send_r_interrupt(void) {
   UserBreak = 1;
   R_CheckUserInterrupt();
 }
 #else
 #include <Rinterface.h>
-void send_r_interrupt() {
+void send_r_interrupt(void) {
   Rf_onintr();
 }
 #endif
