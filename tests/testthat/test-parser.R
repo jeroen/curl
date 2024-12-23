@@ -50,3 +50,9 @@ test_that("Decoding parameters", {
   expect_equal(out$params, c(tv = "tom&jerry", math = "1+1 = 2", empty = ""))
 })
 
+test_that("Parse fragment only", {
+  out <- curl_parse_url("#foo", "http://x.com/a/b/c")
+  expect_equal(out$path, '/a/b/c')
+  expect_equal(out$fragment, 'foo')
+})
+
