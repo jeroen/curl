@@ -67,6 +67,12 @@ curl_parse_url <- function(url, baseurl = NULL, decode = TRUE, params = TRUE){
   stopifnot(is.character(url))
   stopifnot(length(url) == 1)
   baseurl < as.character(baseurl)
+
+  # Workaround for #366
+  if(substr(url, 1, 1) == '#' && (compareVersion(curl_version()$version, "8.8.0") < 0)){
+    url <- sub('(#.*)?$', url, baseurl)
+  }
+
   result <- .Call(R_parse_url, url, baseurl)
   if(inherits(result, 'ada')){
     result <- normalize_ada(result)
