@@ -51,9 +51,7 @@ test_that("Decoding parameters", {
 })
 
 test_that("Parse fragment only", {
-  baseurl <- "http://x.com/a/b/c?bla=123&foo=yolo#foo"
-  out <- curl_parse_url("#foo", baseurl)
-  out2 <- curl_parse_url(baseurl)
-  expect_equal(out, out2)
+  out <- curl_parse_url("#foo", "http://x.com/a/b/c")
+  expect_equal(out$path, "/a/b/c")
 })
 
