@@ -69,7 +69,7 @@ curl_parse_url <- function(url, baseurl = NULL, decode = TRUE, params = TRUE){
   baseurl < as.character(baseurl)
 
   # Workaround for #366
-  if(length(baseurl) && substr(url, 1, 1) == '#' && (compareVersion(curl_version()$version, "8.12.0") < 0)){
+  if(length(baseurl) && substr(url, 1, 1) == '#'){
     url <- sub('(#.*)?$', url, baseurl)
   }
 
