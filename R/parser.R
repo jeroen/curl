@@ -66,7 +66,7 @@
 curl_parse_url <- function(url, baseurl = NULL, decode = TRUE, params = TRUE){
   stopifnot(is.character(url))
   stopifnot(length(url) == 1)
-  baseurl < as.character(baseurl)
+  baseurl <- as.character(baseurl)
 
   # Workaround for #366
   if(length(baseurl) && substr(url, 1, 1) == '#'){
