@@ -34,7 +34,7 @@ extern SEXP R_multi_fdset(SEXP);
 extern SEXP R_multi_list(SEXP);
 extern SEXP R_multi_new(void);
 extern SEXP R_multi_run(SEXP, SEXP, SEXP);
-extern SEXP R_multi_setopt(SEXP, SEXP, SEXP, SEXP);
+extern SEXP R_multi_setopt(SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP R_new_file_writer(SEXP);
 extern SEXP R_new_handle(void);
 extern SEXP R_nslookup(SEXP, SEXP);

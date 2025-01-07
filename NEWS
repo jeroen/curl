@@ -1,3 +1,7 @@
+6.2.0
+ - Fix LTO error for R_multi_setopt
+ - Fix parsing of #fragment links in curl_parse() (#366)
+
 6.1.0
  - Fix a rchk bug
  - Enable CURLOPT_PIPEWAIT by default to prefer multiplex when possible
