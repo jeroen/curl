@@ -29,7 +29,7 @@ SEXP R_parse_url(SEXP url, SEXP baseurl) {
     ada_parse_with_base(get_string(url), Rf_length(STRING_ELT(url, 0)), get_string(baseurl), Rf_length(STRING_ELT(baseurl, 0)));
   if(!ada_is_valid(result)){
     ada_free(result);
-    Rf_error("ADA failed to parse URL");
+    Rf_error("ADA failed to parse URL: %s", get_string(url));
   }
   SEXP out = PROTECT(Rf_allocVector(VECSXP, 9));
   SET_VECTOR_ELT(out, 0, get_ada_field(ada_get_href(result)));
@@ -74,12 +74,18 @@ static SEXP get_field(CURLU *h, CURLUPart part, CURLUcode field_missing){
 
 /* We use CURLU_NON_SUPPORT_SCHEME to make results consistent across different libcurl configurations and Ada URL
  * We use CURLU_URLENCODE to normalize input URLs and also be consistent with Ada URL */
+
+
+static void set_url(CURLU *h, const char *str){
+  fail_if(curl_url_set(h, CURLUPART_URL, str, CURLU_NON_SUPPORT_SCHEME | CURLU_URLENCODE));
+}
+
 SEXP R_parse_url(SEXP url, SEXP baseurl) {
   CURLU *h = curl_url();
   if(Rf_length(baseurl)){
-    fail_if(curl_url_set(h, CURLUPART_URL, get_string(baseurl), CURLU_NON_SUPPORT_SCHEME | CURLU_URLENCODE));
+    set_url(h, get_string(baseurl));
   }
-  fail_if(curl_url_set(h, CURLUPART_URL, get_string(url), CURLU_NON_SUPPORT_SCHEME | CURLU_URLENCODE));
+  set_url(h, get_string(url));
   SEXP out = PROTECT(Rf_allocVector(VECSXP, 9));
   SET_VECTOR_ELT(out, 0, get_field(h, CURLUPART_URL, CURLUE_OK));
   SET_VECTOR_ELT(out, 1, get_field(h, CURLUPART_SCHEME, CURLUE_NO_SCHEME));
