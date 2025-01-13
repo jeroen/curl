@@ -27,7 +27,7 @@ multi_list(pool = NULL)
 
 multi_cancel(handle)
 
-new_pool(total_con = 100, host_con = 6, multiplex = TRUE)
+new_pool(total_con = 100, host_con = 6, max_streams = 10, multiplex = TRUE)
 
 multi_fdset(pool = NULL)
 }
