@@ -25,11 +25,11 @@ jobs:
       matrix:
         config:
           - {os: macOS-13,   r: 'release'}
-          - {os: macOS-13,   r: 'release', ssl-backend: SecureTransport}
+          - {os: macOS-13,   r: 'release', ssl-backend: Secure-Transport}
           - {os: macOS-14,   r: 'release'}
-          - {os: macOS-14,   r: 'release', ssl-backend: SecureTransport}
+          - {os: macOS-14,   r: 'release', ssl-backend: Secure-Transport}
           - {os: macOS-15,   r: 'release'}
-          - {os: macOS-15,   r: 'release', ssl-backend: SecureTransport}
+          - {os: macOS-15,   r: 'release', ssl-backend: Secure-Transport}
           - {os: windows-latest, r: 'release', ssl-backend: openssl}
           - {os: windows-latest, r: 'release'}
           - {os: windows-latest, r: '4.2'}
