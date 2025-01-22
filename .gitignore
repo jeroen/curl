@@ -13,3 +13,5 @@ inst/doc
 windows
 configure.log
 src/ada*
+autobrew
+.deps
