@@ -208,8 +208,7 @@ static void set_handle_defaults(reference *ref){
   assert(curl_easy_setopt(handle, CURLOPT_DEBUGFUNCTION, default_verbose_cb));
 
   /* Prefer using multiplex when possible */
-  /* Does not work well: https://github.com/curl/curl/issues/15838 */
-  //assert(curl_easy_setopt(handle, CURLOPT_PIPEWAIT, 1L));
+  assert(curl_easy_setopt(handle, CURLOPT_PIPEWAIT, 1L));
 }
 
 SEXP R_new_handle(void){
