@@ -102,7 +102,7 @@
 #'
 #' }
 multi_download <- function(urls, destfiles = NULL, resume = FALSE, progress = TRUE,
-                           multi_timeout = Inf, multiplex = FALSE, ...){
+                           multi_timeout = Inf, multiplex = TRUE, ...){
   if(inherits(urls, 'curl_handle'))
     urls <- list(urls)
   if(!is.character(urls) && !is.list(urls))

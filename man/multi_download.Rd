@@ -10,7 +10,7 @@ multi_download(
   resume = FALSE,
   progress = TRUE,
   multi_timeout = Inf,
-  multiplex = FALSE,
+  multiplex = TRUE,
   ...
 )
 }

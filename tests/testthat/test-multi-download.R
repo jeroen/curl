@@ -18,7 +18,7 @@ test_that("Stress test multi_download", {
   outdir <- file.path(tempdir(), 'descriptions')
   files <- sprintf('%s/%s.txt', outdir, pkgs)
   dir.create(outdir, showWarnings = FALSE)
-  results <- curl::multi_download(urls, files, multi_timeout = 60, progress = FALSE)
+  results <- curl::multi_download(urls, files, multi_timeout = 60, connecttimeout=60, progress = FALSE)
   expect_length(results$success, length(pkgs))
   expect_true(all(results$success))
   expect_true(all(results$status_code == 200))
