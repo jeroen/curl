@@ -1,9 +1,6 @@
 library(curl)
 library(xml2)
 
-stopifnot(packageVersion('xml2') >= 1.0)
-stopifnot(packageVersion('curl') >= 2.0)
-
 # Extracts hyperlinks from HTML page
 get_links <- function(res){
   tryCatch({
