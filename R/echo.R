@@ -90,7 +90,11 @@ curl_echo <- function(handle, port = find_port(), progress = interactive(), file
     host <- sub("https?://([^/]+).*", "\\1", input_url)
     #hostname <- gsub(":[0-9]+$", "", host)
     #handle_setopt(handle, port = port, resolve = paste0(hostname, ":", port, ':127.0.0.1'))
-    handle_setopt(handle, httpheader = c(paste0("Host:", host), handle_getheaders(handle)))
+    request_headers <- handle_getheaders(handle)
+    if(!any(grepl("^Host:", request_headers, ignore.case = TRUE))){
+      request_headers <- c(paste("Host:", host), request_headers)
+    }
+    handle_setopt(handle, httpheader = request_headers)
   } else {
     target_url <- paste0("http://127.0.0.1:", port)
   }
