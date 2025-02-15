@@ -18,7 +18,7 @@ jobs:
   R-CMD-check:
     runs-on: ${{ matrix.config.os }}
 
-    name: ${{ matrix.config.os }} (${{ matrix.config.r }}) ${{ matrix.config.ssl-backend }} ${{ matrix.config.parser }}
+    name: ${{ matrix.config.os }} (${{ matrix.config.r }}) ${{ matrix.config.ssl-backend }} ${{ matrix.config.parser }}${{ matrix.config.brew }}
 
     strategy:
       fail-fast: false
@@ -30,6 +30,7 @@ jobs:
           - {os: macOS-14,   r: 'release', ssl-backend: Secure-Transport}
           - {os: macOS-15,   r: 'release'}
           - {os: macOS-15,   r: 'release', ssl-backend: Secure-Transport}
+          - {os: macOS-15,   r: 'release', brew: 'homebrew'}
           - {os: windows-latest, r: 'release', ssl-backend: openssl}
           - {os: windows-latest, r: 'release'}
           - {os: windows-latest, r: '4.2'}
@@ -49,7 +50,13 @@ jobs:
       - uses: actions/checkout@v4
 
       - if: runner.os == 'macos'
-        run: brew uninstall --ignore-dependencies curl ca-certificates || true
+        run: |
+          if [ "${{matrix.config.brew}}" ]; then
+            brew update && HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=1 brew install curl || true
+            echo PKG_CONFIG_PATH="/opt/homebrew/opt/curl/lib/pkgconfig" >> $GITHUB_ENV
+          else
+            brew uninstall --ignore-dependencies curl ca-certificates || true
+          fi
 
       - uses: r-lib/actions/setup-pandoc@v2
 
