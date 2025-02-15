@@ -188,7 +188,7 @@ SEXP R_multi_run(SEXP pool_ptr, SEXP timeout, SEXP max){
     R_CheckUserInterrupt();
 
     /* check for timeout or max result*/
-    if(result_max > 0 && total_success + total_fail >= result_max)
+    if(total_pending > 0 && result_max > 0 && total_success + total_fail >= result_max)
       break;
     if(time_max == 0 && total_pending != -1)
       break;
