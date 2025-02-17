@@ -51,7 +51,7 @@ is_string <- function(x){
 }
 
 # Callback for typed libcurl errors
-raise_libcurl_error <- function(errnum, message, errbuf = NULL, source_url = NULL){
+raise_libcurl_error <- function(errnum, message, errbuf = NULL, source_url = NULL, error_cb = NULL){
   error_code <- libcurl_error_codes[errnum]
   if(is.na(error_code))
     error_code <- NULL #future proof new error codes
@@ -63,10 +63,18 @@ raise_libcurl_error <- function(errnum, message, errbuf = NULL, source_url = NUL
   if(is_string(errbuf)){
     message <- sprintf('%s: %s', message, errbuf)
   }
-  cl <- sys.call(-1)
-  e <- structure(
-    class = c(error_code, "curl_error", "error", "condition"),
-    list(message = message, call = cl)
-  )
-  stop(e)
+  if(is.function(error_cb)){
+    if(length(formals(error_cb)) > 0){
+      error_cb(structure(message, class = c(error_code, "curl_error", "character")))
+    } else {
+      error_cb()
+    }
+  } else {
+    cl <- sys.call(-1)
+    e <- structure(
+      class = c(error_code, "curl_error", "error", "condition"),
+      list(message = message, call = cl)
+    )
+    stop(e)
+  }
 }
