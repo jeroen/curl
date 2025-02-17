@@ -170,12 +170,13 @@ SEXP R_multi_run(SEXP pool_ptr, SEXP timeout, SEXP max){
         } else {
           total_fail++;
           if(Rf_isFunction(cb_error)){
-            int arglen = Rf_length(FORMALS(cb_error));
-            SEXP buf = PROTECT(Rf_mkString(strlen(ref->errbuf) ? ref->errbuf : curl_easy_strerror(status)));
-            SEXP call = PROTECT(Rf_lcons(cb_error, arglen ? Rf_lcons(buf, R_NilValue) : R_NilValue));
-            //R_tryEval(call, R_GlobalEnv, &cbfail);
-            Rf_eval(call, R_GlobalEnv); //OK to error here
-            UNPROTECT(2);
+            SEXP expr = PROTECT(Rf_install("call_multi_error_cb"));
+            SEXP errnum = PROTECT(Rf_ScalarInteger(status));
+            SEXP message = PROTECT(Rf_mkString(strlen(ref->errbuf) ? ref->errbuf : curl_easy_strerror(status)));
+            SEXP call = PROTECT(Rf_lang4(expr, errnum, message, cb_error));
+            SEXP env = PROTECT(R_FindNamespace(Rf_mkString("curl")));
+            Rf_eval(call, env);
+            UNPROTECT(5);
           }
         }
         UNPROTECT(4);

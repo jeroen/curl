@@ -70,3 +70,16 @@ raise_libcurl_error <- function(errnum, message, errbuf = NULL, source_url = NUL
   )
   stop(e)
 }
+
+call_multi_error_cb <- function(errnum, message, error_cb){
+  if(!length(formals(error_cb))){
+    return(error_cb())
+  } else {
+    error_code <- libcurl_error_codes[errnum]
+    if(is.na(error_code))
+      error_code <- NULL #future proof new error codes
+    class(message) <- c(error_code, "curl_error")
+    error_cb(message)
+  }
+}
+
