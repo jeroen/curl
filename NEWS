@@ -1,6 +1,7 @@
 6.2.1
  - Workaround for change of behavior in libcurl 8.12.0
  - The multi-run fail callback argument now has a curl-error class
+ - Fixed a slowness in curl_echo() due to threading problem in httpuv
 
 6.2.0
  - MacOS: we have temporarily switched to a static build of libcurl 8.11.1 until

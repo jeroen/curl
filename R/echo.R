@@ -65,10 +65,6 @@ curl_echo <- function(handle, port = find_port(), progress = interactive(), file
   # Workaround bug in httpuv on windows that keeps protecting handler until next startServer()
   on.exit(rm(handle), add = TRUE)
 
-  # Workaround for weird threading issue on Linux
-  # See: https://github.com/jeroen/curl/issues/327
-  wait <- ifelse(isTRUE(grepl('linux', R.version$platform)), 0.001, 0)
-
   # Post data from curl
   xfer <- function(down, up){
     if(progress){
@@ -79,7 +75,9 @@ curl_echo <- function(handle, port = find_port(), progress = interactive(), file
                     as.integer(100 * up[2] / up[1])), file = stderr())
       }
     }
-    later::run_now(wait)
+    # Using timeoutSecs = 0 caused weird threading issuess with httpuv
+    # See: https://github.com/jeroen/curl/issues/327
+    later::run_now(0.001)
     TRUE
   }
   handle_setopt(handle, connecttimeout = 2, xferinfofunction = xfer, noprogress = FALSE, forbid_reuse = TRUE)
