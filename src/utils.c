@@ -66,7 +66,7 @@ void assert_message(CURLcode res, const char *str){
   UNPROTECT(5); //never happens
 }
 
-void assert_status(CURLcode res, reference *ref){
+void raise_libcurl_error(CURLcode res, reference *ref, SEXP error_cb){
   if(res == CURLE_OK)
     return;
   if(res == CURLE_ABORTED_BY_CALLBACK)
@@ -78,10 +78,14 @@ void assert_status(CURLcode res, reference *ref){
   SEXP message = PROTECT(make_string(curl_easy_strerror(res)));
   SEXP errbuf = PROTECT(make_string(ref->errbuf));
   SEXP expr = PROTECT(Rf_install("raise_libcurl_error"));
-  SEXP call = PROTECT(Rf_lang5(expr, code, message, errbuf, url));
+  SEXP call = PROTECT(Rf_lang6(expr, code, message, errbuf, url, error_cb));
   SEXP env = PROTECT(R_FindNamespace(Rf_mkString("curl")));
   Rf_eval(call, env);
-  UNPROTECT(7); //never happens
+  UNPROTECT(7); //happens for non-throwing error_cb()
+}
+
+void assert_status(CURLcode res, reference *ref){
+  raise_libcurl_error(res, ref, R_NilValue);
 }
 
 void massert(CURLMcode res){
