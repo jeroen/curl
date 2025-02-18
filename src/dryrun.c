@@ -23,10 +23,9 @@ static int process_server(void) {
 SEXP R_curl_dryrun(SEXP ptr){
   CURL *handle = get_handle(ptr);
   curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, write_nothing);
-  CURLcode status = CURLE_ABORTED_BY_CALLBACK;
   CURLM * multi_handle = curl_multi_init();
   if(CURLM_OK != curl_multi_add_handle(multi_handle, handle))
-    goto cleanup;
+    Rf_error("Failed to add handle");
   int still_running = 1;
   while(still_running) {
     if(process_server())
@@ -36,14 +35,10 @@ SEXP R_curl_dryrun(SEXP ptr){
   }
   int msgq = 0;
   CURLMsg *m = curl_multi_info_read(multi_handle, &msgq);
-  if(m && (m->msg == CURLMSG_DONE)){
-    status = m->data.result;
-  }
-
-  cleanup:
-    curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, NULL);
-    curl_multi_remove_handle(multi_handle, handle);
-    curl_multi_cleanup(multi_handle);
+  CURLcode status = (m && (m->msg == CURLMSG_DONE)) ? m->data.result : CURLE_ABORTED_BY_CALLBACK;
+  curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, NULL);
+  curl_multi_remove_handle(multi_handle, handle);
+  curl_multi_cleanup(multi_handle);
   assert_status(status, get_ref(ptr));
   return R_NilValue;
 }
