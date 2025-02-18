@@ -74,10 +74,11 @@ curl_echo <- function(handle, port = find_port(), progress = interactive(), file
         cat(sprintf("\rUpload: %s (%.0f%%)   ", format_size(up[2]),
                     as.integer(100 * up[2] / up[1])), file = stderr())
       }
+    } else {
+      # Workaround for https://github.com/jeroen/curl/issues/327
+      Sys.sleep(0.0001)
     }
-    # Using timeoutSecs = 0 caused weird threading issuess with httpuv
-    # See: https://github.com/jeroen/curl/issues/327
-    later::run_now(0.001)
+    later::run_now(0)
     TRUE
   }
   handle_setopt(handle, connecttimeout = 2, xferinfofunction = xfer, noprogress = FALSE, forbid_reuse = TRUE)
