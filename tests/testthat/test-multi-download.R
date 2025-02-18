@@ -18,7 +18,9 @@ test_that("Stress test multi_download", {
   outdir <- file.path(tempdir(), 'descriptions')
   files <- sprintf('%s/%s.txt', outdir, pkgs)
   dir.create(outdir, showWarnings = FALSE)
-  results <- curl::multi_download(urls, files, multi_timeout = 60, connecttimeout=60, progress = FALSE)
+  multiplex <- .Platform$OS.type != 'windows' #disable windows multiplex until we fix #379
+  results <- curl::multi_download(urls, files, multi_timeout = 60, connecttimeout=60,
+                                  progress = FALSE, multiplex = multiplex)
   expect_length(results$success, length(pkgs))
   expect_true(all(results$success))
   expect_true(all(results$status_code == 200))
