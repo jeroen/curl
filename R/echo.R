@@ -74,11 +74,7 @@ curl_echo <- function(handle, port = find_port(), progress = interactive(), file
         cat(sprintf("\rUpload: %s (%.0f%%)   ", format_size(up[2]),
                     as.integer(100 * up[2] / up[1])), file = stderr())
       }
-    } else {
-      # Workaround for https://github.com/jeroen/curl/issues/327
-      Sys.sleep(0.0001)
     }
-    later::run_now(0)
     TRUE
   }
   handle_setopt(handle, connecttimeout = 2, xferinfofunction = xfer, noprogress = FALSE, forbid_reuse = TRUE)
@@ -97,7 +93,8 @@ curl_echo <- function(handle, port = find_port(), progress = interactive(), file
   } else {
     target_url <- paste0("http://127.0.0.1:", port)
   }
-  curl_fetch_memory(target_url, handle = handle)
+  handle_setopt(handle, url = target_url)
+  curl_dryrun(handle)
   output$url <- input_url
   if(progress) cat("\n", file = stderr())
   return(output)
@@ -140,4 +137,13 @@ find_port <- function(range = NULL){
     range <- sample(1024:49151)
   range <- as.integer(range)
   .Call(R_findport, range)
+}
+
+#' @useDynLib curl R_curl_dryrun
+curl_dryrun <- function(handle){
+  .Call(R_curl_dryrun, handle)
+}
+
+later_wrapper <- function(){
+  later::run_now()
 }
