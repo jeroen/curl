@@ -24,23 +24,8 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: macOS-13,   r: 'release'}
-          - {os: macOS-13,   r: 'release', ssl-backend: Secure-Transport}
-          - {os: macOS-14,   r: 'release'}
-          - {os: macOS-14,   r: 'release', ssl-backend: Secure-Transport}
-          - {os: macOS-15,   r: 'release'}
-          - {os: macOS-15,   r: 'release', ssl-backend: Secure-Transport}
-          - {os: macOS-15,   r: 'release', brew: 'homebrew'}
-          - {os: windows-latest, r: 'release', ssl-backend: openssl}
-          - {os: windows-latest, r: 'release'}
-          - {os: windows-latest, r: '4.2'}
-          - {os: windows-latest, r: '4.1', ssl-backend: openssl}
-          - {os: windows-latest, r: '4.1'}
-          - {os: windows-latest, r: '3.6'}
-          - {os: ubuntu-24.04, r: 'devel', http-user-agent: 'release'}
-          - {os: ubuntu-24.04, r: 'release'}
-          - {os: ubuntu-22.04, r: 'release'}
-          - {os: ubuntu-20.04, r: 'release', parser: "Ada-parser" }
+          - {os: ubuntu-24.04,     r: 'release'}
+          - {os: ubuntu-24.04-arm, r: 'release'}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -49,29 +34,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - if: runner.os == 'macos'
-        run: |
-          if [ "${{matrix.config.brew}}" ]; then
-            brew update && HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=1 brew install curl || true
-            echo PKG_CONFIG_PATH="/opt/homebrew/opt/curl/lib/pkgconfig" >> $GITHUB_ENV
-          else
-            brew uninstall --ignore-dependencies curl ca-certificates || true
-          fi
+      - uses: r-lib/actions/setup-pandoc@HEAD
 
-      - uses: r-lib/actions/setup-pandoc@v2
-
-      - uses: r-lib/actions/setup-r@v2
+      - uses: r-lib/actions/setup-r@HEAD
         with:
           r-version: ${{ matrix.config.r }}
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
 
-      - uses: r-lib/actions/setup-r-dependencies@v2
+      - uses: r-lib/actions/setup-r-dependencies@HEAD
         with:
           extra-packages: any::rcmdcheck
           needs: check
 
-      - uses: r-lib/actions/check-r-package@v2
+      - uses: r-lib/actions/check-r-package@HEAD
         env:
           CURL_SSL_BACKEND: ${{ matrix.config.ssl-backend }}
           TEST_ADA_PARSER: ${{ matrix.config.parser }}
