@@ -40,7 +40,8 @@ jobs:
           - {os: ubuntu-24.04, r: 'devel', http-user-agent: 'release'}
           - {os: ubuntu-24.04, r: 'release'}
           - {os: ubuntu-22.04, r: 'release'}
-          - {os: ubuntu-20.04, r: 'release', parser: "Ada-parser" }
+          - {os: ubuntu-22.04, r: 'release', parser: "Ada-parser" }
+          - {os: ubuntu-24.04-arm, r: 'release' }
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
