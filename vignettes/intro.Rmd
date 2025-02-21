@@ -152,7 +152,7 @@ unlink('mirrors.csv')
 
 If the HTTP request was unsuccessful, R will not continue:
 
-```{r, error=TRUE, purl = FALSE}
+```{r, error=TRUE}
 # Oops! A typo in the URL!
 curl_download('https://cloud.r-project.org/CRAN_mirrorZ.csv', 'mirrors.csv')
 con <- curl('https://cloud.r-project.org/CRAN_mirrorZ.csv')
@@ -188,7 +188,7 @@ unlink('mirrors.csv')
 
 If you *do* want the `curl_fetch_*` functions to automatically raise an error, you should set the [`FAILONERROR`](https://curl.se/libcurl/c/CURLOPT_FAILONERROR.html) option to `TRUE` in the handle of the request.
 
-```{r, error=TRUE, purl = FALSE}
+```{r, error=TRUE}
 h <- new_handle(failonerror = TRUE)
 curl_fetch_memory('https://cloud.r-project.org/CRAN_mirrorZ.csv', handle = h)
 ```
