@@ -1,4 +1,4 @@
-if(!file.exists("../windows/libcurl/include/curl/curl.h")){
+if(!file.exists("curl.dll") && !file.exists("../.deps/libcurl/include/curl/curl.h")){
   unlink("../windows", recursive = TRUE)
   url <- if(grepl("aarch", R.version$platform)){
     "https://github.com/r-windows/bundles/releases/download/curl-8.10.1/curl-8.10.1-clang-aarch64.tar.xz"
@@ -10,9 +10,9 @@ if(!file.exists("../windows/libcurl/include/curl/curl.h")){
     "https://github.com/rwinlib/libcurl/archive/v7.84.0.tar.gz"
   }
   download.file(url, basename(url), quiet = TRUE)
-  dir.create("../windows", showWarnings = FALSE)
-  untar(basename(url), exdir = "../windows", tar = 'internal')
+  dir.create("../.deps", showWarnings = FALSE)
+  untar(basename(url), exdir = "../.deps", tar = 'internal')
   unlink(basename(url))
-  setwd("../windows")
+  setwd("../.deps")
   file.rename(list.files(), 'libcurl')
 }

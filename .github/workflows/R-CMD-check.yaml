@@ -31,6 +31,7 @@ jobs:
           - {os: macOS-15,   r: 'release'}
           - {os: macOS-15,   r: 'release', ssl-backend: Secure-Transport}
           - {os: macOS-15,   r: 'release', brew: 'homebrew'}
+          - {os: windows-latest, r: 'devel'}
           - {os: windows-latest, r: 'release', ssl-backend: openssl}
           - {os: windows-latest, r: 'release'}
           - {os: windows-latest, r: '4.2'}
