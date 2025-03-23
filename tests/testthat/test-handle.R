@@ -21,13 +21,14 @@ test_that("Cookies", {
 })
 
 test_that("Keep-Alive", {
-  # Connection to httpbin already set in previous tests. Subsequent requests
-  # should reuse the connection.
-  # Capture the verbose curl output to look for the connection reuse message
-  h <- handle_setopt(h, verbose=TRUE,
-    debugfunction=function(type, msg) cat(readBin(msg, character())))
-  req <- capture.output(curl_fetch_memory(httpbin("get"), handle=h))
-  expect_true(any(grepl("existing connection", req)))
+  con <- rawConnection(raw(), "wb")
+  handle_setopt(h, verbose=TRUE, debugfunction = function(type, msg){
+    if(type < 3) writeBin(msg, con)
+  })
+  req <- curl_fetch_memory(httpbin("get"), handle = h)
+  logs <- rawToChar(rawConnectionValue(con))
+  close(con)
+  expect_true(grepl("existing", logs))
   handle_setopt(h, verbose=FALSE)
 })
 
