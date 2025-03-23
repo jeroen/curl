@@ -15,4 +15,5 @@ if(!file.exists("curl.dll") && !file.exists("../.deps/libcurl/include/curl/curl.
   unlink(basename(url))
   setwd("../.deps")
   file.rename(list.files(), 'libcurl')
+  invisible()
 }
