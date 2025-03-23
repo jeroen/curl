@@ -1,6 +1,11 @@
 #include "curl-common.h"
 #include <time.h>
 
+#include <Rversion.h>
+#if R_VERSION < R_Version(4, 5, 0)
+# define R_ClosureFormals(x) FORMALS(x)
+#endif
+
 /* Notes:
  *  - First check for unhandled messages in curl_multi_info_read() before curl_multi_perform()
  *  - Use Rf_eval() to callback instead of R_tryEval() to propagate interrupt or error back to C
@@ -159,7 +164,7 @@ SEXP R_multi_run(SEXP pool_ptr, SEXP timeout, SEXP max){
         if(status == CURLE_OK){
           total_success++;
           if(Rf_isFunction(cb_complete)){
-            int arglen = Rf_length(FORMALS(cb_complete));
+            int arglen = Rf_length(R_ClosureFormals(cb_complete));
             SEXP out = PROTECT(make_handle_response(ref));
             SET_VECTOR_ELT(out, 9, buf);
             SEXP call = PROTECT(Rf_lcons(cb_complete, arglen ? Rf_lcons(out, R_NilValue) : R_NilValue));
