@@ -1,5 +1,5 @@
 if(!file.exists("curl.o") && !file.exists("../.deps/libcurl/include/curl/curl.h")){
-  unlink("../windows", recursive = TRUE)
+  unlink("../.deps", recursive = TRUE)
   url <- if(grepl("aarch", R.version$platform)){
     "https://github.com/r-windows/bundles/releases/download/curl-8.10.1/curl-8.10.1-clang-aarch64.tar.xz"
   } else if(grepl("clang", Sys.getenv('R_COMPILED_BY'))){
