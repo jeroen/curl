@@ -1,4 +1,8 @@
-6.3.0
+6.2.3
+ - Non blocking connections now wait for 10ms before returning no data to prevent
+   busy waiting when readBin is called in a loop. See #399
+
+6.2.2
  - Fix a unit test for libcurl 8.13.0
  - Cleanup build
 
