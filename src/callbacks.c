@@ -51,7 +51,7 @@ size_t R_curl_callback_read(char *buffer, size_t size, size_t nitems, SEXP fun) 
   }
 
   size_t bytes_read = Rf_length(res);
-  memcpy(buffer, RAW(res), bytes_read);
+  if (bytes_read) memcpy(buffer, RAW_RO(res), bytes_read);
 
   UNPROTECT(3);
   return bytes_read;
