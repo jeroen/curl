@@ -73,7 +73,7 @@ int R_curl_callback_debug(CURL *handle, curl_infotype type_, char *data,
   /* wrap type and msg into R types */
   SEXP type = PROTECT(Rf_ScalarInteger(type_));
   SEXP msg = PROTECT(Rf_allocVector(RAWSXP, size));
-  memcpy(RAW(msg), data, size);
+  if (size) memcpy(RAW(msg), data, size);
 
   /* call the R function */
   SEXP call = PROTECT(Rf_lang3(fun, type, msg));
