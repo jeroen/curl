@@ -136,12 +136,18 @@ test_that("Error classes", {
   expect_error(new_handle(http_version = 99999), 'http_version', class = 'curl_error_bad_function_argument')
   expect_error(curl_fetch_memory('https://asdfsdfsafdsfsdafsafssdfdsf.bla'), 'resolve', class = 'curl_error_couldnt_resolve_host')
   expect_error(curl_fetch_memory('https://asdfsdfsafdsfsdafsafssdfdsf.bla'), 'resolve', class = 'curl_error_couldnt_resolve_host')
-  expect_error(curl_fetch_memory('https://httpbin.org/delay/10', handle = new_handle(timeout = 1L)),
-               'Timeout was reached [httpbin.org]', class = 'curl_error_operation_timedout', fixed = TRUE)
 
   # NB: there is a bug in curl 8.7.1 (on e.g. macos) that causes failonerror
   # to throw 'curle_recv_error' instead of 'curle_http_returned_error'
   expect_error(curl_download('https://httpbin.org/status/418', 'output.txt'))
+})
+
+
+# This test was flaky with httpbin because of caching
+test_that("Timeout error", {
+  skip_on_cran()
+  expect_error(curl_fetch_memory("http://www2.census.gov/acs2011_5yr/pums/csv_pus.zip", handle = new_handle(timeout = 1L)),
+    'Timeout was reached [www2.census.gov]', class = 'curl_error_operation_timedout', fixed = TRUE)
 })
 
 test_that("Platform specific features", {
