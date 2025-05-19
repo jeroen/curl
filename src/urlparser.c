@@ -101,6 +101,34 @@ SEXP R_parse_url(SEXP url, SEXP baseurl) {
   UNPROTECT(1);
   return out;
 }
+
+static void set_value_for_field(CURLU *h, CURLUPart part, const char *field, const char *name, const char *value){
+  if(!strcmp(field, name) && strlen(value) > 0){
+    fail_if(curl_url_set(h, part, value, CURLU_NON_SUPPORT_SCHEME | CURLU_URLENCODE | CURLU_URLDECODE));
+  }
+}
+
+SEXP R_build_url(SEXP inputs){
+  CURLU *h = curl_url();
+  SEXP names = Rf_getAttrib(inputs, R_NamesSymbol);
+  for(int i = 0; i < Rf_length(names); i++){
+    const char *name = CHAR(STRING_ELT(names, i));
+    const char *value = CHAR(STRING_ELT(inputs, i));
+    set_value_for_field(h, CURLUPART_URL, "url", name, value);
+    set_value_for_field(h, CURLUPART_SCHEME, "scheme", name, value);
+    set_value_for_field(h, CURLUPART_HOST, "host", name, value);
+    set_value_for_field(h, CURLUPART_PORT, "port", name, value);
+    set_value_for_field(h, CURLUPART_PATH, "path", name, value);
+    set_value_for_field(h, CURLUPART_QUERY, "query", name, value);
+    set_value_for_field(h, CURLUPART_FRAGMENT, "fragment", name, value);
+    set_value_for_field(h, CURLUPART_USER, "user", name, value);
+    set_value_for_field(h, CURLUPART_PASSWORD, "password", name, value);
+  }
+  SEXP out = get_field(h, CURLUPART_URL, CURLUE_OK);
+  curl_url_cleanup(h);
+  return out;
+}
+
 #else
 SEXP R_parse_url(SEXP url, SEXP baseurl) {
   Rf_error("URL parser not suppored, this libcurl is too old");

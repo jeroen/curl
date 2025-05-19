@@ -6,6 +6,7 @@
 #include <curl/curl.h>
 
 /* .Call calls */
+extern SEXP R_build_url(SEXP);
 extern SEXP R_curl_connection(SEXP, SEXP, SEXP);
 extern SEXP R_curl_dryrun(SEXP);
 extern SEXP R_curl_escape(SEXP, SEXP);
@@ -48,6 +49,7 @@ extern SEXP R_windows_build(void);
 extern SEXP R_write_file_writer(SEXP, SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
+    {"R_build_url",           (DL_FUNC) &R_build_url,           1},
     {"R_curl_connection",     (DL_FUNC) &R_curl_connection,     3},
     {"R_curl_dryrun",         (DL_FUNC) &R_curl_dryrun,         1},
     {"R_curl_escape",         (DL_FUNC) &R_curl_escape,         2},
