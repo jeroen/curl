@@ -2,9 +2,12 @@
 % Please edit documentation in R/parser.R
 \name{curl_parse_url}
 \alias{curl_parse_url}
+\alias{curl_build_url}
 \title{Normalizing URL parser}
 \usage{
-curl_parse_url(url, baseurl = NULL, decode = TRUE, params = TRUE)
+curl_parse_url(url, baseurl = NULL, decode = FALSE, params = TRUE)
+
+curl_build_url(inputs)
 }
 \arguments{
 \item{url}{a character string of length one}
@@ -15,6 +18,8 @@ curl_parse_url(url, baseurl = NULL, decode = TRUE, params = TRUE)
 Set to \code{FALSE} to get output in url-encoded format.}
 
 \item{params}{parse individual parameters assuming query is in \code{application/x-www-form-urlencoded} format.}
+
+\item{inputs}{list containing any subset of fields returned by \link{curl_parse_url}.}
 }
 \description{
 Interfaces the libcurl \href{https://curl.se/libcurl/c/libcurl-url.html}{URL parser}.

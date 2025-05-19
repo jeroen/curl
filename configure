@@ -17,9 +17,9 @@ PKG_CFLAGS=""
 
 # (Jan 2025) MacOS ships a very buggy libcurl 8.7.1 so we avoid this until apple updates it
 # See: https://github.com/jeroen/curl/issues/376
-if [ `uname` = "Darwin" ]; then
-MINVERSION="--atleast-version=8.8.0"
-fi
+#if [ `uname` = "Darwin" ]; then
+#MINVERSION="--atleast-version=8.8.0"
+#fi
 
 # Use pkg-config if available
 pkg-config ${PKG_CONFIG_NAME} ${MINVERSION} 2>/dev/null

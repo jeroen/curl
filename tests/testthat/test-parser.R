@@ -27,8 +27,8 @@ test_that("Relative links need a baseurl",{
 test_that("Consistent URL encoding", {
   url1 <- "https://ja.wikipedia.org/wiki/\u5bff\u53f8"
   url2 <- "https://ja.wikipedia.org/wiki/%e5%af%bf%e5%8f%b8"
-  out1 <- curl_parse_url(url1)
-  out2 <- curl_parse_url(url2)
+  out1 <- curl_parse_url(url1, decode = TRUE)
+  out2 <- curl_parse_url(url2, decode = TRUE)
   out3 <- curl_parse_url(url1, decode = FALSE)
   out4 <- curl_parse_url(url2, decode = FALSE)
   expect_equal(out1$url, url1)

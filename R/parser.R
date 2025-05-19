@@ -63,7 +63,7 @@
 #' curl_parse_url(url2)$path
 #' curl_parse_url(url1, decode = FALSE)$path
 #' curl_parse_url(url1, decode = FALSE)$path
-curl_parse_url <- function(url, baseurl = NULL, decode = TRUE, params = TRUE){
+curl_parse_url <- function(url, baseurl = NULL, decode = FALSE, params = TRUE){
   stopifnot(is.character(url))
   stopifnot(length(url) == 1)
   baseurl <- as.character(baseurl)
@@ -97,6 +97,19 @@ curl_parse_url <- function(url, baseurl = NULL, decode = TRUE, params = TRUE){
       result$password <- curl_unescape(result$password)
   }
   result
+}
+
+#' @export
+#' @rdname curl_parse_url
+#' @param inputs list containing any subset of fields returned by [curl_parse_url].
+#' @useDynLib curl R_build_url
+curl_build_url <- function(inputs){
+  if(is.list(inputs)){
+    inputs <- Filter(length, inputs)
+    inputs <- structure(as.character(inputs), names = names(inputs))
+  }
+  stopifnot(is.character(inputs))
+  .Call(R_build_url, inputs)
 }
 
 
