@@ -42,7 +42,7 @@ elif [ "$PKGCONFIG_CFLAGS" ] || [ "$PKGCONFIG_LIBS" ]; then
   PKG_LIBS=${PKGCONFIG_LIBS}
 elif [ `uname` = "Darwin" ]; then
   # Temporary fix for: https://github.com/jeroen/curl/issues/376
-  curl -sfL "https://autobrew.github.io/scripts/libcurl" > autobrew
+  curl -sfL "https://autobrew.github.io/scripts/libcurl-macos" > autobrew
   . ./autobrew
 fi
 

@@ -1,3 +1,7 @@
+6.3.0
+ - MacOS: our static build of libcurl now links to the MacOS native LibreSSL
+   and nghttp in order to use the same keychain certificates as native curl.
+
 6.2.3
  - Non blocking connections now wait for 10ms before returning no data to prevent
    busy waiting when readBin is called in a loop. See #399
