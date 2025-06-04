@@ -146,8 +146,9 @@ test_that("Error classes", {
 # This test was flaky with httpbin because of caching
 test_that("Timeout error", {
   skip_on_cran()
-  expect_error(curl_fetch_memory("http://www2.census.gov/acs2011_5yr/pums/csv_pus.zip", handle = new_handle(timeout = 1L)),
-    'Timeout was reached [www2.census.gov]', class = 'curl_error_operation_timedout', fixed = TRUE)
+  # http://www2.census.gov/acs2011_5yr/pums/csv_pus.zip has cert issues
+  expect_error(curl_fetch_memory("https://sin-speed.hetzner.com/10GB.bin", handle = new_handle(timeout = 1L)),
+    'Timeout was reached [sin-speed.hetzner.com]', class = 'curl_error_operation_timedout', fixed = TRUE)
 })
 
 test_that("Platform specific features", {
