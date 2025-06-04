@@ -1,5 +1,5 @@
 6.3.0
- - MacOS/Windows: update to libcurl patched 8.14
+ - MacOS/Windows: update to libcurl 8.14.1
  - MacOS: our static build of libcurl now links to the MacOS native LibreSSL
    and nghttp in order to use the same keychain certificates as native curl.
 
