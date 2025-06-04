@@ -101,6 +101,35 @@ SEXP R_parse_url(SEXP url, SEXP baseurl) {
   UNPROTECT(1);
   return out;
 }
+
+static void set_value(CURLU *h, CURLUPart part, SEXP value){
+  if(Rf_length(value)){
+    if(Rf_inherits(value, "AsIs")){
+      fail_if(curl_url_set(h, part, CHAR(STRING_ELT(value, 0)), 0));
+    } else {
+      fail_if(curl_url_set(h, part, CHAR(STRING_ELT(value, 0)), CURLU_URLENCODE));
+    }
+  }
+}
+
+SEXP R_build_url(SEXP url, SEXP scheme, SEXP host, SEXP port, SEXP path, SEXP query, SEXP fragment, SEXP user, SEXP password){
+  CURLU *h = curl_url();
+  set_value(h, CURLUPART_URL, url);
+  set_value(h, CURLUPART_SCHEME, scheme);
+  set_value(h, CURLUPART_HOST, host);
+  set_value(h, CURLUPART_PORT, port);
+  set_value(h, CURLUPART_PATH, path);
+  set_value(h, CURLUPART_QUERY, query);
+  set_value(h, CURLUPART_FRAGMENT, fragment);
+  set_value(h, CURLUPART_USER, user);
+  set_value(h, CURLUPART_PASSWORD, password);
+  char *str = NULL;
+  fail_if(curl_url_get(h, CURLUPART_URL, &str, 0));
+  SEXP out = make_string(str);
+  curl_free(str);
+  return out;
+}
+
 #else
 SEXP R_parse_url(SEXP url, SEXP baseurl) {
   Rf_error("URL parser not suppored, this libcurl is too old");

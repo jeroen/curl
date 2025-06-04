@@ -99,6 +99,32 @@ curl_parse_url <- function(url, baseurl = NULL, decode = TRUE, params = TRUE){
   result
 }
 
+#' @export
+#' @rdname curl_parse_url
+#' @useDynLib curl R_build_url
+#' @param url either url string or list returned by [curl_parse_url].
+#' Set this to modify a URL using the other parameters.
+#' @param scheme string with e.g. `https`. Required if no `url` parameter was given.
+#' @param host string with hostname. Required if no `url` parameter was given.
+#' @param port string or number with port, e.g. `"443"`.
+#' @param path part of url starting with `/` up till `?` or `#`
+#' @param query part of url starting with `?` up till `#`. Only used if no `params` is given.
+#' @param fragment part of url starting with `#`.
+#' @param user string with username
+#' @param password string with password
+#' @param params named character vector with http GET parameters. This will automatically
+#' be converted to `application/x-www-form-urlencoded` and override `query`,
+curl_build_url <- function(url = NULL, scheme = NULL, host = NULL, port = NULL, path = NULL,
+                           query = NULL, fragment = NULL, user = NULL, password = NULL, params = NULL){
+  if(is.list(url)){
+    url <- do.call(curl_build_url, url)
+  }
+  if(length(params) > 0){
+    query <- I(build_query_urlencoded(params))
+  }
+  port <- as.character(port)
+  .Call(R_build_url, url, scheme, host, port, path, query, fragment, user, password);
+}
 
 # NB: Ada also automatically removes the 'port' if it is the default
 # for that scheme such as https://host:443. I don't think we can prevent that.
@@ -123,6 +149,15 @@ parse_query_urlencoded <- function(query){
   values <- vapply(args, `[`, character(1), 2)
   names(values) <- vapply(args, `[`, character(1), 1)
   return(values)
+}
+
+build_query_urlencoded <- function(params){
+  if(!is.character(params) || length(names(params)) != length(params)){
+    stop("params must be named character vector")
+  }
+  nms <- curl_escape(names(params))
+  values <- gsub("%20", "+", curl_escape(params), fixed = TRUE)
+  paste(nms, values, collapse = '&', sep = '=')
 }
 
 try_parse_url <- function(url){
