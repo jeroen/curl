@@ -21,8 +21,8 @@ curl_build_url(
 )
 }
 \arguments{
-\item{url}{either url string or list returned by \link{curl_parse_url}.
-Set this to modify a URL using the other parameters.}
+\item{url}{either URL string or list returned by \link{curl_parse_url}.
+Use this to modify a URL using the other parameters.}
 
 \item{baseurl}{use this as the parent if \code{url} may be a relative path}
 
@@ -38,9 +38,9 @@ be converted to \code{application/x-www-form-urlencoded} and override \code{quer
 
 \item{port}{string or number with port, e.g. \code{"443"}.}
 
-\item{path}{part of url starting with \code{/} up till \verb{?} or \verb{#}}
+\item{path}{piece of the url starting with \code{/} up till \verb{?} or \verb{#}}
 
-\item{query}{part of url starting with \verb{?} up till \verb{#}. Only used if no \code{params} is given.}
+\item{query}{piece of url starting with \verb{?} up till \verb{#}. Only used if no \code{params} is given.}
 
 \item{fragment}{part of url starting with \verb{#}.}
 

@@ -79,7 +79,10 @@ curl_parse_url <- function(url, baseurl = NULL, decode = TRUE, params = TRUE){
   }
   # Need to parse query before url-decoding
   if(params){
-    result$params <- tryCatch(parse_query_urlencoded(result$query), error = message)
+    tryCatch({
+      result$params <- parse_query_urlencoded(result$query)
+      result$query <- NULL
+    }, error = message)
   }
 
   if(isTRUE(decode)){
@@ -102,13 +105,13 @@ curl_parse_url <- function(url, baseurl = NULL, decode = TRUE, params = TRUE){
 #' @export
 #' @rdname curl_parse_url
 #' @useDynLib curl R_build_url
-#' @param url either url string or list returned by [curl_parse_url].
-#' Set this to modify a URL using the other parameters.
+#' @param url either URL string or list returned by [curl_parse_url].
+#' Use this to modify a URL using the other parameters.
 #' @param scheme string with e.g. `https`. Required if no `url` parameter was given.
 #' @param host string with hostname. Required if no `url` parameter was given.
 #' @param port string or number with port, e.g. `"443"`.
-#' @param path part of url starting with `/` up till `?` or `#`
-#' @param query part of url starting with `?` up till `#`. Only used if no `params` is given.
+#' @param path piece of the url starting with `/` up till `?` or `#`
+#' @param query piece of url starting with `?` up till `#`. Only used if no `params` is given.
 #' @param fragment part of url starting with `#`.
 #' @param user string with username
 #' @param password string with password

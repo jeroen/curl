@@ -6,7 +6,7 @@ test_that("Basic URL parser",{
   expect_equal(out$host, 'google.com')
   expect_equal(out$port, '888')
   expect_equal(out$path, '/foo/bar')
-  expect_equal(out$query, "test=123")
+  expect_equal(out$params, c(test="123"))
   expect_equal(out$fragment, 'bla')
   expect_equal(out$user, 'jerry')
   expect_equal(out$password, 'secret')
@@ -66,4 +66,6 @@ test_that("Decoding parameters", {
   expect_equal(tolower(curl_build_url(out)), url)
   out$url <- NULL
   expect_equal(tolower(curl_build_url(out)), url)
+  expect_equal(curl_build_url(out, query = '', path = ''), 'https://www.test.com/')
+
 })

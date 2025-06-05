@@ -50,7 +50,10 @@ SEXP R_parse_url(SEXP url, SEXP baseurl) {
 
 #define set_ada_value(val, fun) if(Rf_length(val)) fun(result, get_string(val), len_string(val))
 
-SEXP R_build_url(SEXP url, SEXP scheme, SEXP host, SEXP port, SEXP path, SEXP query, SEXP fragment, SEXP user, SEXP password){
+SEXP R_build_url(SEXP url, SEXP scheme, SEXP host, SEXP port, SEXP path,
+                 SEXP query, SEXP fragment, SEXP user, SEXP password){
+  if(!Rf_length(url))
+    Rf_error("Either URL or scheme_host are required");
   ada_url *result = ada_parse(get_string(url), len_string(url));
   set_ada_value(url, ada_set_href);
   set_ada_value(scheme, ada_set_protocol);
