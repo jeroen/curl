@@ -79,7 +79,10 @@ curl_parse_url <- function(url, baseurl = NULL, decode = TRUE, params = TRUE){
   }
   # Need to parse query before url-decoding
   if(params){
-    result$params <- tryCatch(parse_query_urlencoded(result$query), error = message)
+    tryCatch({
+      result$params <- parse_query_urlencoded(result$query)
+      result$query <- NULL
+    }, error = message)
   }
 
   if(isTRUE(decode)){
@@ -99,6 +102,41 @@ curl_parse_url <- function(url, baseurl = NULL, decode = TRUE, params = TRUE){
   result
 }
 
+#' @details You can use [curl_modify_url()] both to modify an existing URL, or to
+#' create new URL from scratch. Arguments get automatically URL-encoded where
+#' needed, unless wrapped in `I()`. If `params` is given, this gets converted
+#' into a `application/x-www-form-urlencoded` string which overrides `query`.
+#' When modifying a URL, use an empty string `""` to unset a piece of the URL.
+#' @export
+#' @rdname curl_parse_url
+#' @useDynLib curl R_modify_url
+#' @param url either URL string or list returned by [curl_parse_url].
+#' Use this to modify a URL using the other parameters.
+#' @param scheme string with e.g. `https`. Required if no `url` parameter was given.
+#' @param host string with hostname. Required if no `url` parameter was given.
+#' @param port string or number with port, e.g. `"443"`.
+#' @param path piece of the url starting with `/` up till `?` or `#`
+#' @param query piece of url starting with `?` up till `#`. Only used if no `params` is given.
+#' @param fragment part of url starting with `#`.
+#' @param user string with username
+#' @param password string with password
+#' @param params named character vector with http GET parameters. This will automatically
+#' be converted to `application/x-www-form-urlencoded` and override `query`,
+curl_modify_url <- function(url = NULL, scheme = NULL, host = NULL, port = NULL, path = NULL,
+                           query = NULL, fragment = NULL, user = NULL, password = NULL, params = NULL){
+  if(is.list(url)){
+    url <- do.call(curl_modify_url, url)
+  }
+  # ADA needs a starting URL. Remove when ADA is removed.
+  if(!length(url)){
+    url <- sprintf('%s://%s', scheme, host)
+  }
+  if(length(params) > 0){
+    query <- I(build_query_urlencoded(params))
+  }
+  port <- as.character(port)
+  .Call(R_modify_url, url, scheme, host, port, path, query, fragment, user, password);
+}
 
 # NB: Ada also automatically removes the 'port' if it is the default
 # for that scheme such as https://host:443. I don't think we can prevent that.
@@ -123,6 +161,15 @@ parse_query_urlencoded <- function(query){
   values <- vapply(args, `[`, character(1), 2)
   names(values) <- vapply(args, `[`, character(1), 1)
   return(values)
+}
+
+build_query_urlencoded <- function(params){
+  if(!is.character(params) || length(names(params)) != length(params)){
+    stop("params must be named character vector")
+  }
+  nms <- curl_escape(names(params))
+  values <- gsub("%20", "+", curl_escape(params), fixed = TRUE)
+  paste(nms, values, collapse = '&', sep = '=')
 }
 
 try_parse_url <- function(url){

@@ -2,19 +2,51 @@
 % Please edit documentation in R/parser.R
 \name{curl_parse_url}
 \alias{curl_parse_url}
+\alias{curl_modify_url}
 \title{Normalizing URL parser}
 \usage{
 curl_parse_url(url, baseurl = NULL, decode = TRUE, params = TRUE)
+
+curl_modify_url(
+  url = NULL,
+  scheme = NULL,
+  host = NULL,
+  port = NULL,
+  path = NULL,
+  query = NULL,
+  fragment = NULL,
+  user = NULL,
+  password = NULL,
+  params = NULL
+)
 }
 \arguments{
-\item{url}{a character string of length one}
+\item{url}{either URL string or list returned by \link{curl_parse_url}.
+Use this to modify a URL using the other parameters.}
 
 \item{baseurl}{use this as the parent if \code{url} may be a relative path}
 
 \item{decode}{automatically \link[=curl_escape]{url-decode} output.
 Set to \code{FALSE} to get output in url-encoded format.}
 
-\item{params}{parse individual parameters assuming query is in \code{application/x-www-form-urlencoded} format.}
+\item{params}{named character vector with http GET parameters. This will automatically
+be converted to \code{application/x-www-form-urlencoded} and override \code{query},}
+
+\item{scheme}{string with e.g. \code{https}. Required if no \code{url} parameter was given.}
+
+\item{host}{string with hostname. Required if no \code{url} parameter was given.}
+
+\item{port}{string or number with port, e.g. \code{"443"}.}
+
+\item{path}{piece of the url starting with \code{/} up till \verb{?} or \verb{#}}
+
+\item{query}{piece of url starting with \verb{?} up till \verb{#}. Only used if no \code{params} is given.}
+
+\item{fragment}{part of url starting with \verb{#}.}
+
+\item{user}{string with username}
+
+\item{password}{string with password}
 }
 \description{
 Interfaces the libcurl \href{https://curl.se/libcurl/c/libcurl-url.html}{URL parser}.
@@ -58,6 +90,12 @@ RHEL-8) the \href{https://github.com/ada-url/ada}{Ada URL} library is used as fa
 Results should be identical, though curl has nicer error messages. This is
 a temporary solution, we plan to remove the fallback when old systems are
 no longer supported.
+
+You can use \code{\link[=curl_modify_url]{curl_modify_url()}} both to modify an existing URL, or to
+create new URL from scratch. Arguments get automatically URL-encoded where
+needed, unless wrapped in \code{I()}. If \code{params} is given, this gets converted
+into a \code{application/x-www-form-urlencoded} string which overrides \code{query}.
+When modifying a URL, use an empty string \code{""} to unset a piece of the URL.
 }
 \examples{
 url <- "https://jerry:secret@google.com:888/foo/bar?test=123#bla"

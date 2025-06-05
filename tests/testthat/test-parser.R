@@ -6,10 +6,15 @@ test_that("Basic URL parser",{
   expect_equal(out$host, 'google.com')
   expect_equal(out$port, '888')
   expect_equal(out$path, '/foo/bar')
-  expect_equal(out$query, "test=123")
+  expect_equal(out$params, c(test="123"))
   expect_equal(out$fragment, 'bla')
   expect_equal(out$user, 'jerry')
   expect_equal(out$password, 'secret')
+  expect_equal(curl_modify_url(out), url)
+
+  expect_equal(curl_modify_url(out), url)
+  out$url <- NULL
+  expect_equal(curl_modify_url(out), url)
 })
 
 test_that("Relative links need a baseurl",{
@@ -39,6 +44,13 @@ test_that("Consistent URL encoding", {
   expect_equal(tolower(out3$path), sub("^.*/wiki", "/wiki", url2))
   expect_equal(tolower(out4$url), url2)
   expect_equal(tolower(out4$path), sub("^.*/wiki", "/wiki", url2))
+
+  expect_equal(tolower(curl_modify_url(out1)), url2)
+  expect_equal(tolower(curl_modify_url(out2)), url2)
+  out1$url <- NULL
+  out2$url <- NULL
+  expect_equal(tolower(curl_modify_url(out1)), url2)
+  expect_equal(tolower(curl_modify_url(out2)), url2)
 })
 
 test_that("IPv6 address is understood", {
@@ -48,6 +60,11 @@ test_that("IPv6 address is understood", {
 })
 
 test_that("Decoding parameters", {
-  out <- curl_parse_url('https://www.test.com/bla?tv=tom%26jerry&math=1%2B1+%3D+2&empty')
+  url <- tolower('https://www.test.com/bla?tv=tom%26jerry&math=1%2B1+%3D+2&empty=')
+  out <- curl_parse_url(url)
   expect_equal(out$params, c(tv = "tom&jerry", math = "1+1 = 2", empty = ""))
+  expect_equal(tolower(curl_modify_url(out)), url)
+  out$url <- NULL
+  expect_equal(tolower(curl_modify_url(out)), url)
+  expect_equal(curl_modify_url(out, query = '', path = ''), 'https://www.test.com/')
 })

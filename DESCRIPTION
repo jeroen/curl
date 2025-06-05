@@ -31,4 +31,4 @@ Depends:
 RoxygenNote: 7.3.2.9000
 Encoding: UTF-8
 Language: en-US
-Roxygen: list(markdown = TRUE)
+Roxygen: list(load = "installed", markdown = TRUE)
