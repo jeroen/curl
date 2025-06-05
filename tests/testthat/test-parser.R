@@ -45,12 +45,12 @@ test_that("Consistent URL encoding", {
   expect_equal(tolower(out4$url), url2)
   expect_equal(tolower(out4$path), sub("^.*/wiki", "/wiki", url2))
 
-  expect_equal(curl_build_url(out1), url2)
-  expect_equal(curl_build_url(out2), url2)
+  expect_equal(tolower(curl_build_url(out1)), url2)
+  expect_equal(tolower(curl_build_url(out2)), url2)
   out1$url <- NULL
   out2$url <- NULL
-  expect_equal(curl_build_url(out1), url2)
-  expect_equal(curl_build_url(out2), url2)
+  expect_equal(tolower(curl_build_url(out1)), url2)
+  expect_equal(tolower(curl_build_url(out2)), url2)
 })
 
 test_that("IPv6 address is understood", {
@@ -63,7 +63,7 @@ test_that("Decoding parameters", {
   url <- tolower('https://www.test.com/bla?tv=tom%26jerry&math=1%2B1+%3D+2&empty=')
   out <- curl_parse_url(url)
   expect_equal(out$params, c(tv = "tom&jerry", math = "1+1 = 2", empty = ""))
-  expect_equal(curl_build_url(out), url)
+  expect_equal(tolower(curl_build_url(out)), url)
   out$url <- NULL
-  expect_equal(curl_build_url(out), url)
+  expect_equal(tolower(curl_build_url(out)), url)
 })

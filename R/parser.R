@@ -119,6 +119,10 @@ curl_build_url <- function(url = NULL, scheme = NULL, host = NULL, port = NULL, 
   if(is.list(url)){
     url <- do.call(curl_build_url, url)
   }
+  # ADA needs a starting URL. Remove when ADA is removed.
+  if(!length(url)){
+    url <- sprintf('%s://%s', scheme, host)
+  }
   if(length(params) > 0){
     query <- I(build_query_urlencoded(params))
   }

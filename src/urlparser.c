@@ -25,8 +25,8 @@ static SEXP get_ada_field(ada_string val){
 
 SEXP R_parse_url(SEXP url, SEXP baseurl) {
   ada_url *result = Rf_length(baseurl) == 0 ?
-    ada_parse(get_string(url), Rf_length(STRING_ELT(url, 0))) :
-    ada_parse_with_base(get_string(url), Rf_length(STRING_ELT(url, 0)), get_string(baseurl), Rf_length(STRING_ELT(baseurl, 0)));
+    ada_parse(get_string(url), len_string(url)) :
+    ada_parse_with_base(get_string(url), len_string(url), get_string(baseurl), len_string(baseurl));
   if(!ada_is_valid(result)){
     ada_free(result);
     Rf_error("ADA failed to parse URL: %s", get_string(url));
@@ -44,6 +44,28 @@ SEXP R_parse_url(SEXP url, SEXP baseurl) {
   Rf_setAttrib(out, R_NamesSymbol, make_url_names());
   Rf_setAttrib(out, R_ClassSymbol, Rf_mkString("ada"));
   UNPROTECT(1);
+  ada_free(result);
+  return out;
+}
+
+#define set_ada_value(val, fun) if(Rf_length(val)) fun(result, get_string(val), len_string(val))
+
+SEXP R_build_url(SEXP url, SEXP scheme, SEXP host, SEXP port, SEXP path, SEXP query, SEXP fragment, SEXP user, SEXP password){
+  ada_url *result = ada_parse(get_string(url), len_string(url));
+  set_ada_value(url, ada_set_href);
+  set_ada_value(scheme, ada_set_protocol);
+  set_ada_value(host, ada_set_hostname);
+  set_ada_value(port, ada_set_port);
+  set_ada_value(path, ada_set_pathname);
+  set_ada_value(query, ada_set_search);
+  set_ada_value(fragment, ada_set_hash);
+  set_ada_value(user, ada_set_username);
+  set_ada_value(password, ada_set_password);
+  if(!ada_is_valid(result)){
+    ada_free(result);
+    Rf_error("ADA failed to build URL");
+  }
+  SEXP out = get_ada_field(ada_get_href(result));
   ada_free(result);
   return out;
 }
@@ -105,9 +127,9 @@ SEXP R_parse_url(SEXP url, SEXP baseurl) {
 static void set_value(CURLU *h, CURLUPart part, SEXP value){
   if(Rf_length(value)){
     if(Rf_inherits(value, "AsIs")){
-      fail_if(curl_url_set(h, part, CHAR(STRING_ELT(value, 0)), 0));
+      fail_if(curl_url_set(h, part, get_string(value), 0));
     } else {
-      fail_if(curl_url_set(h, part, CHAR(STRING_ELT(value, 0)), CURLU_URLENCODE));
+      fail_if(curl_url_set(h, part, get_string(value), CURLU_URLENCODE));
     }
   }
 }

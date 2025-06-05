@@ -10,6 +10,7 @@
 
 #define make_string(x) x != NULL ? Rf_mkString(x) : Rf_ScalarString(NA_STRING)
 #define get_string(x) CHAR(STRING_ELT(x, 0))
+#define len_string(x) Rf_length(STRING_ELT(x, 0))
 #define assert(x) assert_message(x, NULL)
 
 //TODO: switch to CURL_AT_LEAST_VERSION
