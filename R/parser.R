@@ -102,9 +102,14 @@ curl_parse_url <- function(url, baseurl = NULL, decode = TRUE, params = TRUE){
   result
 }
 
+#' @details You can use [curl_modify_url()] both to modify an existing URL, or to
+#' create new URL from scratch. Arguments get automatically URL-encoded where
+#' needed, unless wrapped in `I()`. If `params` is given, this gets converted
+#' into a `application/x-www-form-urlencoded` string which overrides `query`.
+#' When modifying a URL, use an empty string `""` to unset a piece of the URL.
 #' @export
 #' @rdname curl_parse_url
-#' @useDynLib curl R_build_url
+#' @useDynLib curl R_modify_url
 #' @param url either URL string or list returned by [curl_parse_url].
 #' Use this to modify a URL using the other parameters.
 #' @param scheme string with e.g. `https`. Required if no `url` parameter was given.
@@ -117,10 +122,10 @@ curl_parse_url <- function(url, baseurl = NULL, decode = TRUE, params = TRUE){
 #' @param password string with password
 #' @param params named character vector with http GET parameters. This will automatically
 #' be converted to `application/x-www-form-urlencoded` and override `query`,
-curl_build_url <- function(url = NULL, scheme = NULL, host = NULL, port = NULL, path = NULL,
+curl_modify_url <- function(url = NULL, scheme = NULL, host = NULL, port = NULL, path = NULL,
                            query = NULL, fragment = NULL, user = NULL, password = NULL, params = NULL){
   if(is.list(url)){
-    url <- do.call(curl_build_url, url)
+    url <- do.call(curl_modify_url, url)
   }
   # ADA needs a starting URL. Remove when ADA is removed.
   if(!length(url)){
@@ -130,7 +135,7 @@ curl_build_url <- function(url = NULL, scheme = NULL, host = NULL, port = NULL, 
     query <- I(build_query_urlencoded(params))
   }
   port <- as.character(port)
-  .Call(R_build_url, url, scheme, host, port, path, query, fragment, user, password);
+  .Call(R_modify_url, url, scheme, host, port, path, query, fragment, user, password);
 }
 
 # NB: Ada also automatically removes the 'port' if it is the default

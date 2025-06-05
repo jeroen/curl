@@ -50,7 +50,7 @@ SEXP R_parse_url(SEXP url, SEXP baseurl) {
 
 #define set_ada_value(val, fun) if(Rf_length(val)) fun(result, get_string(val), len_string(val))
 
-SEXP R_build_url(SEXP url, SEXP scheme, SEXP host, SEXP port, SEXP path,
+SEXP R_modify_url(SEXP url, SEXP scheme, SEXP host, SEXP port, SEXP path,
                  SEXP query, SEXP fragment, SEXP user, SEXP password){
   if(!Rf_length(url))
     Rf_error("Either URL or scheme_host are required");
@@ -137,7 +137,7 @@ static void set_value(CURLU *h, CURLUPart part, SEXP value){
   }
 }
 
-SEXP R_build_url(SEXP url, SEXP scheme, SEXP host, SEXP port, SEXP path, SEXP query, SEXP fragment, SEXP user, SEXP password){
+SEXP R_modify_url(SEXP url, SEXP scheme, SEXP host, SEXP port, SEXP path, SEXP query, SEXP fragment, SEXP user, SEXP password){
   CURLU *h = curl_url();
   set_value(h, CURLUPART_URL, url);
   set_value(h, CURLUPART_SCHEME, scheme);

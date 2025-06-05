@@ -2,12 +2,12 @@
 % Please edit documentation in R/parser.R
 \name{curl_parse_url}
 \alias{curl_parse_url}
-\alias{curl_build_url}
+\alias{curl_modify_url}
 \title{Normalizing URL parser}
 \usage{
 curl_parse_url(url, baseurl = NULL, decode = TRUE, params = TRUE)
 
-curl_build_url(
+curl_modify_url(
   url = NULL,
   scheme = NULL,
   host = NULL,
@@ -90,6 +90,12 @@ RHEL-8) the \href{https://github.com/ada-url/ada}{Ada URL} library is used as fa
 Results should be identical, though curl has nicer error messages. This is
 a temporary solution, we plan to remove the fallback when old systems are
 no longer supported.
+
+You can use \code{\link[=curl_modify_url]{curl_modify_url()}} both to modify an existing URL, or to
+create new URL from scratch. Arguments get automatically URL-encoded where
+needed, unless wrapped in \code{I()}. If \code{params} is given, this gets converted
+into a \code{application/x-www-form-urlencoded} string which overrides \code{query}.
+When modifying a URL, use an empty string \code{""} to unset a piece of the URL.
 }
 \examples{
 url <- "https://jerry:secret@google.com:888/foo/bar?test=123#bla"
