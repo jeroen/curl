@@ -131,7 +131,7 @@ curl_modify_url <- function(url = NULL, scheme = NULL, host = NULL, port = NULL,
   if(!length(url)){
     url <- sprintf('%s://%s', scheme, host)
   }
-  if(length(params) > 0){
+  if(!is.null(params)){
     query <- I(build_query_urlencoded(params))
   }
   port <- as.character(port)
