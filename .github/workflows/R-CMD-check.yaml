@@ -76,7 +76,7 @@ jobs:
       - uses: r-lib/actions/check-r-package@v2
         env:
           CURL_SSL_BACKEND: ${{ matrix.config.ssl-backend }}
-          TEST_ADA_PARSER: ${{ matrix.config.parser }}
+          ENABLE_ADA_PARSER: ${{ matrix.config.parser }}
           MAKEFLAGS: -j4
 
         with:

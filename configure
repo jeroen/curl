@@ -75,14 +75,25 @@ if [ $? -ne 0 ]; then
 fi
 
 # On curl < 7.62 (RHEL-8) enable the fallback
-#TEST_ADA_PARSER=1
-if [ -z "$TEST_ADA_PARSER" ] && pkg-config --atleast-version="7.80" $PKG_CONFIG_NAME; then
-  echo "Found recent recent version of libcurl"
-elif [ "$TEST_ADA_PARSER" ] || ! ${R_HOME}/bin/Rscript --vanilla tools/testversion.R "7.62"; then
+if pkg-config --max-version="7.62" $PKG_CONFIG_NAME; then
+  if [ -f "/etc/redhat-release" ]; then
+    echo "Getting static libcurl for legacy RHEL-8"
+    curl -sOL "https://github.com/jeroen/curl/releases/download/libcurl-8.14.1/get-curl-linux.sh" && . ./get-curl-linux.sh || ENABLE_ADA_PARSER=1
+  else
+    ENABLE_ADA_PARSER=1
+  fi
+fi
+
+#ENABLE_ADA_PARSER=1
+if [ "$ENABLE_ADA_PARSER" ]; then
+  echo "Using the fallback ADA parser because your system is too old."
   tar xf tools/ada.tar.gz -C src
   PKG_CFLAGS="$PKG_CFLAGS -DUSE_ADA_PARSER"
   echo "CXX_STD=CXX17" >> src/Makevars.in
-elif [ `uname` = "Darwin" ] && ${R_HOME}/bin/Rscript --vanilla tools/testversion.R "7.80"; then
+fi
+
+# MacOS 13 CRAN builder has MacOS 11.3 SDK
+if [ `uname` = "Darwin" ] && [ -z "$BREWDIR" ] && ${R_HOME}/bin/Rscript --vanilla tools/testversion.R "7.80"; then
   PKG_CFLAGS="$PKG_CFLAGS -DENABLE_MACOS_POLYFILL"
 fi
 

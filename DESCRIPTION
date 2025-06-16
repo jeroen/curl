@@ -1,7 +1,7 @@
 Package: curl
 Type: Package
 Title: A Modern and Flexible Web Client for R
-Version: 6.3.0.9000
+Version: 6.3.9000
 Authors@R: c(
     person("Jeroen", "Ooms", role = c("aut", "cre"), email = "jeroenooms@gmail.com",
       comment = c(ORCID = "0000-0002-4035-0289")),
@@ -13,7 +13,7 @@ Description: Bindings to 'libcurl' <https://curl.se/libcurl/> for performing ful
     of 'libcurl' is recommended; for a more-user-friendly web client see the 
     'httr2' package which builds on this package with http specific tools and logic.
 License: MIT + file LICENSE
-SystemRequirements: libcurl (>= 7.62): libcurl-devel (rpm) or libcurl4-openssl-dev (deb)
+SystemRequirements: libcurl (>= 7.73): libcurl-devel (rpm) or libcurl4-openssl-dev (deb)
 URL: https://jeroen.r-universe.dev/curl
 BugReports: https://github.com/jeroen/curl/issues
 Suggests:

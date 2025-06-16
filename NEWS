@@ -1,5 +1,8 @@
+6.4.0
+ - Vendor a static libcurl on RHEL8/Rocky-8 because stock one is too old now.
+
 6.3.0
- - New function curl_modify_url() 
+ - New function curl_modify_url()
  - MacOS/Windows: update to libcurl 8.14.1
  - MacOS: our static build of libcurl now links to the MacOS native LibreSSL
    and nghttp in order to use the same keychain certificates as native curl.
