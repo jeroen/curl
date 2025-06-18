@@ -61,7 +61,7 @@ raise_libcurl_error <- function(errnum, message, errbuf = NULL, source_url = NUL
       message <- sprintf('%s [%s]', message, host)
   }
   if(is_string(errbuf)){
-    message <- sprintf('%s: %s', message, errbuf)
+    message <- sprintf('%s:\n%s', message, errbuf)
   }
   if(is.function(error_cb)){
     if(length(formals(error_cb)) > 0){
