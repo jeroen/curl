@@ -6,6 +6,7 @@
 \alias{curl_fetch_stream}
 \alias{curl_fetch_multi}
 \alias{curl_fetch_echo}
+\alias{handle_data}
 \title{Fetch the contents of a URL}
 \usage{
 curl_fetch_memory(url, handle = new_handle())
@@ -24,6 +25,8 @@ curl_fetch_multi(
 )
 
 curl_fetch_echo(url, handle = new_handle())
+
+handle_data(handle)
 }
 \arguments{
 \item{url}{A character string naming the URL of a resource to be downloaded.}
@@ -73,6 +76,20 @@ schedule requests which are executed concurrently when calling
 \code{done} callback is triggered with response data. For failed requests
 (when \code{curl_fetch_memory()} would raise an error), the \code{fail} function
 is triggered with the error message.
+
+After a request has been performed, metadata from the request can be read
+from the handle object using \code{handle_data()} (this same information also gets
+returned by \code{curl_fetch_memory()} directly). It includes things like:
+\itemize{
+\item Final URL (after redirects)
+\item HTTP status code
+\item Content-type
+\item Response headers
+\item Timings
+\item Http-version
+This data remains available in the handle until it is either re-used for a
+new request, or \code{handle_reset()} is called.
+}
 }
 \examples{
 \donttest{

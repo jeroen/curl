@@ -8,7 +8,6 @@
 \alias{handle_getheaders}
 \alias{handle_setform}
 \alias{handle_reset}
-\alias{handle_data}
 \title{Create and configure a curl handle}
 \usage{
 new_handle(...)
@@ -22,8 +21,6 @@ handle_getheaders(handle)
 handle_setform(handle, ..., .list = list())
 
 handle_reset(handle)
-
-handle_data(handle)
 }
 \arguments{
 \item{...}{named options / headers to be set in the handle.

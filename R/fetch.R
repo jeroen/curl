@@ -22,6 +22,18 @@
 #' (when `curl_fetch_memory()` would raise an error), the `fail` function
 #' is triggered with the error message.
 #'
+#' After a request has been performed, metadata from the request can be read
+#' from the handle object using `handle_data()` (this same information also gets
+#' returned by `curl_fetch_memory()` directly). It includes things like:
+#'  - Final URL (after redirects)
+#'  - HTTP status code
+#'  - Content-type
+#'  - Response headers
+#'  - Timings
+#'  - Http-version
+#' This data remains available in the handle until it is either re-used for a
+#' new request, or `handle_reset()` is called.
+#'
 #' @param url A character string naming the URL of a resource to be downloaded.
 #' @param handle A curl handle object.
 #' @export
@@ -116,4 +128,14 @@ curl_fetch_multi <- function(url, done = NULL, fail = NULL, pool = NULL,
 curl_fetch_echo <- function(url, handle = new_handle()){
   handle_setopt(handle, url = enc2utf8(url))
   curl_echo(handle)
+}
+
+#' @export
+#' @rdname curl_fetch
+#' @useDynLib curl R_get_handle_response
+handle_data <- function(handle){
+  stopifnot(inherits(handle, "curl_handle"))
+  out <- .Call(R_get_handle_response, handle)
+  out$content = NULL
+  out
 }

@@ -170,16 +170,6 @@ handle_cookies <- function(handle){
 
 }
 
-#' @export
-#' @rdname handle
-#' @useDynLib curl R_get_handle_response
-handle_data <- function(handle){
-  stopifnot(inherits(handle, "curl_handle"))
-  out <- .Call(R_get_handle_response, handle)
-  out$content = NULL
-  out
-}
-
 # This is for internal use in progress bars. When the download is complete,
 # the speed is equal to content-size / elapsed-time.
 #' @useDynLib curl R_get_handle_speed
