@@ -1,0 +1,25 @@
+name: Linux Distros
+on:
+  push:
+  pull_request:
+
+jobs:
+  rhel:
+    runs-on: ubuntu-24.04${{matrix.arch=='arm64' && '-arm' || ''}}
+    name: ${{ matrix.distro }} ${{ matrix.arch }}
+    strategy:
+      fail-fast: false
+      matrix:
+        distro: [ 'rocky-8', 'rocky-9', 'fedora' ]
+        arch: [ 'amd64', 'arm64' ]
+    container:
+      image: ghcr.io/r-devel/${{ matrix.distro }}:latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::rcmdcheck
+          needs: check
+
+      - uses: r-lib/actions/check-r-package@v2
