@@ -16,6 +16,11 @@
 #' way to perform multiple independent requests is by using a separate handle for
 #' each request. There is very little performance overhead in creating handles.
 #'
+#' The [handle_setform] function is used to perform a `multipart/form-data` HTTP
+#' POST request (a.k.a. posting a form). The form fields can be specified as
+#' strings, raw vectors (for binary data), or [form_file] and [form_data] for
+#' upload elements. See the examples.
+#'
 #' @family handles
 #' @param ... named options / headers to be set in the handle.
 #'   To send a file, see [form_file()]. To list all allowed options,
@@ -40,6 +45,17 @@
 #' handle_setform(h, .list = list(a = "1", b = "2"))
 #' r <- curl_fetch_memory("https://hb.cran.dev/put", h)
 #' cat(rawToChar(r$content))
+#'
+#' # Posting multipart forms
+#' h <- new_handle()
+#' handle_setform(h,
+#'   foo = "blabla",
+#'   bar = charToRaw("boeboe"),
+#'   iris = form_data(serialize(iris, NULL), "application/rda"),
+#'   description = form_file(system.file("DESCRIPTION")),
+#'   logo = form_file(file.path(R.home('doc'), "html/logo.jpg"), "image/jpeg")
+#' )
+#' req <- curl_fetch_memory("https://hb.cran.dev/post", handle = h)
 new_handle <- function(...){
   h <- .Call(R_new_handle)
   handle_setopt(h, ...)

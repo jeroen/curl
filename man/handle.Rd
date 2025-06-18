@@ -54,6 +54,11 @@ function resets only options/headers/forms in the handle. It does not affect
 active connections, cookies or response data from previous requests. The safest
 way to perform multiple independent requests is by using a separate handle for
 each request. There is very little performance overhead in creating handles.
+
+The \link{handle_setform} function is used to perform a \code{multipart/form-data} HTTP
+POST request (a.k.a. posting a form). The form fields can be specified as
+strings, raw vectors (for binary data), or \link{form_file} and \link{form_data} for
+upload elements. See the examples.
 }
 \examples{
 h <- new_handle()
@@ -68,6 +73,17 @@ handle_setopt(h, .list = list(customrequest = "PUT"))
 handle_setform(h, .list = list(a = "1", b = "2"))
 r <- curl_fetch_memory("https://hb.cran.dev/put", h)
 cat(rawToChar(r$content))
+
+# Posting multipart forms
+h <- new_handle()
+handle_setform(h,
+  foo = "blabla",
+  bar = charToRaw("boeboe"),
+  iris = form_data(serialize(iris, NULL), "application/rda"),
+  description = form_file(system.file("DESCRIPTION")),
+  logo = form_file(file.path(R.home('doc'), "html/logo.jpg"), "image/jpeg")
+)
+req <- curl_fetch_memory("https://hb.cran.dev/post", handle = h)
 }
 \seealso{
 Other handles: 
