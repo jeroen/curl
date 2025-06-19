@@ -95,15 +95,19 @@ static struct curl_slist * default_headers(void){
   return headers;
 }
 
-static void assert_setopt(CURLcode res, const char *optname){
+static void assert_setopt(CURLcode res, CURLoption opt, const char *optname){
   if(res != CURLE_OK){
     char errmsg [256] = {0};
-    snprintf(errmsg, 256, "Invalid or unsupported value when setting curl option '%s'", optname);
+    if(opt == CURLOPT_MAIL_RCPT || opt == CURLOPT_MAIL_FROM || opt == CURLOPT_MAIL_AUTH){
+      snprintf(errmsg, 256, "Error setting '%s': your libcurl may have disabled SMTP support", optname);
+    } else {
+      snprintf(errmsg, 256, "Invalid or unsupported value when setting curl option '%s'", optname);
+    }
     assert_message(CURLE_BAD_FUNCTION_ARGUMENT, errmsg);
   }
 }
 
-#define set_user_option(option, value) assert_setopt(curl_easy_setopt(handle, option, value), optname)
+#define set_user_option(option, value) assert_setopt(curl_easy_setopt(handle, option, value), option, optname)
 
 static void set_headers(reference *ref, struct curl_slist *newheaders){
   if(ref->headers)

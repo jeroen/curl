@@ -114,6 +114,7 @@ test_that("Set blank and NULL headers", {
 
 test_that("Custom vector options", {
   h <- new_handle()
+  skip_if_not('smtp' %in% curl_version()$protocols)
   x <- c("foo@gmail.com", "bar@jkhk.nl")
   handle_setopt(h, mail_rcpt = x)
   expect_equal(curl:::handle_getcustom(h), x)

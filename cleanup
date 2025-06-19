@@ -1,4 +1,4 @@
 #!/bin/sh
-rm -f src/Makevars configure.log
+rm -f src/Makevars configure.log get-curl-linux.sh
 rm -f src/ada*
 rm -Rf .deps autobrew
