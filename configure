@@ -77,7 +77,7 @@ fi
 # On curl < 7.62 (RHEL-8) enable the fallback
 if pkg-config --max-version="7.62" $PKG_CONFIG_NAME; then
   if [ -f "/etc/redhat-release" ]; then
-    echo "Getting static libcurl for legacy RHEL-8"
+    echo "Local libcurl is too old. Downloading static libcurl for legacy RHEL systems..."
     curl -sOL "https://github.com/jeroen/curl/releases/download/libcurl-8.14.1/get-curl-linux.sh" && . ./get-curl-linux.sh || ENABLE_ADA_PARSER=1
   else
     ENABLE_ADA_PARSER=1

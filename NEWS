@@ -1,5 +1,6 @@
 6.4.0
- - Vendor a static libcurl on RHEL8/Rocky-8 because stock one is too old now.
+ - Vendor a static libcurl on RHEL/CentOS/Rocky 7 and 8 because stock version is
+   too old now to support most functionality.
 
 6.3.0
  - New function curl_modify_url()
