@@ -76,7 +76,10 @@ curl_parse_url <- function(url, baseurl = NULL, decode = TRUE, params = TRUE){
   result <- .Call(R_parse_url, url, baseurl)
   if(inherits(result, 'ada')){
     result <- normalize_ada(result)
+  } else {
+    result$url <- toupper_url_encoding(result$url)
   }
+
   # Need to parse query before url-decoding
   if(params){
     tryCatch({
@@ -85,20 +88,11 @@ curl_parse_url <- function(url, baseurl = NULL, decode = TRUE, params = TRUE){
     }, error = message)
   }
 
-  if(isTRUE(decode)){
-    if(length(result$url))
-      result$url <- curl_unescape(result$url)
-    if(length(result$path))
-      result$path <- curl_unescape(result$path)
-    if(length(result$query))
-      result$query <- curl_unescape(result$query)
-    if(length(result$fragment))
-      result$fragment <- curl_unescape(result$fragment)
-    if(length(result$user))
-      result$user <- curl_unescape(result$user)
-    if(length(result$password))
-      result$password <- curl_unescape(result$password)
-  }
+  result$path <- normalize_field(result$path, decode)
+  result$query <- normalize_field(result$query, decode)
+  result$fragment <- normalize_field(result$fragment, decode)
+  result$user <- normalize_field(result$user, decode)
+  result$password <- normalize_field(result$password, decode)
   result
 }
 
@@ -135,7 +129,8 @@ curl_modify_url <- function(url = NULL, scheme = NULL, host = NULL, port = NULL,
     query <- I(build_query_urlencoded(params))
   }
   port <- as.character(port)
-  .Call(R_modify_url, url, scheme, host, port, path, query, fragment, user, password);
+  out <- .Call(R_modify_url, url, scheme, host, port, path, query, fragment, user, password)
+  toupper_url_encoding(out)
 }
 
 # NB: Ada also automatically removes the 'port' if it is the default
@@ -148,6 +143,21 @@ normalize_ada <- function(result){
   if(length(result$fragment))
     result$fragment <- sub("^\\#", "", result$fragment)
   unclass(result)
+}
+
+toupper_url_encoding <- function(x){
+  gsub('(%..)', replacement = '\\U\\1', x, perl = TRUE)
+}
+
+normalize_field <- function(x, decode = TRUE){
+  if(is.null(x)){
+    return(x)
+  }
+  if(isTRUE(decode)){
+    curl_unescape(x)
+  } else {
+    toupper_url_encoding(x)
+  }
 }
 
 # Parses a string in 'application/x-www-form-urlencoded' format

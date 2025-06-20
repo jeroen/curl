@@ -31,26 +31,26 @@ test_that("Relative links need a baseurl",{
 
 test_that("Consistent URL encoding", {
   url1 <- "https://ja.wikipedia.org/wiki/\u5bff\u53f8"
-  url2 <- "https://ja.wikipedia.org/wiki/%e5%af%bf%e5%8f%b8"
+  url2 <- "https://ja.wikipedia.org/wiki/%E5%AF%BF%E5%8F%B8"
   out1 <- curl_parse_url(url1)
   out2 <- curl_parse_url(url2)
   out3 <- curl_parse_url(url1, decode = FALSE)
   out4 <- curl_parse_url(url2, decode = FALSE)
-  expect_equal(out1$url, url1)
+  expect_equal(out1$url, url2)
   expect_equal(out1$path, sub("^.*/wiki", "/wiki", url1))
-  expect_equal(out2$url, url1)
+  expect_equal(out2$url, url2)
   expect_equal(out2$path, sub("^.*/wiki", "/wiki", url1))
-  expect_equal(tolower(out3$url), url2)
-  expect_equal(tolower(out3$path), sub("^.*/wiki", "/wiki", url2))
-  expect_equal(tolower(out4$url), url2)
-  expect_equal(tolower(out4$path), sub("^.*/wiki", "/wiki", url2))
+  expect_equal(out3$url, url2)
+  expect_equal(out3$path, sub("^.*/wiki", "/wiki", url2))
+  expect_equal(out4$url, url2)
+  expect_equal(out4$path, sub("^.*/wiki", "/wiki", url2))
 
-  expect_equal(tolower(curl_modify_url(out1)), url2)
-  expect_equal(tolower(curl_modify_url(out2)), url2)
+  expect_equal(curl_modify_url(out1), url2)
+  expect_equal(curl_modify_url(out2), url2)
   out1$url <- NULL
   out2$url <- NULL
-  expect_equal(tolower(curl_modify_url(out1)), url2)
-  expect_equal(tolower(curl_modify_url(out2)), url2)
+  expect_equal(curl_modify_url(out1), url2)
+  expect_equal(curl_modify_url(out2), url2)
 })
 
 test_that("IPv6 address is understood", {
@@ -60,11 +60,11 @@ test_that("IPv6 address is understood", {
 })
 
 test_that("Decoding parameters", {
-  url <- tolower('https://www.test.com/bla?tv=tom%26jerry&math=1%2B1+%3D+2&empty=')
+  url <- 'https://www.test.com/bla?tv=tom%26jerry&math=1%2B1+%3D+2&empty='
   out <- curl_parse_url(url)
   expect_equal(out$params, c(tv = "tom&jerry", math = "1+1 = 2", empty = ""))
-  expect_equal(tolower(curl_modify_url(out)), url)
+  expect_equal(curl_modify_url(out), url)
   out$url <- NULL
-  expect_equal(tolower(curl_modify_url(out)), url)
+  expect_equal(curl_modify_url(out), url)
   expect_equal(curl_modify_url(out, query = '', path = ''), 'https://www.test.com/')
 })
