@@ -23,3 +23,9 @@ jobs:
           needs: check
 
       - uses: r-lib/actions/check-r-package@v2
+        with:
+          args: '"--no-manual"'
+        env:
+          NOT_CRAN: true
+          _R_CHECK_DOC_SIZES_: FALSE
+          LANG: en_US.UTF-8
