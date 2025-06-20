@@ -132,7 +132,7 @@ static void set_value(CURLU *h, CURLUPart part, SEXP value){
     if(Rf_inherits(value, "AsIs")){
       fail_if(curl_url_set(h, part, get_string(value), 0));
     } else {
-      fail_if(curl_url_set(h, part, get_string(value), CURLU_URLENCODE));
+      fail_if(curl_url_set(h, part, get_string(value), CURLU_NON_SUPPORT_SCHEME | CURLU_URLENCODE));
     }
   }
 }
