@@ -26,6 +26,6 @@ jobs:
         with:
           args: '"--no-manual"'
         env:
-          NOT_CRAN: true
+          NOT_CRAN: false
           _R_CHECK_DOC_SIZES_: FALSE
           LANG: en_US.UTF-8

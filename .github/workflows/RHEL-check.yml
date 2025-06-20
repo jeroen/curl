@@ -26,27 +26,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Register
-        run: |
-          subscription-manager register \
-            --org ${{ secrets.REDHAT_ORG }} \
-            --activationkey ${{ secrets.REDHAT_KEY }}
-        shell: bash
+      - uses: r-hub/actions/register-redhat@main
+        env:
+          REDHAT_ORG: ${{ secrets.REDHAT_ORG }}
+          REDHAT_KEY: ${{ secrets.REDHAT_KEY }}
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck
           needs: check
 
-      - name: Unregister
-        if: always()
-        run: |
-          subscription-manager unregister || true
-
       - uses: r-lib/actions/check-r-package@v2
         with:
           args: '"--no-manual"'
         env:
-          NOT_CRAN: true
+          NOT_CRAN: false
           _R_CHECK_DOC_SIZES_: FALSE
           LANG: en_US.UTF-8
