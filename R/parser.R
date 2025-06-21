@@ -42,8 +42,8 @@
 #' @export
 #' @param url a character string of length one
 #' @param baseurl use this as the parent if `url` may be a relative path
-#' @param decode automatically [url-decode][curl_escape] output.
-#' Set to `FALSE` to get output in url-encoded format.
+#' @param decode automatically [url-decode][curl_escape] output into the actual
+#' values. If set to `FALSE`, values for `query`, `path`, `fragment`, `user` and `password` are returned in url-encoded format.
 #' @param params parse individual parameters assuming query is in `application/x-www-form-urlencoded` format.
 #' @useDynLib curl R_parse_url
 #' @examples

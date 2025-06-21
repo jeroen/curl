@@ -26,8 +26,8 @@ Use this to modify a URL using the other parameters.}
 
 \item{baseurl}{use this as the parent if \code{url} may be a relative path}
 
-\item{decode}{automatically \link[=curl_escape]{url-decode} output.
-Set to \code{FALSE} to get output in url-encoded format.}
+\item{decode}{automatically \link[=curl_escape]{url-decode} output into the actual
+values. If set to \code{FALSE}, values for \code{query}, \code{path}, \code{fragment}, \code{user} and \code{password} are returned in url-encoded format.}
 
 \item{params}{named character vector with http GET parameters. This will automatically
 be converted to \code{application/x-www-form-urlencoded} and override \code{query},}
