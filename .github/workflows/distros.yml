@@ -1,4 +1,4 @@
-name: Linux Distros
+name: Legacy Distros
 on:
   push:
   pull_request:
@@ -10,8 +10,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        distro: [ 'rocky-8', 'rocky-9', 'fedora' ]
+        distro: [ 'rocky-8', 'rocky-9', 'ubuntu-20.04']
         arch: [ 'amd64', 'arm64' ]
+        exclude:
+          - distro: ubuntu-20.04
+            arch: arm64
     container:
       image: ghcr.io/r-devel/${{ matrix.distro }}:latest
     steps:
