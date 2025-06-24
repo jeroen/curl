@@ -22,6 +22,17 @@ curl_options <- function(filter = ""){
   opts[m]
 }
 
+curl_options_list <- local({
+  cache <- NULL
+  function(){
+    option_type_table <- make_option_type_table()
+    if(is.null(cache)){
+      cache <<- structure(option_type_table$value, names = option_type_table$name)
+    }
+    return(cache)
+  }
+})
+
 #' @useDynLib curl R_option_types
 make_option_type_table <- function(){
   out <- .Call(R_option_types)
@@ -31,13 +42,3 @@ make_option_type_table <- function(){
     "object", "string", "slist", "cbptr", "blob", "function"))
   structure(out, class = 'data.frame', row.names = seq_along(out$name))
 }
-
-curl_options_list <- local({
-  cache <- NULL
-  function(){
-    if(is.null(cache)){
-      cache <<- structure(option_type_table$value, names = option_type_table$name)
-    }
-    return(cache)
-  }
-})
