@@ -7,6 +7,7 @@
 #' including when support was added/removed from libcurl.
 #'
 #' @export
+#' @rdname curl_options
 #' @param filter string: only return options with string in name
 #' @examples # Available options
 #' curl_options()
@@ -17,28 +18,32 @@
 #' # Symbol table
 #' curl_symbols("proxy")
 curl_options <- function(filter = ""){
-  opts <- curl_options_list()
+  option_type_table <- make_option_type_table()
+  opts <- structure(option_type_table$value, names = option_type_table$name)
   m <- grep(filter, names(opts), ignore.case = TRUE)
   opts[m]
 }
 
-curl_options_list <- local({
+#' @export
+#' @rdname curl_options
+curl_options_table <- function(filter = ""){
+  option_type_table <- make_option_type_table()
+  m <- grep(filter, option_type_table$name, ignore.case = TRUE)
+  option_type_table[m,]
+}
+
+#' @useDynLib curl R_option_types
+make_option_type_table <- local({
   cache <- NULL
   function(){
-    option_type_table <- make_option_type_table()
     if(is.null(cache)){
-      cache <<- structure(option_type_table$value, names = option_type_table$name)
+      out <- .Call(R_option_types)
+      if(!length(out)) return(out)
+      out$name <- tolower(out$name)
+      out$type <- factor(out$type, levels = 0:8, labels = c("long", "values", "off_t",
+        "object", "string", "slist", "cbptr", "blob", "function"))
+      cache <<- structure(out, class = 'data.frame', row.names = seq_along(out$name))
     }
     return(cache)
   }
 })
-
-#' @useDynLib curl R_option_types
-make_option_type_table <- function(){
-  out <- .Call(R_option_types)
-  if(!length(out)) return(out)
-  out$name <- tolower(out$name)
-  out$type <- factor(out$type, levels = 0:8, labels = c("long", "values", "off_t",
-    "object", "string", "slist", "cbptr", "blob", "function"))
-  structure(out, class = 'data.frame', row.names = seq_along(out$name))
-}

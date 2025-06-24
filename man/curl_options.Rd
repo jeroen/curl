@@ -2,11 +2,14 @@
 % Please edit documentation in R/options.R, R/utilities.R
 \name{curl_options}
 \alias{curl_options}
+\alias{curl_options_table}
 \alias{curl_symbols}
 \alias{curl_version}
 \title{List curl version and options.}
 \usage{
 curl_options(filter = "")
+
+curl_options_table(filter = "")
 
 curl_symbols(filter = "")
 
