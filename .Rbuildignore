@@ -20,5 +20,4 @@
 bugs
 ^\.github$
 ^configure.log$
-^src/ada
 ^\.deps$

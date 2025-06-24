@@ -80,14 +80,6 @@ if [ `uname` = "Linux" ] && pkg-config --max-version="7.72" $PKG_CONFIG_NAME; th
   curl -sOL "https://github.com/jeroen/curl/releases/download/libcurl-8.14.1/get-curl-linux.sh" && . ./get-curl-linux.sh
 fi
 
-#ENABLE_ADA_PARSER=1
-if [ "$ENABLE_ADA_PARSER" ]; then
-  echo "Using the fallback ADA parser because your system is too old."
-  tar xf tools/ada.tar.gz -C src
-  PKG_CFLAGS="$PKG_CFLAGS -DUSE_ADA_PARSER"
-  echo "CXX_STD=CXX17" >> src/Makevars.in
-fi
-
 # MacOS 13 CRAN builder has MacOS 11.3 SDK
 if [ `uname` = "Darwin" ] && [ -z "$BREWDIR" ] && ${R_HOME}/bin/Rscript --vanilla tools/testversion.R "7.80"; then
   PKG_CFLAGS="$PKG_CFLAGS -DENABLE_MACOS_POLYFILL"

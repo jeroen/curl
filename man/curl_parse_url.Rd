@@ -85,12 +85,6 @@ For more details on the URL format see
 \href{https://datatracker.ietf.org/doc/html/rfc3986}{rfc3986}
 or the steps explained in the \href{https://url.spec.whatwg.org/#concept-basic-url-parser}{whatwg basic url parser}.
 
-On platforms that do not have a recent enough curl version (basically only
-RHEL-8) the \href{https://github.com/ada-url/ada}{Ada URL} library is used as fallback.
-Results should be identical, though curl has nicer error messages. This is
-a temporary solution, we plan to remove the fallback when old systems are
-no longer supported.
-
 You can use \code{\link[=curl_modify_url]{curl_modify_url()}} both to modify an existing URL, or to
 create new URL from scratch. Arguments get automatically URL-encoded where
 needed, unless wrapped in \code{I()}. If \code{params} is given, this gets converted

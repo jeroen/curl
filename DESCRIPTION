@@ -28,7 +28,7 @@ Suggests:
 VignetteBuilder: knitr
 Depends:
     R (>= 3.0.0)
-RoxygenNote: 7.3.2.9000
+RoxygenNote: 7.3.2
 Encoding: UTF-8
 Language: en-US
 Roxygen: list(load = "installed", markdown = TRUE)

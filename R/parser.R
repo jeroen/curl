@@ -33,12 +33,6 @@
 #' [rfc3986](https://datatracker.ietf.org/doc/html/rfc3986)
 #' or the steps explained in the [whatwg basic url parser](https://url.spec.whatwg.org/#concept-basic-url-parser).
 #'
-#' On platforms that do not have a recent enough curl version (basically only
-#' RHEL-8) the [Ada URL](https://github.com/ada-url/ada) library is used as fallback.
-#' Results should be identical, though curl has nicer error messages. This is
-#' a temporary solution, we plan to remove the fallback when old systems are
-#' no longer supported.
-#'
 #' @export
 #' @param url a character string of length one
 #' @param baseurl use this as the parent if `url` may be a relative path
@@ -74,11 +68,8 @@ curl_parse_url <- function(url, baseurl = NULL, decode = TRUE, params = TRUE){
   }
 
   result <- .Call(R_parse_url, url, baseurl)
-  if(inherits(result, 'ada')){
-    result <- normalize_ada(result)
-  } else {
-    result$url <- toupper_url_encoding(result$url)
-  }
+  result$url <- toupper_url_encoding(result$url)
+
 
   # Need to parse query before url-decoding
   if(params){
@@ -121,28 +112,12 @@ curl_modify_url <- function(url = NULL, scheme = NULL, host = NULL, port = NULL,
   if(is.list(url)){
     url <- do.call(curl_modify_url, url)
   }
-  # ADA needs a starting URL. Remove when ADA is removed.
-  if(!length(url)){
-    url <- sprintf('%s://%s', scheme, host)
-  }
   if(!is.null(params)){
     query <- I(build_query_urlencoded(params))
   }
   port <- as.character(port)
   out <- .Call(R_modify_url, url, scheme, host, port, path, query, fragment, user, password)
   toupper_url_encoding(out)
-}
-
-# NB: Ada also automatically removes the 'port' if it is the default
-# for that scheme such as https://host:443. I don't think we can prevent that.
-normalize_ada <- function(result){
-  if(length(result$scheme))
-    result$scheme <- sub("\\:$", "", result$scheme)
-  if(length(result$query))
-    result$query <- sub("^\\?", "", result$query)
-  if(length(result$fragment))
-    result$fragment <- sub("^\\#", "", result$fragment)
-  unclass(result)
 }
 
 toupper_url_encoding <- function(x){
