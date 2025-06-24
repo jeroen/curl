@@ -58,11 +58,9 @@ SEXP R_curl_version(void) {
     SET_VECTOR_ELT(list, 10, Rf_ScalarLogical(0));
   #endif
 
-  #ifdef HAS_CURL_PARSER
-    SET_VECTOR_ELT(list, 11, Rf_ScalarLogical(1));
-  #else
-    SET_VECTOR_ELT(list, 11, Rf_ScalarLogical(0));
-  #endif
+  // CURL_PARSER is always assumed to be available
+  SET_VECTOR_ELT(list, 11, Rf_ScalarLogical(1));
+
 
   /* return */
   UNPROTECT(3);

@@ -9,7 +9,6 @@
 ^README.md$
 ^src/option_table.h$
 ^src/Makevars$
-^tools/option_table.txt$
 ^src/*.def$
 ^appveyor\.yml$
 ^revdep$

@@ -13,30 +13,7 @@
 #define len_string(x) Rf_length(STRING_ELT(x, 0))
 #define assert(x) assert_message(x, NULL)
 
-//TODO: switch to CURL_AT_LEAST_VERSION
-#define AT_LEAST_CURL(x,y) (LIBCURL_VERSION_MAJOR > x || (LIBCURL_VERSION_MAJOR == x && LIBCURL_VERSION_MINOR >= y))
-
-#if AT_LEAST_CURL(7, 55)
-#define USE_CURL_OFF_T 1
-#endif
-
-#if AT_LEAST_CURL(7, 62)
-#define HAS_CURL_PARSER 1
-#endif
-
-#if AT_LEAST_CURL(7, 67)
-#define HAS_MAX_STREAMS 1
-#endif
-
-#if AT_LEAST_CURL(7, 72)
-#define HAS_CURLINFO_EFFECTIVE_METHOD 1
-#endif
-
-#if AT_LEAST_CURL(7, 73)
-#define HAS_CURL_EASY_OPTION 1
-#endif
-
-#if AT_LEAST_CURL(7, 80)
+#if CURL_AT_LEAST_VERSION(7,80,0)
 #define HAS_CURL_PARSER_STRERROR 1
 #endif
 
@@ -99,6 +76,6 @@ SEXP reflist_add(SEXP x, SEXP target);
 SEXP reflist_remove(SEXP x, SEXP target);
 
 /* Workaround for CRAN using outdated MacOS11 SDK */
-#if defined(__APPLE__) && !defined(HAS_CURL_EASY_OPTION) && defined(ENABLE_MACOS_POLYFILL)
+#if defined(__APPLE__) && defined(ENABLE_MACOS_POLYFILL) && !CURL_AT_LEAST_VERSION(7,81,0)
 #include "macos-polyfill.h"
 #endif

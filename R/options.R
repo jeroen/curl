@@ -7,6 +7,7 @@
 #' including when support was added/removed from libcurl.
 #'
 #' @export
+#' @rdname curl_options
 #' @param filter string: only return options with string in name
 #' @examples # Available options
 #' curl_options()
@@ -17,51 +18,31 @@
 #' # Symbol table
 #' curl_symbols("proxy")
 curl_options <- function(filter = ""){
-  opts <- curl_options_list()
+  option_type_table <- make_option_type_table()
+  opts <- structure(option_type_table$value, names = option_type_table$name)
   m <- grep(filter, names(opts), ignore.case = TRUE)
   opts[m]
 }
 
-# Remove this when RHEL-8 is EOL
-# NB version$os can show 'linux' for p3m MacOS cross compile
-option_table_legacy <- if(grepl("linux", version$os) && grepl("^7.[1-7]", libcurlVersion())){
-  (function(){
-    env <- new.env()
-    if(file.exists("tools/option_table.txt")){
-      source("tools/option_table.txt", env)
-    } else if(file.exists("../tools/option_table.txt")){
-      source("../tools/option_table.txt", env)
-    } else {
-      stop("Failed to find 'tools/option_table.txt' from:", getwd())
-    }
-
-    option_table <- unlist(as.list(env))
-    names(option_table) <- sub("^curlopt_", "", tolower(names(option_table)))
-    option_table[order(names(option_table))]
-  })()
+#' @export
+#' @rdname curl_options
+curl_options_table <- function(filter = ""){
+  option_type_table <- make_option_type_table()
+  m <- grep(filter, option_type_table$name, ignore.case = TRUE)
+  option_type_table[m,]
 }
 
 #' @useDynLib curl R_option_types
-make_option_type_table <- function(){
-  # Only available for libcurl 7.73 and up.
-  out <- .Call(R_option_types)
-  if(!length(out)) return(out)
-  out$name <- tolower(out$name)
-  out$type <- factor(out$type, levels = 0:8, labels = c("long", "values", "off_t",
-    "object", "string", "slist", "cbptr", "blob", "function"))
-  structure(out, class = 'data.frame', row.names = seq_along(out$name))
-}
-
-curl_options_list <- local({
+make_option_type_table <- local({
   cache <- NULL
   function(){
     if(is.null(cache)){
-      cache <<- if(length(option_type_table)){
-        structure(option_type_table$value, names = option_type_table$name)
-      } else {
-        # Fallback method: extracted from headers at build-time
-        option_table_legacy
-      }
+      out <- .Call(R_option_types)
+      if(!length(out)) return(out)
+      out$name <- tolower(out$name)
+      out$type <- factor(out$type, levels = 0:8, labels = c("long", "values", "off_t",
+        "object", "string", "slist", "cbptr", "blob", "function"))
+      cache <<- structure(out, class = 'data.frame', row.names = seq_along(out$name))
     }
     return(cache)
   }

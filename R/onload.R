@@ -8,7 +8,3 @@
                           "See also https://github.com/jeroen/curl/issues/350"))
   }
 }
-
-.onLoad <- function(libname, pkgname){
-  assign("option_type_table", make_option_type_table(), environment(.onLoad))
-}
