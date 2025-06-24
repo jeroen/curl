@@ -1,7 +1,10 @@
 name: Legacy Distros
+
 on:
   push:
+    branches: [main, master]
   pull_request:
+    branches: [main, master]
 
 jobs:
   rhel:
