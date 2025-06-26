@@ -68,3 +68,9 @@ test_that("Decoding parameters", {
   expect_equal(curl_modify_url(out), url)
   expect_equal(curl_modify_url(out, query = '', path = ''), 'https://www.test.com/')
 })
+
+test_that("Using a default scheme", {
+  expect_error(curl_parse_url('yolo'), 'parse')
+  out <- curl_parse_url('yolo', default_scheme = TRUE)
+  expect_equal(out$url, 'https://yolo/')
+})

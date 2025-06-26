@@ -13,6 +13,8 @@
 #define len_string(x) Rf_length(STRING_ELT(x, 0))
 #define assert(x) assert_message(x, NULL)
 
+
+//RHEL-9 has curl 7.76.1
 #if CURL_AT_LEAST_VERSION(7,80,0)
 #define HAS_CURL_PARSER_STRERROR 1
 #endif

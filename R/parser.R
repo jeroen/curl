@@ -39,6 +39,7 @@
 #' @param decode automatically [url-decode][curl_escape] output into the actual
 #' values. If set to `FALSE`, values for `query`, `path`, `fragment`, `user` and `password` are returned in url-encoded format.
 #' @param params parse individual parameters assuming query is in `application/x-www-form-urlencoded` format.
+#' @param default_scheme when `url` is provided without a scheme prefix, assume `https://`.
 #' @useDynLib curl R_parse_url
 #' @examples
 #' url <- "https://jerry:secret@google.com:888/foo/bar?test=123#bla"
@@ -57,7 +58,8 @@
 #' curl_parse_url(url2)$path
 #' curl_parse_url(url1, decode = FALSE)$path
 #' curl_parse_url(url1, decode = FALSE)$path
-curl_parse_url <- function(url, baseurl = NULL, decode = TRUE, params = TRUE){
+curl_parse_url <- function(url, baseurl = NULL, decode = TRUE, params = TRUE,
+                           default_scheme = FALSE){
   stopifnot(is.character(url))
   stopifnot(length(url) == 1)
   baseurl <- as.character(baseurl)
@@ -67,7 +69,7 @@ curl_parse_url <- function(url, baseurl = NULL, decode = TRUE, params = TRUE){
     url <- sub('(#.*)?$', url, baseurl)
   }
 
-  result <- .Call(R_parse_url, url, baseurl)
+  result <- .Call(R_parse_url, url, baseurl, default_scheme)
   result$url <- toupper_url_encoding(result$url)
 
 

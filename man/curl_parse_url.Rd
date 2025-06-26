@@ -5,7 +5,13 @@
 \alias{curl_modify_url}
 \title{Normalizing URL parser}
 \usage{
-curl_parse_url(url, baseurl = NULL, decode = TRUE, params = TRUE)
+curl_parse_url(
+  url,
+  baseurl = NULL,
+  decode = TRUE,
+  params = TRUE,
+  default_scheme = FALSE
+)
 
 curl_modify_url(
   url = NULL,
@@ -31,6 +37,8 @@ values. If set to \code{FALSE}, values for \code{query}, \code{path}, \code{frag
 
 \item{params}{named character vector with http GET parameters. This will automatically
 be converted to \code{application/x-www-form-urlencoded} and override \code{query},}
+
+\item{default_scheme}{when \code{url} is provided without a scheme prefix, assume \verb{https://}.}
 
 \item{scheme}{string with e.g. \code{https}. Required if no \code{url} parameter was given.}
 

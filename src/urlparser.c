@@ -42,16 +42,18 @@ static SEXP get_field(CURLU *h, CURLUPart part, CURLUcode field_missing){
  * We use CURLU_URLENCODE to normalize input URLs and also be consistent with Ada URL */
 
 
-static void set_url(CURLU *h, const char *str){
-  fail_if(curl_url_set(h, CURLUPART_URL, str, CURLU_NON_SUPPORT_SCHEME | CURLU_URLENCODE));
+static void set_url(CURLU *h, const char *str, int default_scheme){
+  int flags = CURLU_NON_SUPPORT_SCHEME | CURLU_URLENCODE | (default_scheme * CURLU_DEFAULT_SCHEME);
+  fail_if(curl_url_set(h, CURLUPART_URL, str, flags));
 }
 
-SEXP R_parse_url(SEXP url, SEXP baseurl) {
+SEXP R_parse_url(SEXP url, SEXP baseurl, SEXP default_https) {
   CURLU *h = curl_url();
+  int default_scheme = Rf_length(default_https) && Rf_asLogical(default_https);
   if(Rf_length(baseurl)){
-    set_url(h, get_string(baseurl));
+    set_url(h, get_string(baseurl), default_scheme);
   }
-  set_url(h, get_string(url));
+  set_url(h, get_string(url), default_scheme);
   SEXP out = PROTECT(Rf_allocVector(VECSXP, 9));
   SET_VECTOR_ELT(out, 0, get_field(h, CURLUPART_URL, CURLUE_OK));
   SET_VECTOR_ELT(out, 1, get_field(h, CURLUPART_SCHEME, CURLUE_NO_SCHEME));

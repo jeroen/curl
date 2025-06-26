@@ -81,6 +81,7 @@ if [ `uname` = "Linux" ] && pkg-config --max-version="7.72" $PKG_CONFIG_NAME; th
 fi
 
 # MacOS 13 CRAN builder has MacOS 11.3 SDK
+# Also for people compiling from source on MacOS 11
 if [ `uname` = "Darwin" ] && [ -z "$BREWDIR" ] && ${R_HOME}/bin/Rscript --vanilla tools/testversion.R "7.80"; then
   PKG_CFLAGS="$PKG_CFLAGS -DENABLE_MACOS_POLYFILL"
 fi
