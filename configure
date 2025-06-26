@@ -74,8 +74,12 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
+# Test minimum version
+${CC} -E ${CPPFLAGS} ${PKG_CFLAGS} ${CFLAGS} tools/version.c >/dev/null 2>&1
+if [ $? -ne 0 ]; then
+
 # On curl < 7.73 (RHEL-8 / Ubuntu 20.04) enable the static library
-if [ `uname` = "Linux" ] && pkg-config --max-version="7.72" $PKG_CONFIG_NAME; then
+if [ `uname` = "Linux" ]; then
   echo "Local libcurl is too old. Downloading static libcurl for legacy RHEL systems..."
   curl -sOL "https://github.com/jeroen/curl/releases/download/libcurl-8.14.1/get-curl-linux.sh" && . ./get-curl-linux.sh
 fi
@@ -84,6 +88,7 @@ fi
 # Also for people compiling from source on MacOS 11
 if [ `uname` = "Darwin" ] && [ -z "$BREWDIR" ] && ${R_HOME}/bin/Rscript --vanilla tools/testversion.R "7.80"; then
   PKG_CFLAGS="$PKG_CFLAGS -DENABLE_MACOS_POLYFILL"
+fi
 fi
 
 # Write to Makevars
