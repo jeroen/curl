@@ -32,7 +32,11 @@ if [ $? -eq 0 ]; then
 fi
 
 # Note that cflags may be empty in case of success
-if [ "$INCLUDE_DIR" ] || [ "$LIB_DIR" ]; then
+if [ "$CURL_CFLAGS" ] || [ "$CURL_LIBS" ]; then
+  echo "Found CURL_CFLAGS and/or CURL_LIBS!"
+  PKG_CFLAGS="$CURL_CFLAGS"
+  PKG_LIBS="$CURL_LIBS"
+elif [ "$INCLUDE_DIR" ] || [ "$LIB_DIR" ]; then
   echo "Found INCLUDE_DIR and/or LIB_DIR!"
   PKG_CFLAGS="-I$INCLUDE_DIR $PKG_CFLAGS"
   PKG_LIBS="-L$LIB_DIR $PKG_LIBS"
@@ -80,7 +84,8 @@ if [ $? -ne 0 ]; then
 
 # On curl < 7.73 (RHEL-8 / Ubuntu 20.04) enable the static library
 if [ `uname` = "Linux" ]; then
-  echo "Local libcurl is too old. Downloading static libcurl for legacy RHEL systems..."
+  echo "Local libcurl is too old. Downloading a static libcurl for legacy Linux..."
+  echo "For alternative solutions see: https://github.com/jeroen/curl/issues/416"
   curl -sOL "https://github.com/jeroen/curl/releases/download/libcurl-8.14.1/get-curl-linux.sh" && . ./get-curl-linux.sh
 fi
 
