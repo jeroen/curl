@@ -1,0 +1,40 @@
+on:
+  schedule:
+    - cron:  '0 4 * * *'
+  workflow_dispatch:
+
+name: Daily libcurl master
+
+jobs:
+  R-CMD-check:
+    runs-on: macos-15
+    name: Daily libcurl master
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - run: |
+            brew remove curl --ignore-dependencies || true
+            brew install curl --HEAD || true
+            echo PKG_CONFIG_PATH="/opt/homebrew/opt/curl/lib/pkgconfig" >> $GITHUB_ENV
+
+      - uses: r-lib/actions/setup-pandoc@v2
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::rcmdcheck
+          needs: check
+
+      - uses: r-lib/actions/check-r-package@v2
+        env:
+          MAKEFLAGS: -j4
+          DISABLE_AUTOBREW: true
+        with:
+          args: 'c("--no-manual", "--as-cran", "--run-donttest")'

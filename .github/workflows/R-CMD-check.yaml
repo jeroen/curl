@@ -28,10 +28,7 @@ jobs:
         config:
           - {os: macOS-13,   r: 'release'}
           - {os: macOS-13,   r: 'release', ssl-backend: Secure-Transport}
-          - {os: macOS-14,   r: 'release'}
-          - {os: macOS-14,   r: 'release', ssl-backend: Secure-Transport}
           - {os: macOS-15,   r: 'release'}
-          - {os: macOS-15,   r: 'next', ssl-backend: Secure-Transport}
           - {os: macOS-15,   r: 'next', brew: 'homebrew'}
           - {os: windows-latest, r: 'devel'}
           - {os: windows-latest, r: 'release', ssl-backend: openssl}
@@ -42,7 +39,6 @@ jobs:
           - {os: windows-latest, r: '3.6'}
           - {os: ubuntu-24.04, r: 'devel', http-user-agent: 'release'}
           - {os: ubuntu-24.04, r: 'release'}
-          - {os: ubuntu-22.04, r: 'release'}
           - {os: ubuntu-24.04-arm, r: 'release' }
 
     env:
