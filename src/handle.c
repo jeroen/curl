@@ -165,12 +165,20 @@ static void set_handle_defaults(reference *ref){
   assert(curl_easy_setopt(handle, CURLOPT_COOKIEFILE, ""));
   assert(curl_easy_setopt(handle, CURLOPT_FILETIME, 1L));
 
-  /* set the default user agent */
+  /* set the default user agent to match base R */
   SEXP agent = Rf_GetOption1(Rf_install("HTTPUserAgent"));
   if(Rf_isString(agent) && Rf_length(agent)){
     assert(curl_easy_setopt(handle, CURLOPT_USERAGENT, CHAR(STRING_ELT(agent, 0))));
   } else {
     assert(curl_easy_setopt(handle, CURLOPT_USERAGENT, "r/curl/jeroen"));
+  }
+
+  /* set the default netrc path to match base R */
+  SEXP netrc = Rf_GetOption1(Rf_install("netrc"));
+  if (Rf_isString(netrc) && Rf_length(netrc)) {
+    const char *path = R_ExpandFileName(CHAR(STRING_ELT(netrc, 0)));
+    assert(curl_easy_setopt(handle, CURLOPT_NETRC, CURL_NETRC_OPTIONAL));
+    assert(curl_easy_setopt(handle, CURLOPT_NETRC_FILE, path));
   }
 
   /* allow all authentication methods */

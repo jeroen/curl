@@ -1,3 +1,6 @@
+7.0.0
+ - Support option(netrc) / R_DEFAULT_NETRC to match base R
+
 6.4.0
  - Vendor a static libcurl on RHEL/CentOS/Rocky 7 and 8 because stock version is
    too old now to support most functionality.
