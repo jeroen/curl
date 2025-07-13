@@ -1,5 +1,10 @@
 7.0.0
- - Support option(netrc) / R_DEFAULT_NETRC to match base R
+ - Major cleanup: packge now requires libcurl >= 7.73. Removed all conditioning
+   and fallbacks for older libcurl versions (#413).
+ - Removed the fallback ADA parser and unconditinoally use the curl URL parser.
+ - Removed the legacy type-checking code as we can unconditionally use the easy-
+   option API.
+ - Support option('netrc') to match base R >= 4.6.0.
 
 6.4.0
  - Vendor a static libcurl on RHEL/CentOS/Rocky 7 and 8 because stock version is
