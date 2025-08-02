@@ -5,6 +5,7 @@
  - Removed the legacy type-checking code as we can unconditionally use the easy-
    option API.
  - Support option('netrc') to match base R >= 4.6.0.
+ - Setting any value in curl_modify_url() to NA or "" will now unset it.
 
 6.4.0
  - Vendor a static libcurl on RHEL/CentOS/Rocky 7 and 8 because stock version is

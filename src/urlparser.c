@@ -71,8 +71,10 @@ SEXP R_parse_url(SEXP url, SEXP baseurl, SEXP default_https) {
 }
 
 static void set_value(CURLU *h, CURLUPart part, SEXP value){
-  if(Rf_length(value)){
-    if(Rf_inherits(value, "AsIs")){
+  if(Rf_length(value) && Rf_isString(value)){
+    if(STRING_ELT(value, 0) == NA_STRING || Rf_length(STRING_ELT(value, 0)) == 0){
+      fail_if(curl_url_set(h, part, NULL, 0));
+    } else if(Rf_inherits(value, "AsIs")){
       fail_if(curl_url_set(h, part, get_string(value), 0));
     } else {
       fail_if(curl_url_set(h, part, get_string(value), CURLU_NON_SUPPORT_SCHEME | CURLU_URLENCODE));
