@@ -48,6 +48,10 @@ has_internet <- local({
     if(any(c("8.8.4.4", "8.8.8.8") %in% ip_addr))
       return(TRUE)
 
+    ip_addr <- nslookup('time.cloudflare.com', multiple = TRUE, error = FALSE, ipv4_only = TRUE)
+    if(any(c("162.159.200.1", "162.159.200.123") %in% ip_addr))
+      return(TRUE)
+
     # Method 2: look for a proxy server
     proxy_vars <- Sys.getenv(c('ALL_PROXY', 'https_proxy', 'HTTPS_PROXY', 'HTTPS_proxy'), NA)
 
