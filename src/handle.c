@@ -270,7 +270,7 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
       if (TYPEOF(val) != CLOSXP)
         Rf_error("Value for option %s (%d) must be a function.", optname, key);
 
-      set_user_option(CURLOPT_XFERINFOFUNCTION, (curl_progress_callback) R_curl_callback_xferinfo);
+      set_user_option(CURLOPT_XFERINFOFUNCTION, (curl_xferinfo_callback) R_curl_callback_xferinfo);
       set_user_option(CURLOPT_XFERINFODATA, val);
       set_user_option(CURLOPT_NOPROGRESS, 0);
       SET_VECTOR_ELT(prot, 1, val); //protect gc
