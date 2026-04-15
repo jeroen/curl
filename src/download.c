@@ -27,7 +27,7 @@ SEXP R_download_curl(SEXP url, SEXP destfile, SEXP quiet, SEXP mode, SEXP ptr, S
 
   /* set options */
   curl_easy_setopt(handle, CURLOPT_URL, Rf_translateCharUTF8(Rf_asChar(url)));
-  curl_easy_setopt(handle, CURLOPT_NOPROGRESS, Rf_asLogical(quiet));
+  curl_easy_setopt(handle, CURLOPT_NOPROGRESS, (long) Rf_asLogical(quiet));
   curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, push_disk);
   curl_easy_setopt(handle, CURLOPT_WRITEDATA, dest);
   curl_easy_setopt(handle, CURLOPT_FAILONERROR, 1L);

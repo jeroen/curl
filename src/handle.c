@@ -272,7 +272,7 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
 
       set_user_option(CURLOPT_XFERINFOFUNCTION, (curl_xferinfo_callback) R_curl_callback_xferinfo);
       set_user_option(CURLOPT_XFERINFODATA, val);
-      set_user_option(CURLOPT_NOPROGRESS, 0);
+      set_user_option(CURLOPT_NOPROGRESS, 0L);
       SET_VECTOR_ELT(prot, 1, val); //protect gc
     } else if (key == CURLOPT_PROGRESSFUNCTION) {
       if (TYPEOF(val) != CLOSXP)
@@ -280,7 +280,7 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
 
       set_user_option(CURLOPT_PROGRESSFUNCTION,(curl_progress_callback) R_curl_callback_progress);
       set_user_option(CURLOPT_PROGRESSDATA, val);
-      set_user_option(CURLOPT_NOPROGRESS, 0);
+      set_user_option(CURLOPT_NOPROGRESS, 0L);
       SET_VECTOR_ELT(prot, 2, val); //protect gc
     } else if (key == CURLOPT_READFUNCTION) {
       if (TYPEOF(val) != CLOSXP)
