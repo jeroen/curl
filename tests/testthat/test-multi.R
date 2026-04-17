@@ -135,7 +135,7 @@ test_that("total_con and multi_fdset", {
   skip_on_os("solaris")
   skip_if_not(strsplit(curl_version()$version, "-")[[1]][1] >= as.numeric_version("7.30"),
               "libcurl does not support host_connections")
-  total_con <- 5
+  total_con <- 4
   pool <- new_pool(total_con = total_con, multiplex = FALSE)
   for (i in c(4, 3, 2, 1, 0, 1, 2, 3, 4)) {
     h1 <- new_handle(url = httpbin(paste0("delay/", i)))
@@ -144,7 +144,7 @@ test_that("total_con and multi_fdset", {
   while(length(multi_list(pool = pool))){
     res <- multi_run(pool = pool, poll = 1)
     fdset <- multi_fdset(pool = pool)
-    expect_lte(length(c(fdset$reads, fdset$writes)), min(total_con, res$pending))
+    expect_lte(length(c(fdset$reads, fdset$writes)), min(total_con, res$pending) +1)
   }
 })
 
@@ -152,7 +152,7 @@ test_that("host_con and multi_fdset", {
   skip_on_os("solaris")
   skip_if_not(strsplit(curl_version()$version, "-")[[1]][1] >= as.numeric_version("7.30"),
               "libcurl does not support host_connections")
-  host_con <- 5
+  host_con <- 4
   pool <- new_pool(host_con = host_con, multiplex = FALSE)
   for (i in c(4, 3, 2, 1, 0, 1, 2, 3, 4)) {
     h1 <- new_handle(url = httpbin(paste0("delay/", i)))
@@ -161,7 +161,7 @@ test_that("host_con and multi_fdset", {
   while(length(multi_list(pool = pool))){
     res <- multi_run(pool = pool, poll = 1)
     fdset <- multi_fdset(pool = pool)
-    expect_lte(length(c(fdset$reads, fdset$writes)), min(host_con, res$pending))
+    expect_lte(length(c(fdset$reads, fdset$writes)), min(host_con, res$pending) +1)
   }
 })
 

@@ -1,5 +1,6 @@
 7.0.1
  - Increase max size of string returned by ie_proxy_info() to 65536
+ - Fix a unit test for libcurl 8.20
 
 7.0.0
  - Major cleanup: packge now requires libcurl >= 7.73. Removed all conditioning
