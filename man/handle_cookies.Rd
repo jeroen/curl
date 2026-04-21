@@ -30,7 +30,7 @@ handle_reset(h)
 handle_cookies(h)
 }
 \seealso{
-Other handles: 
+Other handles:
 \code{\link{handle}}
 }
 \concept{handles}

@@ -86,7 +86,7 @@ handle_setform(h,
 req <- curl_fetch_memory("https://hb.cran.dev/post", handle = h)
 }
 \seealso{
-Other handles: 
-\code{\link{handle_cookies}()}
+Other handles:
+\code{\link[=handle_cookies]{handle_cookies()}}
 }
 \concept{handles}

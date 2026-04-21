@@ -16,7 +16,7 @@
 #' @rdname nslookup
 #' @useDynLib curl R_nslookup
 #' @examples # Should always work if we are online
-#' nslookup("www.r-project.org")
+#' nslookup("www.google.com")
 #'
 #' # If your OS supports IPv6
 #' nslookup("ipv6.test-ipv6.com", ipv4_only = FALSE, error = FALSE)

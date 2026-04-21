@@ -348,7 +348,7 @@ In recent versions of the curl package there are no performance benefits of reus
 
 ```{r}
 req1 <- curl_fetch_memory("https://hb.cran.dev/get")
-req2 <- curl_fetch_memory("https://www.r-project.org")
+req2 <- curl_fetch_memory("https://www.google.com")
 ```
 
 In past versions of this package you needed to manually use a handle to take advantage of http Keep-Alive. However as of version 2.3 this is no longer the case: curl automatically maintains global a pool of open http connections shared by all handles. When performing many requests to the same server, curl automatically uses existing connections when possible, eliminating TCP/SSL handshaking overhead:
