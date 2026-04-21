@@ -35,7 +35,8 @@ set_emscripten_gateway <- function(){
   if(proxy == '' || proxy == "socks5h://localhost:8580"){
     try({
       # Note the websocket runs wss (port 443) but inside we mimic plain http
-      # therefore for curl it looks like plain http:// but on 443.
+      # therefore for curl it looks like http:// but on 443. But it is actually
+      # https because of the wss:// layer in emscripten.
       h <- new_handle(connecttimeout = 2, noproxy = '*')
       req <- curl_fetch_memory("http://get-ws-proxy.r-universe.dev:443", handle = h)
       if(req$status == 200){
