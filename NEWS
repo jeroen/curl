@@ -1,4 +1,6 @@
-7.0.1
+7.1.0
+ - Everything now works out of the box under emscripten (webR) by automatically
+   bootstrapping a ws gateway.
  - Increase max size of string returned by ie_proxy_info() to 65536
  - Fix a unit test for libcurl 8.20
 
