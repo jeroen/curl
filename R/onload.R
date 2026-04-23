@@ -39,11 +39,9 @@ set_emscripten_gateway <- function(){
       # https because of the wss:// layer in emscripten.
       h <- new_handle(connecttimeout = 2, noproxy = '*')
       req <- curl_fetch_memory("http://get-ws-proxy.r-universe.dev:443", handle = h)
-      if(req$status == 200){
-        wsproxy <- rawToChar(req$content)
-        if(grepl('^socks5h://', wsproxy)){
-          Sys.setenv(ALL_PROXY = wsproxy)
-        }
+      wsproxy <- rawToChar(req$content)
+      if(req$status == 200 && grepl('^socks5h://', wsproxy)) {
+        Sys.setenv(ALL_PROXY = wsproxy)
       }
     }, silent = TRUE)
   }

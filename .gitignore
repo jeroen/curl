@@ -13,3 +13,4 @@ windows
 configure.log
 autobrew
 .deps
+.positai

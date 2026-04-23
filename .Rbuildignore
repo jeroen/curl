@@ -20,3 +20,5 @@ bugs
 ^\.github$
 ^configure.log$
 ^\.deps$
+^\.positai$
+^\.claude$
