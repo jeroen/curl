@@ -182,7 +182,8 @@ static void reset(Rconnection con) {
   con->isopen = FALSE;
   con->text = TRUE;
   con->incomplete = FALSE;
-  strcpy(con->mode, "r");
+  con->mode[0] = 'r';
+  con->mode[1] = '\0';
 }
 
 static Rboolean rcurl_open(Rconnection con) {
@@ -263,17 +264,25 @@ SEXP R_curl_connection(SEXP url, SEXP ptr, SEXP partial) {
 
   /* setup curl. These are the parts that are recyclable. */
   request *req = malloc(sizeof(request));
+  if(!req)
+    Rf_error("Failure in malloc. Out of memory?");
   req->handle = get_handle(ptr);
   req->ref = get_ref(ptr);
   req->limit = CURL_MAX_WRITE_SIZE;
   req->buf = malloc(req->limit);
+  if(!req->buf)
+    Rf_error("Failure in malloc. Out of memory?");
   req->manager = curl_multi_init();
   req->partial = Rf_asLogical(partial); //only for curl_fetch_stream()
   req->used = 0;
 
   /* allocate url string */
-  req->url = malloc(strlen(Rf_translateCharUTF8(Rf_asChar(url))) + 1);
-  strcpy(req->url, Rf_translateCharUTF8(Rf_asChar(url)));
+  const char *url_utf8 = Rf_translateCharUTF8(Rf_asChar(url));
+  size_t url_len = strlen(url_utf8) + 1;
+  req->url = malloc(url_len);
+  if(!req->url)
+    Rf_error("Failure in malloc. Out of memory?");
+  memcpy(req->url, url_utf8, url_len);
 
   /* set connection properties */
   con->incomplete = FALSE;
