@@ -33,7 +33,6 @@ curl_version <- function(){
 parse_date <- function(datestring){
   out <- .Call(R_curl_getdate, datestring);
   class(out) <- c("POSIXct", "POSIXt")
-  attr(out, "tzone") <- "UTC"
   out
 }
 
