@@ -1,3 +1,6 @@
+7.1.1
+ - Fix -Wdiscarded-qualifiers warning on gcc-16
+
 7.1.0
  - Everything now works out of the box under emscripten (webR) by automatically
    bootstrapping a ws gateway.
