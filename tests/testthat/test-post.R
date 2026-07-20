@@ -62,7 +62,7 @@ test_that("Multipart form post", {
     bar = charToRaw("boeboe"),
     iris = form_data(serialize(iris, NULL), "data/rda"),
     description = form_file(system.file("DESCRIPTION")),
-    logo = form_file(file.path(Sys.getenv("R_DOC_DIR"), "html/logo.jpg"), "image/jpeg")
+    logo = form_file(file.path(R.home('doc'), "html/logo.jpg"), "image/jpeg")
   )
   req <- curl_fetch_memory(httpbin("post"), handle = hx)
 

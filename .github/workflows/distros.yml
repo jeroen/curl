@@ -17,13 +17,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        distro: [ 'rocky-8', 'rocky-9', 'ubuntu-20.04', 'ubuntu-22.04', 'debian-10', 'debian-11', 'debian-12']
+        distro: [ 'rocky-8', 'rocky-9', 'rocky-10', 'fedora', 'ubuntu-20.04', 'ubuntu-22.04', 'debian-10', 'debian-11', 'debian-12', 'debian-13', 'debian-14']
         #arch: [ 'amd64', 'arm64' ]
         arch: [ 'amd64' ]
     container:
       image: ghcr.io/r-devel/${{ matrix.distro }}:latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
+
+      - if: matrix.distro == 'rocky-9' || matrix.distro == 'rocky-10'
+        run: |
+          mkdir -p /usr/share/doc/R/html
+          echo bla >> /usr/share/doc/R/html/logo.jpg
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
