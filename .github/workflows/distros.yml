@@ -25,11 +25,6 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - if: matrix.distro == 'rocky-9' || matrix.distro == 'rocky-10'
-        run: |
-          mkdir -p /usr/share/doc/R/html
-          echo bla >> /usr/share/doc/R/html/logo.jpg
-
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck
