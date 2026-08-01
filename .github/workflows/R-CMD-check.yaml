@@ -40,6 +40,9 @@ jobs:
           - {os: ubuntu-24.04, r: 'devel', http-user-agent: 'release'}
           - {os: ubuntu-24.04, r: 'release'}
           - {os: ubuntu-24.04-arm, r: 'release' }
+          - {os: ubuntu-24.04-arm, r: 'devel' }
+          - {os: windows-11-arm, r: 'devel'}
+
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -69,6 +72,7 @@ jobs:
         with:
           extra-packages: any::rcmdcheck
           needs: check
+          pak-version: 'devel'
 
       - uses: r-lib/actions/check-r-package@v2
         env:
