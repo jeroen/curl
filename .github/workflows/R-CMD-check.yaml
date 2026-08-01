@@ -67,12 +67,14 @@ jobs:
           r-version: ${{ matrix.config.r }}
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
+          cran: 'https://cran.r-universe.dev'
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck
           needs: check
           pak-version: 'devel'
+          cache: false
 
       - uses: r-lib/actions/check-r-package@v2
         env:
