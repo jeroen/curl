@@ -1,0 +1,330 @@
+#!/bin/sh
+# curl-consts - resolve libcurl's integer constants (enum values and macro
+#               constants) against a real <curl/curl.h>, with their C type and
+#               a form usable from R.
+#
+#   ./curl-consts                                   # every constant
+#   ./curl-consts -e '^CURL(AUTH|PROTO)_'           # only some families
+#   ./curl-consts -n CURLAUTH_ANY -n CURLOPT_URL    # named ones
+#   ./curl-consts -N mysymbols.txt                  # names from a file
+#   ./curl-consts -e '^CURLAUTH_' -r > R/constants.R
+#
+# Only integer constants come back: functions, typedefs, string macros and
+# symbols missing from the installed libcurl cannot be evaluated and are
+# reported by -u instead.
+
+set -eu
+
+CC=${CC:-cc}
+INCDIR=/opt/homebrew/opt/curl/include
+HEADER=curl/curl.h
+SYMFILE=
+SYMURL=https://raw.githubusercontent.com/curl/curl/HEAD/docs/libcurl/symbols-in-versions
+FILTER=
+NAMES=
+OUT=table
+HEX=0
+SHOW_UNRESOLVED=0
+VERBOSE=1
+SIGNED32=0
+
+usage() {
+    cat >&2 <<'EOF'
+usage: curl-consts [options] [extra cc flags...]
+
+selection
+  -e ERE   only symbols matching this extended regex (repeatable)
+  -n NAME  only this symbol (repeatable)
+  -N FILE  only the symbols named in FILE, one per line
+
+output
+  -r       emit an R source file defining a named vector of doubles
+  -s       encode values that fill 32 bits as signed 32-bit ints, so they
+           fit an R integer; cast back through uint32_t in your C code
+  -t       tab-separated
+  -x       add a hex column (table mode)
+  -u       also report symbols that could not be resolved
+
+input
+  -I DIR   include directory holding curl/ (default /opt/homebrew/opt/curl/include)
+  -H HDR   header to include (default curl/curl.h)
+  -f FILE  local symbols-in-versions instead of downloading
+  -U URL   where to download symbols-in-versions from
+  -c CC    compiler (default $CC or cc)
+  -v       progress on stderr
+EOF
+    exit 2
+}
+
+tmp=$(mktemp -d) || exit 1
+trap 'rm -rf "$tmp"' EXIT INT TERM
+: > "$tmp/names"
+
+while getopts 'e:n:N:rstxuI:H:f:U:c:vh' opt; do
+    case $opt in
+        e) FILTER="${FILTER}${FILTER:+|}$OPTARG" ;;
+        n) echo "$OPTARG" >> "$tmp/names"; NAMES=1 ;;
+        N) cat "$OPTARG" >> "$tmp/names"; NAMES=1 ;;
+        r) OUT=r ;;
+        s) SIGNED32=1 ;;
+        t) OUT=tsv ;;
+        x) HEX=1 ;;
+        u) SHOW_UNRESOLVED=1 ;;
+        I) INCDIR=$OPTARG ;;
+        H) HEADER=$OPTARG ;;
+        f) SYMFILE=$OPTARG ;;
+        U) SYMURL=$OPTARG ;;
+        c) CC=$OPTARG ;;
+        v) VERBOSE=1 ;;
+        *) usage ;;
+    esac
+done
+shift $((OPTIND - 1))
+CCFLAGS=$*
+
+log() { [ "$VERBOSE" -eq 1 ] && echo "curl-consts: $*" >&2 || : ; }
+
+# ---------------------------------------------------------------- symbol list
+if [ -n "$SYMFILE" ]; then
+    cp "$SYMFILE" "$tmp/siv.txt"
+else
+    log "fetching $SYMURL"
+    curl -sSfL "$SYMURL" -o "$tmp/siv.txt"
+fi
+
+# Symbol lines start in column 1; the banner and column headers are indented.
+awk '/^[A-Za-z_][A-Za-z0-9_]*[ \t]/ { print $1 }' "$tmp/siv.txt" | sort -u > "$tmp/all"
+
+if [ -n "$NAMES" ]; then
+    sort -u "$tmp/names" > "$tmp/want"
+    comm -23 "$tmp/want" "$tmp/all" | sed 's/^/curl-consts: not in symbols-in-versions: /' >&2
+    comm -12 "$tmp/want" "$tmp/all" > "$tmp/pending"
+elif [ -n "$FILTER" ]; then
+    grep -E "$FILTER" "$tmp/all" > "$tmp/pending" || :
+else
+    cp "$tmp/all" "$tmp/pending"
+fi
+
+total=$(wc -l < "$tmp/pending" | tr -d ' ')
+[ "$total" -gt 0 ] || { echo "curl-consts: no symbols selected" >&2; exit 1; }
+log "$total symbols to try"
+
+# ------------------------------------------------------------- compiler setup
+: > "$tmp/empty.c"
+ERRFLAG=
+for f in -ferror-limit=0 -fmax-errors=0; do
+    if $CC "$f" -c "$tmp/empty.c" -o "$tmp/empty.o" 2>/dev/null; then ERRFLAG=$f; break; fi
+done
+
+# _Generic names the type exactly; fall back to size and signedness if the
+# compiler predates C11.
+cat > "$tmp/gtest.c" <<'EOF'
+int main(void) { return _Generic(1, int: 0, default: 1); }
+EOF
+STD=
+GENERIC=0
+for f in '' -std=c11 -std=gnu11; do
+    if $CC $f -c "$tmp/gtest.c" -o "$tmp/gtest.o" 2>/dev/null; then STD=$f; GENERIC=1; break; fi
+done
+
+if [ "$GENERIC" -eq 1 ]; then
+    cat > "$tmp/ty.h" <<'EOF'
+#define TY(n) _Generic((n), \
+        char: "char", signed char: "signed char", unsigned char: "unsigned char", \
+        short: "short", unsigned short: "unsigned short", \
+        int: "int", unsigned int: "unsigned int", \
+        long: "long", unsigned long: "unsigned long", \
+        long long: "long long", unsigned long long: "unsigned long long", \
+        default: "?")
+EOF
+else
+    log "no _Generic; deducing types from size and signedness"
+    cat > "$tmp/ty.h" <<'EOF'
+/* (n)-(n)-1 wraps to a huge positive value in an unsigned type. */
+#define TY(n) ((n) - (n) - 1 < 0 \
+    ? (sizeof(n) == sizeof(int) ? "int" : sizeof(n) == sizeof(long) ? "long" : "long long") \
+    : (sizeof(n) == sizeof(int) ? "unsigned int" : sizeof(n) == sizeof(long) ? "unsigned long" : "unsigned long long"))
+EOF
+fi
+
+cat > "$tmp/probe.c" <<EOF
+#include <stdio.h>
+#include <$HEADER>
+#include "ty.h"
+
+/* '#n' stringizes before expansion, so the symbol's own name is printed.  The
+   '(n) < 0' test is evaluated in the symbol's own type, which is how a
+   negative signed constant is told apart from a large unsigned one.  R's
+   integer type is a 32-bit signed int whose minimum encodes NA, so anything
+   outside +-(2^31 - 1) has to travel as a double. */
+#define P(n) do { \\
+        int neg_; unsigned long long u_, mag_; long long s_, r32_; \\
+        const char *rt_; char enc_[24]; \\
+        (void)((n) | 0);  /* rejects pointers: string macros are not values */ \\
+        neg_ = (n) < 0; \\
+        u_ = (unsigned long long)(n); \\
+        s_ = (long long)(n); \\
+        mag_ = neg_ ? -u_ : u_; \\
+        rt_ = (neg_ ? s_ >= -2147483647LL : u_ <= 2147483647ULL) ? "integer" \\
+              : (mag_ <= 9007199254740992ULL) ? "double" : "inexact"; \\
+        /* Reinterpret a value that fills 32 bits as a signed 32-bit int.  R's
+           NA_integer_ is INT_MIN, so that one bit pattern is unusable. */ \\
+        r32_ = (!neg_ && u_ <= 4294967295ULL) \\
+               ? (long long)(int)(unsigned int)u_ : 0; \\
+        if (!neg_ && u_ <= 4294967295ULL && r32_ != -2147483647LL - 1) \\
+            sprintf(enc_, "%lld", r32_); \\
+        else \\
+            sprintf(enc_, "-"); \\
+        if (neg_) printf("%s\\t%lld\\t-0x%llx\\t%s\\t%s\\t%s\\n", #n, s_, -u_, TY(n), rt_, enc_); \\
+        else      printf("%s\\t%llu\\t0x%llx\\t%s\\t%s\\t%s\\n", #n, u_, u_, TY(n), rt_, enc_); \\
+    } while (0);
+
+int main(void)
+{
+#include "entries.h"
+    return 0;
+}
+EOF
+
+: > "$tmp/values.tsv"
+
+# Compile the pending batch; whatever the compiler rejects is blanked out and
+# retried, so one bad line can never take the whole batch down with it.
+round=0
+while [ -s "$tmp/pending" ]; do
+    round=$((round + 1))
+    log "round $round: trying $(wc -l < "$tmp/pending" | tr -d ' ') symbols"
+
+    awk '{ print "P(" $1 ")" }' "$tmp/pending" > "$tmp/entries.master"
+    echo 0 > "$tmp/bad"          # sentinel: keeps this file non-empty for awk
+
+    attempt=0
+    while : ; do
+        attempt=$((attempt + 1))
+        # Blanking rejected lines rather than deleting them keeps the line
+        # numbers in compiler messages pointing at the same symbols.
+        awk 'NR==FNR { bad[$1]; next } { print (FNR in bad) ? "" : $0 }' \
+            "$tmp/bad" "$tmp/entries.master" > "$tmp/entries.h"
+
+        if $CC -w $STD $ERRFLAG -I"$INCDIR" -I"$tmp" $CCFLAGS \
+               "$tmp/probe.c" -o "$tmp/probe" 2> "$tmp/err"; then
+            break
+        fi
+
+        sed -n 's/.*entries\.h:\([0-9][0-9]*\):.*/\1/p' "$tmp/err" | sort -un > "$tmp/newbad"
+        if [ ! -s "$tmp/newbad" ] || [ "$attempt" -gt 60 ]; then
+            echo "curl-consts: compilation failed with nothing left to drop" >&2
+            sed 's/^/  /' "$tmp/err" >&2
+            exit 1
+        fi
+        sort -un "$tmp/bad" "$tmp/newbad" > "$tmp/bad.new" && mv "$tmp/bad.new" "$tmp/bad"
+    done
+
+    before=$(wc -l < "$tmp/values.tsv" | tr -d ' ')
+    "$tmp/probe" >> "$tmp/values.tsv"
+    after=$(wc -l < "$tmp/values.tsv" | tr -d ' ')
+    log "round $round: resolved $((after - before)), $attempt compile(s)"
+
+    # Rejected symbols go round again: some were only casualties of a parse
+    # error on a neighbouring line and compile fine without it.
+    awk 'NR==FNR { bad[$1]; next } (FNR in bad) { print }' \
+        "$tmp/bad" "$tmp/pending" > "$tmp/pending.new"
+    mv "$tmp/pending.new" "$tmp/pending"
+
+    [ "$after" -gt "$before" ] || break
+done
+
+sort -o "$tmp/values.tsv" "$tmp/values.tsv"
+resolved=$(wc -l < "$tmp/values.tsv" | tr -d ' ')
+
+# libcurl version, for the generated file's header
+cat > "$tmp/ver.c" <<EOF
+#include <stdio.h>
+#include <$HEADER>
+int main(void) { printf("%s\n", LIBCURL_VERSION); return 0; }
+EOF
+if $CC -w -I"$INCDIR" $CCFLAGS "$tmp/ver.c" -o "$tmp/ver" 2>/dev/null; then
+    LIBVER=$("$tmp/ver")
+else
+    LIBVER=unknown
+fi
+
+# --------------------------------------------------------------------- output
+awk -F'\t' -v mode="$OUT" -v hex="$HEX" -v ver="$LIBVER" -v hdr="$HEADER" -v enc="$SIGNED32" '
+    {
+        name[++n] = $1; val[n] = $2; hx[n] = $3; ct[n] = $4; rt[n] = $5
+        rv[n] = $2
+        # -s: re-encode anything that does not fit an R integer but does fit
+        # 32 bits, and say so, since the binding has to undo it.
+        if (enc && rt[n] != "integer" && $6 != "-") { rv[n] = $6; rt[n] = "int32" }
+        # An R integer literal carries an L suffix; keep it in the width.
+        lit[n] = rv[n] (enc && (rt[n] == "integer" || rt[n] == "int32") ? "L" : "")
+        note[n] = ct[n] (rt[n] == "int32" ? ", int32-encoded: cast back through uint32_t" : "") \
+                        (rt[n] == "inexact" ? "  -- WARNING: > 2^53, not exact as a double" : "")
+        if (length(rv[n]) > wr) wr = length(rv[n])
+        if (length($1)   > w)  w  = length($1)
+        if (length($2)   > wv) wv = length($2)
+        if (length($3)   > wh) wh = length($3)
+        if (length($4)   > wc) wc = length($4)
+        if (length(lit[n]) > wl) wl = length(lit[n])
+    }
+    END {
+        if (mode == "r") {
+            print "## Generated by curl-consts from <" hdr ">, libcurl " ver
+            if (enc) {
+                print "## Values marked int32-encoded were reinterpreted as signed 32-bit"
+                print "## ints to fit an R integer.  Recover them in C with"
+                print "##     (unsigned long)(uint32_t)INTEGER(x)[0]"
+                print "## Casting straight to long sign-extends and gives the wrong bits."
+                print "## Anything still a double is outside +-(2^31 - 1)."
+            } else {
+                print "## Every value is a double: R integers cannot hold all of these"
+                print "## (CURLAUTH_ANY and friends exceed .Machine$integer.max).  Doubles"
+                print "## carry each value exactly, so in C just take"
+                print "##     (long)REAL(x)[0]"
+                print "## On LLP64 (Windows) long is 32-bit, so fold the wide masks first:"
+                print "##     v > (double)LONG_MAX ? (long)(unsigned long)v : (long)v"
+            }
+            print ""
+            # An entry a double cannot hold exactly is commented out rather
+            # than emitted wrong; find the last real entry for comma placement.
+            last = 0
+            for (i = 1; i <= n; i++) if (enc || rt[i] != "inexact") last = i
+            print "curl_constants <- c("
+            for (i = 1; i <= n; i++) {
+                if (!enc && rt[i] == "inexact") {
+                    printf "  ## %-*s = %*s   ## omitted: %s is not exact as a double, use (%s)-1 in C\n",
+                           w, name[i], wl, lit[i], val[i], ct[i]
+                    continue
+                }
+                printf "  %-*s = %*s%s  # %s\n", w, name[i], wl, lit[i],
+                       (i < last) ? "," : " ", note[i]
+            }
+            print ")"
+        } else if (mode == "tsv") {
+            print "SYMBOL\tVALUE\t" (enc ? "RVALUE\t" : "") (hex ? "HEX\t" : "") "CTYPE\tRTYPE"
+            for (i = 1; i <= n; i++)
+                print name[i] "\t" val[i] "\t" (enc ? rv[i] "\t" : "") \
+                      (hex ? hx[i] "\t" : "") ct[i] "\t" rt[i]
+        } else {
+            fmt = "%-" w "s  %" wv "s  " (enc ? "%" wr "s  " : "%.0s") \
+                  (hex ? "%" wh "s  " : "%.0s") "%-" wc "s  %s\n"
+            printf fmt, "SYMBOL", "VALUE", (enc ? "R VALUE" : ""), (hex ? "HEX" : ""), "CTYPE", "R TYPE"
+            for (i = 1; i <= n; i++)
+                printf fmt, name[i], val[i], (enc ? rv[i] : ""), (hex ? hx[i] : ""), ct[i], rt[i]
+        }
+    }
+' "$tmp/values.tsv"
+
+if [ "$SHOW_UNRESOLVED" -eq 1 ]; then
+    cut -f1 "$tmp/values.tsv" | sort > "$tmp/got"
+    if [ -n "$NAMES" ]; then cp "$tmp/want" "$tmp/sel"
+    elif [ -n "$FILTER" ]; then grep -E "$FILTER" "$tmp/all" > "$tmp/sel" || :
+    else cp "$tmp/all" "$tmp/sel"; fi
+    echo
+    echo "# unresolved - not an integer constant here, or absent from this libcurl:"
+    comm -23 "$tmp/sel" "$tmp/got" | sed 's/^/# /'
+fi
+
+nd=$(awk -F'\t' '$5 == "double"' "$tmp/values.tsv" | wc -l | tr -d ' ')
+echo "curl-consts: resolved $resolved of $total (libcurl $LIBVER); $nd exceed R integer range" >&2
