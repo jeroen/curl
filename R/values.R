@@ -11,12 +11,11 @@
 # R integer and are stored as doubles, which hold these values exactly. The
 # C code in R_handle_setopt converts them back to the proper long.
 
-#' Symbolic values for curl options
-#'
-#' Symbolic constants from `<curl/curl.h>` for use as values in
-#' [handle_setopt()]. Several curl options take an enum or bitmask value,
-#' for which the libcurl manual pages give symbolic names. These constants
-#' let you copy such values literally from the libcurl documentation:
+#' @details
+#' Several curl options take an enum or bitmask value, for which the libcurl
+#' manual pages give symbolic names. These constants are exported as R
+#' variables, so you can copy such values literally from the libcurl
+#' documentation:
 #'
 #' ```r
 #' h <- new_handle()
@@ -183,15 +182,6 @@
 #'  - `CURLPROXY_SOCKS5`: SOCKS5 proxy
 #'  - `CURLPROXY_SOCKS5_HOSTNAME`: SOCKS5 proxy, proxy resolves the hostname
 #'
-#' # CURLOPT_RTSP_REQUEST
-#' RTSP request type, see
-#' <https://curl.se/libcurl/c/CURLOPT_RTSP_REQUEST.html>. One of
-#' `CURL_RTSPREQ_OPTIONS`, `CURL_RTSPREQ_DESCRIBE`, `CURL_RTSPREQ_ANNOUNCE`,
-#' `CURL_RTSPREQ_SETUP`, `CURL_RTSPREQ_PLAY`, `CURL_RTSPREQ_PAUSE`,
-#' `CURL_RTSPREQ_TEARDOWN`, `CURL_RTSPREQ_GET_PARAMETER`,
-#' `CURL_RTSPREQ_SET_PARAMETER`, `CURL_RTSPREQ_RECORD`,
-#' `CURL_RTSPREQ_RECEIVE`.
-#'
 #' # CURLOPT_SOCKS5_AUTH
 #' Bitmask of allowed methods for SOCKS5 proxy authentication, see
 #' <https://curl.se/libcurl/c/CURLOPT_SOCKS5_AUTH.html>: `CURLAUTH_BASIC`
@@ -265,22 +255,30 @@
 #' See <https://curl.se/libcurl/c/CURLOPT_WS_OPTIONS.html>.
 #'  - `CURLWS_RAW_MODE`: deliver raw websocket traffic to the write callback
 #'
-#' @name curl_constants
-#' @rdname curl_constants
-#' @seealso [handle_setopt()], [curl_options()], [curl_symbols()]
+#' # Other symbols
+#' The sections above cover the option values supported by [handle_setopt()].
+#' Use `curl_symbols()` to look up the value of any other symbol from the
+#' libcurl symbol table, along with the libcurl version in which it was
+#' introduced, deprecated, or removed.
+#'
+#' @name curl_options
+#' @rdname curl_options
+#' @seealso [handle_setopt()]
 #' @examples
+#' # Set options using symbolic constants
 #' h <- new_handle()
 #' handle_setopt(h, http_version = CURL_HTTP_VERSION_1_1)
 #' handle_setopt(h, httpauth = CURLAUTH_BASIC + CURLAUTH_DIGEST)
+#'
+#' # Lookup values for any symbol
+#' curl_symbols("CURLUSESSL")
 #' @exportPattern ^CURL
 #' @aliases CURL_HTTP_VERSION_1_0 CURL_HTTP_VERSION_1_1 CURL_HTTP_VERSION_2 CURL_HTTP_VERSION_2_0
 #' @aliases CURL_HTTP_VERSION_2_PRIOR_KNOWLEDGE CURL_HTTP_VERSION_2TLS CURL_HTTP_VERSION_3
 #' @aliases CURL_HTTP_VERSION_3ONLY CURL_HTTP_VERSION_NONE CURL_IPRESOLVE_V4 CURL_IPRESOLVE_V6
 #' @aliases CURL_IPRESOLVE_WHATEVER CURL_NETRC_IGNORED CURL_NETRC_OPTIONAL CURL_NETRC_REQUIRED
 #' @aliases CURL_REDIR_GET_ALL CURL_REDIR_POST_301 CURL_REDIR_POST_302 CURL_REDIR_POST_303
-#' @aliases CURL_REDIR_POST_ALL CURL_RTSPREQ_ANNOUNCE CURL_RTSPREQ_DESCRIBE CURL_RTSPREQ_GET_PARAMETER
-#' @aliases CURL_RTSPREQ_OPTIONS CURL_RTSPREQ_PAUSE CURL_RTSPREQ_PLAY CURL_RTSPREQ_RECEIVE
-#' @aliases CURL_RTSPREQ_RECORD CURL_RTSPREQ_SET_PARAMETER CURL_RTSPREQ_SETUP CURL_RTSPREQ_TEARDOWN
+#' @aliases CURL_REDIR_POST_ALL
 #' @aliases CURL_SSLVERSION_DEFAULT CURL_SSLVERSION_MAX_DEFAULT CURL_SSLVERSION_MAX_NONE
 #' @aliases CURL_SSLVERSION_MAX_TLSv1_0 CURL_SSLVERSION_MAX_TLSv1_1 CURL_SSLVERSION_MAX_TLSv1_2
 #' @aliases CURL_SSLVERSION_MAX_TLSv1_3 CURL_SSLVERSION_TLSv1 CURL_SSLVERSION_TLSv1_0
@@ -326,17 +324,6 @@ CURL_REDIR_POST_301                 <- 1L
 CURL_REDIR_POST_302                 <- 2L
 CURL_REDIR_POST_303                 <- 4L
 CURL_REDIR_POST_ALL                 <- 7L
-CURL_RTSPREQ_ANNOUNCE               <- 3L
-CURL_RTSPREQ_DESCRIBE               <- 2L
-CURL_RTSPREQ_GET_PARAMETER          <- 8L
-CURL_RTSPREQ_OPTIONS                <- 1L
-CURL_RTSPREQ_PAUSE                  <- 6L
-CURL_RTSPREQ_PLAY                   <- 5L
-CURL_RTSPREQ_RECEIVE                <- 11L
-CURL_RTSPREQ_RECORD                 <- 10L
-CURL_RTSPREQ_SET_PARAMETER          <- 9L
-CURL_RTSPREQ_SETUP                  <- 4L
-CURL_RTSPREQ_TEARDOWN               <- 7L
 CURL_SSLVERSION_DEFAULT             <- 0L
 CURL_SSLVERSION_MAX_DEFAULT         <- 65536L
 CURL_SSLVERSION_MAX_NONE            <- 0L
