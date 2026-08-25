@@ -1,10 +1,11 @@
-#' List curl version and options
+#' Listing curl features and options
 #'
-#' `curl_version()` shows the versions of libcurl, libssl and zlib and
-#' supported protocols. `curl_options()` lists all options available in
-#' the current version of libcurl. Most options take a string, number, or
-#' `TRUE`/`FALSE` value, but some options require a special enum or bitmask
-#' value: these are documented in the sections below.
+#' @description The functions `curl_version()` and `curl_options()` show the available
+#' features, protocols and options supported by the local version of libcurl.
+#'
+#' @description You can use `curl_options_table()` to lookup the type for each
+#' option: most options take a string, number, or `TRUE`/`FALSE` value, but some
+#' options need a special enum/bitmask value: these are listed in the sections below.
 #'
 #' @export
 #' @rdname curl_options

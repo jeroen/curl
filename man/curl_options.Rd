@@ -109,7 +109,7 @@
 \alias{CURLUSESSL_NONE}
 \alias{CURLUSESSL_TRY}
 \alias{CURLWS_RAW_MODE}
-\title{List curl version and options}
+\title{Listing curl features and options}
 \usage{
 curl_options(filter = "")
 
@@ -121,11 +121,12 @@ curl_version()
 \item{filter}{string: only return options with string in name}
 }
 \description{
-\code{curl_version()} shows the versions of libcurl, libssl and zlib and
-supported protocols. \code{curl_options()} lists all options available in
-the current version of libcurl. Most options take a string, number, or
-\code{TRUE}/\code{FALSE} value, but some options require a special enum or bitmask
-value: these are documented in the sections below.
+The functions \code{curl_version()} and \code{curl_options()} show the available
+features, protocols and options supported by the local version of libcurl.
+
+You can use \code{curl_options_table()} to lookup the type for each
+option: most options take a string, number, or \code{TRUE}/\code{FALSE} value, but some
+options need a special enum/bitmask value: these are listed in the sections below.
 }
 \details{
 Several curl options take an enum or bitmask value, for which the libcurl
