@@ -240,9 +240,9 @@ handle_setopt(handle, useragent = 12345)
 
 ### ENUM (long) options
 
-Some curl options take an long in C that actually corresponds to an ENUM value. 
+Some curl options take a long in C that actually corresponds to an ENUM value. 
 
-For example the [CURLOPT_USE_SSL](https://curl.se/libcurl/c/CURLOPT_USE_SSL.html) docs explains that there are 4 possible values for this option: `CURLUSESSL_NONE`, `CURLUSESSL_TRY`, `CURLUSESSL_CONTROL`, and `CURLUSESSL_ALL`. To use this option you have to lookup the integer values for these enums in the symbol table. These symbol values never change, so you only need to lookup the value you need once and then hardcode the integer value in your R code.
+For example the [CURLOPT_USE_SSL](https://curl.se/libcurl/c/CURLOPT_USE_SSL.html) docs explains that there are 4 possible values for this option:
 
 ```{r}
 curl::curl_symbols("CURLUSESSL")
@@ -251,7 +251,7 @@ curl::curl_symbols("CURLUSESSL")
 So suppose we want to set `CURLOPT_USE_SSL` to `CURLUSESSL_ALL` we would use this R code:
 
 ```{r}
-handle_setopt(handle, use_ssl = 3)
+handle_setopt(handle, use_ssl = CURLUSESSL_ALL)
 ```
 
 ### Disabling HTTP/2
