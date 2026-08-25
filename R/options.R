@@ -1,10 +1,10 @@
-#' List curl version and options.
+#' List curl version and options
 #'
 #' `curl_version()` shows the versions of libcurl, libssl and zlib and
 #' supported protocols. `curl_options()` lists all options available in
-#' the current version of libcurl.  The dataset `curl_symbols` lists all
-#' symbols (including options) provides more information about the symbols,
-#' including when support was added/removed from libcurl.
+#' the current version of libcurl. Most options take a string, number, or
+#' `TRUE`/`FALSE` value, but some options require a special enum or bitmask
+#' value: these are documented in the sections below.
 #'
 #' @export
 #' @rdname curl_options
@@ -14,9 +14,6 @@
 #'
 #' # List proxy options
 #' curl_options("proxy")
-#'
-#' # Symbol table
-#' curl_symbols("proxy")
 curl_options <- function(filter = ""){
   option_type_table <- make_option_type_table()
   opts <- structure(option_type_table$value, names = option_type_table$name)

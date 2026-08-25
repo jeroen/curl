@@ -324,7 +324,11 @@ SEXP R_handle_setopt(SEXP ptr, SEXP keys, SEXP values){
     } else if(r_curl_is_long_option(key)){
       if(!Rf_isNumeric(val) || Rf_length(val) != 1)
         Rf_error("Value for option %s (%d) must be a number.", optname, key);
-      set_user_option(key, (long) Rf_asInteger(val));
+      /* Go through double and long long because wide bitmasks such as
+         CURLAUTH_ANY (see R/values.R) exceed both INT_MAX and, on Windows,
+         LONG_MAX. There the truncation to 32-bit long keeps the low bits,
+         which is the exact value these masks have in a 32-bit C long. */
+      set_user_option(key, (long) (long long) Rf_asReal(val));
     } else if(r_curl_is_off_t_option(key)){
       if(!Rf_isNumeric(val) || Rf_length(val) != 1)
         Rf_error("Value for option %s (%d) must be a number.", optname, key);

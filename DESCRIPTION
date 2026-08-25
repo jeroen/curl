@@ -1,7 +1,7 @@
 Package: curl
 Type: Package
 Title: A Modern and Flexible Web Client for R
-Version: 7.1.0
+Version: 8.0.0
 Authors@R: c(
     person("Jeroen", "Ooms", role = c("aut", "cre"), email = "jeroenooms@gmail.com",
       comment = c(ORCID = "0000-0002-4035-0289")),
@@ -28,7 +28,7 @@ Suggests:
 VignetteBuilder: knitr
 Depends:
     R (>= 3.0.0)
-RoxygenNote: 7.3.2
 Encoding: UTF-8
 Language: en-US
 Roxygen: list(load = "installed", markdown = TRUE)
+Config/roxygen2/version: 8.0.0

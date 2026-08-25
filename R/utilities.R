@@ -1,4 +1,5 @@
 #' @rdname curl_options
+#' @usage NULL
 #' @export
 curl_symbols <- function(filter = ""){
   m <- grep(filter, curl_symbol_data$name, ignore.case = TRUE)

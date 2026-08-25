@@ -1,4 +1,6 @@
-7.1.1
+8.0.0
+ - Package now exports constants for ENUM and bitmask values so we no longer
+   need to lookup symbols manually. See ?curl_options
  - Fix -Wdiscarded-qualifiers warning on gcc-16
 
 7.1.0
