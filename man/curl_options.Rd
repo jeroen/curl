@@ -108,6 +108,7 @@
 \alias{CURLUSESSL_CONTROL}
 \alias{CURLUSESSL_NONE}
 \alias{CURLUSESSL_TRY}
+\alias{CURLWS_NOAUTOPONG}
 \alias{CURLWS_RAW_MODE}
 \title{Listing curl features and options}
 \usage{
@@ -433,9 +434,12 @@ Request TLS upgrade for FTP, SMTP, POP3 and IMAP transfers, see
 }
 
 \section{CURLOPT_WS_OPTIONS}{
-See \url{https://curl.se/libcurl/c/CURLOPT_WS_OPTIONS.html}.
+Bitmask with websocket behavior options, see
+\url{https://curl.se/libcurl/c/CURLOPT_WS_OPTIONS.html}.
 \itemize{
 \item \code{CURLWS_RAW_MODE}: deliver raw websocket traffic to the write callback
+\item \code{CURLWS_NOAUTOPONG}: disable the automatic reply to PING frames
+(libcurl >= 8.14)
 }
 }
 

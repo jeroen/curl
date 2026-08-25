@@ -252,8 +252,11 @@
 #'  - `CURLUSESSL_ALL`: require SSL for all communication, or fail
 #'
 #' # CURLOPT_WS_OPTIONS
-#' See <https://curl.se/libcurl/c/CURLOPT_WS_OPTIONS.html>.
+#' Bitmask with websocket behavior options, see
+#' <https://curl.se/libcurl/c/CURLOPT_WS_OPTIONS.html>.
 #'  - `CURLWS_RAW_MODE`: deliver raw websocket traffic to the write callback
+#'  - `CURLWS_NOAUTOPONG`: disable the automatic reply to PING frames
+#'    (libcurl >= 8.14)
 #'
 #' # Other symbols
 #' The sections above cover the option values supported by [handle_setopt()].
@@ -299,7 +302,7 @@
 #' @aliases CURLSSH_AUTH_PASSWORD CURLSSH_AUTH_PUBLICKEY CURLSSLOPT_ALLOW_BEAST
 #' @aliases CURLSSLOPT_AUTO_CLIENT_CERT CURLSSLOPT_NATIVE_CA CURLSSLOPT_NO_PARTIALCHAIN
 #' @aliases CURLSSLOPT_NO_REVOKE CURLSSLOPT_REVOKE_BEST_EFFORT CURLUSESSL_ALL CURLUSESSL_CONTROL
-#' @aliases CURLUSESSL_NONE CURLUSESSL_TRY CURLWS_RAW_MODE
+#' @aliases CURLUSESSL_NONE CURLUSESSL_TRY CURLWS_NOAUTOPONG CURLWS_RAW_MODE
 NULL
 
 CURL_HTTP_VERSION_1_0               <- 1L
@@ -405,4 +408,5 @@ CURLUSESSL_ALL                      <- 3L
 CURLUSESSL_CONTROL                  <- 2L
 CURLUSESSL_NONE                     <- 0L
 CURLUSESSL_TRY                      <- 1L
+CURLWS_NOAUTOPONG                   <- 2L
 CURLWS_RAW_MODE                     <- 1L
