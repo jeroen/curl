@@ -440,8 +440,8 @@ See \url{https://curl.se/libcurl/c/CURLOPT_WS_OPTIONS.html}.
 
 \section{Other symbols}{
 The sections above cover the option values supported by \code{\link[=handle_setopt]{handle_setopt()}}.
-Use \code{curl_symbols()} to look up the value of any other symbol from the
-libcurl symbol table, along with the libcurl version in which it was
+Use \code{curl_symbols()} was previously used to lookup the value of any symbol
+from the libcurl symbol table, along with the libcurl version in which it was
 introduced, deprecated, or removed.
 }
 
@@ -458,8 +458,6 @@ h <- new_handle()
 handle_setopt(h, http_version = CURL_HTTP_VERSION_1_1)
 handle_setopt(h, httpauth = CURLAUTH_BASIC + CURLAUTH_DIGEST)
 
-# Lookup values for any symbol
-curl_symbols("CURLUSESSL")
 }
 \seealso{
 \code{\link[=handle_setopt]{handle_setopt()}}

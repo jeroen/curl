@@ -257,8 +257,8 @@
 #'
 #' # Other symbols
 #' The sections above cover the option values supported by [handle_setopt()].
-#' Use `curl_symbols()` to look up the value of any other symbol from the
-#' libcurl symbol table, along with the libcurl version in which it was
+#' Use `curl_symbols()` was previously used to lookup the value of any symbol
+#' from the libcurl symbol table, along with the libcurl version in which it was
 #' introduced, deprecated, or removed.
 #'
 #' @name curl_options
@@ -270,8 +270,6 @@
 #' handle_setopt(h, http_version = CURL_HTTP_VERSION_1_1)
 #' handle_setopt(h, httpauth = CURLAUTH_BASIC + CURLAUTH_DIGEST)
 #'
-#' # Lookup values for any symbol
-#' curl_symbols("CURLUSESSL")
 #' @exportPattern ^CURL
 #' @aliases CURL_HTTP_VERSION_1_0 CURL_HTTP_VERSION_1_1 CURL_HTTP_VERSION_2 CURL_HTTP_VERSION_2_0
 #' @aliases CURL_HTTP_VERSION_2_PRIOR_KNOWLEDGE CURL_HTTP_VERSION_2TLS CURL_HTTP_VERSION_3
