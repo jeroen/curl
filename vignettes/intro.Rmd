@@ -118,7 +118,7 @@ writeLines("A2 LOGOUT", con, sep = "\r\n")
 close(con)
 ```
 
-Note that for pingpong protocols such as `imaps://` or `smtps://`, libcurl consumes the initial server greeting while connecting, so the first thing to read is the response to your own first command. Such a socket connection can also be opened in non-blocking mode to poll for data, for example to wait for incoming IMAP `IDLE` notifications.
+Note that for pingpong protocols such as `imaps://` or `smtps://`, libcurl consumes the initial server greeting while connecting, so the first thing to read is the response to your own first command. Like base `socketConnection()`, blocking reads wait at most `getOption("timeout")` seconds (default 60) for data, and then return whatever is available; use `isIncomplete()` to distinguish a timeout from the peer having closed the connection. A socket connection can also be opened in non-blocking mode to poll for data without waiting, for example for incoming IMAP `IDLE` notifications.
 
 
 ### Async requests

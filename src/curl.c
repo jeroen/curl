@@ -143,13 +143,22 @@ static curl_socket_t get_active_socket(request *req){
 
 /* read for connect-only connections: bytes come straight off the socket
  * via curl_easy_recv() instead of the multi write callback */
+/* blocking reads/writes wait at most getOption("timeout") like base R sockets */
+static double sock_timeout_ms(void) {
+  double timeout = Rf_asReal(Rf_GetOption1(Rf_install("timeout")));
+  return (R_FINITE(timeout) && timeout > 0) ? timeout * 1000 : 0;
+}
+
 static size_t sock_read(void *target, size_t req_size, Rconnection con) {
   request *req = (request*) con->private;
   curl_socket_t sockfd = get_active_socket(req);
+  double timeout_ms = sock_timeout_ms();
+  double waited_ms = 0;
   size_t n = 0;
   CURLcode rc = curl_easy_recv(req->handle, target, req_size, &n);
   while(rc == CURLE_AGAIN) {
-    if(!con->blocking) {
+    if(!con->blocking || (timeout_ms > 0 && waited_ms >= timeout_ms)) {
+      /* no data available (yet): non-blocking read or timeout reached */
       con->incomplete = TRUE;
       return 0;
     }
@@ -157,6 +166,7 @@ static size_t sock_read(void *target, size_t req_size, Rconnection con) {
       assert_message(CURLE_ABORTED_BY_CALLBACK, NULL);
     if(wait_on_socket(sockfd, 1, 500) < 0)
       Rf_error("Failure in select() while waiting for data");
+    waited_ms += 500;
     rc = curl_easy_recv(req->handle, target, req_size, &n);
   }
   assert_status(rc, req->ref);
@@ -170,16 +180,21 @@ static size_t rcurl_write(const void *buf, size_t sz, size_t ni, Rconnection con
   if(!req->connect_only)
     Rf_error("Connection is not writable");
   curl_socket_t sockfd = get_active_socket(req);
+  double timeout_ms = sock_timeout_ms();
+  double waited_ms = 0;
   size_t total = sz * ni;
   size_t sent = 0;
   while(sent < total) {
     size_t n = 0;
     CURLcode rc = curl_easy_send(req->handle, (const char*) buf + sent, total - sent, &n);
     if(rc == CURLE_AGAIN) {
+      if(timeout_ms > 0 && waited_ms >= timeout_ms)
+        Rf_error("Timeout was reached sending data on connection");
       if(pending_interrupt())
         assert_message(CURLE_ABORTED_BY_CALLBACK, NULL);
       if(wait_on_socket(sockfd, 0, 500) < 0)
         Rf_error("Failure in select() while waiting to send");
+      waited_ms += 500;
       continue;
     }
     assert_status(rc, req->ref);

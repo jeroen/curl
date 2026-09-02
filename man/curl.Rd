@@ -38,6 +38,13 @@ extensions that libcurl does not implement, such as IMAP \code{IDLE}. Note that
 for pingpong protocols such as \verb{imaps://} or \verb{smtps://}, libcurl consumes
 the server greeting while connecting, so you should not expect to read it.
 Such a socket connection cannot be recycled for regular transfers.
+
+Like base \code{\link[=socketConnection]{socketConnection()}}, blocking reads on a socket connection wait
+at most \code{getOption("timeout")} seconds (default 60) for data to arrive, and
+then return whatever is available, possibly zero bytes. Use \code{\link[=isIncomplete]{isIncomplete()}}
+to distinguish a timeout (\code{TRUE}) from the peer having closed the connection
+(\code{FALSE}). Open the connection with \code{blocking = FALSE} to poll for data
+without waiting at all.
 }
 \examples{
 \dontrun{
