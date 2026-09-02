@@ -10,11 +10,36 @@
 #' needs to call [isIncomplete()] to check if the download has completed
 #' yet.
 #'
+#' Requesting a connection in read-write mode (`"r+"` or `"r+b"`) creates a
+#' bidirectional socket connection, similar to base [socketConnection()]. In
+#' this mode libcurl only establishes the connection (including TLS handshake,
+#' certificate verification, and proxy traversal, cf. `CURLOPT_CONNECT_ONLY`)
+#' without speaking the protocol, and you can use e.g. [writeLines()] and
+#' [readLines()] to implement a custom protocol dialogue over the socket.
+#' This can be used to speak custom protocols over TLS, or protocol
+#' extensions that libcurl does not implement, such as IMAP `IDLE`.
+#'
+#' Unlike regular curl connections, socket connections are not opened
+#' automatically: call [open()] on the connection yourself. Blocking reads
+#' wait for data to arrive (interruptible via ctrl-c), which is convenient
+#' for a request/response dialogue, but note that reading until EOF, such as
+#' `readLines(con)` without `n`, waits indefinitely because a socket has no
+#' EOF until the peer closes. To poll without waiting, open the connection
+#' with `open(con, blocking = FALSE)`: reads then return only the data that
+#' is available, and [isIncomplete()] tells whether the peer is still
+#' connected. Note that for pingpong protocols such as `imaps://` or
+#' `smtps://`, libcurl consumes the server greeting while connecting, so you
+#' should not expect to read it. A socket connection cannot be recycled for
+#' regular transfers.
+#'
 #' @useDynLib curl R_curl_connection
 #' @export
 #' @param url character string. See examples.
 #' @param open character string. How to open the connection if it should be opened
-#'   initially. Currently only "r" and "rb" are supported.
+#'   initially. Use "r" or "rb" for a regular transfer, or "r+" / "r+b" for a
+#'   bidirectional (connect-only) socket connection, see details. Socket
+#'   connections are never opened initially: call [open()] on the connection
+#'   yourself, optionally with `blocking = FALSE`.
 #' @param handle a curl handle object
 #' @examples \dontrun{
 #' con <- curl("https://hb.cran.dev/get")
@@ -62,6 +87,14 @@
 #' library(jsonlite)
 #' con <- gzcon(curl("https://jeroen.github.io/data/nycflights13.json.gz"))
 #' nycflights <- stream_in(con)
+#'
+#' # Raw socket connection (CURLOPT_CONNECT_ONLY): speak IMAP by hand over TLS
+#' con <- curl("imaps://imap.gmail.com", "r+")
+#' open(con)
+#' writeLines("A1 CAPABILITY", con, sep = "\r\n")
+#' while(!grepl("^A1 ", line <- readLines(con, n = 1))) print(line)
+#' writeLines("A2 LOGOUT", con, sep = "\r\n")
+#' close(con)
 #' }
 #'
 curl <- function(url = "https://hb.cran.dev/get", open = "", handle = new_handle()){
@@ -71,8 +104,9 @@ curl <- function(url = "https://hb.cran.dev/get", open = "", handle = new_handle
 # 'stream' currently only used for non-blocking connections to prevent
 # busy looping in curl_fetch_stream()
 curl_connection <- function(url, mode, handle, partial = FALSE){
-  con <- .Call(R_curl_connection, url, handle, partial)
-  if(!identical(mode, "")){
+  socket <- grepl("+", mode, fixed = TRUE)
+  con <- .Call(R_curl_connection, url, handle, partial, socket)
+  if(!identical(mode, "") && !socket){
     withCallingHandlers(open(con, open = mode), error = function(err) {
       close(con)
     })
