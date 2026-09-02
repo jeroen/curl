@@ -11,7 +11,9 @@ curl(url = "https://hb.cran.dev/get", open = "", handle = new_handle())
 
 \item{open}{character string. How to open the connection if it should be opened
 initially. Use "r" or "rb" for a regular transfer, or "r+" / "r+b" for a
-bidirectional (connect-only) socket connection, see details.}
+bidirectional (connect-only) socket connection, see details. Socket
+connections are never opened initially: call \code{\link[=open]{open()}} on the connection
+yourself, optionally with \code{blocking = FALSE}.}
 
 \item{handle}{a curl handle object}
 }
@@ -27,17 +29,27 @@ that is available without waiting. For such non-blocking connections the caller
 needs to call \code{\link[=isIncomplete]{isIncomplete()}} to check if the download has completed
 yet.
 
-Opening the connection in read-write mode (\code{"r+"} or \code{"r+b"}) creates a
+Requesting a connection in read-write mode (\code{"r+"} or \code{"r+b"}) creates a
 bidirectional socket connection, similar to base \code{\link[=socketConnection]{socketConnection()}}. In
 this mode libcurl only establishes the connection (including TLS handshake,
 certificate verification, and proxy traversal, cf. \code{CURLOPT_CONNECT_ONLY})
 without speaking the protocol, and you can use e.g. \code{\link[=writeLines]{writeLines()}} and
 \code{\link[=readLines]{readLines()}} to implement a custom protocol dialogue over the socket.
 This can be used to speak custom protocols over TLS, or protocol
-extensions that libcurl does not implement, such as IMAP \code{IDLE}. Note that
-for pingpong protocols such as \verb{imaps://} or \verb{smtps://}, libcurl consumes
-the server greeting while connecting, so you should not expect to read it.
-Such a socket connection cannot be recycled for regular transfers.
+extensions that libcurl does not implement, such as IMAP \code{IDLE}.
+
+Unlike regular curl connections, socket connections are not opened
+automatically: call \code{\link[=open]{open()}} on the connection yourself. Blocking reads
+wait for data to arrive (interruptible via ctrl-c), which is convenient
+for a request/response dialogue, but note that reading until EOF, such as
+\code{readLines(con)} without \code{n}, waits indefinitely because a socket has no
+EOF until the peer closes. To poll without waiting, open the connection
+with \code{open(con, blocking = FALSE)}: reads then return only the data that
+is available, and \code{\link[=isIncomplete]{isIncomplete()}} tells whether the peer is still
+connected. Note that for pingpong protocols such as \verb{imaps://} or
+\verb{smtps://}, libcurl consumes the server greeting while connecting, so you
+should not expect to read it. A socket connection cannot be recycled for
+regular transfers.
 }
 \examples{
 \dontrun{
@@ -89,6 +101,7 @@ nycflights <- stream_in(con)
 
 # Raw socket connection (CURLOPT_CONNECT_ONLY): speak IMAP by hand over TLS
 con <- curl("imaps://imap.gmail.com", "r+")
+open(con)
 writeLines("A1 CAPABILITY", con, sep = "\r\n")
 while(!grepl("^A1 ", line <- readLines(con, n = 1))) print(line)
 writeLines("A2 LOGOUT", con, sep = "\r\n")

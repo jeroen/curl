@@ -4,8 +4,12 @@ test_that("bidirectional socket connection over plain tcp", {
   port <- find_port()
   server <- serverSocket(port)
   on.exit(close(server), add = TRUE)
+
+  # socket connections are not opened automatically
   con <- curl(sprintf("telnet://127.0.0.1:%d", port), "r+b")
   on.exit(close(con), add = TRUE)
+  expect_false(isOpen(con))
+  open(con, "rb")
   peer <- socketAccept(server, blocking = TRUE, open = "r+b")
 
   # client to server
@@ -28,9 +32,9 @@ test_that("non-blocking reads on a socket connection", {
   port <- find_port()
   server <- serverSocket(port)
   on.exit(close(server), add = TRUE)
-  con <- curl(sprintf("telnet://127.0.0.1:%d", port))
+  con <- curl(sprintf("telnet://127.0.0.1:%d", port), "r+b")
   on.exit(close(con), add = TRUE)
-  open(con, "r+b", blocking = FALSE)
+  open(con, "rb", blocking = FALSE)
   peer <- socketAccept(server, blocking = TRUE, open = "r+b")
 
   # no data available: return immediately with 0 bytes
@@ -54,6 +58,7 @@ test_that("socket connection speaks IMAP over TLS", {
   skip_if_offline("imap.gmail.com")
   con <- curl("imaps://imap.gmail.com", "r+")
   on.exit(close(con), add = TRUE)
+  open(con)
   writeLines("A1 CAPABILITY", con, sep = "\r\n")
   out <- character()
   for(i in 1:50) {

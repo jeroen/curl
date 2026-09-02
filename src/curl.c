@@ -257,7 +257,6 @@ static void reset(Rconnection con) {
   curl_easy_setopt(req->handle, CURLOPT_WRITEDATA, NULL);
   curl_easy_setopt(req->handle, CURLOPT_FAILONERROR, 0L);
   curl_easy_setopt(req->handle, CURLOPT_CONNECT_ONLY, 0L);
-  req->connect_only = 0;
   req->ref->locked = 0;
   con->isopen = FALSE;
   con->canwrite = FALSE;
@@ -276,8 +275,9 @@ static Rboolean rcurl_open(Rconnection con) {
   if(req->ref->locked)
     Rf_error("Handle is already in use elsewhere.");
 
-  /* mode with '+' means a bidirectional (connect-only) socket connection */
-  req->connect_only = strchr(con->mode, '+') != NULL;
+  /* mode with '+' also makes it a bidirectional (connect-only) socket connection */
+  if(strchr(con->mode, '+'))
+    req->connect_only = 1;
 
   /* init a multi stack with callback */
   CURL *handle = req->handle;
@@ -348,7 +348,7 @@ static Rboolean rcurl_open(Rconnection con) {
   return TRUE;
 }
 
-SEXP R_curl_connection(SEXP url, SEXP ptr, SEXP partial) {
+SEXP R_curl_connection(SEXP url, SEXP ptr, SEXP partial, SEXP socket) {
   if(!Rf_isString(url))
     Rf_error("Argument 'url' must be string.");
 
@@ -367,7 +367,7 @@ SEXP R_curl_connection(SEXP url, SEXP ptr, SEXP partial) {
   req->manager = curl_multi_init();
   req->partial = Rf_asLogical(partial); //only for curl_fetch_stream()
   req->used = 0;
-  req->connect_only = 0;
+  req->connect_only = Rf_asLogical(socket); //bidirectional socket connection
 
   /* allocate url string */
   req->url = malloc(strlen(Rf_translateCharUTF8(Rf_asChar(url))) + 1);
