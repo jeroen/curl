@@ -22,13 +22,6 @@
 #' the server greeting while connecting, so you should not expect to read it.
 #' Such a socket connection cannot be recycled for regular transfers.
 #'
-#' Like base [socketConnection()], blocking reads on a socket connection wait
-#' at most `getOption("timeout")` seconds (default 60) for data to arrive, and
-#' then return whatever is available, possibly zero bytes. Use [isIncomplete()]
-#' to distinguish a timeout (`TRUE`) from the peer having closed the connection
-#' (`FALSE`). Open the connection with `blocking = FALSE` to poll for data
-#' without waiting at all.
-#'
 #' @useDynLib curl R_curl_connection
 #' @export
 #' @param url character string. See examples.

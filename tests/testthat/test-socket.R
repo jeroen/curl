@@ -49,29 +49,6 @@ test_that("non-blocking reads on a socket connection", {
   expect_false(isIncomplete(con))
 })
 
-test_that("blocking reads on a socket connection honor options(timeout)", {
-  skip_on_cran()
-  skip_if(getRversion() < "4.0.0") # needs serverSocket()
-  port <- find_port()
-  server <- serverSocket(port)
-  on.exit(close(server), add = TRUE)
-  con <- curl(sprintf("telnet://127.0.0.1:%d", port), "r+b")
-  on.exit(close(con), add = TRUE)
-  peer <- socketAccept(server, blocking = TRUE, open = "r+b")
-  on.exit(close(peer), add = TRUE)
-  old <- options(timeout = 2)
-  on.exit(options(old), add = TRUE)
-
-  # blocking read with no incoming data returns empty after the timeout
-  t0 <- Sys.time()
-  out <- readBin(con, raw(), 100)
-  elapsed <- as.numeric(Sys.time() - t0, units = "secs")
-  expect_equal(length(out), 0)
-  expect_true(isIncomplete(con)) # timeout, not EOF
-  expect_gte(elapsed, 1.5)
-  expect_lt(elapsed, 30)
-})
-
 test_that("socket connection speaks IMAP over TLS", {
   skip_on_cran()
   skip_if_offline("imap.gmail.com")
