@@ -105,6 +105,21 @@ close(con)
 
 The `curl_fetch_stream` function provides a very simple wrapper around a non-blocking connection.
 
+#### Bidirectional socket connections
+
+Opening a connection in read-write mode (`"r+"` or `"r+b"`) creates a bidirectional socket connection, similar to base `socketConnection()`. In this mode libcurl only establishes the connection (including the TLS handshake, certificate verification, and proxy traversal), without speaking the protocol, and you can exchange raw bytes on the socket with the usual reading and writing functions. This can be used to speak custom protocols over TLS, or protocol extensions that libcurl does not implement, such as the IMAP `IDLE` command:
+
+```{r, eval=FALSE}
+con <- curl("imaps://imap.gmail.com", "r+")
+writeLines("A1 CAPABILITY", con, sep = "\r\n")
+readLines(con, n = 1)
+#> [1] "* CAPABILITY IMAP4rev1 UNSELECT IDLE NAMESPACE QUOTA ID XLIST ..."
+writeLines("A2 LOGOUT", con, sep = "\r\n")
+close(con)
+```
+
+Note that for pingpong protocols such as `imaps://` or `smtps://`, libcurl consumes the initial server greeting while connecting, so the first thing to read is the response to your own first command. Such a socket connection can also be opened in non-blocking mode to poll for data, for example to wait for incoming IMAP `IDLE` notifications.
+
 
 ### Async requests
 
