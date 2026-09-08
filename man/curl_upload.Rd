@@ -15,7 +15,7 @@ curl_upload(file, url, verbose = TRUE, reuse = TRUE, ...)
 
 \item{reuse}{try to keep alive and recycle connections when possible}
 
-\item{...}{other arguments passed to \code{\link[=handle_setopt]{handle_setopt()}}, for
+\item{...}{other arguments passed to \code{\link[=new_handle]{new_handle()}}, for
 example a \code{username} and \code{password}.}
 }
 \description{

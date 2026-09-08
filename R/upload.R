@@ -9,7 +9,7 @@
 #' @param url where to upload, should start with e.g. `ftp://`
 #' @param verbose emit some progress output
 #' @param reuse try to keep alive and recycle connections when possible
-#' @param ... other arguments passed to [handle_setopt()], for
+#' @param ... other arguments passed to [new_handle()], for
 #' example a `username` and `password`.
 #' @examples \dontrun{# Upload package to winbuilder:
 #' curl_upload('mypkg_1.3.tar.gz', 'ftp://win-builder.r-project.org/R-devel/')
