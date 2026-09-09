@@ -85,6 +85,11 @@ SEXP R_multi_add(SEXP handle_ptr, SEXP cb_complete, SEXP cb_error, SEXP cb_data,
   if(ref->locked)
     Rf_error("Handle is locked. Probably in use in a connection or async request.");
 
+  /* start every transfer with an empty response-header buffer, as the
+   * fetch functions do; otherwise the headers of earlier transfers on this
+   * handle accumulate in the result */
+  reset_resheaders(ref);
+
   /* placeholder body */
   if(Rf_isFunction(cb_data)){
     curl_easy_setopt(ref->handle, CURLOPT_WRITEFUNCTION, (curl_write_callback) data_callback);
