@@ -42,6 +42,12 @@
 #error "Unsupported connections API version"
 #endif
 
+/* for select() in connect-only (socket) mode */
+#ifndef _WIN32
+#include <sys/select.h>
+#include <sys/time.h>
+#endif
+
 #define min(a, b) (((a) < (b)) ? (a) : (b))
 #define R_EOF -1
 
@@ -53,6 +59,7 @@ typedef struct {
   int has_more;
   int used;
   int partial;
+  int connect_only;
   size_t size;
   size_t limit;
   CURLM *manager;
@@ -112,9 +119,80 @@ static void fetchdata(request *req) {
   check_handles(req->manager, req->ref);
 }
 
+/* wait for the socket of a connect-only handle to become readable/writable */
+static int wait_on_socket(curl_socket_t sockfd, int for_recv, int timeout_ms) {
+  struct timeval tv;
+  fd_set infd, outfd, errfd;
+  tv.tv_sec = timeout_ms / 1000;
+  tv.tv_usec = (timeout_ms % 1000) * 1000;
+  FD_ZERO(&infd);
+  FD_ZERO(&outfd);
+  FD_ZERO(&errfd);
+  FD_SET(sockfd, &errfd);
+  FD_SET(sockfd, for_recv ? &infd : &outfd);
+  return select((int) sockfd + 1, &infd, &outfd, &errfd, &tv);
+}
+
+static curl_socket_t get_active_socket(request *req){
+  curl_socket_t sockfd = CURL_SOCKET_BAD;
+  assert(curl_easy_getinfo(req->handle, CURLINFO_ACTIVESOCKET, &sockfd));
+  if(sockfd == CURL_SOCKET_BAD)
+    Rf_error("Connection has no active socket (already closed by peer?)");
+  return sockfd;
+}
+
+/* read for connect-only connections: bytes come straight off the socket
+ * via curl_easy_recv() instead of the multi write callback */
+static size_t sock_read(void *target, size_t req_size, Rconnection con) {
+  request *req = (request*) con->private;
+  curl_socket_t sockfd = get_active_socket(req);
+  size_t n = 0;
+  CURLcode rc = curl_easy_recv(req->handle, target, req_size, &n);
+  while(rc == CURLE_AGAIN) {
+    if(!con->blocking) {
+      con->incomplete = TRUE;
+      return 0;
+    }
+    if(pending_interrupt())
+      assert_message(CURLE_ABORTED_BY_CALLBACK, NULL);
+    if(wait_on_socket(sockfd, 1, 500) < 0)
+      Rf_error("Failure in select() while waiting for data");
+    rc = curl_easy_recv(req->handle, target, req_size, &n);
+  }
+  assert_status(rc, req->ref);
+  /* zero bytes with CURLE_OK means the peer closed the connection */
+  con->incomplete = n > 0;
+  return n;
+}
+
+static size_t rcurl_write(const void *buf, size_t sz, size_t ni, Rconnection con) {
+  request *req = (request*) con->private;
+  if(!req->connect_only)
+    Rf_error("Connection is not writable");
+  curl_socket_t sockfd = get_active_socket(req);
+  size_t total = sz * ni;
+  size_t sent = 0;
+  while(sent < total) {
+    size_t n = 0;
+    CURLcode rc = curl_easy_send(req->handle, (const char*) buf + sent, total - sent, &n);
+    if(rc == CURLE_AGAIN) {
+      if(pending_interrupt())
+        assert_message(CURLE_ABORTED_BY_CALLBACK, NULL);
+      if(wait_on_socket(sockfd, 0, 500) < 0)
+        Rf_error("Failure in select() while waiting to send");
+      continue;
+    }
+    assert_status(rc, req->ref);
+    sent += n;
+  }
+  return ni;
+}
+
 static size_t rcurl_read(void *target, size_t sz, size_t ni, Rconnection con) {
   request *req = (request*) con->private;
   size_t req_size = sz * ni;
+  if(req->connect_only)
+    return sock_read(target, req_size, con);
   size_t total_size = pop(target, req_size, req);
   if (total_size > 0 && (!con->blocking || req->partial)) {
       // If we can return data without waiting, and the connection is
@@ -178,8 +256,10 @@ static void reset(Rconnection con) {
   curl_easy_setopt(req->handle, CURLOPT_WRITEFUNCTION, NULL);
   curl_easy_setopt(req->handle, CURLOPT_WRITEDATA, NULL);
   curl_easy_setopt(req->handle, CURLOPT_FAILONERROR, 0L);
+  curl_easy_setopt(req->handle, CURLOPT_CONNECT_ONLY, 0L);
   req->ref->locked = 0;
   con->isopen = FALSE;
+  con->canwrite = FALSE;
   con->text = TRUE;
   con->incomplete = FALSE;
   strcpy(con->mode, "r");
@@ -195,11 +275,16 @@ static Rboolean rcurl_open(Rconnection con) {
   if(req->ref->locked)
     Rf_error("Handle is already in use elsewhere.");
 
+  /* mode with '+' also makes it a bidirectional (connect-only) socket connection */
+  if(strchr(con->mode, '+'))
+    req->connect_only = 1;
+
   /* init a multi stack with callback */
   CURL *handle = req->handle;
   assert(curl_easy_setopt(handle, CURLOPT_URL, req->url));
   assert(curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, push));
   assert(curl_easy_setopt(handle, CURLOPT_WRITEDATA, req));
+  assert(curl_easy_setopt(handle, CURLOPT_CONNECT_ONLY, req->connect_only ? 1L : 0L));
 
   /* add the handle to the pool and lock it */
   massert(curl_multi_add_handle(req->manager, handle));
@@ -244,6 +329,18 @@ static Rboolean rcurl_open(Rconnection con) {
   /* Stream connections should be checked via handle_data() */
   /* Non-blocking open connections get checked during read */
 
+  /* connect-only handles are done after the connect: verify we got a socket */
+  if(req->connect_only) {
+    curl_socket_t sockfd = CURL_SOCKET_BAD;
+    assert(curl_easy_getinfo(handle, CURLINFO_ACTIVESOCKET, &sockfd));
+    if(sockfd == CURL_SOCKET_BAD) {
+      Rf_warningcall(R_NilValue, "Failed to connect to '%s'", req->url);
+      reset(con);
+      return FALSE;
+    }
+    con->canwrite = TRUE;
+  }
+
   /* set mode in case open() changed it */
   con->text = strchr(con->mode, 'b') ? FALSE : TRUE;
   con->isopen = TRUE;
@@ -251,7 +348,7 @@ static Rboolean rcurl_open(Rconnection con) {
   return TRUE;
 }
 
-SEXP R_curl_connection(SEXP url, SEXP ptr, SEXP partial) {
+SEXP R_curl_connection(SEXP url, SEXP ptr, SEXP partial, SEXP socket) {
   if(!Rf_isString(url))
     Rf_error("Argument 'url' must be string.");
 
@@ -270,6 +367,7 @@ SEXP R_curl_connection(SEXP url, SEXP ptr, SEXP partial) {
   req->manager = curl_multi_init();
   req->partial = Rf_asLogical(partial); //only for curl_fetch_stream()
   req->used = 0;
+  req->connect_only = Rf_asLogical(socket); //bidirectional socket connection
 
   /* allocate url string */
   req->url = malloc(strlen(Rf_translateCharUTF8(Rf_asChar(url))) + 1);
@@ -288,6 +386,7 @@ SEXP R_curl_connection(SEXP url, SEXP ptr, SEXP partial) {
   con->close = reset;
   con->destroy = cleanup;
   con->read = rcurl_read;
+  con->write = rcurl_write;
   con->fgetc = rcurl_fgetc;
   con->fgetc_internal = rcurl_fgetc;
 
