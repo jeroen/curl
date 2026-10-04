@@ -66,6 +66,24 @@ void assert_message(CURLcode res, const char *str){
   UNPROTECT(5); //never happens
 }
 
+/* Only extract the hostname here, so that the full (possibly sensitive) URL
+ * never gets embedded in the R call object */
+static SEXP get_url_host(const char *source_url){
+  if(source_url == NULL)
+    return R_NilValue;
+  CURLU *h = curl_url();
+  SEXP host = R_NilValue;
+  if(curl_url_set(h, CURLUPART_URL, source_url, CURLU_NON_SUPPORT_SCHEME) == CURLUE_OK){
+    char *str = NULL;
+    if(curl_url_get(h, CURLUPART_HOST, &str, 0) == CURLUE_OK){
+      host = make_string(str);
+      curl_free(str);
+    }
+  }
+  curl_url_cleanup(h);
+  return host;
+}
+
 void raise_libcurl_error(CURLcode res, reference *ref, SEXP error_cb){
   if(res == CURLE_OK)
     return;
@@ -73,12 +91,12 @@ void raise_libcurl_error(CURLcode res, reference *ref, SEXP error_cb){
     send_r_interrupt();
   const char *source_url = NULL;
   curl_easy_getinfo(ref->handle, CURLINFO_EFFECTIVE_URL, &source_url);
-  SEXP url = PROTECT(make_string(source_url));
+  SEXP host = PROTECT(get_url_host(source_url));
   SEXP code = PROTECT(Rf_ScalarInteger(res));
   SEXP message = PROTECT(make_string(curl_easy_strerror(res)));
   SEXP errbuf = PROTECT(make_string(ref->errbuf));
   SEXP expr = PROTECT(Rf_install("raise_libcurl_error"));
-  SEXP call = PROTECT(Rf_lang6(expr, code, message, errbuf, url, error_cb));
+  SEXP call = PROTECT(Rf_lang6(expr, code, message, errbuf, host, error_cb));
   SEXP env = PROTECT(R_FindNamespace(Rf_mkString("curl")));
   Rf_eval(call, env);
   UNPROTECT(7); //happens for non-throwing error_cb()

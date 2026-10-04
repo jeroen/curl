@@ -158,7 +158,3 @@ build_query_urlencoded <- function(params){
   values <- gsub("%20", "+", curl_escape(params), fixed = TRUE)
   paste(nms, values, collapse = '&', sep = '=')
 }
-
-try_parse_url <- function(url){
-  tryCatch(curl_parse_url(url), error = function(e){})
-}

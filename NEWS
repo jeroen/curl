@@ -1,5 +1,7 @@
 8.1.0
  - Win/MacOS: update to libcurl 8.14.2
+ - Sanitize sensitive URLs from the call embedded in libcurl error conditions
+   so that it is no longer exposed via traceback()/sys.calls() (#454)
 
 8.0.0
  - Package now exports constants for ENUM and bitmask values so we no longer

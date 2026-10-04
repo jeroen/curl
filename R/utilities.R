@@ -52,14 +52,12 @@ is_string <- function(x){
 }
 
 # Callback for typed libcurl errors
-raise_libcurl_error <- function(errnum, message, errbuf = NULL, source_url = NULL, error_cb = NULL){
+raise_libcurl_error <- function(errnum, message, errbuf = NULL, host = NULL, error_cb = NULL){
   error_code <- libcurl_error_codes[errnum]
   if(is.na(error_code))
     error_code <- NULL #future proof new error codes
-  if(is_string(source_url)){
-    host <- try_parse_url(source_url)$host
-    if(is_string(host))
-      message <- sprintf('%s [%s]', message, host)
+  if(is_string(host)){
+    message <- sprintf('%s [%s]', message, host)
   }
   if(is_string(errbuf)){
     message <- sprintf('%s:\n%s', message, errbuf)
