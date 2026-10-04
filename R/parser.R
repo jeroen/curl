@@ -143,7 +143,7 @@ parse_query_urlencoded <- function(query){
   query <- chartr('+',' ', query)
   argstr <- strsplit(query, "&", fixed = TRUE)[[1]]
   args <- lapply(argstr, function(x){
-    c(curl_unescape(strsplit(x, "=", fixed = TRUE)[[1]]), "")
+    c(curl_unescape(split_string(x, "=")), "")
   })
   values <- vapply(args, `[`, character(1), 2)
   names(values) <- vapply(args, `[`, character(1), 1)
