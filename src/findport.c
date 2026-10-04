@@ -47,7 +47,7 @@ static int port_is_available(int port){
 
   // define server socket
   struct sockaddr_in serv_addr;
-  memset(&serv_addr, '0', sizeof(serv_addr));
+  memset(&serv_addr, 0, sizeof(serv_addr));
   serv_addr.sin_family = AF_INET;
   serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
   serv_addr.sin_port = htons(port);
