@@ -85,7 +85,8 @@ test_that("Empty values", {
   expect_length(res$form, 0)
   expect_equal(as.numeric(res$headers$`Content-Length`), 0)
 
-  hx <- handle_setform(new_handle(), x = "", y = raw(0))
+  hx <- handle_setform(new_handle(), x = "", y = raw(0), z = form_data(""),
+                       w = form_data(raw(0), "text/plain"))
   req <- curl_fetch_memory(httpbin("post"), handle = hx)
 
   # For debugging
@@ -95,9 +96,11 @@ test_that("Empty values", {
 
   res <- jsonlite::fromJSON(rawToChar(req$content))
   expect_match(res$headers$`Content-Type`, "multipart")
-  expect_length(res$form, 2)
+  expect_length(res$form, 4)
   expect_equal(res$form$x, "")
   expect_equal(res$form$y, "")
+  expect_equal(res$form$z, "")
+  expect_equal(res$form$w, "")
 })
 
 rm(h)

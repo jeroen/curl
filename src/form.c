@@ -40,6 +40,9 @@ struct curl_httppost* make_form(SEXP form){
         //assume a form_value upload
         unsigned char * data = RAW(VECTOR_ELT(val, 0));
         long datalen = Rf_length(VECTOR_ELT(val, 0));
+        //libcurl assumes strlen() if datalen is 0
+        if(datalen == 0)
+          data = (unsigned char *) "";
         if(Rf_isString(VECTOR_ELT(val, 1))){
           const char * content_type = CHAR(Rf_asChar(VECTOR_ELT(val, 1)));
           curl_formadd(&post, &last, CURLFORM_COPYNAME, name, CURLFORM_COPYCONTENTS, data, CURLFORM_CONTENTSLENGTH, datalen, CURLFORM_CONTENTTYPE, content_type, CURLFORM_END);
