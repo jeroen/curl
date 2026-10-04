@@ -69,6 +69,11 @@ test_that("Decoding parameters", {
   expect_equal(curl_modify_url(out, query = '', path = ''), 'https://www.test.com/')
 })
 
+test_that("Parameter values can contain '='", {
+  out <- curl_parse_url('https://www.test.com/?token=abc==&expr=a=b&flag')
+  expect_equal(out$params, c(token = "abc==", expr = "a=b", flag = ""))
+})
+
 test_that("Using a default scheme", {
   expect_error(curl_parse_url('yolo'), 'parse')
   out <- curl_parse_url('yolo', default_scheme = TRUE)
