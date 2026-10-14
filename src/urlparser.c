@@ -15,13 +15,15 @@ static SEXP make_url_names(void){
   return names;
 }
 
-static void fail_if(CURLUcode err){
-  if(err != CURLUE_OK)
+static void fail_if(CURLU *h, CURLUcode err){
+  if(err != CURLUE_OK){
+    curl_url_cleanup(h);
 #ifdef HAS_CURL_PARSER_STRERROR
     Rf_error("Failed to parse URL: %s", curl_url_strerror(err));
 #else
     Rf_error("Failed to parse URL: error code %d", err);
 #endif
+  }
 }
 
 static SEXP get_field(CURLU *h, CURLUPart part, CURLUcode field_missing){
@@ -31,7 +33,7 @@ static SEXP get_field(CURLU *h, CURLUPart part, CURLUcode field_missing){
   if(err == field_missing && err != CURLUE_OK){
     field = R_NilValue;
   } else {
-    fail_if(err);
+    fail_if(h, err);
     field = make_string(str);
   }
   curl_free(str);
@@ -44,7 +46,7 @@ static SEXP get_field(CURLU *h, CURLUPart part, CURLUcode field_missing){
 
 static void set_url(CURLU *h, const char *str, int default_scheme){
   int flags = CURLU_NON_SUPPORT_SCHEME | CURLU_URLENCODE | (default_scheme * CURLU_DEFAULT_SCHEME);
-  fail_if(curl_url_set(h, CURLUPART_URL, str, flags));
+  fail_if(h, curl_url_set(h, CURLUPART_URL, str, flags));
 }
 
 SEXP R_parse_url(SEXP url, SEXP baseurl, SEXP default_https) {
@@ -73,11 +75,11 @@ SEXP R_parse_url(SEXP url, SEXP baseurl, SEXP default_https) {
 static void set_value(CURLU *h, CURLUPart part, SEXP value){
   if(Rf_length(value) && Rf_isString(value)){
     if(STRING_ELT(value, 0) == NA_STRING || Rf_length(STRING_ELT(value, 0)) == 0){
-      fail_if(curl_url_set(h, part, NULL, 0));
+      fail_if(h, curl_url_set(h, part, NULL, 0));
     } else if(Rf_inherits(value, "AsIs")){
-      fail_if(curl_url_set(h, part, get_string(value), 0));
+      fail_if(h, curl_url_set(h, part, get_string(value), 0));
     } else {
-      fail_if(curl_url_set(h, part, get_string(value), CURLU_NON_SUPPORT_SCHEME | CURLU_URLENCODE));
+      fail_if(h, curl_url_set(h, part, get_string(value), CURLU_NON_SUPPORT_SCHEME | CURLU_URLENCODE));
     }
   }
 }
@@ -94,7 +96,7 @@ SEXP R_modify_url(SEXP url, SEXP scheme, SEXP host, SEXP port, SEXP path, SEXP q
   set_value(h, CURLUPART_USER, user);
   set_value(h, CURLUPART_PASSWORD, password);
   char *str = NULL;
-  fail_if(curl_url_get(h, CURLUPART_URL, &str, 0));
+  fail_if(h, curl_url_get(h, CURLUPART_URL, &str, 0));
   SEXP out = make_string(str);
   curl_free(str);
   curl_url_cleanup(h);
