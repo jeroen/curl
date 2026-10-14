@@ -1,5 +1,5 @@
 8.1.0
- - Win/MacOS: update to libcurl 8.14.2
+ - Win/MacOS: update to libcurl 8.14.20261014 (mainly CVE backports)
  - Sanitize sensitive URLs from the call embedded in libcurl error conditions
    so that it is no longer exposed via traceback()/sys.calls() (#454)
 
