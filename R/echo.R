@@ -59,7 +59,7 @@ curl_echo <- function(handle, port = find_port(), progress = interactive(), file
   }
 
   # Start httpuv
-  server_id <- httpuv::startServer("0.0.0.0", port, list(call = echo_handler))
+  server_id <- httpuv::startServer("127.0.0.1", port, list(call = echo_handler))
   on.exit(httpuv::stopServer(server_id), add = TRUE)
 
   # Workaround bug in httpuv on windows that keeps protecting handler until next startServer()
