@@ -185,6 +185,28 @@ static void reset(Rconnection con) {
   strcpy(con->mode, "r");
 }
 
+/* Have we received the complete headers of the final response? libcurl
+ * passes the headers of every response to the header callback (including
+ * redirects, auth challenges, and 1xx), so we only trust a status that
+ * can't be followed by another request. For the others we keep waiting for
+ * the body, as before. */
+static int has_final_headers(request *req) {
+  memory *h = &req->ref->resheaders;
+  size_t n = h->size;
+  /* headers end with a blank line; allow a bare LF line ending */
+  if (n < 2 || h->buf[n - 1] != '\n')
+    return 0;
+  if (h->buf[n - 2] != '\n' && !(n >= 3 && h->buf[n - 2] == '\r' && h->buf[n - 3] == '\n'))
+    return 0;
+
+  /* status is 0 until the first response (excluding proxy CONNECT) */
+  long status = 0;
+  curl_easy_getinfo(req->handle, CURLINFO_RESPONSE_CODE, &status);
+  if (status < 200 || (status >= 300 && status < 400) || status == 401 || status == 407)
+    return 0;
+  return 1;
+}
+
 static Rboolean rcurl_open(Rconnection con) {
   request *req = (request*) con->private;
 
@@ -212,6 +234,7 @@ static Rboolean rcurl_open(Rconnection con) {
   req->used = 1;
   req->has_data = 0;
   req->has_more = 1;
+  reset_resheaders(req->ref);
 
   /* fully non-blocking has 's' in open mode */
   int block_open = strchr(con->mode, 's') == NULL;
@@ -219,9 +242,10 @@ static Rboolean rcurl_open(Rconnection con) {
   if(block_open && !force_open)
     curl_easy_setopt(handle, CURLOPT_FAILONERROR, 1L);
 
- /* Wait for first data to arrive. Monitoring a change in status code does not
-   suffice in case of http redirects */
-  while(block_open && req->has_more && !req->has_data) {
+ /* Wait for the headers of the final response or the first data to arrive.
+   Monitoring a change in status code does not suffice in case of http
+   redirects */
+  while(block_open && req->has_more && !req->has_data && !has_final_headers(req)) {
     int numfds;
     massert(curl_multi_wait(req->manager, NULL, 0, 1000, &numfds));
     if(pending_interrupt()) {
