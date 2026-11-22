@@ -1,5 +1,11 @@
 h <- new_handle()
 
+strip_cf <- function(input){
+  input$origin <- NULL
+  input$headers[grepl("Cf-", names(input$headers), ignore.case = TRUE)] <- NULL
+  input
+}
+
 test_that("Post text data", {
   handle_setopt(h, COPYPOSTFIELDS = "moo=moomooo");
   handle_setheaders(h,
@@ -18,14 +24,14 @@ test_that("Post text data", {
   input <- jsonlite::fromJSON(rawToChar(req$content))
   con <- curl(httpbin("post"), handle = h)
   output <- jsonlite::fromJSON(con)
-  expect_equal(input, output)
+  expect_equal(strip_cf(input), strip_cf(output))
 
   # Using download interface
   tmp <- tempfile()
   on.exit(unlink(tmp), add = TRUE)
   curl_download(httpbin("post"), tmp, handle = h)
-  txt2 <- readLines(tmp)
-  expect_equal(rawToChar(req$content), paste0(txt2, "\n", collapse=""))
+  output2 <- jsonlite::read_json(tmp)
+  expect_equal(strip_cf(input), strip_cf(output2))
 })
 
 test_that("Change headers", {
