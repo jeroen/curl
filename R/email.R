@@ -1,7 +1,7 @@
 #' Send email
 #'
 #' Use the curl SMTP client to send an email. The `message` argument must be
-#' properly formatted [RFC2822](https://www.rfc-editor.org/rfc/rfc2822) email message with From/To/Subject headers and CRLF
+#' properly formatted [RFC2822](https://www.rfc-editor.org/info/rfc2822/) email message with From/To/Subject headers and CRLF
 #' line breaks.
 #'
 #' @section Specifying the server, port, and protocol:
