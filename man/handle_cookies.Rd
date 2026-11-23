@@ -11,7 +11,7 @@ handle_cookies(handle)
 }
 \description{
 The \code{handle_cookies} function returns a data frame with 7 columns as specified in the
-\href{http://www.cookiecentral.com/faq/#3.5}{netscape cookie file format}.
+\href{https://everything.curl.dev/http/cookies/fileformat.html#fields-in-the-file}{netscape cookie file format}.
 }
 \examples{
 h <- new_handle()

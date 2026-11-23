@@ -335,7 +335,7 @@ req <- curl_fetch_memory("https://hb.cran.dev/cookies/delete?foo", handle = h)
 handle_cookies(h)
 ```
 
-The `handle_cookies` function returns a data frame with 7 columns as specified in the [netscape cookie file format](http://www.cookiecentral.com/faq/#3.5).
+The `handle_cookies` function returns a data frame with 7 columns as specified in the [netscape cookie file format](https://everything.curl.dev/http/cookies/fileformat.html#fields-in-the-file).
 
 ### On reusing handles
 

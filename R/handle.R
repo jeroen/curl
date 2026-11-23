@@ -145,7 +145,7 @@ handle_reset <- function(handle){
 #' Extract cookies from a handle
 #'
 #' The `handle_cookies` function returns a data frame with 7 columns as specified in the
-#' [netscape cookie file format](http://www.cookiecentral.com/faq/#3.5).
+#' [netscape cookie file format](https://everything.curl.dev/http/cookies/fileformat.html#fields-in-the-file).
 #'
 #' @useDynLib curl R_get_handle_cookies
 #' @export
