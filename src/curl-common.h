@@ -54,6 +54,7 @@ typedef struct {
 
 CURL* get_handle(SEXP ptr);
 reference* get_ref(SEXP ptr);
+CURLM* get_connection_curlm(SEXP ptr);
 void raise_libcurl_error(CURLcode res, reference *ref, SEXP error_cb);
 void assert_status(CURLcode res, reference *ref);
 void assert_message(CURLcode res, const char *str);

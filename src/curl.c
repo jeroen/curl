@@ -169,6 +169,8 @@ static void cleanup(Rconnection con) {
   free(req->buf);
   free(req->url);
   free(req);
+  if (con->ex_ptr)
+    R_ClearExternalPtr((SEXP) con->ex_ptr);
 }
 
 /* reset to pre-opened state */
@@ -205,6 +207,42 @@ static int has_final_headers(request *req) {
   if (status < 200 || (status >= 300 && status < 400) || status == 401 || status == 407)
     return 0;
   return 1;
+}
+
+static int is_ready(request *req) {
+  return !req->has_more || req->has_data || has_final_headers(req);
+}
+
+static Rconnection get_curl_connection(SEXP ptr) {
+  if (!Rf_inherits(ptr, "curl"))
+    Rf_error("Argument 'con' must be a curl connection");
+  SEXP id = Rf_getAttrib(ptr, Rf_install("conn_id"));
+  if (TYPEOF(id) != EXTPTRSXP)
+    Rf_error("Connection is not a curl connection");
+  Rconnection con = (Rconnection) R_ExternalPtrAddr(id);
+  if (!con)
+    Rf_error("Connection is closed");
+  return con;
+}
+
+CURLM *get_connection_curlm(SEXP ptr) {
+  Rconnection con = get_curl_connection(ptr);
+  request *req = (request*) con->private;
+  return req->manager;
+}
+
+SEXP R_curl_ready(SEXP ptr) {
+  Rconnection con = get_curl_connection(ptr);
+  request *req = (request*) con->private;
+  if (!con->isopen)
+    Rf_error("Connection is not open");
+  if (req->has_more) {
+    R_CheckUserInterrupt();
+    massert(curl_multi_perform(req->manager, &(req->has_more)));
+    con->incomplete = req->has_more || req->size;
+    check_handles(req->manager, req->ref);
+  }
+  return Rf_ScalarLogical(is_ready(req));
 }
 
 static Rboolean rcurl_open(Rconnection con) {
@@ -245,7 +283,7 @@ static Rboolean rcurl_open(Rconnection con) {
  /* Wait for the headers of the final response or the first data to arrive.
    Monitoring a change in status code does not suffice in case of http
    redirects */
-  while(block_open && req->has_more && !req->has_data && !has_final_headers(req)) {
+  while(block_open && !is_ready(req)) {
     int numfds;
     massert(curl_multi_wait(req->manager, NULL, 0, 1000, &numfds));
     if(pending_interrupt()) {
@@ -318,8 +356,8 @@ SEXP R_curl_connection(SEXP url, SEXP ptr, SEXP partial) {
   /* protect the handle */
   (req->ref->refCount)++;
 
-  /* store the CURLM address in con->ex_ptr which is the 'conn_id' attribute */
-  R_SetExternalPtrAddr((SEXP) con->ex_ptr, req->manager);
+  /* store the Rconnection in con->ex_ptr which is the 'conn_id' attribute */
+  R_SetExternalPtrAddr((SEXP) con->ex_ptr, con);
 
   UNPROTECT(1);
   return rc;

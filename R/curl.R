@@ -10,6 +10,12 @@
 #' needs to call [isIncomplete()] to check if the download has completed
 #' yet.
 #'
+#' To also avoid blocking while waiting for response headers, include `"s"` in
+#' the open mode (e.g. `open(con, "rbfs", blocking = FALSE)`), then call
+#' `curl_ready(con)` together with [multi_fdset()] until it returns `TRUE`
+#' (indicating that the final response headers or body data have arrived, or
+#' the transfer has finished).
+#'
 #' @useDynLib curl R_curl_connection
 #' @export
 #' @param url character string. See examples.
@@ -66,6 +72,14 @@
 #'
 curl <- function(url = "https://hb.cran.dev/get", open = "", handle = new_handle()){
   curl_connection(url, open, handle)
+}
+
+#' @rdname curl
+#' @param con a curl connection opened with `open(con, "rbfs", blocking = FALSE)`.
+#' @useDynLib curl R_curl_ready
+#' @export
+curl_ready <- function(con){
+  .Call(R_curl_ready, con)
 }
 
 # 'stream' currently only used for non-blocking connections to prevent
