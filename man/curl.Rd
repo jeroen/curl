@@ -2,9 +2,12 @@
 % Please edit documentation in R/curl.R
 \name{curl}
 \alias{curl}
+\alias{curl_ready}
 \title{Curl connection interface}
 \usage{
 curl(url = "https://hb.cran.dev/get", open = "", handle = new_handle())
+
+curl_ready(con)
 }
 \arguments{
 \item{url}{character string. See examples.}
@@ -13,6 +16,8 @@ curl(url = "https://hb.cran.dev/get", open = "", handle = new_handle())
 initially. Currently only "r" and "rb" are supported.}
 
 \item{handle}{a curl handle object}
+
+\item{con}{a curl connection opened with \code{open(con, "rbfs", blocking = FALSE)}.}
 }
 \description{
 Drop-in replacement for base \code{\link[=url]{url()}} that supports https, ftps,
@@ -25,6 +30,12 @@ In this case \code{readBin} and \code{readLines} will return immediately with da
 that is available without waiting. For such non-blocking connections the caller
 needs to call \code{\link[=isIncomplete]{isIncomplete()}} to check if the download has completed
 yet.
+
+To also avoid blocking while waiting for response headers, include \code{"s"} in
+the open mode (e.g. \code{open(con, "rbfs", blocking = FALSE)}), then call
+\code{curl_ready(con)} together with \code{\link[=multi_fdset]{multi_fdset()}} until it returns \code{TRUE}
+(indicating that the final response headers or body data have arrived, or
+the transfer has finished).
 }
 \examples{
 \dontrun{

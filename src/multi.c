@@ -22,19 +22,9 @@ multiref *get_multiref(SEXP ptr){
 
 /* retrieves CURLM from connections as well as pools */
 CURLM *get_curlm(SEXP ptr){
-  CURLM *multi;
-  if(Rf_inherits(ptr, "curl")){
-    ptr = Rf_getAttrib(ptr, Rf_install("conn_id"));
-    if (TYPEOF(ptr) != EXTPTRSXP)
-      Rf_error("pool ptr is not a curl connection");
-    multi = (CURLM*) R_ExternalPtrAddr(ptr);
-    if(!multi)
-      Rf_error("CURLM pointer is dead");
-  } else {
-    multiref *mref = get_multiref(ptr);
-    multi = mref->m;
-  }
-  return multi;
+  if(Rf_inherits(ptr, "curl"))
+    return get_connection_curlm(ptr);
+  return get_multiref(ptr)->m;
 }
 
 void multi_release(reference *ref){
